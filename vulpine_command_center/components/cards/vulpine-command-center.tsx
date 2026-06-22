@@ -7,7 +7,7 @@ import {
   Settings, ChevronRight, ChevronLeft, Bell, Search, X, Check, AlertTriangle, Info,
   Clock, LogOut, Activity, Zap, Shield, TrendingUp, Upload, FileText,
   GitBranch, Package, Calculator, ClipboardCheck, Download, CircleSlash,
-  UserCircle, BellRing, Lock, Monitor, CreditCard, Menu,
+  UserCircle, BellRing, Lock, Monitor, CreditCard, Menu, Mail, Send,
 } from "lucide-react"
 
 // ─── Design tokens ──────────────────────────────────────────────
@@ -29,7 +29,7 @@ const EASE_OUT = [0.16, 1, 0.3, 1] as const
 
 // ─── Navigation ─────────────────────────────────────────────────
 
-type SectionId = "dashboard" | "leads" | "contacts" | "companies" | "revenue" | "autobid" | "drive" | "settings"
+type SectionId = "dashboard" | "leads" | "contacts" | "companies" | "revenue" | "autobid" | "emailblaster" | "drive" | "settings"
 
 interface NavItem {
   id: SectionId
@@ -62,6 +62,7 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { id: "revenue", label: "Revenue", icon: DollarSign },
       { id: "autobid", label: "Bid Engine", icon: Wrench },
+      { id: "emailblaster", label: "Email Blaster", icon: Mail },
     ],
   },
   {
@@ -627,6 +628,186 @@ function BidEngineSection() {
   )
 }
 
+// ─── Section: Email Blaster ─────────────────────────────────────
+
+const EMAIL_BLASTER_STAGES = [
+  { id: "audience", label: "Audience", icon: Users, description: "Select contact lists, companies, filters, tags, and saved segments." },
+  { id: "template", label: "Template", icon: FileText, description: "Choose or draft reusable email templates for outbound campaigns." },
+  { id: "sender", label: "Sender", icon: UserCircle, description: "Configure sender profile, reply-to address, and domain verification." },
+  { id: "compliance", label: "Compliance", icon: Shield, description: "Validate unsubscribe rules, suppression lists, sender identity, and send limits." },
+  { id: "suppressions", label: "Suppressions", icon: X, description: "Review and manage global suppression lists before any send." },
+  { id: "batch", label: "Batch Queue", icon: Package, description: "Prepare controlled send batches and monitor pending delivery jobs." },
+  { id: "send-review", label: "Send Review", icon: Send, description: "Final human review and approval gate before any outbound job runs." },
+  { id: "delivery", label: "Delivery", icon: Check, description: "Track sent, failed, bounced, opened, replied, and suppressed outcomes." },
+]
+
+const EMAIL_ZONES = [
+  { label: "Audience Builder", description: "Select contacts, companies, filters, tags, and saved segments.", icon: Users },
+  { label: "Template Center", description: "Choose or draft reusable email templates for outbound campaigns.", icon: FileText },
+  { label: "Compliance Gate", description: "Validate unsubscribe rules, suppression lists, sender identity, and send limits.", icon: Shield },
+  { label: "Batch Queue", description: "Prepare controlled send batches and monitor pending delivery jobs.", icon: Package },
+  { label: "Delivery Monitor", description: "Track sent, failed, bounced, opened, replied, and suppressed outcomes.", icon: Activity },
+  { label: "Review & Launch", description: "Human review area before any outbound email job is allowed to send.", icon: ClipboardCheck },
+]
+
+function EmailBlasterSection() {
+  const [activeStage, setActiveStage] = useState<string | null>(null)
+
+  return (
+    <div className={`flex flex-col gap-5 ${SECTION_MIN_H}`}>
+      {/* Hero */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="rounded-2xl surface-card p-5 lg:p-7 relative overflow-hidden"
+        style={{ boxShadow: CARD_SHADOW }}
+      >
+        <GlowOrb className="w-64 h-64 -top-32 -right-32 bg-primary/5" />
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center glow-teal-sm shrink-0">
+                <Mail className="size-5 text-primary" />
+              </div>
+              <div>
+                <h2 className="text-xl font-extrabold text-foreground font-display tracking-tight">Email Blaster</h2>
+                <p className="text-[11px] text-muted-foreground font-sans">Bulk outbound email workflow shell</p>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground font-sans leading-relaxed max-w-xl">
+              Audience selection, templates, compliance checks, suppression rules, batch sending, and delivery tracking will be built in later phases. This shell defines the layout and workflow stages ready for backend wiring.
+            </p>
+          </div>
+          <PlaceholderBadge label="Shell" />
+        </div>
+      </motion.div>
+
+      {/* Workflow stage rail */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.1, ease: EASE_OUT }}
+        className="rounded-2xl surface-card p-5 lg:p-6"
+        style={{ boxShadow: CARD_SHADOW }}
+      >
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="text-sm font-bold text-foreground font-display tracking-tight">Workflow Stages</h3>
+            <p className="text-[11px] text-muted-foreground mt-0.5 font-sans">Select a stage to preview its placeholder.</p>
+          </div>
+        </div>
+
+        {/* Stage tabs */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none flex-wrap">
+          {EMAIL_BLASTER_STAGES.map((stage, i) => {
+            const Icon = stage.icon
+            const isActive = activeStage === stage.id
+            return (
+              <button
+                key={stage.id}
+                onClick={() => setActiveStage(isActive ? null : stage.id)}
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap shrink-0 font-sans ${
+                  isActive
+                    ? "bg-primary/12 text-primary border border-primary/20"
+                    : "text-muted-foreground hover:text-foreground hover:bg-accent/40 border border-transparent"
+                }`}
+              >
+                <span className="text-[10px] font-mono text-muted-foreground/50 mr-0.5">{String(i + 1).padStart(2, "0")}</span>
+                <Icon className="size-3.5" />
+                {stage.label}
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Stage detail */}
+        <AnimatePresence mode="wait">
+          {activeStage && (() => {
+            const stage = EMAIL_BLASTER_STAGES.find((s) => s.id === activeStage)
+            if (!stage) return null
+            const Icon = stage.icon
+            return (
+              <motion.div
+                key={activeStage}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.25 }}
+                className="mt-4 rounded-xl bg-muted/20 border border-border/30 p-5 flex items-start gap-4"
+              >
+                <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 glow-teal-sm">
+                  <Icon className="size-5 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-[13px] font-bold text-foreground font-display">{stage.label}</p>
+                  <p className="text-xs text-muted-foreground font-sans mt-1 leading-relaxed">{stage.description}</p>
+                  <div className="flex items-center gap-2 mt-3">
+                    <PlaceholderBadge label="Backend wiring required" />
+                  </div>
+                </div>
+              </motion.div>
+            )
+          })()}
+        </AnimatePresence>
+      </motion.div>
+
+      {/* Placeholder content grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {EMAIL_ZONES.map((zone, i) => {
+          const Icon = zone.icon
+          return (
+            <motion.div
+              key={zone.label}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 + i * 0.07, ease: EASE_OUT }}
+              className="rounded-2xl surface-card p-5 flex flex-col gap-3"
+              style={{ boxShadow: CARD_SHADOW }}
+            >
+              <div className="flex items-center gap-3">
+                <div className="size-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                  <Icon className="size-4 text-primary" />
+                </div>
+                <div>
+                  <h4 className="text-[13px] font-bold text-foreground font-display tracking-tight">{zone.label}</h4>
+                  <p className="text-[11px] text-muted-foreground font-sans mt-0.5">{zone.description}</p>
+                </div>
+              </div>
+              <div className="h-px bg-border/40" />
+              <div className="rounded-lg bg-muted/20 border border-border/30 p-3 flex items-center justify-center min-h-[80px]">
+                <p className="text-[11px] text-muted-foreground/50 font-sans text-center">
+                  Content area — ready for backend wiring
+                </p>
+              </div>
+              <PlaceholderBadge label="Placeholder" />
+            </motion.div>
+          )
+        })}
+      </div>
+
+      {/* Compliance warning */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.5, ease: EASE_OUT }}
+        className="rounded-2xl surface-card p-5 flex items-start gap-4 border border-amber-500/20 bg-amber-500/[0.03]"
+        style={{ boxShadow: CARD_SHADOW }}
+      >
+        <div className="size-9 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0">
+          <AlertTriangle className="size-4 text-amber-500" />
+        </div>
+        <div className="flex-1">
+          <p className="text-[13px] font-bold text-foreground font-display tracking-tight">Sending Disabled</p>
+          <p className="text-xs text-muted-foreground font-sans mt-1 leading-relaxed">
+            No emails can be sent from this shell. Sending will remain disabled until backend mail transport, suppression handling, unsubscribe logic, sender verification, and audit logging are implemented.
+          </p>
+        </div>
+      </motion.div>
+    </div>
+  )
+}
+
 // ─── Section: Vulpine Drive ─────────────────────────────────────
 
 function DriveSection() {
@@ -813,6 +994,7 @@ const SECTION_COMPONENTS: Record<SectionId, React.FC> = {
   companies: CompaniesSection,
   revenue: RevenueSection,
   autobid: BidEngineSection,
+  emailblaster: EmailBlasterSection,
   drive: DriveSection,
   settings: SettingsSection,
 }
