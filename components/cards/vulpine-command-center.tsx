@@ -5,10 +5,11 @@ import { motion, AnimatePresence } from "motion/react"
 import {
   LayoutDashboard, Users, Building2, DollarSign, Wrench, HardDrive,
   Settings, ChevronRight, ChevronLeft, Bell, Search, X, Check, AlertTriangle, Info,
-  Clock, LogOut, Activity, Zap, Shield, TrendingUp, Upload, FileText,
-  GitBranch, Package, Calculator, ClipboardCheck, Download, CircleSlash,
+  Clock, LogOut, Activity, Zap, Shield, TrendingUp, FileText,
+  GitBranch, Package, ClipboardCheck, CircleSlash,
   UserCircle, BellRing, Lock, Monitor, CreditCard, Menu, Mail, Send,
 } from "lucide-react"
+import { CabinetBidEngineSection } from "./cabinet-bid-engine-section"
 
 // ─── Design tokens ──────────────────────────────────────────────
 
@@ -471,163 +472,6 @@ function RevenueSection() {
 
 // ─── Section: Bid Engine ────────────────────────────────────────
 
-const BID_WORKFLOW_STAGES = [
-  { id: "workbook", label: "Workbook", icon: FileText, description: "Load and parse uploaded project workbook files." },
-  { id: "plans", label: "Plans", icon: GitBranch, description: "Architectural plans and drawing set ingestion." },
-  { id: "unit-mix", label: "Unit Mix", icon: Package, description: "Room types, quantities, and cabinet configuration by unit." },
-  { id: "takeoff", label: "Cabinet Takeoff", icon: ClipboardCheck, description: "Door and drawer count extraction per room per unit." },
-  { id: "sku-mapping", label: "SKU Mapping", icon: Zap, description: "Map takeoff items to catalog SKUs and pricing tiers." },
-  { id: "pricing", label: "Pricing", icon: Calculator, description: "Apply labor, material, and margin rules to generate bid totals." },
-  { id: "qa", label: "QA", icon: Shield, description: "Validation checks, flag anomalies, and approval gate." },
-  { id: "export", label: "Export", icon: Download, description: "Generate bid package, PDF summary, and CSV export." },
-]
-
-const BID_ZONES = [
-  { label: "Ingestion Hub", description: "Upload project workbooks, plans, and supporting documents.", icon: Upload },
-  { label: "Workflow Control Center", description: "Manage active bid jobs, monitor stage progress, and trigger re-runs.", icon: Activity },
-  { label: "Workspace Draft Viewer", description: "Live preview of extracted data, unit mix, and pricing draft.", icon: FileText },
-  { label: "Review & Export", description: "Final QA review, approval sign-off, and bid package export.", icon: ClipboardCheck },
-]
-
-function BidEngineSection() {
-  const [activeStage, setActiveStage] = useState<string | null>(null)
-
-  return (
-    <div className={`flex flex-col gap-5 ${SECTION_MIN_H}`}>
-      {/* Hero */}
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="rounded-2xl surface-card p-5 lg:p-7 relative overflow-hidden"
-        style={{ boxShadow: CARD_SHADOW }}
-      >
-        <GlowOrb className="w-64 h-64 -top-32 -right-32 bg-primary/5" />
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-3 mb-3">
-              <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center glow-teal-sm shrink-0">
-                <Wrench className="size-5 text-primary" />
-              </div>
-              <div>
-                <h2 className="text-xl font-extrabold text-foreground font-display tracking-tight">Bid Engine</h2>
-                <p className="text-[11px] text-muted-foreground font-sans">Cabinet bidding workflow shell</p>
-              </div>
-            </div>
-            <p className="text-xs text-muted-foreground font-sans leading-relaxed max-w-xl">
-              Workbook, plans, unit mix, takeoff, pricing, QA, and export will be built in later phases. This shell defines the layout and workflow stages ready for backend wiring.
-            </p>
-          </div>
-          <PlaceholderBadge label="Shell" />
-        </div>
-      </motion.div>
-
-      {/* Workflow stage rail */}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1, ease: EASE_OUT }}
-        className="rounded-2xl surface-card p-5 lg:p-6"
-        style={{ boxShadow: CARD_SHADOW }}
-      >
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h3 className="text-sm font-bold text-foreground font-display tracking-tight">Workflow Stages</h3>
-            <p className="text-[11px] text-muted-foreground mt-0.5 font-sans">Select a stage to preview its placeholder.</p>
-          </div>
-        </div>
-
-        {/* Stage tabs */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none flex-wrap">
-          {BID_WORKFLOW_STAGES.map((stage, i) => {
-            const Icon = stage.icon
-            const isActive = activeStage === stage.id
-            return (
-              <button
-                key={stage.id}
-                onClick={() => setActiveStage(isActive ? null : stage.id)}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap shrink-0 font-sans ${
-                  isActive
-                    ? "bg-primary/12 text-primary border border-primary/20"
-                    : "text-muted-foreground hover:text-foreground hover:bg-accent/40 border border-transparent"
-                }`}
-              >
-                <span className="text-[10px] font-mono text-muted-foreground/50 mr-0.5">{String(i + 1).padStart(2, "0")}</span>
-                <Icon className="size-3.5" />
-                {stage.label}
-              </button>
-            )
-          })}
-        </div>
-
-        {/* Stage detail */}
-        <AnimatePresence mode="wait">
-          {activeStage && (() => {
-            const stage = BID_WORKFLOW_STAGES.find((s) => s.id === activeStage)
-            if (!stage) return null
-            const Icon = stage.icon
-            return (
-              <motion.div
-                key={activeStage}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.25 }}
-                className="mt-4 rounded-xl bg-muted/20 border border-border/30 p-5 flex items-start gap-4"
-              >
-                <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 glow-teal-sm">
-                  <Icon className="size-5 text-primary" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-[13px] font-bold text-foreground font-display">{stage.label}</p>
-                  <p className="text-xs text-muted-foreground font-sans mt-1 leading-relaxed">{stage.description}</p>
-                  <div className="flex items-center gap-2 mt-3">
-                    <PlaceholderBadge label="Backend wiring required" />
-                  </div>
-                </div>
-              </motion.div>
-            )
-          })()}
-        </AnimatePresence>
-      </motion.div>
-
-      {/* Workflow zones */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {BID_ZONES.map((zone, i) => {
-          const Icon = zone.icon
-          return (
-            <motion.div
-              key={zone.label}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 + i * 0.07, ease: EASE_OUT }}
-              className="rounded-2xl surface-card p-5 flex flex-col gap-3"
-              style={{ boxShadow: CARD_SHADOW }}
-            >
-              <div className="flex items-center gap-3">
-                <div className="size-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                  <Icon className="size-4 text-primary" />
-                </div>
-                <div>
-                  <h4 className="text-[13px] font-bold text-foreground font-display tracking-tight">{zone.label}</h4>
-                  <p className="text-[11px] text-muted-foreground font-sans mt-0.5">{zone.description}</p>
-                </div>
-              </div>
-              <div className="h-px bg-border/40" />
-              <div className="rounded-lg bg-muted/20 border border-border/30 p-3 flex items-center justify-center min-h-[80px]">
-                <p className="text-[11px] text-muted-foreground/50 font-sans text-center">
-                  Content area — ready for backend wiring
-                </p>
-              </div>
-              <PlaceholderBadge label="Placeholder" />
-            </motion.div>
-          )
-        })}
-      </div>
-    </div>
-  )
-}
-
 // ─── Section: Email Blaster ─────────────────────────────────────
 
 const EMAIL_BLASTER_STAGES = [
@@ -993,7 +837,7 @@ const SECTION_COMPONENTS: Record<SectionId, React.FC> = {
   contacts: ContactsSection,
   companies: CompaniesSection,
   revenue: RevenueSection,
-  autobid: BidEngineSection,
+  autobid: CabinetBidEngineSection,
   emailblaster: EmailBlasterSection,
   drive: DriveSection,
   settings: SettingsSection,

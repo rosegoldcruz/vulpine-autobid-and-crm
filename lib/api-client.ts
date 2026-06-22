@@ -45,6 +45,24 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   return res.json() as Promise<T>
 }
 
+async function upload<T>(path: string, formData: FormData, options: Omit<RequestInit, "body" | "method"> = {}): Promise<T> {
+  const base = getBaseUrl()
+  const url = `${base}${path}`
+
+  const res = await fetch(url, {
+    ...options,
+    method: "POST",
+    body: formData,
+  })
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "Unknown error")
+    throw new Error(`API error ${res.status} at ${path}: ${text}`)
+  }
+
+  return res.json() as Promise<T>
+}
+
 export const apiClient = {
   get<T>(path: string, options?: RequestOptions) {
     return request<T>(path, { ...options, method: "GET" })
@@ -58,6 +76,7 @@ export const apiClient = {
   patch<T>(path: string, body: unknown, options?: RequestOptions) {
     return request<T>(path, { ...options, method: "PATCH", body })
   },
+  upload,
   delete<T>(path: string, options?: RequestOptions) {
     return request<T>(path, { ...options, method: "DELETE" })
   },
