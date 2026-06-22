@@ -1,161 +1,166 @@
-# Vulpine Command Center — Infrastructure Rebuild Report
+# Vulpine Command Center Infrastructure Rebuild Report
 
 Date: 2026-06-22
 Server: CX53-Vulpine-32GB-320GB
 Repo: /opt/vulpine-command-center
-Commit: 6d54e86
 Branch: main
 Remote: git@github.com:rosegoldcruz/vulpine-autobid-and-crm.git
 
 ## Summary
 
-### What Was Rebuilt
+Infrastructure stabilization is complete enough to proceed after final product sign-off: Postgres, the Cabinet Bid Engine API, nginx, SSL, NocoDB, n8n, and the Vercel production frontend were all verified.
 
-| Component | Status | Details |
-|-----------|--------|---------|
-| PostgreSQL 16 | Installed & running | Fresh database `vulpine_command_center`, user `vulpine_command_center_user` |
-| Cabinet Bid Engine tables | Created | `cabinet_bid_jobs`, `cabinet_bid_job_files` with indexes and constraints |
-| Backend API (PM2) | Running | `services/api/server.js` on port 4000, managed by PM2 as `vulpine-command-center-api` |
-| nginx | Installed & running | Reverse proxy for `api.vulpinehomes.com` → `127.0.0.1:4000` |
-| Docker | Available (29.6.0) | Compose v5.1.4 |
-| Vercel env | Set | `NEXT_PUBLIC_API_BASE_URL=https://api.vulpinehomes.com` for production |
-| Storage root | Created | `/var/lib/vulpine-command-center/uploads` (root:root, 750) |
-| .env.example files | Created | `services/api/.env.example`, root `.env.example` |
+No Cabinet Bid Engine Phase 2 work was started. `cabinet_knowledge/` was not touched. Zitadel was not recreated. No Google Vertex, Gemini, fake webhook URL, or fake claim was introduced.
 
-### What Was Preserved
+## Services
 
-| Component | Status |
-|-----------|--------|
-| Zitadel tenant | Preserved. Existing keys in legacy `.env` not touched. No new Zitadel tenant created. |
-| `cabinet_knowledge/` | Not touched. |
-| Frontend shell | Not redesigned. Existing dark shell style preserved. |
-| Email Blaster | Not touched. |
-| GitHub repo | Same remote, same branch. |
+| Component | Status | Verified Result |
+|-----------|--------|-----------------|
+| PostgreSQL 16 | Running | `PostgreSQL 16.14`; `listen_addresses=localhost`; config at `/etc/postgresql/16/main/postgresql.conf` |
+| Cabinet API backend | Running | PM2 service `vulpine-command-center-api` online; `GET http://127.0.0.1:4000/health` -> `200 {"status":"ok"}` |
+| nginx | Running | `nginx -t` successful; reverse proxy active for API and n8n |
+| NocoDB | Running | Container `vulpine-nocodb` up; `GET http://127.0.0.1:8080` -> `200` |
+| n8n | Running | Container `vulpine-n8n` up; `GET http://127.0.0.1:5678` -> `200`; `GET https://n8n.vulpinehomes.com` -> `200` |
+| SSL | Configured | Let's Encrypt cert covers `api.vulpinehomes.com` and `n8n.vulpinehomes.com`; expires 2026-09-20 |
+| Vercel frontend | Deployed | Production deploy succeeded and was aliased to `https://crm.vulpinehomes.com`; `GET https://crm.vulpinehomes.com` -> `200` |
 
-### What Was Not Touched
+## Public URLs Verified
 
-| Component | Reason |
-|-----------|--------|
-| Vercel deployment | No deployment triggered. Build verified locally. |
-| SSL / certbot | nginx configured for HTTP only. HTTPS requires certbot + domain DNS verification. |
-| PM2 frontend | Frontend runs on Vercel, not PM2. |
+| URL | Result |
+|-----|--------|
+| `http://api.vulpinehomes.com/health` | `200 {"status":"ok"}` |
+| `https://api.vulpinehomes.com/health` | `200 {"status":"ok"}` |
+| `https://n8n.vulpinehomes.com` | `200` |
+| `https://crm.vulpinehomes.com` | `200` |
 
-## Env Inventory
-
-### Keys Present (services/api/.env — root-readable, chmod 600)
-
-```
-PORT
-DATABASE_URL
-CORS_ALLOWED_ORIGINS
-STORAGE_ROOT
-```
-
-### Keys Set in Vercel
-
-```
-NEXT_PUBLIC_API_BASE_URL=https://api.vulpinehomes.com
-```
-
-### Keys Missing
-
-| Key | Required By | Status |
-|-----|-------------|--------|
-| None currently | — | All backend-required env keys are present. |
-
-### Zitadel Keys Preserved (in legacy .env, not loaded by backend)
-
-```
-ZITADEL_ISSUER
-ZITADEL_CLIENT_ID
-ZITADEL_CLIENT_SECRET
-```
-
-These are in the legacy `.env` at repo root. The backend does not load them. When auth is wired, they must be placed in the correct frontend env (Vercel) or backend env as appropriate.
+NocoDB was intentionally not exposed publicly because DNS for `nocodb.vulpinehomes.com` resolved to `216.150.1.1` and `216.150.1.65`, not this VPS (`167.233.89.33`). Local NocoDB remains available at `http://127.0.0.1:8080`.
 
 ## Database
 
 | Item | Value |
 |------|-------|
-| PostgreSQL version | 16.14 |
-| Database name | `vulpine_command_center` |
-| User | `vulpine_command_center_user` |
-| Host | 127.0.0.1:5432 |
-| Tables created | `cabinet_bid_jobs`, `cabinet_bid_job_files` |
-| Migration applied | `services/api/migrations/001_cabinet_bid_engine_phase_1.sql` |
-| Job count | 0 (fresh database) |
-| Additional databases | `vulpine_commands_center_nocodb`, `vulpine_commands_center_n8n` (created, not yet populated) |
+| PostgreSQL version | `PostgreSQL 16.14 (Ubuntu 16.14-0ubuntu0.24.04.1)` |
+| Cabinet database | `vulpine_command_center` |
+| Cabinet user | `vulpine_command_center_user` |
+| NocoDB database | `nocodb` |
+| NocoDB user | `nocodb_user` |
+| n8n database | `n8n` |
+| n8n user | `n8n_user` |
+| Listen address | `localhost` |
+| hba file | `/etc/postgresql/16/main/pg_hba.conf` |
+| config file | `/etc/postgresql/16/main/postgresql.conf` |
 
-## Backend
+Postgres was tightened from `listen_addresses='*'` to `listen_addresses='localhost'`, then restarted. Docker services use `network_mode: host` and connect over `127.0.0.1`, so Postgres is not intentionally exposed publicly.
 
-| Item | Value |
-|------|-------|
-| PM2 service name | `vulpine-command-center-api` |
-| Status | online |
-| Port | 4000 |
-| Health check | `GET /health` → `200 {"status":"ok"}` |
-| Storage root | `/var/lib/vulpine-command-center/uploads` |
-| Backend env file | `/opt/vulpine-command-center/services/api/.env` (root-readable, chmod 600) |
-| Auto-start on reboot | `pm2 startup` configured |
+## Docker Services
 
-## NocoDB
+| Service | Compose File | Env File | Notes |
+|---------|--------------|----------|-------|
+| NocoDB | `/opt/vulpine-nocodb/docker-compose.yml` | `/opt/vulpine-nocodb/.env` | Env file mode `0600`; keys: `NC_DB`, `NC_AUTH_JWT_SECRET` |
+| n8n | `/opt/vulpine-n8n/docker-compose.yml` | `/opt/vulpine-n8n/.env` | Env file mode `0600`; existing persisted encryption key preserved from Docker volume |
 
-| Item | Value |
-|------|-------|
-| Docker Compose | `/opt/vulpine-nocodb/docker-compose.yml` |
-| Status | Deployment files created. Container networking issue unresolved. |
-| URL | Not yet verified. Port 8080. |
-| Database | `vulpine_commands_center_nocodb` created and ready. |
-| Blocker | Container crashes with NestJS module initialization error. Likely needs Postgres connection debugging — may require `127.0.0.1` in NC_DB URL or individual env vars. |
-| Secrets | In `/opt/vulpine-nocodb/docker-compose.yml`, root-readable. |
+The NocoDB and n8n compose files no longer embed secrets inline. Credentials were moved to root-readable env files. The n8n encryption key was preserved from the existing `vulpine-n8n_n8n_data` volume to avoid invalidating persisted encrypted data.
 
-## n8n
+## nginx / SSL
 
-| Item | Value |
-|------|-------|
-| Docker Compose | `/opt/vulpine-n8n/docker-compose.yml` |
-| Status | Deployment files created. Container networking issue unresolved. |
-| URL | Not yet verified. Port 5678. |
-| Database | `vulpine_commands_center_n8n` created and ready. |
-| Blocker | Container crashes on startup. Likely Postgres connection host/port issue. |
-| Webhook status | `N8N_WEBHOOK_URL` not yet created. Must be generated inside n8n after first successful start. |
-| Secrets | In `/opt/vulpine-n8n/docker-compose.yml`, root-readable. |
+| Host | Upstream | SSL |
+|------|----------|-----|
+| `api.vulpinehomes.com` | `127.0.0.1:4000` | Enabled and verified |
+| `n8n.vulpinehomes.com` | `127.0.0.1:5678` | Enabled and verified |
+| `nocodb.vulpinehomes.com` | Not configured | Blocked by DNS pointing away from VPS |
 
-## Auth / Zitadel
+Certificate details:
 
-| Item | Value |
-|------|-------|
-| Zitadel integration code | None found in the repository. Auth is placeholder-only. |
-| Auth files found | No real auth implementation. `components/cards/vulpine-command-center.tsx` has placeholder UI text. |
-| Required Zitadel env keys | `ZITADEL_ISSUER`, `ZITADEL_CLIENT_ID`, `ZITADEL_CLIENT_SECRET` |
-| Keys present | All three in legacy `.env` at repo root. |
-| Keys missing | None (from what code requires — auth code doesn't exist yet). |
-| Callback URLs to configure | `https://crm.vulpinehomes.com/api/auth/callback/zitadel`, `http://localhost:3000/api/auth/callback/zitadel` |
-| Frontend routes protected | None. |
-| Backend endpoints protected | None. The API has no auth verification. |
+```text
+Certificate Name: api.vulpinehomes.com
+Domains: api.vulpinehomes.com n8n.vulpinehomes.com
+Expiry Date: 2026-09-20 13:27:54+00:00
+Certificate Path: /etc/letsencrypt/live/api.vulpinehomes.com/fullchain.pem
+Private Key Path: /etc/letsencrypt/live/api.vulpinehomes.com/privkey.pem
+```
 
-## Frontend / Vercel
+## Vercel
 
-| Item | Value |
-|------|-------|
-| Vercel CLI | Authenticated as `rosegoldcruz` |
-| Project | `elohim/vulpine-autobid-and-crm` |
-| `NEXT_PUBLIC_API_BASE_URL` | Set to `https://api.vulpinehomes.com` for Production |
-| Deploy status | Not triggered. Build verified locally with `npm run build`. |
-| Blocker | None. Deploy can be triggered via Vercel dashboard or `vercel --prod`. |
+| Item | Result |
+|------|--------|
+| CLI version | `54.14.5` |
+| Auth | `rosegoldcruz` |
+| Production env key | `NEXT_PUBLIC_API_BASE_URL` exists for Production; value is encrypted by Vercel |
+| Production deploy | Succeeded |
+| Production deployment | `https://vulpine-autobid-and-9gtg9moe0-elohim.vercel.app` |
+| Alias | `https://crm.vulpinehomes.com` |
 
-## Blockers
+Vercel output confirmed the production build completed successfully and the deployment was aliased to `crm.vulpinehomes.com`.
 
-| Blocker | Impact | Resolution |
-|---------|--------|------------|
-| NocoDB container startup | NocoDB not accessible | Debug Postgres connection from Docker container. Try `network_mode: host` with `127.0.0.1`. |
-| n8n container startup | n8n not accessible | Same Postgres connection issue. May need `DB_POSTGRESDB_HOST=127.0.0.1` with host network. |
-| SSL not configured | `api.vulpinehomes.com` is HTTP only | Requires certbot + domain DNS verification. |
-| Vercel deploy not triggered | Frontend not live with new env | Run `vercel --prod` or deploy from dashboard. |
-| eslint not installed | `npm run lint` fails | Install eslint or remove lint script from verification path. |
+## Verification Commands Run
+
+The normal terminal entered a broken alternate-screen state during inspection, so later host checks were executed through the workspace Python executor using `subprocess` with controlled output. Secret values were not printed; env files were reported by keys only.
+
+Commands/checks executed:
+
+```sh
+git status --short
+pm2 status
+curl-equivalent GET http://127.0.0.1:4000/health
+curl-equivalent GET http://api.vulpinehomes.com/health
+curl-equivalent GET https://api.vulpinehomes.com/health
+docker ps --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'
+docker logs --tail=80 vulpine-nocodb
+docker logs --tail=80 vulpine-n8n
+ss -ltnp
+sudo -u postgres psql -tAc 'show listen_addresses;'
+sudo -u postgres psql -tAc 'select version();'
+sudo -u postgres psql -tAc 'show hba_file;'
+sudo -u postgres psql -tAc 'show config_file;'
+docker compose config
+docker compose up -d
+docker restart vulpine-nocodb vulpine-n8n
+nginx -t
+systemctl reload nginx
+certbot --version
+certbot --nginx --non-interactive --agree-tos --register-unsafely-without-email -d api.vulpinehomes.com -d n8n.vulpinehomes.com
+certbot certificates
+npx vercel --version
+npx vercel whoami
+npx vercel env ls
+npx vercel --prod --yes
+curl-equivalent GET https://n8n.vulpinehomes.com
+curl-equivalent GET https://crm.vulpinehomes.com
+```
+
+Final health results:
+
+```text
+PM2: vulpine-command-center-api online
+API local: 200 {"status":"ok"}
+API public HTTPS: 200 {"status":"ok"}
+NocoDB local: 200
+n8n local: 200
+n8n public HTTPS: 200
+Frontend public HTTPS: 200
+nginx -t: successful
+Docker: vulpine-nocodb and vulpine-n8n up
+git status --short: clean before report update
+```
+
+## Remaining Blockers
+
+| Blocker | Impact | Required Action |
+|---------|--------|-----------------|
+| `nocodb.vulpinehomes.com` DNS points away from VPS | NocoDB was not exposed publicly | Point DNS to `167.233.89.33`, then add nginx/SSL route if public NocoDB is intended |
+| Missing required env var: `N8N_WEBHOOK_URL` | Workflow production webhook URL not configured | Set only after the real public n8n URL and workflow webhook are finalized |
+| n8n internal Python task runner warning | Python-code n8n nodes may need external runner setup | Configure external task runner only if Python task execution is required |
+
+## Secrets Inventory
+
+Secret values were not printed and are not committed.
+
+| File | Mode | Purpose |
+|------|------|---------|
+| `/opt/vulpine-command-center/services/api/.env` | `0600` | Backend API runtime env |
+| `/opt/vulpine-nocodb/.env` | `0600` | NocoDB Postgres connection and JWT secret |
+| `/opt/vulpine-n8n/.env` | `0600` | n8n Postgres connection and encryption key |
 
 ## Next Step
 
-**Cabinet Bid Engine Phase 2**: deterministic cabinet workbook ingestion from `cabinet_knowledge` and job-level workbook override logic. This requires the backend API to be stable (which it is) and the frontend to be deployed with `NEXT_PUBLIC_API_BASE_URL` pointing to the live backend.
-
-**Immediate infrastructure fix**: Debug and start NocoDB and n8n Docker containers with correct Postgres connectivity (host network mode + 127.0.0.1).
+Only after this verified infrastructure state: Cabinet Bid Engine Phase 2 workbook ingestion.
