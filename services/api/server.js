@@ -1,3 +1,24 @@
+// Load .env file before any requires
+try {
+  const fs = require("node:fs")
+  const path = require("node:path")
+  const envPath = path.join(__dirname, ".env")
+  if (fs.existsSync(envPath)) {
+    const envContent = fs.readFileSync(envPath, "utf8")
+    for (const line of envContent.split("\n")) {
+      const trimmed = line.trim()
+      if (!trimmed || trimmed.startsWith("#")) continue
+      const eqIndex = trimmed.indexOf("=")
+      if (eqIndex === -1) continue
+      const key = trimmed.slice(0, eqIndex).trim()
+      const value = trimmed.slice(eqIndex + 1).trim()
+      if (key && !process.env[key]) {
+        process.env[key] = value
+      }
+    }
+  }
+} catch (_) { /* env loading is best-effort */ }
+
 const http = require("node:http")
 const { URL } = require("node:url")
 const {
