@@ -2,6 +2,7 @@
 
 import React, { useState, useCallback, useMemo, useRef, useEffect } from "react"
 import dynamic from "next/dynamic"
+import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "motion/react"
 import {
   LayoutDashboard, Users, Building2, DollarSign, Wrench, HardDrive,
@@ -1034,6 +1035,7 @@ export default function VulpineCommandCenter({
   initialSection?: SectionId
   allowedSections?: readonly SectionId[]
 }) {
+  const router = useRouter()
   const [activeSection, setActiveSection] = useState<SectionId>(initialSection)
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [notificationsOpen, setNotificationsOpen] = useState(false)
@@ -1047,13 +1049,17 @@ export default function VulpineCommandCenter({
   const handleNavigation = useCallback(
     (sectionId: SectionId) => {
       if (sectionId === activeSection) return
+      if (sectionId === "bidstracker") {
+        router.push("/bids/tracker")
+        return
+      }
       setIsTransitioning(true)
       setTimeout(() => {
         setActiveSection(sectionId)
         setIsTransitioning(false)
       }, 180)
     },
-    [activeSection],
+    [activeSection, router],
   )
 
   const handleMarkRead = useCallback((id: number) => {
