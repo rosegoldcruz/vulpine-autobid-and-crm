@@ -24,6 +24,8 @@ dist/
 .env.test.local
 .env.production.local
 .env.example
+!.env.example
+!**/.env.example
 
 # Logs
 *.log
@@ -35,3 +37,15 @@ yarn-error.log*
 # TypeScript build info
 tsconfig.tsbuildinfo
 .vercel
+
+# Python runtime artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+
+# Transitional runtime data is never committed
+/legacy/bids-tracker/data/
+/legacy/bids-tracker/uploads/
+/services/engine/uploads/*
+!/services/engine/uploads/.gitkeep
