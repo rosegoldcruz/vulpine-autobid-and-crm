@@ -30,6 +30,7 @@ async function proxy(request: Request, context: RouteContext) {
   if (!ALLOWED_PROTOCOLS.has(baseUrl.protocol)) return apiError("UPSTREAM_NOT_CONFIGURED", `${serverEnvNames.visionApiUrl} must use HTTP or HTTPS.`, correlationId, 503)
 
   const headers = new Headers({ "x-correlation-id": correlationId })
+  headers.set("x-vulpine-actor", authorization.session.user.id || authorization.session.user.email || "authenticated-user")
   const contentType = request.headers.get("content-type")
   const projectId = request.headers.get("x-project-id")
   if (contentType) headers.set("content-type", contentType)

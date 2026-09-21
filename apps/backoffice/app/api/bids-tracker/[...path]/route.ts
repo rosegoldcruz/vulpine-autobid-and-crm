@@ -54,6 +54,7 @@ async function proxy(request: Request, context: RouteContext) {
 
   const upstreamUrl = new URL(rule.upstream(match), `${baseUrl.toString().replace(/\/$/, "")}/`)
   const headers = new Headers({ "x-correlation-id": correlationId })
+  headers.set("x-vulpine-actor", authorization.session.user.id || authorization.session.user.email || "authenticated-user")
   const contentType = request.headers.get("content-type")
   if (contentType) headers.set("content-type", contentType)
   const integrationToken = optionalServerEnv(serverEnvNames.bidsTrackerApiToken)
