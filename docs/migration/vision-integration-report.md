@@ -54,7 +54,7 @@
 ## FILES CHANGED
 
 - Workspace/package wiring: root `package.json`, `pnpm-workspace.yaml`, `pnpm-lock.yaml`.
-- Preview deployment boundary: root `vercel.json` explicitly builds Backoffice and publishes `apps/backoffice/.next` from the monorepo root.
+- Preview deployment boundary: root `vercel.json` explicitly builds Backoffice and publishes `apps/backoffice/.next` from the monorepo root; the root manifest pins Next 16 so Vercel's framework detector can identify the monorepo target before running the filtered build.
 - Shared packages: `packages/contracts`, `packages/config`, `packages/sdk`.
 - Server boundary: `services/vision`.
 - Backoffice: Vision route, API proxies, access map, Command Center navigation, and Vision module.
