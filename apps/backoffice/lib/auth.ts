@@ -35,8 +35,7 @@ export const authOptions: NextAuthOptions = {
   providers: [ZitadelProvider(providerOptions as OAuthUserConfig<unknown>)],
   session: { strategy: "jwt" },
   callbacks: {
-    async jwt({ token, account, profile }) {
-      if (account?.access_token) token.accessToken = account.access_token
+    async jwt({ token, profile }) {
       const profileClaims = profile && typeof profile === "object" ? profile as Record<string, unknown> : undefined
       token.roles = extractZitadelRoles(profileClaims, token as Record<string, unknown>)
       return token
@@ -46,7 +45,6 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.sub ?? ""
         session.user.roles = token.roles ?? []
       }
-      session.accessToken = token.accessToken
       return session
     },
   },
