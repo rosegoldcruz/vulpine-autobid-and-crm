@@ -3,6 +3,7 @@
 import React, { useState, useCallback, useMemo, useRef, useEffect } from "react"
 import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
+import { signOut } from "next-auth/react"
 import { motion, AnimatePresence } from "motion/react"
 import {
   LayoutDashboard, Users, Building2, DollarSign, Wrench, HardDrive,
@@ -756,7 +757,11 @@ function SettingsSection() {
               )
             })}
             <div className="border-t border-border/50 my-2" />
-            <button className="flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-semibold text-fin-loss/70 hover:text-fin-loss hover:bg-fin-loss/5 transition-all duration-200 w-full text-left font-sans">
+            <button
+              type="button"
+              onClick={() => void signOut({ callbackUrl: "/signed-out" })}
+              className="flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-semibold text-fin-loss/70 hover:text-fin-loss hover:bg-fin-loss/5 transition-all duration-200 w-full text-left font-sans"
+            >
               <LogOut className="size-4" />Sign Out
             </button>
           </nav>
@@ -1060,6 +1065,7 @@ export default function VulpineCommandCenter({
 
   const handleNavigation = useCallback(
     (sectionId: SectionId) => {
+      if (allowedSections && !allowedSections.includes(sectionId)) return
       if (sectionId === activeSection) return
       if (sectionId === "bidstracker" || sectionId === "vision") {
         router.push(sectionId === "vision" ? "/bids/vision" : "/bids/tracker")
@@ -1071,7 +1077,7 @@ export default function VulpineCommandCenter({
         setIsTransitioning(false)
       }, 180)
     },
-    [activeSection, router],
+    [activeSection, allowedSections, router],
   )
 
   const handleMarkRead = useCallback((id: number) => {
@@ -1149,6 +1155,7 @@ export default function VulpineCommandCenter({
               className="p-2.5 rounded-xl hover:bg-accent/50 transition-all duration-200"
               aria-label="Settings"
               onClick={() => handleNavigation("settings")}
+              disabled={Boolean(allowedSections && !allowedSections.includes("settings"))}
             >
               <Settings className="size-4 text-muted-foreground" />
             </button>

@@ -3,6 +3,7 @@ export type VulpineRole = (typeof roles)[number]
 
 export const capabilities = [
   "backoffice.access",
+  "dashboard.read",
   "bids.read",
   "bids.write",
   "bids.upload",
@@ -15,6 +16,7 @@ export const capabilities = [
   "drive.write",
   "finance.read",
   "finance.write",
+  "settings.read",
   "settings.manage",
 ] as const
 
@@ -22,12 +24,12 @@ export type Capability = (typeof capabilities)[number]
 
 const roleCapabilities: Record<VulpineRole, readonly Capability[] | "*"> = {
   admin: "*",
-  executive: ["backoffice.access", "bids.read", "vision.read", "crm.read", "drive.read", "finance.read"],
-  finance: ["backoffice.access", "bids.read", "crm.read", "drive.read", "finance.read", "finance.write"],
-  operations: ["backoffice.access", "bids.read", "bids.write", "bids.upload", "vision.read", "crm.read", "drive.read", "drive.write"],
-  estimator: ["backoffice.access", "bids.read", "bids.write", "bids.upload", "vision.read", "vision.write", "drive.read"],
-  sales: ["backoffice.access", "bids.read", "crm.read", "crm.write", "drive.read"],
-  nbc: ["backoffice.access", "bids.read", "bids.write", "bids.upload", "vision.read", "crm.read", "drive.read"],
+  executive: ["backoffice.access", "dashboard.read", "bids.read", "vision.read", "crm.read", "drive.read", "finance.read", "settings.read"],
+  finance: ["backoffice.access", "dashboard.read", "bids.read", "crm.read", "drive.read", "finance.read", "finance.write", "settings.read"],
+  operations: ["backoffice.access", "dashboard.read", "bids.read", "bids.write", "bids.upload", "vision.read", "crm.read", "drive.read", "drive.write", "settings.read"],
+  estimator: ["backoffice.access", "dashboard.read", "bids.read", "bids.write", "bids.upload", "vision.read", "vision.write", "drive.read", "settings.read"],
+  sales: ["backoffice.access", "dashboard.read", "bids.read", "crm.read", "crm.write", "drive.read", "settings.read"],
+  nbc: ["backoffice.access", "dashboard.read", "bids.read", "bids.write", "bids.upload", "vision.read", "crm.read", "drive.read", "settings.read"],
 }
 
 export function isVulpineRole(value: string): value is VulpineRole {

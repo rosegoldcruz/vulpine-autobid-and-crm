@@ -3,13 +3,18 @@ import test from "node:test"
 import { capabilitiesForRoles, hasCapability } from "../packages/permissions/src/index.ts"
 
 test("admin receives every capability", () => {
+  assert.equal(hasCapability(["admin"], "dashboard.read"), true)
+  assert.equal(hasCapability(["admin"], "settings.read"), true)
   assert.equal(hasCapability(["admin"], "settings.manage"), true)
   assert.equal(hasCapability(["admin"], "bids.delete"), true)
+  assert.equal(hasCapability(["admin"], "bids.write"), true)
+  assert.equal(hasCapability(["admin"], "vision.write"), true)
 })
 
 test("estimator can operate bids without settings access", () => {
   assert.equal(hasCapability(["estimator"], "bids.write"), true)
   assert.equal(hasCapability(["estimator"], "settings.manage"), false)
+  assert.equal(hasCapability(["estimator"], "settings.read"), true)
 })
 
 test("unknown roles receive no capabilities", () => {
