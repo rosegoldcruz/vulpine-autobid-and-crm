@@ -8,6 +8,7 @@ export type BackofficeSectionId =
   | "revenue"
   | "autobid"
   | "bidstracker"
+  | "vision"
   | "emailblaster"
   | "drive"
   | "settings"
@@ -18,6 +19,7 @@ export function visibleSectionsForRoles(roles: readonly string[]): BackofficeSec
   if (hasCapability(roles, "crm.read")) visible.push("leads", "contacts", "companies")
   if (hasCapability(roles, "finance.read")) visible.push("revenue")
   if (hasCapability(roles, "bids.read")) visible.push("autobid", "bidstracker")
+  if (hasCapability(roles, "vision.read")) visible.push("vision")
   if (hasCapability(roles, "crm.write")) visible.push("emailblaster")
   if (hasCapability(roles, "drive.read")) visible.push("drive")
   if (hasCapability(roles, "settings.manage")) visible.push("settings")

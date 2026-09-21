@@ -31,3 +31,70 @@ export type BidKpis = {
 }
 
 export type UpdateBidInput = Partial<Pick<BidRecord, "project_name" | "company_name" | "units" | "bid_amount" | "sent_date" | "status">>
+
+export type VisionProject = VisionProjectManifest
+
+export type VisionJob = {
+  id: string
+  projectId: string
+  state: string
+  manifest: VisionProject
+  classifiedPages: Array<{ document: string; pageNumber: number; classification: string; confidence: number; reason: string }>
+  qaResult: {
+    safeToSend: boolean
+    criticalIssues: Array<{ code: string; message: string }>
+    warnings: string[]
+    assumptions: string[]
+  }
+}
+
+type VisionEnvelope<T> =
+  | { ok: true; data: T; meta?: { correlationId?: string } }
+  | { ok: false; error: { code?: string; message?: string }; meta?: { correlationId?: string } }
+
+export class VisionClientError extends Error {
+  constructor(message: string, public readonly code = "VISION_REQUEST_FAILED", public readonly correlationId?: string) {
+    super(message)
+    this.name = "VisionClientError"
+  }
+}
+
+export class VisionClient {
+  private readonly request: typeof fetch
+
+  constructor(
+    private readonly basePath = "/api/vision",
+    request?: typeof fetch,
+  ) {
+    this.request = request ?? ((input, init) => fetch(input, init))
+  }
+
+  private async call<T>(path: string, init?: RequestInit): Promise<T> {
+    const response = await this.request(`${this.basePath}${path}`, { ...init, cache: "no-store" })
+    const body = (await response.json().catch(() => null)) as VisionEnvelope<T> | null
+    if (!response.ok || !body?.ok) {
+      const failure = body && !body.ok ? body : null
+      throw new VisionClientError(failure?.error.message || `Vision request failed (${response.status}).`, failure?.error.code, failure?.meta?.correlationId)
+    }
+    return body.data
+  }
+
+  createProject(projectName: string) {
+    return this.call<{ project: VisionProject }>("/projects", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ projectName }) })
+  }
+
+  upload(projectId: string, files: readonly File[]) {
+    const body = new FormData()
+    files.forEach((file) => body.append("files", file))
+    return this.call<{ project: VisionProject; job: VisionJob }>("/uploads", { method: "POST", headers: { "x-project-id": projectId }, body })
+  }
+
+  process(jobId: string) {
+    return this.call<{ project: VisionProject; job: VisionJob }>(`/jobs/${encodeURIComponent(jobId)}/process`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ jobId }) })
+  }
+
+  getJob(jobId: string) {
+    return this.call<{ project: VisionProject; job: VisionJob }>(`/jobs/${encodeURIComponent(jobId)}`)
+  }
+}
+import type { VisionProjectManifest } from "@vulpine/contracts"

@@ -9,7 +9,7 @@ import {
   Settings, ChevronRight, ChevronLeft, Bell, Search, X, Check, AlertTriangle, Info,
   Clock, LogOut, Activity, Zap, Shield, TrendingUp, FileText,
   GitBranch, Package, ClipboardCheck, CircleSlash, BarChart3,
-  UserCircle, BellRing, Lock, Monitor, CreditCard, Menu, Mail, Send,
+  UserCircle, BellRing, Lock, Monitor, CreditCard, Menu, Mail, Send, ScanLine,
 } from "lucide-react"
 import { CabinetBidEngineSection } from "./cabinet-bid-engine-section"
 import type { BackofficeSectionId } from "@/lib/backoffice-access"
@@ -20,6 +20,17 @@ const BidsTrackerSection = dynamic(
     loading: () => (
       <div className="surface-card flex min-h-72 items-center justify-center rounded-2xl text-xs text-muted-foreground">
         Loading Bids Tracker module…
+      </div>
+    ),
+  },
+)
+
+const VisionSection = dynamic(
+  () => import("./vision-section").then((module) => module.VisionSection),
+  {
+    loading: () => (
+      <div className="surface-card flex min-h-72 items-center justify-center rounded-2xl text-xs text-muted-foreground">
+        Loading Vision workspace…
       </div>
     ),
   },
@@ -78,6 +89,7 @@ const NAV_GROUPS: NavGroup[] = [
       { id: "revenue", label: "Revenue", icon: DollarSign },
       { id: "autobid", label: "Bid Engine", icon: Wrench },
       { id: "bidstracker", label: "Bids Tracker", icon: BarChart3 },
+      { id: "vision", label: "Vision", icon: ScanLine },
       { id: "emailblaster", label: "Email Blaster", icon: Mail },
     ],
   },
@@ -854,6 +866,7 @@ const SECTION_COMPONENTS: Record<SectionId, React.ComponentType> = {
   revenue: RevenueSection,
   autobid: CabinetBidEngineSection,
   bidstracker: BidsTrackerSection,
+  vision: VisionSection,
   emailblaster: EmailBlasterSection,
   drive: DriveSection,
   settings: SettingsSection,
@@ -1049,8 +1062,8 @@ export default function VulpineCommandCenter({
   const handleNavigation = useCallback(
     (sectionId: SectionId) => {
       if (sectionId === activeSection) return
-      if (sectionId === "bidstracker") {
-        router.push("/bids/tracker")
+      if (sectionId === "bidstracker" || sectionId === "vision") {
+        router.push(sectionId === "vision" ? "/bids/vision" : "/bids/tracker")
         return
       }
       setIsTransitioning(true)

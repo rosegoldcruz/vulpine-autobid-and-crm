@@ -7,6 +7,9 @@ export const serverEnvNames = {
   zitadelAudience: "ZITADEL_AUDIENCE",
   bidsTrackerApiUrl: "BIDS_TRACKER_API_URL",
   bidsTrackerApiToken: "BIDS_TRACKER_API_TOKEN",
+  visionApiUrl: "VISION_API_URL",
+  visionApiToken: "VISION_API_TOKEN",
+  visionIntegrationKey: "VISION_INTEGRATION_KEY",
 } as const
 
 export const browserEnvNames = {

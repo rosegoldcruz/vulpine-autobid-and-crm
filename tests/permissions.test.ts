@@ -15,3 +15,12 @@ test("estimator can operate bids without settings access", () => {
 test("unknown roles receive no capabilities", () => {
   assert.deepEqual(capabilitiesForRoles(["unknown"]), [])
 })
+
+test("Vision access is read-only by default and write-enabled only for estimators/admins", () => {
+  assert.equal(hasCapability(["executive"], "vision.read"), true)
+  assert.equal(hasCapability(["executive"], "vision.write"), false)
+  assert.equal(hasCapability(["operations"], "vision.read"), true)
+  assert.equal(hasCapability(["operations"], "vision.write"), false)
+  assert.equal(hasCapability(["estimator"], "vision.write"), true)
+  assert.equal(hasCapability(["admin"], "vision.write"), true)
+})

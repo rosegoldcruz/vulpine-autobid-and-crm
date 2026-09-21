@@ -1,4 +1,6 @@
-# Exact next implementation step: Vision
+# Vision boundary extraction — completed 2026-09-21
+
+The source-preserving slice described below is now implemented. The detailed evidence, runtime contract, rollback plan, and remaining gaps are recorded in [`vision-integration-report.md`](./vision-integration-report.md).
 
 Do not copy the current `/opt/vulpine-vision` tree blindly: it already has uncommitted AEON, chat, integration, validation, and test work.
 
@@ -11,4 +13,4 @@ The next implementation slice is a source-preserving Vision boundary extraction:
 5. Extract the existing Vision UI into a Backoffice module at `/bids/vision`, replacing only its transport layer with `packages/sdk` calls to the server-owned Vision API.
 6. Verify the existing Leads handoff tests, Vision unit/integration tests, Backoffice typecheck/build, and an authenticated `/bids/vision` browser flow before any traffic or DNS change.
 
-The first concrete code change should therefore be the contract/test promotion in step 3. It creates the stable seam needed to split the UI from processing without rewriting Vision or activating quarantined estimator behavior.
+The first concrete code change was the contract/test promotion in step 3. It created the stable seam used to split the UI from processing without rewriting Vision or activating quarantined estimator behavior.
