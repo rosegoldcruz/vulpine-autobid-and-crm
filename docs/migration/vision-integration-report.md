@@ -83,7 +83,7 @@ npm run build               # /opt/vulpine-vision
 - Vision service suite: 4/4 pass.
 - Backoffice ESLint: pass.
 - Backoffice Next 16 production build: pass; `/bids/vision`, both Vision API routes, and existing routes compiled.
-- The previous Vercel preview failure is recorded on commit `99e3321` as deployment `dpl_7kBU5kvoW3j71YKfWYGff92QttYx`. The repository now declares the monorepo build/output boundary in `vercel.json`; a new push is required for Vercel to prove the remote fix.
+- The previous Vercel preview failure is recorded on commit `99e3321` as deployment `dpl_7kBU5kvoW3j71YKfWYGff92QttYx`. After declaring the monorepo boundary and exposing Next 16 at the workspace root, Vercel reported `Deployment has completed` for commit `feb12d0` on 2026-09-21.
 - Playwright browser suite: 2/2 pass using installed Chrome; verified meaningful content, no framework overlay, fail-closed auth, create/upload/process/reset toasts, workflow state, desktop, and 390 px mobile.
 - Standalone Vision: 19/19 tests, lint, and production build pass; dirty manifest unchanged.
 
