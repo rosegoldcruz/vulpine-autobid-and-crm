@@ -2,6 +2,6 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
   "installCommand": "corepack pnpm install --frozen-lockfile",
-  "buildCommand": "corepack pnpm --filter @vulpine/backoffice build",
+  "buildCommand": "NODE_ENV=production corepack pnpm --filter @vulpine/backoffice build",
   "outputDirectory": "apps/backoffice/.next"
 }
