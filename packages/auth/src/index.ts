@@ -3,6 +3,7 @@ import { isVulpineRole, type VulpineRole } from "@vulpine/permissions"
 export const ZITADEL_ROLES_CLAIM = "urn:zitadel:iam:org:project:roles" as const
 export const ZITADEL_PROJECT_ROLES_SCOPE = "urn:iam:org:project:roles" as const
 export const ZITADEL_PROJECTS_ROLES_SCOPE = "urn:zitadel:iam:org:projects:roles" as const
+export const ZITADEL_API_AUDIENCE_SCOPE = "urn:zitadel:iam:org:project:id:zitadel:aud" as const
 
 type Claims = Record<string, unknown>
 

@@ -5,6 +5,7 @@ import {
   extractZitadelRolesForProject,
   zitadelProjectRolesClaim,
   zitadelRoleClaimKeys,
+  ZITADEL_API_AUDIENCE_SCOPE,
   ZITADEL_PROJECT_ROLES_SCOPE,
   ZITADEL_PROJECTS_ROLES_SCOPE,
   ZITADEL_ROLES_CLAIM,
@@ -78,6 +79,78 @@ function assignedOrganizations(projectId: string, ...sources: Array<Claims | und
   return [...organizations].map(([id, domain]) => ({ id, ...(domain ? { domain } : {}) }))
 }
 
+function record(value: unknown): Claims | undefined {
+  return value && typeof value === "object" && !Array.isArray(value) ? value as Claims : undefined
+}
+
+async function responseJson(response: Response): Promise<Claims | undefined> {
+  if (!response.ok) return undefined
+  try {
+    return record(await response.json())
+  } catch {
+    return undefined
+  }
+}
+
+async function inspectZitadelProject(accessToken: string, projectId: string) {
+  const baseUrl = issuer.replace(/\/$/, "")
+  const commonHeaders = {
+    authorization: `Bearer ${accessToken}`,
+    "content-type": "application/json",
+  }
+  const [projectResponse, rolesResponse, assignmentsResponse] = await Promise.all([
+    fetch(`${baseUrl}/zitadel.project.v2.ProjectService/GetProject`, {
+      method: "POST",
+      headers: { ...commonHeaders, "connect-protocol-version": "1" },
+      body: JSON.stringify({ projectId }),
+      signal: AbortSignal.timeout(5_000),
+    }),
+    fetch(`${baseUrl}/zitadel.project.v2.ProjectService/ListProjectRoles`, {
+      method: "POST",
+      headers: { ...commonHeaders, "connect-protocol-version": "1" },
+      body: JSON.stringify({ projectId }),
+      signal: AbortSignal.timeout(5_000),
+    }),
+    fetch(`${baseUrl}/auth/v1/usergrants/me/_search`, {
+      method: "POST",
+      headers: commonHeaders,
+      body: "{}",
+      signal: AbortSignal.timeout(5_000),
+    }),
+  ])
+
+  const [projectBody, rolesBody, assignmentsBody] = await Promise.all([
+    responseJson(projectResponse),
+    responseJson(rolesResponse),
+    responseJson(assignmentsResponse),
+  ])
+  const project = record(projectBody?.project)
+  const projectRoles = Array.isArray(rolesBody?.projectRoles) ? rolesBody.projectRoles : []
+  const assignments = Array.isArray(assignmentsBody?.result) ? assignmentsBody.result : []
+
+  return {
+    projectId,
+    assertRolesOnAuthentication: typeof project?.projectRoleAssertion === "boolean" ? project.projectRoleAssertion : null,
+    projectRoleKeys: projectRoles
+      .map((role) => record(role)?.key)
+      .filter((key): key is string => typeof key === "string"),
+    userRoleAssignments: assignments
+      .map(record)
+      .filter((assignment): assignment is Claims => assignment?.projectId === projectId)
+      .map((assignment) => ({
+        userId: typeof assignment.userId === "string" ? assignment.userId : null,
+        roleNames: stringValues(assignment.roleKeys ?? assignment.roles),
+        organizationId: typeof assignment.orgId === "string" ? assignment.orgId : null,
+        organizationDomain: typeof assignment.orgDomain === "string" ? assignment.orgDomain : null,
+      })),
+    inspectionStatus: {
+      project: projectResponse.status,
+      projectRoles: rolesResponse.status,
+      userRoleAssignments: assignmentsResponse.status,
+    },
+  }
+}
+
 if (optionalServerEnv(serverEnvNames.nextAuthUrl)) {
   process.env.NEXTAUTH_URL = optionalServerEnv(serverEnvNames.nextAuthUrl)
 }
@@ -91,7 +164,7 @@ const providerOptions = {
   authorization: {
     params: {
       scope: ["openid", "email", "profile", audience ? `urn:zitadel:iam:org:project:id:${audience}:aud` : ""]
-        .concat(audience ? [ZITADEL_PROJECT_ROLES_SCOPE, ZITADEL_PROJECTS_ROLES_SCOPE] : [])
+        .concat(audience ? [ZITADEL_PROJECT_ROLES_SCOPE, ZITADEL_PROJECTS_ROLES_SCOPE, ZITADEL_API_AUDIENCE_SCOPE] : [])
         .filter(Boolean)
         .join(" "),
     },
@@ -133,6 +206,21 @@ export const authOptions: NextAuthOptions = {
           normalizedCapabilities: token.capabilities,
           organizations: audience ? assignedOrganizations(audience, ...claimSources) : [],
         }))
+
+        if (audience && account?.access_token) {
+          try {
+            console.info(JSON.stringify({
+              event: "zitadel.authorization.project-inspection",
+              ...await inspectZitadelProject(account.access_token, audience),
+            }))
+          } catch (error) {
+            console.warn(JSON.stringify({
+              event: "zitadel.authorization.project-inspection",
+              projectId: audience,
+              inspectionError: error instanceof Error ? error.name : "UnknownError",
+            }))
+          }
+        }
       }
       token.roles ??= []
       token.capabilities = capabilitiesForRoles(token.roles)
