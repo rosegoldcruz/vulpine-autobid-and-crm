@@ -216,8 +216,7 @@ type NotifType = "success" | "warning" | "info"
 const NOTIF_ITEMS: Array<{
   id: number; type: NotifType; title: string; message: string; time: string; read: boolean
 }> = [
-  { id: 1, type: "info", title: "Command Center Ready", message: "Vulpine Command Center shell is live and ready for module wiring.", time: "just now", read: false },
-  { id: 2, type: "warning", title: "Backend Not Connected", message: "NEXT_PUBLIC_API_BASE_URL is not set. Modules will load once backend is wired.", time: "just now", read: false },
+  { id: 1, type: "success", title: "Bids & Vision Connected", message: "The native Bids Tracker and Vision modules are connected to their authoritative services.", time: "just now", read: false },
   { id: 3, type: "success", title: "Bid Engine Shell Created", message: "Workflow stage placeholders are ready for backend integration.", time: "1 min ago", read: true },
 ]
 
@@ -1200,7 +1199,7 @@ export default function VulpineCommandCenter({
                   <div className="size-2 rounded-full bg-fin-gain animate-pulse-soft" />
                   <span className="font-medium">Vulpine Command Center — Shell</span>
                 </div>
-                <span className="font-mono text-muted-foreground/60">v0.1.0 — Backend not connected</span>
+                <span className="font-mono text-muted-foreground/60">v0.1.0 — Bids &amp; Vision live</span>
               </div>
             </div>
           </footer>
