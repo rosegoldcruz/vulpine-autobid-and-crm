@@ -1,0 +1,1 @@
+"""Vulpine Auto Bidder — Models module."""

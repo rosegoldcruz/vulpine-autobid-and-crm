@@ -1,0 +1,77 @@
+{
+  "name": "Vulpine Lead Import Pipeline",
+  "nodes": [
+    {
+      "name": "CSV Upload Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "position": [250, 300],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "import-csv",
+        "responseMode": "responseNode"
+      }
+    },
+    {
+      "name": "Import Leads via API",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [500, 300],
+      "parameters": {
+        "method": "POST",
+        "url": "http://api:8000/api/v1/leads/import/csv",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {"name": "csv_content", "value": "={{ $json.body.csv_content }}"},
+            {"name": "classify", "value": true}
+          ]
+        }
+      }
+    },
+    {
+      "name": "Wait 30s for GHL sync",
+      "type": "n8n-nodes-base.wait",
+      "position": [750, 300],
+      "parameters": {
+        "resume": "timeInterval",
+        "waitAmount": 30,
+        "unit": "seconds"
+      }
+    },
+    {
+      "name": "Score Imported Contacts",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [1000, 300],
+      "parameters": {
+        "method": "POST",
+        "url": "http://api:8000/api/v1/scoring/batch",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {"name": "limit", "value": 500},
+            {"name": "use_ai", "value": true}
+          ]
+        }
+      }
+    },
+    {
+      "name": "Return Results",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [1250, 300],
+      "parameters": {}
+    }
+  ],
+  "connections": {
+    "CSV Upload Webhook": {
+      "main": [["Import Leads via API"]]
+    },
+    "Import Leads via API": {
+      "main": [["Wait 30s for GHL sync"]]
+    },
+    "Wait 30s for GHL sync": {
+      "main": [["Score Imported Contacts"]]
+    },
+    "Score Imported Contacts": {
+      "main": [["Return Results"]]
+    }
+  }
+}

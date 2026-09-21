@@ -1,0 +1,79 @@
+{
+  "name": "Vulpine Reply Processing",
+  "nodes": [
+    {
+      "name": "GHL Reply Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "position": [250, 300],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ghl-reply",
+        "responseMode": "responseNode"
+      }
+    },
+    {
+      "name": "Classify & Process Reply",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [500, 300],
+      "parameters": {
+        "method": "POST",
+        "url": "http://api:8000/api/v1/replies/process",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {"name": "contact_id", "value": "={{ $json.contact.id }}"},
+            {"name": "email_body", "value": "={{ $json.email.body }}"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "Check if Human Needed",
+      "type": "n8n-nodes-base.if",
+      "position": [750, 300],
+      "parameters": {
+        "conditions": {
+          "boolean": [{"value1": "={{ $json.requires_human }}", "value2": true}]
+        }
+      }
+    },
+    {
+      "name": "Send Slack/Email Alert",
+      "type": "n8n-nodes-base.noOp",
+      "position": [1000, 200],
+      "parameters": {}
+    },
+    {
+      "name": "Auto-Response Handled",
+      "type": "n8n-nodes-base.noOp",
+      "position": [1000, 400],
+      "parameters": {}
+    },
+    {
+      "name": "Return Status",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [1250, 300],
+      "parameters": {}
+    }
+  ],
+  "connections": {
+    "GHL Reply Webhook": {
+      "main": [["Classify & Process Reply"]]
+    },
+    "Classify & Process Reply": {
+      "main": [["Check if Human Needed"]]
+    },
+    "Check if Human Needed": {
+      "main": [
+        ["Send Slack/Email Alert"],
+        ["Auto-Response Handled"]
+      ]
+    },
+    "Send Slack/Email Alert": {
+      "main": [["Return Status"]]
+    },
+    "Auto-Response Handled": {
+      "main": [["Return Status"]]
+    }
+  }
+}
