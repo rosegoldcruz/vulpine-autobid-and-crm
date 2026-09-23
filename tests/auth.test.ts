@@ -2,6 +2,7 @@ import assert from "node:assert/strict"
 import test from "node:test"
 import {
   extractZitadelRoles,
+  extractZitadelRolesFromAssignments,
   extractZitadelRolesForProject,
   zitadelProjectRolesClaim,
   zitadelRoleClaimKeys,
@@ -31,4 +32,14 @@ test("project-specific ZITADEL roles are preferred and normalized", () => {
 
 test("generic role claims remain a safe compatibility fallback", () => {
   assert.deepEqual(extractZitadelRolesForProject("project-1", { [ZITADEL_ROLES_CLAIM]: ["operations"] }), ["operations"])
+})
+
+test("server-side ZITADEL role assignments are scoped to the authenticated subject and project", () => {
+  const assignments = [
+    { projectId: "project-1", userId: "user-1", roleNames: ["admin", "unknown"] },
+    { projectId: "project-1", userId: "user-2", roleNames: ["executive"] },
+    { projectId: "project-2", userId: "user-1", roleNames: ["sales"] },
+  ]
+
+  assert.deepEqual(extractZitadelRolesFromAssignments("project-1", "user-1", assignments), ["admin"])
 })

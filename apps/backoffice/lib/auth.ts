@@ -2,6 +2,7 @@ import type { NextAuthOptions } from "next-auth"
 import type { OAuthUserConfig } from "next-auth/providers/oauth"
 import ZitadelProvider from "next-auth/providers/zitadel"
 import {
+  extractZitadelRolesFromAssignments,
   extractZitadelRolesForProject,
   zitadelProjectRolesClaim,
   zitadelRoleClaimKeys,
@@ -183,9 +184,34 @@ export const authOptions: NextAuthOptions = {
         const idTokenClaims = decodeJwtClaims(account?.id_token)
         const accessTokenClaims = decodeJwtClaims(account?.access_token)
         const claimSources = [profileClaims, idTokenClaims, accessTokenClaims]
-        // Authorization trusts NextAuth's validated ID token and provider userinfo.
-        // The access-token payload is decoded only for sanitized diagnostics below.
-        token.roles = audience ? extractZitadelRolesForProject(audience, profileClaims, idTokenClaims) : []
+        const subject = profileClaims?.sub ?? idTokenClaims?.sub ?? accessTokenClaims?.sub ?? token.sub
+        let projectInspection: Awaited<ReturnType<typeof inspectZitadelProject>> | undefined
+
+        // Authorization first trusts NextAuth's validated ID token and provider userinfo.
+        // If ZITADEL omits role claims, its authenticated /me grants response is the
+        // authoritative server-side fallback for this same subject and project.
+        const claimRoles = audience ? extractZitadelRolesForProject(audience, profileClaims, idTokenClaims) : []
+
+        if (audience && account?.access_token) {
+          try {
+            projectInspection = await inspectZitadelProject(account.access_token, audience)
+            console.info(JSON.stringify({
+              event: "zitadel.authorization.project-inspection",
+              ...projectInspection,
+            }))
+          } catch (error) {
+            console.warn(JSON.stringify({
+              event: "zitadel.authorization.project-inspection",
+              projectId: audience,
+              inspectionError: error instanceof Error ? error.name : "UnknownError",
+            }))
+          }
+        }
+
+        const assignmentRoles = audience && typeof subject === "string" && projectInspection
+          ? extractZitadelRolesFromAssignments(audience, subject, projectInspection.userRoleAssignments)
+          : []
+        token.roles = [...new Set([...claimRoles, ...assignmentRoles])]
         token.capabilities = capabilitiesForRoles(token.roles)
 
         const audiences = new Set<string>()
@@ -197,7 +223,7 @@ export const authOptions: NextAuthOptions = {
 
         console.info(JSON.stringify({
           event: "zitadel.authorization.normalized",
-          subject: profileClaims?.sub ?? idTokenClaims?.sub ?? accessTokenClaims?.sub ?? token.sub ?? null,
+          subject: subject ?? null,
           audiences: [...audiences],
           scopes: [...scopes],
           roleClaimKeys: zitadelRoleClaimKeys(...claimSources),
@@ -206,21 +232,6 @@ export const authOptions: NextAuthOptions = {
           normalizedCapabilities: token.capabilities,
           organizations: audience ? assignedOrganizations(audience, ...claimSources) : [],
         }))
-
-        if (audience && account?.access_token) {
-          try {
-            console.info(JSON.stringify({
-              event: "zitadel.authorization.project-inspection",
-              ...await inspectZitadelProject(account.access_token, audience),
-            }))
-          } catch (error) {
-            console.warn(JSON.stringify({
-              event: "zitadel.authorization.project-inspection",
-              projectId: audience,
-              inspectionError: error instanceof Error ? error.name : "UnknownError",
-            }))
-          }
-        }
       }
       token.roles ??= []
       token.capabilities = capabilitiesForRoles(token.roles)

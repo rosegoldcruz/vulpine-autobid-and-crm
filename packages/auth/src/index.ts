@@ -51,6 +51,22 @@ export function extractZitadelRolesForProject(
   return [...found]
 }
 
+export function extractZitadelRolesFromAssignments(
+  projectId: string,
+  subject: string,
+  assignments: Array<Claims | null | undefined>,
+): VulpineRole[] {
+  const found = new Set<VulpineRole>()
+
+  for (const assignment of assignments) {
+    if (!assignment) continue
+    if (assignment.projectId !== projectId || assignment.userId !== subject) continue
+    addRoles(found, assignment.roleNames ?? assignment.roleKeys ?? assignment.roles)
+  }
+
+  return [...found]
+}
+
 export function zitadelRoleClaimKeys(...sources: Array<Claims | null | undefined>): string[] {
   const keys = new Set<string>()
   for (const source of sources) {
