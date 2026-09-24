@@ -139,6 +139,7 @@ async function inspectZitadelProject(accessToken: string, projectId: string) {
       .map(record)
       .filter((assignment): assignment is Claims => assignment?.projectId === projectId)
       .map((assignment) => ({
+        projectId: typeof assignment.projectId === "string" ? assignment.projectId : null,
         userId: typeof assignment.userId === "string" ? assignment.userId : null,
         roleNames: stringValues(assignment.roleKeys ?? assignment.roles),
         organizationId: typeof assignment.orgId === "string" ? assignment.orgId : null,
