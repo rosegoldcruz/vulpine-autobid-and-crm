@@ -37,6 +37,17 @@ const VisionSection = dynamic(
   },
 )
 
+const DriveSection = dynamic(
+  () => import("./drive-section").then((module) => module.DriveSection),
+  {
+    loading: () => (
+      <div className="surface-card flex min-h-72 items-center justify-center rounded-2xl text-xs text-muted-foreground">
+        Loading Vulpine Drive…
+      </div>
+    ),
+  },
+)
+
 // ─── Design tokens ──────────────────────────────────────────────
 
 const CARD_SHADOW =
@@ -217,7 +228,7 @@ type NotifType = "success" | "warning" | "info"
 const NOTIF_ITEMS: Array<{
   id: number; type: NotifType; title: string; message: string; time: string; read: boolean
 }> = [
-  { id: 1, type: "success", title: "Bids & Vision Connected", message: "The native Bids Tracker and Vision modules are connected to their authoritative services.", time: "just now", read: false },
+  { id: 1, type: "success", title: "Core Modules Connected", message: "Bids Tracker, Vision, and Vulpine Drive are connected to their authoritative services.", time: "just now", read: false },
   { id: 3, type: "success", title: "Bid Engine Shell Created", message: "Workflow stage placeholders are ready for backend integration.", time: "1 min ago", read: true },
 ]
 
@@ -679,30 +690,6 @@ function EmailBlasterSection() {
   )
 }
 
-// ─── Section: Vulpine Drive ─────────────────────────────────────
-
-function DriveSection() {
-  return (
-    <div className={`flex flex-col gap-5 ${SECTION_MIN_H}`}>
-      <SectionPanel>
-        <SectionHeader title="Vulpine Drive" subtitle="File storage, document management, and project assets." />
-        <div className="flex flex-col items-center justify-center py-16 gap-4">
-          <div className="size-14 rounded-2xl bg-primary/10 flex items-center justify-center glow-teal-sm">
-            <HardDrive className="size-7 text-primary" />
-          </div>
-          <div className="text-center max-w-xs">
-            <p className="text-sm font-bold text-foreground font-display">Vulpine Drive module placeholder.</p>
-            <p className="text-xs text-muted-foreground mt-2 font-sans leading-relaxed">
-              File browser, folder hierarchy, project document linking, and upload management will be built in a later phase.
-            </p>
-          </div>
-          <PlaceholderBadge label="Not yet implemented" />
-        </div>
-      </SectionPanel>
-    </div>
-  )
-}
-
 // ─── Section: Settings ──────────────────────────────────────────
 
 function SettingsSection() {
@@ -1048,9 +1035,11 @@ function Sidebar({
 export default function VulpineCommandCenter({
   initialSection = "dashboard",
   allowedSections,
+  driveCanWrite = false,
 }: {
   initialSection?: SectionId
   allowedSections?: readonly SectionId[]
+  driveCanWrite?: boolean
 }) {
   const router = useRouter()
   const [activeSection, setActiveSection] = useState<SectionId>(initialSection)
@@ -1067,8 +1056,8 @@ export default function VulpineCommandCenter({
     (sectionId: SectionId) => {
       if (allowedSections && !allowedSections.includes(sectionId)) return
       if (sectionId === activeSection) return
-      if (sectionId === "bidstracker" || sectionId === "vision") {
-        router.push(sectionId === "vision" ? "/bids/vision" : "/bids/tracker")
+      if (sectionId === "bidstracker" || sectionId === "vision" || sectionId === "drive") {
+        router.push(sectionId === "vision" ? "/bids/vision" : sectionId === "drive" ? "/drive" : "/bids/tracker")
         return
       }
       setIsTransitioning(true)
@@ -1193,7 +1182,7 @@ export default function VulpineCommandCenter({
                 exit={{ opacity: 0, y: -12 }}
                 transition={{ duration: 0.35, ease: EASE_OUT }}
               >
-                <ActiveComponent />
+                {activeSection === "drive" ? <DriveSection canWrite={driveCanWrite} /> : <ActiveComponent />}
               </motion.div>
             </AnimatePresence>
           </main>
@@ -1206,7 +1195,7 @@ export default function VulpineCommandCenter({
                   <div className="size-2 rounded-full bg-fin-gain animate-pulse-soft" />
                   <span className="font-medium">Vulpine Command Center — Shell</span>
                 </div>
-                <span className="font-mono text-muted-foreground/60">v0.1.0 — Bids &amp; Vision live</span>
+                <span className="font-mono text-muted-foreground/60">v0.2.0 — Bids, Vision &amp; Drive live</span>
               </div>
             </div>
           </footer>

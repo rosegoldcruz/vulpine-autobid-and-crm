@@ -10,6 +10,8 @@ export const serverEnvNames = {
   visionApiUrl: "VISION_API_URL",
   visionApiToken: "VISION_API_TOKEN",
   visionIntegrationKey: "VISION_INTEGRATION_KEY",
+  driveApiUrl: "DRIVE_API_URL",
+  driveApiToken: "DRIVE_API_TOKEN",
 } as const
 
 export const browserEnvNames = {

@@ -1,3 +1,11 @@
+import type {
+  ApiResponse,
+  DirectoryListing,
+  DriveRecentListing,
+  DriveUploadResult,
+  VisionProjectManifest,
+} from "@vulpine/contracts"
+
 export type BidStatus = "Sent" | "Follow-Up" | "Won" | "Lost"
 
 export type BidRecord = {
@@ -97,4 +105,65 @@ export class VisionClient {
     return this.call<{ project: VisionProject; job: VisionJob }>(`/jobs/${encodeURIComponent(jobId)}`)
   }
 }
-import type { VisionProjectManifest } from "@vulpine/contracts"
+export class DriveClientError extends Error {
+  constructor(message: string, public readonly code = "DRIVE_REQUEST_FAILED", public readonly correlationId?: string) {
+    super(message)
+    this.name = "DriveClientError"
+  }
+}
+
+export class DriveClient {
+  private readonly request: typeof fetch
+
+  constructor(
+    private readonly basePath = "/api/drive",
+    request?: typeof fetch,
+  ) {
+    this.request = request ?? ((input, init) => fetch(input, init))
+  }
+
+  private async call<T>(path: string, init?: RequestInit): Promise<T> {
+    const response = await this.request(`${this.basePath}${path}`, { ...init, cache: "no-store" })
+    const body = (await response.json().catch(() => null)) as ApiResponse<T> | null
+    if (!response.ok || !body?.ok) {
+      const failure = body && !body.ok ? body : null
+      throw new DriveClientError(
+        failure?.error.message || `Drive request failed (${response.status}).`,
+        failure?.error.code,
+        failure?.meta.correlationId,
+      )
+    }
+    return body.data
+  }
+
+  list(path = "/") {
+    return this.call<DirectoryListing>(`/files?path=${encodeURIComponent(path)}`)
+  }
+
+  recent() {
+    return this.call<DriveRecentListing>("/recent")
+  }
+
+  logAccess(path: string, action: "view" | "modify" = "view") {
+    return this.call<{ logged: true }>("/access", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ path, action }),
+    })
+  }
+
+  upload(path: string, files: readonly File[]) {
+    const body = new FormData()
+    body.append("path", path)
+    files.forEach((file) => body.append("files", file))
+    return this.call<DriveUploadResult>("/upload", { method: "POST", body })
+  }
+
+  previewUrl(path: string) {
+    return `${this.basePath}/preview?path=${encodeURIComponent(path)}`
+  }
+
+  downloadUrl(path: string, folder = false) {
+    return `${this.basePath}/download?path=${encodeURIComponent(path)}${folder ? "&type=folder" : ""}`
+  }
+}
