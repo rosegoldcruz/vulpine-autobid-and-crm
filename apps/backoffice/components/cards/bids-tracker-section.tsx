@@ -2,20 +2,15 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import {
-  Bell,
   ChevronDown,
-  ChevronLeft,
-  ChevronRight,
   CircleDollarSign,
   Expand,
   Loader2,
   MoreHorizontal,
-  Pencil,
   Plus,
   RefreshCw,
   RotateCcw,
   Search,
-  Sparkles,
   Trash2,
 } from "lucide-react"
 import { toast, Toaster } from "sonner"
@@ -24,7 +19,7 @@ import type { ApiResponse } from "@vulpine/contracts"
 import type { BidRecord, UpdateBidInput } from "@vulpine/sdk"
 import { BID_STATUSES, bidNeedsReview, buildBidDashboard, normalizeBidStatus } from "@/lib/bids-dashboard"
 
-const NAV_TABS = ["Overview", "Tasks", "Discussions", "Pins", "Dashboards"] as const
+const NAV_TABS = ["Overview", "Tasks", "Dashboards"] as const
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const response = await fetch(`/api/bids-tracker/${path}`, { cache: "no-store", ...options })
@@ -63,7 +58,7 @@ export function BidsTrackerSection() {
   const [mutating, setMutating] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [query, setQuery] = useState("")
-  const [taskView, setTaskView] = useState(false)
+  const [activeTab, setActiveTab] = useState<(typeof NAV_TABS)[number]>("Overview")
   const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null)
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set())
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -84,6 +79,7 @@ export function BidsTrackerSection() {
 
   useEffect(() => { void load() }, [load])
 
+  const taskView = activeTab === "Tasks"
   const metrics = useMemo(() => buildBidDashboard(bids), [bids])
   const visibleBids = useMemo(() => {
     const normalized = query.trim().toLowerCase()
@@ -166,7 +162,7 @@ export function BidsTrackerSection() {
 
   function resetView() {
     setQuery("")
-    setTaskView(false)
+    setActiveTab("Overview")
     setCollapsedGroups(new Set())
     toast.info("Tracker reset", { description: "Search, task filter, and collapsed groups were cleared." })
   }
@@ -181,89 +177,81 @@ export function BidsTrackerSection() {
   }
 
   function selectTab(tab: (typeof NAV_TABS)[number]) {
+    setActiveTab(tab)
     if (tab === "Overview") {
-      setTaskView(false)
       document.querySelector("#overview")?.scrollIntoView({ behavior: "smooth", block: "start" })
     }
     if (tab === "Tasks") {
-      setTaskView(true)
       document.querySelector("#bid-tracker")?.scrollIntoView({ behavior: "smooth", block: "start" })
     }
     if (tab === "Dashboards") {
-      setTaskView(false)
       document.querySelector("#dashboards")?.scrollIntoView({ behavior: "smooth", block: "start" })
     }
   }
 
   return (
-    <div className="min-h-screen bg-[#f0f2ff] p-3 text-[#17181b] sm:p-6 lg:p-10 xl:px-[clamp(4rem,7.5vw,7.5rem)] xl:py-24">
-      <Toaster position="top-right" richColors closeButton />
-      <main id="overview" className="mx-auto w-full max-w-[1360px] overflow-hidden rounded-[18px] border border-[#d8dce7] bg-[#f8f9fc] shadow-[0_16px_50px_rgba(64,75,123,0.2)]">
-        <header className="flex h-12 items-center gap-3 border-b border-[#d9dde7] bg-[#f4f5f9] px-3 sm:px-4">
-          <div className="flex min-w-max items-center gap-2.5">
-            <div className="flex size-6 items-center justify-center rounded-[6px] bg-[#f06465] text-[13px] font-black text-white shadow-sm">V</div>
-            <h1 className="text-[15px] font-semibold tracking-[-0.015em] sm:text-base">Bids CRM &amp; Pipeline</h1>
-            <button type="button" aria-label="Workspace menu" className="rounded p-1 text-[#727680] hover:bg-[#e7e9ef]"><MoreHorizontal className="size-4" /></button>
+    <div id="overview" className="flex min-h-[calc(100vh-4.5rem)] flex-col gap-5 text-foreground">
+      <Toaster position="top-right" theme="dark" richColors closeButton />
+
+      <header className="surface-card rounded-2xl p-5 lg:p-6">
+        <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 glow-teal-sm">
+              <CircleDollarSign className="size-5 text-primary" />
+            </div>
+            <div>
+              <h1 className="font-display text-lg font-bold tracking-tight text-foreground">Bids Tracker</h1>
+              <p className="mt-0.5 text-xs text-muted-foreground">Live pipeline performance, bid records, and document intake.</p>
+            </div>
           </div>
 
-          <nav aria-label="Bid workspace views" className="scrollbar-none ml-1 flex h-full min-w-0 flex-1 items-center gap-0.5 overflow-x-auto">
-            {NAV_TABS.map((tab) => {
-              const active = tab === (taskView ? "Tasks" : "Overview")
-              const disabled = tab === "Discussions" || tab === "Pins"
-              return (
-                <button
-                  key={tab}
-                  type="button"
-                  disabled={disabled}
-                  onClick={() => selectTab(tab)}
-                  title={disabled ? `${tab} will activate when its service is connected` : undefined}
-                  className={`h-8 whitespace-nowrap rounded-md px-3 text-xs font-medium transition-colors ${active ? "bg-[#d9dce6] text-[#24262b]" : "text-[#858994] hover:bg-[#e9ebf0] hover:text-[#4f535c] disabled:cursor-not-allowed disabled:opacity-55"}`}
-                >
-                  {tab}
-                </button>
-              )
-            })}
-            <button type="button" aria-label="Edit views" className="ml-0.5 rounded-md p-2 text-[#767b84] hover:bg-[#e6e8ed]"><Pencil className="size-3.5" /></button>
-          </nav>
-
-          <div className="ml-auto hidden shrink-0 items-center gap-1 sm:flex">
-            <button type="button" aria-label="Previous view" className="rounded-md p-2 text-[#a0a4ae] hover:bg-[#e8eaf0]"><ChevronLeft className="size-4" /></button>
-            <button type="button" aria-label="Next view" className="rounded-md p-2 text-[#a0a4ae] hover:bg-[#e8eaf0]"><ChevronRight className="size-4" /></button>
-            <Sparkles className="mx-1 size-4 text-[#7d9bf1]" aria-hidden="true" />
-            <button type="button" aria-label="Notifications" className="relative rounded-md p-2 text-[#555963] hover:bg-[#e8eaf0]"><Bell className="size-4" /><span className="absolute right-1.5 top-1.5 size-1.5 rounded-full bg-[#e45279] ring-2 ring-[#f4f5f9]" /></button>
-          </div>
-        </header>
-
-        <div className="flex min-h-11 items-center justify-between border-b border-[#d8dce7] bg-white px-3 sm:px-4">
-          <button type="button" className="flex items-center gap-1 text-sm font-semibold hover:text-[#525866]">Bid Overview <ChevronDown className="size-3.5" /></button>
-          <div className="flex items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-2">
             <input ref={fileInputRef} type="file" accept="application/pdf" multiple className="hidden" onChange={(event) => void uploadFiles(event.target.files)} />
-            <button type="button" onClick={() => fileInputRef.current?.click()} disabled={mutating} className="flex h-8 items-center gap-1.5 rounded-md border border-[#d7dae3] bg-white px-2.5 text-[11px] font-semibold text-[#565b66] shadow-sm hover:bg-[#f5f6f9] disabled:opacity-50">
-              {mutating ? <Loader2 className="size-3.5 animate-spin" /> : <Plus className="size-3.5" />} <span className="hidden sm:inline">Add bid PDF</span>
+            <button type="button" onClick={() => fileInputRef.current?.click()} disabled={mutating} className="flex h-9 items-center gap-2 rounded-xl border border-primary/20 bg-primary/10 px-3 text-xs font-semibold text-primary transition-colors hover:bg-primary/15 disabled:opacity-50">
+              {mutating ? <Loader2 className="size-3.5 animate-spin" /> : <Plus className="size-3.5" />} Add bid PDF
             </button>
-            <button type="button" onClick={() => void load()} disabled={loading || mutating} aria-label="Refresh bids" className="rounded-md p-1.5 text-[#60646d] hover:bg-[#f0f1f5] disabled:opacity-50"><RefreshCw className={`size-4 ${loading ? "animate-spin" : ""}`} /></button>
-            <div className="hidden text-right text-[9px] leading-tight text-[#81858f] sm:block"><span>Last refreshed</span><br /><strong className="font-medium text-[#51555d]">{lastRefreshed ? "just now" : "waiting…"}</strong></div>
+            <button type="button" onClick={() => void load()} disabled={loading || mutating} aria-label="Refresh bids" className="flex size-9 items-center justify-center rounded-xl border border-border/60 text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground disabled:opacity-50">
+              <RefreshCw className={`size-4 ${loading ? "animate-spin" : ""}`} />
+            </button>
+            <div className="hidden text-right text-[10px] leading-tight text-muted-foreground sm:block"><span>Last refreshed</span><br /><strong className="font-medium text-foreground/80">{lastRefreshed ? "just now" : "waiting…"}</strong></div>
           </div>
         </div>
 
-        {error && <div role="alert" className="border-b border-[#edb8bb] bg-[#fff1f1] px-4 py-3 text-xs font-medium text-[#a82e33]">Bids Tracker unavailable: {error}</div>}
+        <nav aria-label="Bid workspace views" className="scrollbar-none mt-5 flex items-center gap-1 overflow-x-auto border-t border-border/40 pt-4">
+          {NAV_TABS.map((tab) => {
+            const active = tab === activeTab
+            return (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => selectTab(tab)}
+                className={`h-8 whitespace-nowrap rounded-lg px-3 text-xs font-semibold transition-colors ${active ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"}`}
+              >
+                {tab}
+              </button>
+            )
+          })}
+        </nav>
+      </header>
 
-        <section aria-label="Bid KPIs" className="grid grid-cols-1 border-b border-[#d7dbe5] bg-[#eef0f6] md:grid-cols-3">
-          <KpiCard label="Closed Won" value={loading ? "…" : money(metrics.wonValue)} />
-          <KpiCard label="Closed Lost" value={loading ? "…" : money(metrics.lostValue)} />
-          <KpiCard label="Open Bids" value={loading ? "…" : money(metrics.openValue)} last />
-        </section>
+      {error && <div role="alert" className="rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-xs font-medium text-destructive-foreground">Bids Tracker unavailable: {error}</div>}
 
-        <section id="dashboards" className="grid grid-cols-1 border-b border-[#d7dbe5] bg-[#eef0f6] lg:grid-cols-[1.05fr_.95fr]">
-          <ChartPanel title="Open Bids by Amount & Status" className="lg:border-r">
+      <section aria-label="Bid KPIs" className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <KpiCard label="Closed Won" value={loading ? "…" : money(metrics.wonValue)} />
+        <KpiCard label="Closed Lost" value={loading ? "…" : money(metrics.lostValue)} />
+        <KpiCard label="Open Bids" value={loading ? "…" : money(metrics.openValue)} />
+      </section>
+
+      <section id="dashboards" className="grid grid-cols-1 gap-4 lg:grid-cols-[1.05fr_.95fr]">
+          <ChartPanel title="Open Bids by Amount & Status">
             <StatusLegend data={metrics.status} mode="value" />
             <div className="h-[260px] px-2 pb-2 pt-3 sm:h-[300px] sm:px-5">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={metrics.status} margin={{ top: 22, right: 10, bottom: 2, left: 0 }}>
-                  <CartesianGrid stroke="#eceef2" vertical={false} />
-                  <XAxis dataKey="name" tick={{ fill: "#32343a", fontSize: 10 }} tickLine={false} axisLine={{ stroke: "#cfd2d8" }} />
-                  <YAxis tickFormatter={compactMoney} tick={{ fill: "#5d616a", fontSize: 10 }} tickLine={false} axisLine={false} width={58} />
-                  <Tooltip cursor={{ fill: "#f5f6f8" }} formatter={(value) => money(Number(value))} contentStyle={tooltipStyle} />
+                  <CartesianGrid stroke="#2c3039" vertical={false} />
+                  <XAxis dataKey="name" tick={{ fill: "#8e93a3", fontSize: 10 }} tickLine={false} axisLine={{ stroke: "#353a44" }} />
+                  <YAxis tickFormatter={compactMoney} tick={{ fill: "#8e93a3", fontSize: 10 }} tickLine={false} axisLine={false} width={58} />
+                  <Tooltip cursor={{ fill: "rgba(255,255,255,.03)" }} formatter={(value) => money(Number(value))} contentStyle={tooltipStyle} />
                   <Bar dataKey="value" radius={[2, 2, 0, 0]} maxBarSize={115} isAnimationActive={false}>
                     {metrics.status.map((entry) => <Cell key={entry.name} fill={entry.color} />)}
                   </Bar>
@@ -286,55 +274,55 @@ export function BidsTrackerSection() {
                     </PieChart>
                   </ResponsiveContainer>
                   <div className="pointer-events-none absolute inset-0 flex items-center justify-center pb-1 pt-7">
-                    <div className="text-center"><p className="text-2xl font-semibold tracking-tight text-[#212328]">{metrics.totalCount}</p><p className="text-[10px] font-medium uppercase tracking-[0.12em] text-[#858993]">Total bids</p></div>
+                    <div className="text-center"><p className="text-2xl font-semibold tracking-tight text-foreground">{metrics.totalCount}</p><p className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">Total bids</p></div>
                   </div>
                 </>
               ) : <EmptyState label="No recorded bids" />}
             </div>
           </ChartPanel>
-        </section>
+      </section>
 
-        <section id="bid-tracker" className="bg-white">
-          <div className="flex flex-col justify-between gap-3 border-b border-[#e0e2e8] px-3 py-3 sm:flex-row sm:items-center sm:px-4">
+      <section id="bid-tracker" className="surface-card overflow-hidden rounded-2xl">
+          <div className="flex flex-col justify-between gap-3 border-b border-border/50 px-4 py-4 sm:flex-row sm:items-center sm:px-5">
             <div>
-              <div className="flex items-center gap-2"><h2 className="text-sm font-semibold">Bid Tracker</h2>{taskView && <span className="rounded-full bg-[#fff0c7] px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-[#805b00]">Needs review</span>}</div>
-              <p className="mt-0.5 text-[10px] text-[#858993]">{visibleBids.length} of {metrics.totalCount} bids · edits save on blur</p>
+              <div className="flex items-center gap-2"><h2 className="font-display text-sm font-bold text-foreground">Bid register</h2>{taskView && <span className="rounded-md border border-amber-400/20 bg-amber-400/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-amber-300">Needs review</span>}</div>
+              <p className="mt-0.5 text-[10px] text-muted-foreground">{visibleBids.length} of {metrics.totalCount} bids · edits save on blur</p>
             </div>
             <div className="flex items-center gap-2">
-              <label className="flex h-8 min-w-0 flex-1 items-center gap-2 rounded-md border border-[#d9dce3] bg-[#fafbfc] px-2.5 text-[#7d818a] focus-within:border-[#9fa6b6] sm:w-64">
+              <label className="flex h-9 min-w-0 flex-1 items-center gap-2 rounded-xl border border-border/60 bg-background/30 px-3 text-muted-foreground focus-within:border-primary/40 sm:w-64">
                 <Search className="size-3.5 shrink-0" /><span className="sr-only">Search bids</span>
-                <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search projects or companies" className="min-w-0 flex-1 bg-transparent text-[11px] text-[#25272c] outline-none placeholder:text-[#9ca0a9]" />
+                <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search projects or companies" className="min-w-0 flex-1 bg-transparent text-[11px] text-foreground outline-none placeholder:text-muted-foreground/60" />
               </label>
-              <button type="button" onClick={resetView} title="Reset filters and groups" className="flex size-8 shrink-0 items-center justify-center rounded-md border border-[#d9dce3] text-[#6d717a] hover:bg-[#f3f4f7]" aria-label="Reset tracker view"><RotateCcw className="size-3.5" /></button>
+              <button type="button" onClick={resetView} title="Reset filters and groups" className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-border/60 text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground" aria-label="Reset tracker view"><RotateCcw className="size-3.5" /></button>
             </div>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full min-w-[1080px] border-collapse text-left text-[11px]">
-              <thead><tr className="border-b border-[#e1e3e8] text-[10px] font-medium text-[#62666f]"><th className="w-[28%] px-4 py-3">Project</th><th className="w-[13%] px-4 py-3">Status</th><th className="w-[18%] px-4 py-3">Company</th><th className="px-4 py-3 text-right">Bid Value</th><th className="px-4 py-3 text-right">Units</th><th className="px-4 py-3">Sent Date</th><th className="px-4 py-3 text-right">Projected Profit</th><th className="w-12 px-2 py-3"><span className="sr-only">Actions</span></th></tr></thead>
+              <thead><tr className="border-b border-border/50 bg-muted/10 text-[10px] font-semibold uppercase tracking-[0.06em] text-muted-foreground"><th className="w-[28%] px-4 py-3">Project</th><th className="w-[13%] px-4 py-3">Status</th><th className="w-[18%] px-4 py-3">Company</th><th className="px-4 py-3 text-right">Bid Value</th><th className="px-4 py-3 text-right">Units</th><th className="px-4 py-3">Sent Date</th><th className="px-4 py-3 text-right">Projected Profit</th><th className="w-12 px-2 py-3"><span className="sr-only">Actions</span></th></tr></thead>
               <tbody>
                 {groupedBids.map((group) => {
                   const collapsed = collapsedGroups.has(group.status)
                   return [
-                    <tr key={`${group.status}-group`} className="border-b border-[#dfe2e7] bg-[#f7f8fa]">
+                    <tr key={`${group.status}-group`} className="border-b border-border/40 bg-muted/15">
                       <td colSpan={8} className="px-3 py-2">
-                        <button type="button" onClick={() => toggleGroup(group.status)} className="flex items-center gap-2 text-[10px] font-semibold text-[#50545c]">
+                        <button type="button" onClick={() => toggleGroup(group.status)} className="flex items-center gap-2 text-[10px] font-semibold text-muted-foreground hover:text-foreground">
                           <ChevronDown className={`size-3.5 transition-transform ${collapsed ? "-rotate-90" : ""}`} />
                           <StatusPill status={group.status} />
-                          <span className="font-normal text-[#92969f]">{group.bids.length}</span>
+                          <span className="font-normal text-muted-foreground/60">{group.bids.length}</span>
                         </button>
                       </td>
                     </tr>,
                     ...(!collapsed ? group.bids.map((bid) => (
-                      <tr key={bid.id} className="border-b border-[#eceef1] transition-colors last:border-0 hover:bg-[#fafbfc]">
-                        <td className="px-4 py-2.5"><div className="flex items-center gap-2"><CircleDollarSign className="size-4 shrink-0 text-[#d99126]" /><EditableText value={bid.project_name} label="Project" onCommit={(value) => updateBid(bid.id, { project_name: value })} /></div></td>
-                        <td className="px-4 py-2.5"><select aria-label={`Status for ${bid.project_name ?? "bid"}`} defaultValue={normalizeBidStatus(bid.status)} onChange={(event) => void updateBid(bid.id, { status: event.target.value })} className={`${fieldClass} max-w-28 rounded-md bg-[#d4d5d7] px-2.5 text-center font-semibold`} >{BID_STATUSES.map((status) => <option key={status} value={status}>{status}</option>)}</select></td>
+                      <tr key={bid.id} className="border-b border-border/30 transition-colors last:border-0 hover:bg-accent/20">
+                        <td className="px-4 py-2.5"><div className="flex items-center gap-2"><CircleDollarSign className="size-4 shrink-0 text-amber-400" /><EditableText value={bid.project_name} label="Project" onCommit={(value) => updateBid(bid.id, { project_name: value })} /></div></td>
+                        <td className="px-4 py-2.5"><select aria-label={`Status for ${bid.project_name ?? "bid"}`} defaultValue={normalizeBidStatus(bid.status)} onChange={(event) => void updateBid(bid.id, { status: event.target.value })} className={`${fieldClass} max-w-28 rounded-md bg-muted/60 px-2.5 text-center font-semibold`} >{BID_STATUSES.map((status) => <option key={status} value={status}>{status}</option>)}</select></td>
                         <td className="px-4 py-2.5"><EditableText value={bid.company_name} label="Company" onCommit={(value) => updateBid(bid.id, { company_name: value })} /></td>
                         <td className="px-4 py-2.5 text-right"><EditableNumber value={bid.bid_amount} label="Bid value" onCommit={(value) => updateBid(bid.id, { bid_amount: value })} moneyInput /></td>
                         <td className="px-4 py-2.5 text-right"><EditableNumber value={bid.units} label="Units" onCommit={(value) => updateBid(bid.id, { units: value })} /></td>
-                        <td className="px-4 py-2.5"><input aria-label={`Sent date for ${bid.project_name ?? "bid"}`} type="date" title={formatDate(bid.sent_date)} defaultValue={bid.sent_date ?? ""} onBlur={(event) => { if (event.target.value !== (bid.sent_date ?? "")) void updateBid(bid.id, { sent_date: event.target.value }) }} className={`${fieldClass} min-w-28`} /></td>
-                        <td className="px-4 py-2.5 text-right font-medium text-[#228367]">{money(bid.projected_profit)}</td>
-                        <td className="px-2 py-2.5"><button type="button" onClick={() => void deleteBid(bid.id)} disabled={mutating} aria-label={`Delete ${bid.project_name ?? "bid"}`} className="rounded-md p-1.5 text-[#a0a4ab] hover:bg-[#fff0f0] hover:text-[#ba3d43] disabled:opacity-50"><Trash2 className="size-3.5" /></button></td>
+                        <td className="px-4 py-2.5"><input aria-label={`Sent date for ${bid.project_name ?? "bid"}`} type="date" title={formatDate(bid.sent_date)} defaultValue={bid.sent_date ?? ""} onBlur={(event) => { if (event.target.value !== (bid.sent_date ?? "")) void updateBid(bid.id, { sent_date: event.target.value }) }} className={`${fieldClass} min-w-28 [color-scheme:dark]`} /></td>
+                        <td className="px-4 py-2.5 text-right font-medium text-fin-gain">{money(bid.projected_profit)}</td>
+                        <td className="px-2 py-2.5"><button type="button" onClick={() => void deleteBid(bid.id)} disabled={mutating} aria-label={`Delete ${bid.project_name ?? "bid"}`} className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive disabled:opacity-50"><Trash2 className="size-3.5" /></button></td>
                       </tr>
                     )) : []),
                   ]
@@ -344,35 +332,34 @@ export function BidsTrackerSection() {
           </div>
 
           {!loading && !error && visibleBids.length === 0 && <EmptyState label={taskView ? "No bids need review" : "No matching bid records"} />}
-          {loading && <div className="flex min-h-40 items-center justify-center gap-2 text-xs text-[#747982]"><Loader2 className="size-4 animate-spin" /> Loading authoritative bid records…</div>}
+          {loading && <div className="flex min-h-40 items-center justify-center gap-2 text-xs text-muted-foreground"><Loader2 className="size-4 animate-spin" /> Loading authoritative bid records…</div>}
         </section>
-      </main>
     </div>
   )
 }
 
-const fieldClass = "w-full border border-transparent bg-transparent py-1 text-[11px] text-[#27292e] outline-none transition-colors hover:border-[#d8dbe2] hover:bg-[#f7f8fa] focus:border-[#aeb4c1] focus:bg-white"
-const tooltipStyle = { background: "#ffffff", border: "1px solid #d9dce3", borderRadius: 6, boxShadow: "0 8px 24px rgba(45,51,70,.12)", color: "#202227", fontSize: 11 }
+const fieldClass = "w-full border border-transparent bg-transparent py-1 text-[11px] text-foreground outline-none transition-colors hover:border-border/70 hover:bg-accent/30 focus:border-primary/40 focus:bg-background/50"
+const tooltipStyle = { background: "#191b20", border: "1px solid #343842", borderRadius: 8, boxShadow: "0 12px 30px rgba(0,0,0,.28)", color: "#f0f1f4", fontSize: 11 }
 
-function KpiCard({ label, value, last = false }: { label: string; value: string; last?: boolean }) {
-  return <article className={`relative min-h-[148px] bg-white p-4 ${last ? "" : "border-b border-[#d7dbe5] md:border-b-0 md:border-r"}`}><div className="flex items-center justify-between"><h2 className="text-sm font-medium">{label}</h2><div className="flex items-center gap-4 text-[#666a73]"><MoreHorizontal className="size-4" /><Expand className="size-3.5" /></div></div><p className="flex min-h-[92px] items-center justify-center text-[40px] font-medium tracking-[-0.035em] sm:text-[48px] lg:text-[54px]">{value}</p></article>
+function KpiCard({ label, value }: { label: string; value: string }) {
+  return <article className="surface-card relative min-h-[148px] overflow-hidden rounded-2xl p-5"><div className="flex items-center justify-between"><h2 className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">{label}</h2><div className="flex items-center gap-3 text-muted-foreground/60"><MoreHorizontal className="size-4" /><Expand className="size-3.5" /></div></div><p className="flex min-h-[92px] items-center text-[34px] font-semibold tracking-[-0.035em] text-foreground sm:text-[40px] xl:text-[44px]">{value}</p></article>
 }
 
 function ChartPanel({ title, children, className = "" }: { title: string; children: React.ReactNode; className?: string }) {
-  return <article className={`border-b border-[#d7dbe5] bg-white lg:border-b-0 ${className}`}><div className="flex items-center justify-between px-4 pt-3"><h2 className="text-sm font-medium">{title}</h2><div className="flex items-center gap-4 text-[#666a73]"><MoreHorizontal className="size-4" /><Expand className="size-3.5" /></div></div>{children}</article>
+  return <article className={`surface-card overflow-hidden rounded-2xl ${className}`}><div className="flex items-center justify-between px-5 pt-5"><h2 className="font-display text-sm font-bold text-foreground">{title}</h2><div className="flex items-center gap-3 text-muted-foreground/60"><MoreHorizontal className="size-4" /><Expand className="size-3.5" /></div></div>{children}</article>
 }
 
 function StatusLegend({ data, mode }: { data: ReturnType<typeof buildBidDashboard>["status"]; mode: "value" | "count" }) {
-  return <div className="flex flex-wrap gap-x-3 gap-y-1 px-4 pt-2 text-[9px] text-[#555961]">{data.map((item) => <span key={item.name} className="flex items-center gap-1"><span className="size-1.5 rounded-full" style={{ backgroundColor: item.color }} />{item.name}<span className="text-[#9a9da4]">{mode === "value" ? compactMoney(item.value) : item.count}</span></span>)}</div>
+  return <div className="flex flex-wrap gap-x-3 gap-y-1 px-5 pt-2 text-[9px] text-muted-foreground">{data.map((item) => <span key={item.name} className="flex items-center gap-1"><span className="size-1.5 rounded-full" style={{ backgroundColor: item.color }} />{item.name}<span className="text-muted-foreground/60">{mode === "value" ? compactMoney(item.value) : item.count}</span></span>)}</div>
 }
 
 function StatusPill({ status }: { status: string }) {
-  const palette: Record<string, string> = { Sent: "bg-[#cacbcd] text-[#484a4e]", "Follow-Up": "bg-[#f5b4df] text-[#743057]", Won: "bg-[#a4eccb] text-[#1f664c]", Lost: "bg-[#e7aaa8] text-[#792d2b]" }
+  const palette: Record<string, string> = { Sent: "bg-muted text-muted-foreground", "Follow-Up": "bg-pink-400/15 text-pink-300", Won: "bg-fin-gain/15 text-fin-gain", Lost: "bg-destructive/15 text-red-300" }
   return <span className={`rounded-md px-2 py-1 ${palette[status] ?? palette.Sent}`}>{status}</span>
 }
 
 function EmptyState({ label }: { label: string }) {
-  return <div className="flex min-h-40 items-center justify-center text-xs font-medium text-[#8a8e97]">{label}</div>
+  return <div className="flex min-h-40 items-center justify-center text-xs font-medium text-muted-foreground">{label}</div>
 }
 
 function EditableText({ value, label, onCommit }: { value: string | null; label: string; onCommit: (value: string) => void | Promise<void> }) {
@@ -380,5 +367,5 @@ function EditableText({ value, label, onCommit }: { value: string | null; label:
 }
 
 function EditableNumber({ value, label, onCommit, moneyInput = false }: { value: number | null; label: string; onCommit: (value: number | null) => void | Promise<void>; moneyInput?: boolean }) {
-  return <div className="flex items-center justify-end"><span className="text-[#777b83]">{moneyInput ? "$" : ""}</span><input aria-label={label} type="number" defaultValue={value ?? ""} onBlur={(event) => { const nextValue = event.target.value === "" ? null : Number(event.target.value); if (nextValue !== value) void onCommit(nextValue) }} className={`${fieldClass} w-24 px-1 text-right`} /></div>
+  return <div className="flex items-center justify-end"><span className="text-muted-foreground">{moneyInput ? "$" : ""}</span><input aria-label={label} type="number" defaultValue={value ?? ""} onBlur={(event) => { const nextValue = event.target.value === "" ? null : Number(event.target.value); if (nextValue !== value) void onCommit(nextValue) }} className={`${fieldClass} w-24 px-1 text-right`} /></div>
 }
