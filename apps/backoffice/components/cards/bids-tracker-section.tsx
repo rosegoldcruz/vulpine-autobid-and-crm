@@ -7,6 +7,7 @@ import {
   Expand,
   Loader2,
   MoreHorizontal,
+  Pencil,
   Plus,
   RefreshCw,
   RotateCcw,
@@ -18,6 +19,7 @@ import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer,
 import type { ApiResponse } from "@vulpine/contracts"
 import type { BidRecord, UpdateBidInput } from "@vulpine/sdk"
 import { BID_STATUSES, bidNeedsReview, buildBidDashboard, normalizeBidStatus } from "@/lib/bids-dashboard"
+import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer"
 
 const NAV_TABS = ["Overview", "Tasks", "Dashboards"] as const
 
@@ -61,6 +63,7 @@ export function BidsTrackerSection() {
   const [activeTab, setActiveTab] = useState<(typeof NAV_TABS)[number]>("Overview")
   const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null)
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set())
+  const [editingBid, setEditingBid] = useState<BidRecord | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const load = useCallback(async () => {
@@ -190,8 +193,9 @@ export function BidsTrackerSection() {
   }
 
   return (
-    <div id="overview" className="flex min-h-[calc(100vh-4.5rem)] flex-col gap-5 text-foreground">
-      <Toaster position="top-right" theme="dark" richColors closeButton />
+    <div id="overview" className="flex min-h-[calc(100vh-4.5rem)] flex-col gap-5 pb-24 text-foreground lg:pb-0">
+      <Toaster position="bottom-center" theme="dark" richColors closeButton />
+      <input ref={fileInputRef} type="file" accept="application/pdf" multiple className="hidden" onChange={(event) => void uploadFiles(event.target.files)} />
 
       <header className="surface-card rounded-2xl p-5 lg:p-6">
         <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
@@ -205,8 +209,7 @@ export function BidsTrackerSection() {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <input ref={fileInputRef} type="file" accept="application/pdf" multiple className="hidden" onChange={(event) => void uploadFiles(event.target.files)} />
+          <div className="hidden flex-wrap items-center gap-2 lg:flex">
             <button type="button" onClick={() => fileInputRef.current?.click()} disabled={mutating} className="flex h-9 items-center gap-2 rounded-xl border border-primary/20 bg-primary/10 px-3 text-xs font-semibold text-primary transition-colors hover:bg-primary/15 disabled:opacity-50">
               {mutating ? <Loader2 className="size-3.5 animate-spin" /> : <Plus className="size-3.5" />} Add bid PDF
             </button>
@@ -225,7 +228,7 @@ export function BidsTrackerSection() {
                 key={tab}
                 type="button"
                 onClick={() => selectTab(tab)}
-                className={`h-8 whitespace-nowrap rounded-lg px-3 text-xs font-semibold transition-colors ${active ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"}`}
+                className={`h-11 whitespace-nowrap rounded-xl px-4 text-xs font-semibold transition-colors ${active ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"}`}
               >
                 {tab}
               </button>
@@ -236,13 +239,13 @@ export function BidsTrackerSection() {
 
       {error && <div role="alert" className="rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-xs font-medium text-destructive-foreground">Bids Tracker unavailable: {error}</div>}
 
-      <section aria-label="Bid KPIs" className="grid grid-cols-1 gap-4 md:grid-cols-3">
+      <section aria-label="Bid KPIs" className="scrollbar-none -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0">
         <KpiCard label="Closed Won" value={loading ? "…" : money(metrics.wonValue)} />
         <KpiCard label="Closed Lost" value={loading ? "…" : money(metrics.lostValue)} />
         <KpiCard label="Open Bids" value={loading ? "…" : money(metrics.openValue)} />
       </section>
 
-      <section id="dashboards" className="grid grid-cols-1 gap-4 lg:grid-cols-[1.05fr_.95fr]">
+      <section id="dashboards" className={`${activeTab === "Dashboards" ? "grid" : "hidden"} grid-cols-1 gap-4 lg:grid lg:grid-cols-[1.05fr_.95fr]`}>
           <ChartPanel title="Open Bids by Amount & Status">
             <StatusLegend data={metrics.status} mode="value" />
             <div className="h-[260px] px-2 pb-2 pt-3 sm:h-[300px] sm:px-5">
@@ -282,22 +285,51 @@ export function BidsTrackerSection() {
           </ChartPanel>
       </section>
 
-      <section id="bid-tracker" className="surface-card overflow-hidden rounded-2xl">
+      <section id="bid-tracker" className={`${activeTab === "Dashboards" ? "hidden lg:block" : "block"} surface-card overflow-hidden rounded-2xl`}>
           <div className="flex flex-col justify-between gap-3 border-b border-border/50 px-4 py-4 sm:flex-row sm:items-center sm:px-5">
             <div>
               <div className="flex items-center gap-2"><h2 className="font-display text-sm font-bold text-foreground">Bid register</h2>{taskView && <span className="rounded-md border border-amber-400/20 bg-amber-400/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-amber-300">Needs review</span>}</div>
               <p className="mt-0.5 text-[10px] text-muted-foreground">{visibleBids.length} of {metrics.totalCount} bids · edits save on blur</p>
             </div>
             <div className="flex items-center gap-2">
-              <label className="flex h-9 min-w-0 flex-1 items-center gap-2 rounded-xl border border-border/60 bg-background/30 px-3 text-muted-foreground focus-within:border-primary/40 sm:w-64">
+              <label className="flex h-11 min-w-0 flex-1 items-center gap-2 rounded-xl border border-border/60 bg-background/30 px-3 text-muted-foreground focus-within:border-primary/40 sm:w-64">
                 <Search className="size-3.5 shrink-0" /><span className="sr-only">Search bids</span>
-                <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search projects or companies" className="min-w-0 flex-1 bg-transparent text-[11px] text-foreground outline-none placeholder:text-muted-foreground/60" />
+                <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search projects or companies" className="min-w-0 flex-1 bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground/60 sm:text-[11px]" />
               </label>
-              <button type="button" onClick={resetView} title="Reset filters and groups" className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-border/60 text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground" aria-label="Reset tracker view"><RotateCcw className="size-3.5" /></button>
+              <button type="button" onClick={resetView} title="Reset filters and groups" className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-border/60 text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground" aria-label="Reset tracker view"><RotateCcw className="size-4" /></button>
             </div>
           </div>
 
-          <div className="overflow-x-auto">
+          <div className="divide-y divide-border/40 md:hidden">
+            {groupedBids.map((group) => {
+              const collapsed = collapsedGroups.has(group.status)
+              return (
+                <div key={`${group.status}-mobile`}>
+                  <button type="button" onClick={() => toggleGroup(group.status)} className="flex h-12 w-full items-center gap-2 bg-muted/15 px-4 text-left text-[11px] font-semibold text-muted-foreground">
+                    <ChevronDown className={`size-4 transition-transform ${collapsed ? "-rotate-90" : ""}`} />
+                    <StatusPill status={group.status} />
+                    <span className="text-muted-foreground/60">{group.bids.length}</span>
+                  </button>
+                  {!collapsed ? group.bids.map((bid) => (
+                    <article key={bid.id} className="flex min-h-28 items-center gap-3 px-4 py-4">
+                      <button type="button" onClick={() => setEditingBid(bid)} className="min-w-0 flex-1 rounded-xl text-left">
+                        <span className="block truncate text-sm font-black tracking-tight text-foreground">{bid.project_name || "Untitled bid"}</span>
+                        <span className="mt-1 block truncate text-xs font-medium text-muted-foreground">{bid.company_name || "Company not set"}</span>
+                        <span className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px]">
+                          <strong className="text-foreground">{money(bid.bid_amount)}</strong>
+                          <span className="text-fin-gain">{money(bid.projected_profit)} profit</span>
+                          <span className="text-muted-foreground/60">{formatDate(bid.sent_date)}</span>
+                        </span>
+                      </button>
+                      <button type="button" onClick={() => setEditingBid(bid)} className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-border/60 text-muted-foreground" aria-label={`Edit ${bid.project_name || "bid"}`}><Pencil className="size-4" /></button>
+                    </article>
+                  )) : null}
+                </div>
+              )
+            })}
+          </div>
+
+          <div className="hidden overflow-x-auto md:block">
             <table className="w-full min-w-[1080px] border-collapse text-left text-[11px]">
               <thead><tr className="border-b border-border/50 bg-muted/10 text-[10px] font-semibold uppercase tracking-[0.06em] text-muted-foreground"><th className="w-[28%] px-4 py-3">Project</th><th className="w-[13%] px-4 py-3">Status</th><th className="w-[18%] px-4 py-3">Company</th><th className="px-4 py-3 text-right">Bid Value</th><th className="px-4 py-3 text-right">Units</th><th className="px-4 py-3">Sent Date</th><th className="px-4 py-3 text-right">Projected Profit</th><th className="w-12 px-2 py-3"><span className="sr-only">Actions</span></th></tr></thead>
               <tbody>
@@ -306,7 +338,7 @@ export function BidsTrackerSection() {
                   return [
                     <tr key={`${group.status}-group`} className="border-b border-border/40 bg-muted/15">
                       <td colSpan={8} className="px-3 py-2">
-                        <button type="button" onClick={() => toggleGroup(group.status)} className="flex items-center gap-2 text-[10px] font-semibold text-muted-foreground hover:text-foreground">
+                        <button type="button" onClick={() => toggleGroup(group.status)} className="flex min-h-11 items-center gap-2 text-[10px] font-semibold text-muted-foreground hover:text-foreground">
                           <ChevronDown className={`size-3.5 transition-transform ${collapsed ? "-rotate-90" : ""}`} />
                           <StatusPill status={group.status} />
                           <span className="font-normal text-muted-foreground/60">{group.bids.length}</span>
@@ -322,7 +354,7 @@ export function BidsTrackerSection() {
                         <td className="px-4 py-2.5 text-right"><EditableNumber value={bid.units} label="Units" onCommit={(value) => updateBid(bid.id, { units: value })} /></td>
                         <td className="px-4 py-2.5"><input aria-label={`Sent date for ${bid.project_name ?? "bid"}`} type="date" title={formatDate(bid.sent_date)} defaultValue={bid.sent_date ?? ""} onBlur={(event) => { if (event.target.value !== (bid.sent_date ?? "")) void updateBid(bid.id, { sent_date: event.target.value }) }} className={`${fieldClass} min-w-28 [color-scheme:dark]`} /></td>
                         <td className="px-4 py-2.5 text-right font-medium text-fin-gain">{money(bid.projected_profit)}</td>
-                        <td className="px-2 py-2.5"><button type="button" onClick={() => void deleteBid(bid.id)} disabled={mutating} aria-label={`Delete ${bid.project_name ?? "bid"}`} className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive disabled:opacity-50"><Trash2 className="size-3.5" /></button></td>
+                        <td className="px-2 py-2.5"><button type="button" onClick={() => void deleteBid(bid.id)} disabled={mutating} aria-label={`Delete ${bid.project_name ?? "bid"}`} className="flex size-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive disabled:opacity-50"><Trash2 className="size-4" /></button></td>
                       </tr>
                     )) : []),
                   ]
@@ -334,6 +366,13 @@ export function BidsTrackerSection() {
           {!loading && !error && visibleBids.length === 0 && <EmptyState label={taskView ? "No bids need review" : "No matching bid records"} />}
           {loading && <div className="flex min-h-40 items-center justify-center gap-2 text-xs text-muted-foreground"><Loader2 className="size-4 animate-spin" /> Loading authoritative bid records…</div>}
         </section>
+
+      <div className="mobile-action-dock lg:hidden">
+        <button type="button" onClick={() => fileInputRef.current?.click()} disabled={mutating} className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-xs font-black text-primary-foreground disabled:opacity-50">{mutating ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />} Add bid PDF</button>
+        <button type="button" onClick={() => void load()} disabled={loading || mutating} className="flex size-12 items-center justify-center rounded-xl text-muted-foreground disabled:opacity-50" aria-label="Refresh bids"><RefreshCw className={`size-5 ${loading ? "animate-spin" : ""}`} /></button>
+      </div>
+
+      {editingBid ? <BidEditDrawer bid={editingBid} mutating={mutating} onClose={() => setEditingBid(null)} onSave={async (input) => { await updateBid(editingBid.id, input); setEditingBid(null) }} onDelete={async () => { await deleteBid(editingBid.id); setEditingBid(null) }} /> : null}
     </div>
   )
 }
@@ -342,8 +381,48 @@ const fieldClass = "w-full border border-transparent bg-transparent py-1 text-[1
 const tooltipStyle = { background: "#191b20", border: "1px solid #343842", borderRadius: 8, boxShadow: "0 12px 30px rgba(0,0,0,.28)", color: "#f0f1f4", fontSize: 11 }
 
 function KpiCard({ label, value }: { label: string; value: string }) {
-  return <article className="surface-card relative min-h-[148px] overflow-hidden rounded-2xl p-5"><div className="flex items-center justify-between"><h2 className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">{label}</h2><div className="flex items-center gap-3 text-muted-foreground/60"><MoreHorizontal className="size-4" /><Expand className="size-3.5" /></div></div><p className="flex min-h-[92px] items-center text-[34px] font-semibold tracking-[-0.035em] text-foreground sm:text-[40px] xl:text-[44px]">{value}</p></article>
+  return <article className="surface-card relative min-h-[148px] min-w-[78vw] snap-start overflow-hidden rounded-2xl p-5 md:min-w-0"><div className="flex items-center justify-between"><h2 className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">{label}</h2><div className="flex items-center gap-3 text-muted-foreground/60"><MoreHorizontal className="size-4" /><Expand className="size-3.5" /></div></div><p className="flex min-h-[92px] items-center text-[34px] font-semibold tracking-[-0.035em] text-foreground sm:text-[40px] xl:text-[44px]">{value}</p></article>
 }
+
+function BidEditDrawer({ bid, mutating, onClose, onSave, onDelete }: { bid: BidRecord; mutating: boolean; onClose: () => void; onSave: (input: UpdateBidInput) => Promise<void>; onDelete: () => Promise<void> }) {
+  const [projectName, setProjectName] = useState(bid.project_name ?? "")
+  const [companyName, setCompanyName] = useState(bid.company_name ?? "")
+  const [status, setStatus] = useState<string>(normalizeBidStatus(bid.status))
+  const [bidAmount, setBidAmount] = useState(bid.bid_amount?.toString() ?? "")
+  const [units, setUnits] = useState(bid.units?.toString() ?? "")
+  const [sentDate, setSentDate] = useState(bid.sent_date ?? "")
+
+  return (
+    <Drawer open onOpenChange={(open) => { if (!open) onClose() }}>
+      <DrawerContent className="mx-auto max-h-[92dvh] max-w-xl border-border/70 bg-card/98 pb-[env(safe-area-inset-bottom)]">
+        <DrawerHeader className="px-5 text-left">
+          <DrawerTitle className="font-display text-xl font-black tracking-tight">Edit bid</DrawerTitle>
+          <DrawerDescription>Update the authoritative tracker record.</DrawerDescription>
+        </DrawerHeader>
+        <form onSubmit={(event) => { event.preventDefault(); void onSave({ project_name: projectName, company_name: companyName, status, bid_amount: bidAmount === "" ? null : Number(bidAmount), units: units === "" ? null : Number(units), sent_date: sentDate }) }} className="overflow-y-auto px-5 pb-4">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <MobileField label="Project"><input value={projectName} onChange={(event) => setProjectName(event.target.value)} className={mobileFieldClass} /></MobileField>
+            <MobileField label="Company"><input value={companyName} onChange={(event) => setCompanyName(event.target.value)} className={mobileFieldClass} /></MobileField>
+            <MobileField label="Status"><select value={status} onChange={(event) => setStatus(event.target.value)} className={mobileFieldClass}>{BID_STATUSES.map((option) => <option key={option} value={option}>{option}</option>)}</select></MobileField>
+            <MobileField label="Bid value"><input type="number" inputMode="decimal" value={bidAmount} onChange={(event) => setBidAmount(event.target.value)} className={mobileFieldClass} /></MobileField>
+            <MobileField label="Units"><input type="number" inputMode="numeric" value={units} onChange={(event) => setUnits(event.target.value)} className={mobileFieldClass} /></MobileField>
+            <MobileField label="Sent date"><input type="date" value={sentDate} onChange={(event) => setSentDate(event.target.value)} className={`${mobileFieldClass} [color-scheme:dark]`} /></MobileField>
+          </div>
+          <DrawerFooter className="mt-5 grid grid-cols-[auto_1fr] gap-2 px-0">
+            <button type="button" onClick={() => void onDelete()} disabled={mutating} className="flex h-12 items-center justify-center gap-2 rounded-xl border border-destructive/30 px-4 text-xs font-bold text-destructive disabled:opacity-50"><Trash2 className="size-4" /> Delete</button>
+            <button type="submit" disabled={mutating} className="flex h-12 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-xs font-black text-primary-foreground disabled:opacity-50">{mutating ? <Loader2 className="size-4 animate-spin" /> : null} Save changes</button>
+          </DrawerFooter>
+        </form>
+      </DrawerContent>
+    </Drawer>
+  )
+}
+
+function MobileField({ label, children }: { label: string; children: React.ReactNode }) {
+  return <label className="grid gap-1.5 text-[11px] font-bold uppercase tracking-[0.08em] text-muted-foreground">{label}{children}</label>
+}
+
+const mobileFieldClass = "h-12 w-full rounded-xl border border-border/70 bg-background/60 px-3 text-base font-medium text-foreground outline-none focus:border-primary/50"
 
 function ChartPanel({ title, children, className = "" }: { title: string; children: React.ReactNode; className?: string }) {
   return <article className={`surface-card overflow-hidden rounded-2xl ${className}`}><div className="flex items-center justify-between px-5 pt-5"><h2 className="font-display text-sm font-bold text-foreground">{title}</h2><div className="flex items-center gap-3 text-muted-foreground/60"><MoreHorizontal className="size-4" /><Expand className="size-3.5" /></div></div>{children}</article>

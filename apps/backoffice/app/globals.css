@@ -115,6 +115,50 @@
   }
   body {
     @apply bg-background text-foreground;
+    min-height: 100dvh;
+    overscroll-behavior-y: none;
+  }
+}
+
+@media (max-width: 1023px) and (pointer: coarse) {
+  button,
+  select,
+  input:not([type="hidden"]),
+  textarea,
+  [role="button"] {
+    min-height: 44px;
+  }
+
+  input,
+  textarea,
+  select {
+    scroll-margin-bottom: calc(8rem + env(safe-area-inset-bottom));
+  }
+
+  html {
+    scroll-padding-bottom: calc(8rem + env(safe-area-inset-bottom));
+  }
+}
+
+.mobile-action-dock {
+  position: fixed;
+  inset-inline: 1rem;
+  bottom: calc(5.5rem + env(safe-area-inset-bottom));
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .5rem;
+  border: 1px solid oklch(0.28 0.015 260 / .75);
+  border-radius: 1rem;
+  background: oklch(0.145 0.008 260 / .94);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, .45), 0 0 0 1px rgba(255, 255, 255, .04);
+}
+
+@media (min-width: 1024px) {
+  .mobile-action-dock {
+    display: none;
   }
 }
 

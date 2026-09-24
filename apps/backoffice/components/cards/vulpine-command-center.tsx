@@ -10,8 +10,18 @@ import {
   Settings, ChevronRight, ChevronLeft, Bell, Search, X, Check, AlertTriangle, Info,
   Clock, LogOut, Activity, Zap, Shield, TrendingUp, FileText,
   GitBranch, Package, ClipboardCheck, CircleSlash, BarChart3,
-  UserCircle, BellRing, Lock, Monitor, CreditCard, Menu, Mail, Send, ScanLine,
+  UserCircle, BellRing, Lock, Monitor, CreditCard, Mail, Send, ScanLine,
+  MoreHorizontal,
 } from "lucide-react"
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer"
 import { CabinetBidEngineSection } from "./cabinet-bid-engine-section"
 import type { BackofficeSectionId } from "@/lib/backoffice-access"
 
@@ -63,7 +73,6 @@ const C = {
 }
 
 const SPRING = { type: "spring" as const, stiffness: 400, damping: 32 }
-const EASE_OUT = [0.16, 1, 0.3, 1] as const
 
 // ─── Navigation ─────────────────────────────────────────────────
 
@@ -127,7 +136,7 @@ function SectionPanel({ children, className = "" }: { children: React.ReactNode;
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: 0.15, ease: EASE_OUT }}
+      transition={{ ...SPRING, delay: 0.08 }}
       className={`rounded-2xl surface-card p-5 lg:p-6 ${className}`}
       style={{ boxShadow: CARD_SHADOW }}
     >
@@ -172,7 +181,7 @@ function PlaceholderModule({
     <motion.div
       initial={{ opacity: 0, y: 16, scale: 0.97 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.5, delay, ease: EASE_OUT }}
+      transition={{ ...SPRING, delay }}
       className="relative overflow-hidden rounded-2xl surface-card p-5 lg:p-6 flex flex-col gap-4"
       style={{ boxShadow: CARD_SHADOW }}
     >
@@ -207,7 +216,7 @@ function StatShell({
     <motion.div
       initial={{ opacity: 0, y: 16, scale: 0.97 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.5, delay, ease: EASE_OUT }}
+      transition={{ ...SPRING, delay }}
       className="relative overflow-hidden rounded-2xl surface-card p-4 lg:p-5"
       style={{ boxShadow: CARD_SHADOW }}
     >
@@ -268,8 +277,8 @@ function NotificationPanel({
           initial={{ opacity: 0, y: -12, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -12, scale: 0.95 }}
-          transition={{ duration: 0.25, ease: EASE_OUT }}
-          className="absolute top-full right-0 mt-3 w-[400px] max-h-[30rem] rounded-2xl surface-elevated overflow-hidden z-50 glow-teal-sm"
+          transition={SPRING}
+          className="fixed inset-x-3 bottom-[calc(5.75rem+env(safe-area-inset-bottom))] z-50 max-h-[70dvh] overflow-hidden rounded-2xl surface-elevated glow-teal-sm sm:absolute sm:inset-x-auto sm:bottom-auto sm:right-0 sm:top-full sm:mt-3 sm:w-[400px] sm:max-h-[30rem]"
           style={{ boxShadow: CARD_SHADOW }}
         >
           <div className="flex items-center justify-between p-5 border-b border-border/50">
@@ -281,11 +290,11 @@ function NotificationPanel({
             </div>
             <div className="flex items-center gap-1">
               {unreadCount > 0 && (
-                <button onClick={onMarkAllRead} className="text-[11px] font-semibold text-primary hover:text-primary/80 px-2 py-1 transition-colors">
+                <button onClick={onMarkAllRead} className="min-h-11 px-2 text-[11px] font-semibold text-primary transition-colors hover:text-primary/80">
                   Mark all read
                 </button>
               )}
-              <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-accent transition-colors" aria-label="Close notifications">
+              <button onClick={onClose} className="flex size-11 items-center justify-center rounded-xl transition-colors hover:bg-accent" aria-label="Close notifications">
                 <X className="size-4 text-muted-foreground" />
               </button>
             </div>
@@ -296,9 +305,9 @@ function NotificationPanel({
                 key={notif.id}
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.25, delay: i * 0.04 }}
+                transition={{ ...SPRING, delay: i * 0.025 }}
                 onClick={() => onMarkRead(notif.id)}
-                className={`w-full flex items-start gap-3.5 p-4 text-left border-b border-border/30 hover:bg-accent/30 transition-all duration-200 ${!notif.read ? "bg-primary/[0.04]" : ""}`}
+                className={`flex min-h-20 w-full items-start gap-3.5 border-b border-border/30 p-4 text-left transition-colors hover:bg-accent/30 ${!notif.read ? "bg-primary/[0.04]" : ""}`}
               >
                 <div className={`size-8 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${
                   notif.type === "success" ? "bg-fin-gain/12 text-fin-gain" : notif.type === "warning" ? "bg-chart-3/12 text-chart-3" : "bg-chart-2/12 text-chart-2"
@@ -346,7 +355,7 @@ function DashboardSection() {
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
+        transition={SPRING}
         className="rounded-2xl surface-card p-5 lg:p-6 relative overflow-hidden"
         style={{ boxShadow: CARD_SHADOW }}
       >
@@ -474,7 +483,7 @@ function RevenueSection() {
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
+        transition={SPRING}
         className="rounded-2xl surface-card p-5 lg:p-6 relative overflow-hidden"
         style={{ boxShadow: CARD_SHADOW }}
       >
@@ -541,7 +550,7 @@ function EmailBlasterSection() {
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
+        transition={SPRING}
         className="rounded-2xl surface-card p-5 lg:p-7 relative overflow-hidden"
         style={{ boxShadow: CARD_SHADOW }}
       >
@@ -569,7 +578,7 @@ function EmailBlasterSection() {
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1, ease: EASE_OUT }}
+        transition={{ ...SPRING, delay: 0.08 }}
         className="rounded-2xl surface-card p-5 lg:p-6"
         style={{ boxShadow: CARD_SHADOW }}
       >
@@ -615,7 +624,7 @@ function EmailBlasterSection() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.25 }}
+                transition={SPRING}
                 className="mt-4 rounded-xl bg-muted/20 border border-border/30 p-5 flex items-start gap-4"
               >
                 <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 glow-teal-sm">
@@ -643,7 +652,7 @@ function EmailBlasterSection() {
               key={zone.label}
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 + i * 0.07, ease: EASE_OUT }}
+              transition={{ ...SPRING, delay: 0.12 + i * 0.04 }}
               className="rounded-2xl surface-card p-5 flex flex-col gap-3"
               style={{ boxShadow: CARD_SHADOW }}
             >
@@ -672,7 +681,7 @@ function EmailBlasterSection() {
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.5, ease: EASE_OUT }}
+        transition={{ ...SPRING, delay: 0.28 }}
         className="rounded-2xl surface-card p-5 flex items-start gap-4 border border-amber-500/20 bg-amber-500/[0.03]"
         style={{ boxShadow: CARD_SHADOW }}
       >
@@ -707,7 +716,7 @@ function SettingsSection() {
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
+        transition={SPRING}
         className="rounded-2xl surface-card p-5 lg:p-6 relative overflow-hidden"
         style={{ boxShadow: CARD_SHADOW }}
       >
@@ -720,7 +729,7 @@ function SettingsSection() {
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
+          transition={{ ...SPRING, delay: 0.08 }}
           className="rounded-2xl surface-card p-3.5 lg:col-span-1"
           style={{ boxShadow: CARD_SHADOW }}
         >
@@ -757,7 +766,7 @@ function SettingsSection() {
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
+          transition={{ ...SPRING, delay: 0.14 }}
           className="rounded-2xl surface-card p-5 lg:p-7 lg:col-span-3"
           style={{ boxShadow: CARD_SHADOW }}
         >
@@ -767,7 +776,7 @@ function SettingsSection() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.25 }}
+              transition={SPRING}
             >
               {activeTab === "profile" && (
                 <div className="flex flex-col items-center justify-center py-10 gap-4">
@@ -882,7 +891,7 @@ function Sidebar({
     <motion.aside
       animate={{ width: isOpen ? 240 : 64 }}
       transition={{ type: "spring", stiffness: 340, damping: 34 }}
-      className={`fixed bottom-0 left-0 top-16 z-40 flex shrink-0 flex-col overflow-hidden border-r border-border/50 bg-card/95 backdrop-blur-xl transition-transform duration-200 lg:relative lg:inset-auto lg:z-20 lg:bg-card/70 ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
+      className={`relative z-20 hidden shrink-0 flex-col overflow-hidden border-r border-border/50 bg-card/70 lg:flex ${isOpen ? "translate-x-0" : "lg:translate-x-0"}`}
       style={{ minHeight: "100%" }}
     >
       {/* Logo row */}
@@ -900,7 +909,7 @@ function Sidebar({
                     initial={{ opacity: 0, x: -8 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -8 }}
-                    transition={{ duration: 0.18 }}
+                    transition={SPRING}
                     className="text-[15px] font-extrabold tracking-tight text-foreground font-display whitespace-nowrap overflow-hidden"
                   >
                     Vulpine
@@ -944,7 +953,7 @@ function Sidebar({
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  transition={{ duration: 0.15 }}
+                  transition={SPRING}
                   className="text-[10px] font-bold tracking-[0.1em] uppercase text-muted-foreground/50 px-2.5 pt-3 pb-1.5 font-sans select-none"
                 >
                   {group.label}
@@ -984,7 +993,7 @@ function Sidebar({
                         initial={{ opacity: 0, x: -6 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -6 }}
-                        transition={{ duration: 0.16 }}
+                        transition={SPRING}
                         className="truncate"
                       >
                         {item.label}
@@ -1016,7 +1025,7 @@ function Sidebar({
                 initial={{ opacity: 0, x: -6 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -6 }}
-                transition={{ duration: 0.16 }}
+                transition={SPRING}
                 className="flex-1 min-w-0"
               >
                 <p className="text-xs font-bold text-foreground truncate font-sans">Vulpine User</p>
@@ -1027,6 +1036,84 @@ function Sidebar({
         </div>
       </div>
     </motion.aside>
+  )
+}
+
+function MobileNavigation({
+  activeSection,
+  onNavigate,
+  allowedSections,
+}: {
+  activeSection: SectionId
+  onNavigate: (id: SectionId) => void
+  allowedSections?: readonly SectionId[]
+}) {
+  const primaryIds: SectionId[] = ["dashboard", "bidstracker", "vision", "drive"]
+  const primary = primaryIds
+    .map((id) => ALL_NAV_ITEMS.find((item) => item.id === id))
+    .filter((item): item is NavItem => Boolean(item && (!allowedSections || allowedSections.includes(item.id))))
+  const available = ALL_NAV_ITEMS.filter((item) => !allowedSections || allowedSections.includes(item.id))
+  const moreIsActive = !primaryIds.includes(activeSection)
+
+  return (
+    <nav
+      aria-label="Mobile navigation"
+      className="fixed inset-x-0 bottom-0 z-50 border-t border-border/70 bg-card/95 px-2 pb-[env(safe-area-inset-bottom)] backdrop-blur-2xl lg:hidden"
+    >
+      <div className="mx-auto grid h-[4.75rem] max-w-lg grid-cols-5 items-stretch">
+        {primary.map((item) => {
+          const Icon = item.icon
+          const active = item.id === activeSection
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => onNavigate(item.id)}
+              aria-current={active ? "page" : undefined}
+              className={`relative flex min-h-11 min-w-11 flex-col items-center justify-center gap-1 rounded-2xl text-[10px] font-bold ${active ? "text-primary" : "text-muted-foreground"}`}
+            >
+              {active ? <motion.span layoutId="mobile-nav-indicator" transition={SPRING} className="absolute inset-x-3 top-1 h-0.5 rounded-full bg-primary shadow-[0_0_10px_rgba(45,212,191,.55)]" /> : null}
+              <Icon className="size-5" />
+              <span className="max-w-[4.5rem] truncate">{item.label.replace("Vulpine ", "")}</span>
+            </button>
+          )
+        })}
+
+        <Drawer>
+          <DrawerTrigger asChild>
+            <button type="button" className={`relative flex min-h-11 min-w-11 flex-col items-center justify-center gap-1 rounded-2xl text-[10px] font-bold ${moreIsActive ? "text-primary" : "text-muted-foreground"}`}>
+              {moreIsActive ? <motion.span layoutId="mobile-nav-indicator" transition={SPRING} className="absolute inset-x-3 top-1 h-0.5 rounded-full bg-primary shadow-[0_0_10px_rgba(45,212,191,.55)]" /> : null}
+              <MoreHorizontal className="size-5" />
+              <span>More</span>
+            </button>
+          </DrawerTrigger>
+          <DrawerContent className="border-border/70 bg-card/98 pb-[env(safe-area-inset-bottom)]">
+            <DrawerHeader className="px-5 pb-3 text-left">
+              <DrawerTitle className="font-display text-lg font-black">All modules</DrawerTitle>
+              <DrawerDescription>Everything in Vulpine Backoffice, one thumb away.</DrawerDescription>
+            </DrawerHeader>
+            <div className="grid max-h-[58dvh] grid-cols-2 gap-2 overflow-y-auto px-4 pb-5">
+              {available.map((item) => {
+                const Icon = item.icon
+                const active = item.id === activeSection
+                return (
+                  <DrawerClose key={item.id} asChild>
+                    <button
+                      type="button"
+                      onClick={() => onNavigate(item.id)}
+                      className={`flex min-h-16 items-center gap-3 rounded-2xl border px-4 text-left text-sm font-bold ${active ? "border-primary/30 bg-primary/10 text-primary" : "border-border/60 bg-background/30 text-foreground"}`}
+                    >
+                      <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10"><Icon className="size-5" /></span>
+                      <span className="truncate">{item.label}</span>
+                    </button>
+                  </DrawerClose>
+                )
+              })}
+            </div>
+          </DrawerContent>
+        </Drawer>
+      </div>
+    </nav>
   )
 }
 
@@ -1080,6 +1167,7 @@ export default function VulpineCommandCenter({
   const unreadCount = useMemo(() => notifItems.filter((n) => !n.read).length, [notifItems])
   const ActiveComponent = useMemo(() => SECTION_COMPONENTS[activeSection], [activeSection])
   const activeNav = useMemo(() => ALL_NAV_ITEMS.find((n) => n.id === activeSection), [activeSection])
+  const ActiveNavIcon = activeNav?.icon ?? Wrench
 
   return (
     <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-background text-foreground">
@@ -1092,14 +1180,10 @@ export default function VulpineCommandCenter({
       {/* Top header */}
       <header className="border-b border-border/60 bg-card/60 backdrop-blur-xl sticky top-0 z-30 relative">
         <div className="flex items-center justify-between h-16 px-4">
-          {/* Mobile menu toggle */}
-          <button
-            onClick={() => setSidebarOpen((v) => !v)}
-            className="p-2.5 rounded-xl hover:bg-accent/50 transition-all duration-200 lg:hidden"
-            aria-label="Toggle menu"
-          >
-            <Menu className="size-4 text-muted-foreground" />
-          </button>
+          <div className="flex min-w-0 items-center gap-3 lg:hidden">
+            <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-primary/12 glow-teal-sm"><ActiveNavIcon className="size-5 text-primary" /></div>
+            <div className="min-w-0"><p className="truncate font-display text-sm font-black text-foreground">{activeNav?.label}</p><p className="text-[10px] text-muted-foreground">Vulpine Backoffice</p></div>
+          </div>
 
           {/* Breadcrumb */}
           <div className="hidden lg:flex items-center gap-1.5 text-xs text-muted-foreground font-sans">
@@ -1110,13 +1194,13 @@ export default function VulpineCommandCenter({
 
           {/* Right actions */}
           <div className="flex items-center gap-1.5 ml-auto">
-            <button className="p-2.5 rounded-xl hover:bg-accent/50 transition-all duration-200" aria-label="Search">
+            <button className="flex size-11 items-center justify-center rounded-xl hover:bg-accent/50" aria-label="Search">
               <Search className="size-4 text-muted-foreground" />
             </button>
             <div className="relative">
               <button
                 onClick={() => setNotificationsOpen((prev) => !prev)}
-                className="p-2.5 rounded-xl hover:bg-accent/50 transition-all duration-200 relative"
+                className="relative flex size-11 items-center justify-center rounded-xl hover:bg-accent/50"
                 aria-label="Notifications"
                 aria-expanded={notificationsOpen}
               >
@@ -1141,7 +1225,7 @@ export default function VulpineCommandCenter({
               />
             </div>
             <button
-              className="p-2.5 rounded-xl hover:bg-accent/50 transition-all duration-200"
+              className="hidden size-11 items-center justify-center rounded-xl hover:bg-accent/50 sm:flex"
               aria-label="Settings"
               onClick={() => handleNavigation("settings")}
               disabled={Boolean(allowedSections && !allowedSections.includes("settings"))}
@@ -1154,14 +1238,6 @@ export default function VulpineCommandCenter({
 
       {/* Body: sidebar + content */}
       <div className="flex flex-1 relative z-10" style={{ minHeight: "calc(100vh - 4rem)" }}>
-        {sidebarOpen && (
-          <button
-            type="button"
-            aria-label="Close navigation"
-            onClick={() => setSidebarOpen(false)}
-            className="fixed inset-0 top-16 z-30 bg-black/45 backdrop-blur-[1px] lg:hidden"
-          />
-        )}
         {/* Sidebar */}
         <Sidebar
           activeSection={activeSection}
@@ -1173,14 +1249,14 @@ export default function VulpineCommandCenter({
 
         {/* Main content area */}
         <div className="flex flex-col flex-1 min-w-0">
-          <main className="flex-1 px-5 lg:px-8 xl:px-10 py-6 lg:py-8 overflow-auto">
+          <main className="flex-1 overflow-auto px-4 pb-[calc(7rem+env(safe-area-inset-bottom))] pt-5 sm:px-5 lg:px-8 lg:py-8 xl:px-10">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeSection}
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: isTransitioning ? 0.3 : 1, y: isTransitioning ? 6 : 0 }}
                 exit={{ opacity: 0, y: -12 }}
-                transition={{ duration: 0.35, ease: EASE_OUT }}
+                transition={SPRING}
               >
                 {activeSection === "drive" ? <DriveSection canWrite={driveCanWrite} /> : <ActiveComponent />}
               </motion.div>
@@ -1188,7 +1264,7 @@ export default function VulpineCommandCenter({
           </main>
 
           {/* Footer */}
-          <footer className="border-t border-border/40 shrink-0">
+          <footer className="hidden border-t border-border/40 lg:block lg:shrink-0">
             <div className="px-5 lg:px-8 xl:px-10 py-4">
               <div className="flex items-center justify-between text-[11px] text-muted-foreground font-sans">
                 <div className="flex items-center gap-2">
@@ -1201,6 +1277,7 @@ export default function VulpineCommandCenter({
           </footer>
         </div>
       </div>
+      <MobileNavigation activeSection={activeSection} onNavigate={handleNavigation} allowedSections={allowedSections} />
     </div>
   )
 }

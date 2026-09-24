@@ -36,7 +36,7 @@ function Metric({ label, value, detail, icon: Icon, tone = "teal" }: {
     rose: "border-rose-400/20 bg-rose-400/10 text-rose-300",
   }
   return (
-    <article className="surface-card relative overflow-hidden rounded-2xl border border-border/60 p-4 shadow-[0_18px_48px_rgba(0,0,0,.12)]">
+    <article className="surface-card relative min-w-[72vw] snap-start overflow-hidden rounded-2xl border border-border/60 p-4 shadow-[0_18px_48px_rgba(0,0,0,.12)] sm:min-w-0">
       <div className="absolute -right-8 -top-8 size-24 rounded-full bg-primary/[0.04] blur-2xl" />
       <div className={`mb-4 flex size-9 items-center justify-center rounded-xl border ${colors[tone]}`}><Icon className="size-4" /></div>
       <p className="text-[10px] font-bold uppercase tracking-[.16em] text-muted-foreground">{label}</p>
@@ -58,8 +58,8 @@ function ActionButton({ children, onClick, disabled, secondary = false }: {
       onClick={onClick}
       disabled={disabled}
       className={secondary
-        ? "inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-border/80 bg-background/40 px-4 text-xs font-bold text-foreground transition hover:border-primary/35 hover:bg-primary/[0.05] disabled:cursor-not-allowed disabled:opacity-40"
-        : "inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-xs font-black text-primary-foreground shadow-[0_0_28px_rgba(45,212,191,.18)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"}
+        ? "inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-border/80 bg-background/40 px-4 text-xs font-bold text-foreground transition hover:border-primary/35 hover:bg-primary/[0.05] disabled:cursor-not-allowed disabled:opacity-40"
+        : "inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-xs font-black text-primary-foreground shadow-[0_0_28px_rgba(45,212,191,.18)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"}
     >{children}</button>
   )
 }
@@ -155,8 +155,8 @@ export function VisionSection() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-4.5rem)] space-y-5 pb-10">
-      <Toaster richColors position="top-right" theme="dark" closeButton />
+    <div className="min-h-[calc(100vh-4.5rem)] space-y-5 pb-28 lg:pb-10">
+      <Toaster richColors position="bottom-center" theme="dark" closeButton />
 
       <header className="surface-card relative overflow-hidden rounded-2xl border border-border/60 px-5 py-5 lg:px-7">
         <div className="absolute -right-16 -top-24 size-64 rounded-full bg-primary/[0.08] blur-3xl" />
@@ -171,14 +171,14 @@ export function VisionSection() {
               <p className="max-w-2xl text-xs leading-5 text-muted-foreground">Traceable plan and workbook ingestion for cabinet opportunities. Deterministic evidence comes in; estimator intelligence stays locked down.</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="hidden items-center gap-2 lg:flex">
             <ActionButton secondary onClick={reset}><RotateCcw className="size-3.5" /> Reset</ActionButton>
             <ActionButton secondary onClick={refresh} disabled={!job || busy !== null}>{busy === "refresh" ? <Loader2 className="size-3.5 animate-spin" /> : <RefreshCw className="size-3.5" />} Refresh</ActionButton>
           </div>
         </div>
       </header>
 
-      <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
+      <div className="scrollbar-none -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 xl:grid-cols-4">
         <Metric label="Source files" value={`${totals.files}`} detail="Checksummed and traceable" icon={FileArchive} />
         <Metric label="Plan PDFs" value={`${totals.pdfs}`} detail={`${totals.pages} page${totals.pages === 1 ? "" : "s"} indexed`} icon={FileText} tone="blue" />
         <Metric label="Workbooks" value={`${totals.workbooks}`} detail="XLSX and CSV evidence" icon={FileSpreadsheet} tone="amber" />
@@ -194,7 +194,7 @@ export function VisionSection() {
 
           <label className="text-[10px] font-bold uppercase tracking-[.14em] text-muted-foreground">Project name</label>
           <div className="mt-2 flex gap-2">
-            <input aria-label="Project name" value={projectName} onChange={(event) => setProjectName(event.target.value)} disabled={Boolean(project)} className="h-10 min-w-0 flex-1 rounded-xl border border-border/80 bg-background/50 px-3 text-xs text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary/50 disabled:opacity-55" />
+            <input aria-label="Project name" value={projectName} onChange={(event) => setProjectName(event.target.value)} disabled={Boolean(project)} className="h-12 min-w-0 flex-1 rounded-xl border border-border/80 bg-background/50 px-3 text-base text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary/50 disabled:opacity-55 sm:text-xs" />
             <ActionButton onClick={createProject} disabled={!projectName.trim() || Boolean(project) || busy !== null}>{busy === "create" ? <Loader2 className="size-3.5 animate-spin" /> : <FolderPlus className="size-3.5" />} Create</ActionButton>
           </div>
 
@@ -203,7 +203,7 @@ export function VisionSection() {
             <span className="text-xs font-bold text-foreground">Choose evidence files</span>
             <span className="mt-1 text-[10px] text-muted-foreground">PDF, ZIP, XLSX, CSV · no legacy XLS</span>
           </button>
-          <input ref={inputRef} type="file" multiple accept=".pdf,.zip,.xlsx,.csv" className="sr-only" onChange={(event) => setFiles(Array.from(event.target.files ?? []))} />
+          <input ref={inputRef} type="file" multiple accept=".pdf,.zip,.xlsx,.csv" className="hidden" onChange={(event) => setFiles(Array.from(event.target.files ?? []))} />
           {files.length > 0 && <div className="mt-3 rounded-xl border border-border/70 bg-background/30 px-3 py-2 text-[10px] text-muted-foreground"><strong className="text-foreground">{files.length} selected:</strong> {files.map((file) => file.name).join(", ")}</div>}
 
           <div className="mt-4 grid grid-cols-2 gap-2">
@@ -236,12 +236,12 @@ export function VisionSection() {
               </div>
 
               <div className="overflow-hidden rounded-2xl border border-border/70">
-                <div className="grid grid-cols-[minmax(0,1fr)_80px_90px] border-b border-border/70 bg-background/40 px-4 py-2 text-[9px] font-bold uppercase tracking-[.12em] text-muted-foreground"><span>Document</span><span>Type</span><span className="text-right">Bytes</span></div>
+                <div className="hidden grid-cols-[minmax(0,1fr)_80px_90px] border-b border-border/70 bg-background/40 px-4 py-2 text-[9px] font-bold uppercase tracking-[.12em] text-muted-foreground sm:grid"><span>Document</span><span>Type</span><span className="text-right">Bytes</span></div>
                 {project.files.length ? project.files.map((file) => (
-                  <div key={file.id} className="grid grid-cols-[minmax(0,1fr)_80px_90px] items-center border-b border-border/40 px-4 py-3 text-[11px] last:border-b-0">
+                  <div key={file.id} className="grid min-h-16 grid-cols-[minmax(0,1fr)_auto] items-center border-b border-border/40 px-4 py-3 text-[11px] last:border-b-0 sm:min-h-0 sm:grid-cols-[minmax(0,1fr)_80px_90px]">
                     <span className="truncate font-medium text-foreground">{file.name}</span>
-                    <span className="font-mono text-[9px] uppercase text-muted-foreground">{file.name.split(".").pop()}</span>
-                    <span className="text-right font-mono text-[9px] text-muted-foreground">{file.size.toLocaleString()}</span>
+                    <span className="hidden font-mono text-[9px] uppercase text-muted-foreground sm:block">{file.name.split(".").pop()}</span>
+                    <span className="text-right font-mono text-[9px] text-muted-foreground"><span className="mr-1 uppercase sm:hidden">{file.name.split(".").pop()} ·</span>{file.size.toLocaleString()} bytes</span>
                   </div>
                 )) : <div className="px-4 py-8 text-center text-xs text-muted-foreground">No files added yet.</div>}
               </div>
@@ -265,6 +265,14 @@ export function VisionSection() {
       <div className="flex items-start gap-3 rounded-2xl border border-amber-400/20 bg-amber-400/[0.05] px-4 py-3 text-[10px] leading-4 text-amber-100/80">
         <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-300" />
         <p><strong className="text-amber-200">Safety boundary:</strong> this module cannot approve unit mix, generate takeoff, resolve SKUs, calculate pricing, export a bid, or mark anything safe to send. Those operations return <span className="font-mono text-amber-200">ESTIMATOR_INTELLIGENCE_DISABLED</span>.</p>
+      </div>
+
+      <div className="mobile-action-dock lg:hidden">
+        {!project ? <button type="button" onClick={createProject} disabled={!projectName.trim() || busy !== null} className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-xs font-black text-primary-foreground disabled:opacity-40">{busy === "create" ? <Loader2 className="size-4 animate-spin" /> : <FolderPlus className="size-4" />} Create project</button> : null}
+        {project && !files.length && job?.state !== "files_ingested" ? <button type="button" onClick={() => inputRef.current?.click()} disabled={busy !== null} className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-xs font-black text-primary-foreground disabled:opacity-40"><UploadCloud className="size-4" /> Choose files</button> : null}
+        {project && files.length > 0 ? <button type="button" onClick={upload} disabled={busy !== null} className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-xs font-black text-primary-foreground disabled:opacity-40">{busy === "upload" ? <Loader2 className="size-4 animate-spin" /> : <UploadCloud className="size-4" />} Add {files.length} file{files.length === 1 ? "" : "s"}</button> : null}
+        {job?.state === "files_ingested" ? <button type="button" onClick={process} disabled={busy !== null} className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-xs font-black text-primary-foreground disabled:opacity-40">{busy === "process" ? <Loader2 className="size-4 animate-spin" /> : <ArrowRight className="size-4" />} Process</button> : null}
+        <button type="button" onClick={job ? refresh : reset} disabled={busy !== null} className="flex size-12 shrink-0 items-center justify-center rounded-xl text-muted-foreground disabled:opacity-40" aria-label={job ? "Refresh Vision" : "Reset Vision"}>{busy === "refresh" ? <Loader2 className="size-5 animate-spin" /> : job ? <RefreshCw className="size-5" /> : <RotateCcw className="size-5" />}</button>
       </div>
     </div>
   )

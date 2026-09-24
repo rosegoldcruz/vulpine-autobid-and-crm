@@ -16,6 +16,7 @@ import {
   Wrench,
 } from "lucide-react"
 import apiClient from "@/lib/api-client"
+import { toast, Toaster } from "sonner"
 
 const CARD_SHADOW =
   "rgba(14, 63, 126, 0.04) 0px 0px 0px 1px, rgba(42, 51, 69, 0.04) 0px 1px 1px -0.5px, rgba(42, 51, 70, 0.04) 0px 3px 3px -1.5px, rgba(42, 51, 70, 0.04) 0px 6px 6px -3px, rgba(14, 63, 126, 0.04) 0px 12px 12px -6px, rgba(14, 63, 126, 0.04) 0px 24px 24px -12px"
@@ -164,8 +165,11 @@ export function CabinetBidEngineSection() {
       setJobs((current) => [response.job, ...current])
       setSelectedJobId(response.job.id)
       setForm(emptyForm)
+      toast.success("Cabinet bid job created", { description: response.job.name })
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to create cabinet bid job")
+      const message = err instanceof Error ? err.message : "Unable to create cabinet bid job"
+      setError(message)
+      toast.error("Create failed", { description: message })
     } finally {
       setSaving(false)
     }
@@ -183,8 +187,11 @@ export function CabinetBidEngineSection() {
       setDetail(response)
       setWorkbookFile(null)
       await loadJobs()
+      toast.success("Workbook uploaded", { description: workbookFile.name })
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to upload cabinet workbook")
+      const message = err instanceof Error ? err.message : "Unable to upload cabinet workbook"
+      setError(message)
+      toast.error("Workbook upload failed", { description: message })
     } finally {
       setUploadingWorkbook(false)
     }
@@ -202,19 +209,23 @@ export function CabinetBidEngineSection() {
       setDetail(response)
       setPlanFiles(null)
       await loadJobs()
+      toast.success("Plan PDFs uploaded", { description: `${planFiles.length} file${planFiles.length === 1 ? "" : "s"} added.` })
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to upload cabinet plan PDFs")
+      const message = err instanceof Error ? err.message : "Unable to upload cabinet plan PDFs"
+      setError(message)
+      toast.error("Plan upload failed", { description: message })
     } finally {
       setUploadingPlans(false)
     }
   }
 
   return (
-    <div className={`flex flex-col gap-5 ${SECTION_MIN_H}`}>
+    <div className={`flex flex-col gap-5 pb-24 lg:pb-0 ${SECTION_MIN_H}`}>
+      <Toaster position="bottom-center" theme="dark" richColors closeButton />
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
+        transition={{ type: "spring", stiffness: 360, damping: 30 }}
         className="rounded-2xl surface-card p-5 lg:p-7 relative overflow-hidden"
         style={{ boxShadow: CARD_SHADOW }}
       >
@@ -270,7 +281,7 @@ export function CabinetBidEngineSection() {
               <button
                 type="submit"
                 disabled={saving}
-                className="mt-1 h-10 rounded-xl bg-primary text-primary-foreground text-xs font-bold font-sans flex items-center justify-center gap-2 disabled:opacity-60"
+                className="mt-1 h-12 rounded-xl bg-primary text-primary-foreground text-xs font-bold font-sans flex items-center justify-center gap-2 disabled:opacity-60"
               >
                 {saving ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
                 Create Cabinet Bid Job
@@ -282,7 +293,7 @@ export function CabinetBidEngineSection() {
             title="Persisted Cabinet Jobs"
             subtitle="Loaded from the Cabinet Bid Engine backend."
             action={
-              <button onClick={loadJobs} className="p-2 rounded-lg hover:bg-accent/50 transition-colors" aria-label="Refresh cabinet jobs">
+              <button onClick={loadJobs} className="flex size-11 items-center justify-center rounded-xl hover:bg-accent/50 transition-colors" aria-label="Refresh cabinet jobs">
                 <RefreshCw className={`size-3.5 ${loading ? "animate-spin" : ""}`} />
               </button>
             }
@@ -298,7 +309,7 @@ export function CabinetBidEngineSection() {
                   <button
                     key={job.id}
                     onClick={() => setSelectedJobId(job.id)}
-                    className={`rounded-xl border p-3 text-left transition-all ${
+                    className={`min-h-20 rounded-xl border p-3 text-left transition-all ${
                       selectedJobId === job.id
                         ? "border-primary/40 bg-primary/[0.06]"
                         : "border-border/40 bg-muted/10 hover:bg-accent/30"
@@ -354,7 +365,7 @@ export function CabinetBidEngineSection() {
                       label={workbookFile?.name || "Choose cabinet workbook"}
                       onChange={(files) => setWorkbookFile(files?.[0] || null)}
                     />
-                    <button disabled={!workbookFile || uploadingWorkbook} className="h-10 rounded-xl bg-primary text-primary-foreground text-xs font-bold font-sans flex items-center justify-center gap-2 disabled:opacity-60">
+                    <button disabled={!workbookFile || uploadingWorkbook} className="h-12 rounded-xl bg-primary text-primary-foreground text-xs font-bold font-sans flex items-center justify-center gap-2 disabled:opacity-60">
                       {uploadingWorkbook ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />}
                       Upload Cabinet Workbook
                     </button>
@@ -370,7 +381,7 @@ export function CabinetBidEngineSection() {
                       label={planFiles?.length ? `${planFiles.length} cabinet plan PDF(s) selected` : "Choose cabinet plan PDFs"}
                       onChange={setPlanFiles}
                     />
-                    <button disabled={!planFiles?.length || uploadingPlans} className="h-10 rounded-xl bg-primary text-primary-foreground text-xs font-bold font-sans flex items-center justify-center gap-2 disabled:opacity-60">
+                    <button disabled={!planFiles?.length || uploadingPlans} className="h-12 rounded-xl bg-primary text-primary-foreground text-xs font-bold font-sans flex items-center justify-center gap-2 disabled:opacity-60">
                       {uploadingPlans ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />}
                       Upload Cabinet Plan PDFs
                     </button>
@@ -401,7 +412,7 @@ function Panel({ title, subtitle, children, action }: { title: string; subtitle:
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45 }}
+      transition={{ type: "spring", stiffness: 340, damping: 32 }}
       className="rounded-2xl surface-card p-5 lg:p-6"
       style={{ boxShadow: CARD_SHADOW }}
     >
@@ -425,7 +436,7 @@ function TextField({ label, value, onChange, required = false }: { label: string
         required={required}
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="h-10 rounded-xl border border-border/50 bg-muted/10 px-3 text-sm text-foreground outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/15"
+        className="h-12 rounded-xl border border-border/50 bg-muted/10 px-3 text-base text-foreground outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/15 sm:text-sm"
       />
     </label>
   )
@@ -494,7 +505,19 @@ function FilesTable({ files }: { files: CabinetBidFile[] }) {
   }
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-border/40">
+    <div className="overflow-hidden rounded-xl border border-border/40">
+      <div className="divide-y divide-border/40 md:hidden">
+        {files.map((file) => (
+          <article key={file.id} className="min-h-24 px-4 py-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0"><p className="truncate text-sm font-bold text-foreground">{file.original_filename}</p><p className="mt-1 text-[11px] text-muted-foreground">{file.file_type === "cabinet_workbook" ? "Workbook" : "Plan PDF"} · {formatBytes(file.size_bytes)}</p></div>
+              <span className="rounded-lg bg-primary/10 px-2 py-1 font-mono text-[9px] font-bold uppercase text-primary">{file.upload_status}</span>
+            </div>
+            <p className="mt-3 truncate font-mono text-[9px] text-muted-foreground/60">SHA256 {file.sha256_hash}</p>
+          </article>
+        ))}
+      </div>
+      <div className="hidden overflow-x-auto md:block">
       <table className="w-full min-w-[760px] text-left">
         <thead className="bg-muted/20 border-b border-border/40">
           <tr>
@@ -519,6 +542,7 @@ function FilesTable({ files }: { files: CabinetBidFile[] }) {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   )
 }
