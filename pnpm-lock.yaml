@@ -260,6 +260,9 @@ importers:
 
   services/documents:
     dependencies:
+      '@vulpine/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
       '@vulpine/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts

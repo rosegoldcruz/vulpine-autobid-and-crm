@@ -2,9 +2,10 @@
 
 Server-owned document and storage API extracted from the standalone Vulpine Drive application.
 
-The service is not called directly by browsers. Backoffice authenticates the user with ZITADEL,
-enforces canonical `drive.read` / `drive.write` capabilities, then proxies an integration-authenticated
-request to this service.
+Backoffice authenticates the user with ZITADEL and enforces canonical `drive.read` / `drive.write`
+capabilities. Metadata requests remain server-to-server. Backoffice issues short-lived, action/path-scoped
+transfer tickets for uploads, previews, and downloads so large file bytes do not pass through Vercel and
+the browser never receives the master integration credential.
 
 ## Runtime
 
@@ -22,6 +23,9 @@ SFTP_PORT
 SFTP_USERNAME
 SFTP_PASSWORD
 DATABASE_URL
+BACKOFFICE_ORIGIN
 ```
 
-All routes except `/health` require `x-vulpine-integration-key`. The browser never receives this key.
+Metadata routes require `x-vulpine-integration-key`. Transfer routes accept either that server-side key or
+a five-minute HMAC ticket scoped to the authenticated subject, action, and exact Drive path. Upload CORS is
+restricted to `BACKOFFICE_ORIGIN` (production default: `https://backoffice.vulpine.llc`).

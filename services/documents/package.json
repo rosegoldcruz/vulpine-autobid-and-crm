@@ -9,6 +9,7 @@
     "test": "node --import tsx --test tests/*.test.ts"
   },
   "dependencies": {
+    "@vulpine/auth": "workspace:*",
     "@vulpine/contracts": "workspace:*",
     "archiver": "^7.0.1",
     "express": "^5.1.0",

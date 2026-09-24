@@ -2,6 +2,7 @@ import type {
   ApiResponse,
   DirectoryListing,
   DriveRecentListing,
+  DriveUploadTicket,
   DriveUploadResult,
   VisionProjectManifest,
 } from "@vulpine/contracts"
@@ -152,11 +153,24 @@ export class DriveClient {
     })
   }
 
-  upload(path: string, files: readonly File[]) {
+  async upload(path: string, files: readonly File[]) {
+    const transfer = await this.call<DriveUploadTicket>("/upload-ticket", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ path }),
+    })
     const body = new FormData()
     body.append("path", path)
     files.forEach((file) => body.append("files", file))
-    return this.call<DriveUploadResult>("/upload", { method: "POST", body })
+    const response = await this.request(transfer.uploadUrl, { method: "POST", body, cache: "no-store" })
+    const result = (await response.json().catch(() => null)) as DriveUploadResult | { error?: { message?: string } } | null
+    if (!response.ok || !result || !("uploaded" in result)) {
+      throw new DriveClientError(
+        result && "error" in result ? result.error?.message || "Drive upload failed." : "Drive upload failed.",
+        "DRIVE_UPLOAD_FAILED",
+      )
+    }
+    return result
   }
 
   previewUrl(path: string) {

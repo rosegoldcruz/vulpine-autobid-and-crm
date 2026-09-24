@@ -32,6 +32,11 @@ export type DriveUploadResult = {
   uploaded: number
 }
 
+export type DriveUploadTicket = {
+  uploadUrl: string
+  expiresAt: string
+}
+
 export type DriveHealth = {
   status: "ok"
   service: "vulpine-documents"

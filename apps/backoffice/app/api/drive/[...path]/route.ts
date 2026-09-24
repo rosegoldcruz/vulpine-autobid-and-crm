@@ -1,5 +1,6 @@
 import { normalizeCorrelationId, VULPINE_INTEGRATION_AUTH_HEADER, type ApiErrorCode } from "@vulpine/contracts"
 import { optionalServerEnv, serverEnvNames } from "@vulpine/config"
+import { signDriveTransferTicket, type DriveTransferAction } from "@vulpine/auth"
 import type { Capability } from "@vulpine/permissions"
 import { apiError, apiSuccess } from "@/lib/api-response"
 import { requireCapability } from "@/lib/require-capability"
@@ -10,7 +11,7 @@ const routeRules = [
   { method: "GET", path: "files", capability: "drive.read", upstreamPath: "/files", binary: false },
   { method: "GET", path: "recent", capability: "drive.read", upstreamPath: "/recent", binary: false },
   { method: "POST", path: "access", capability: "drive.read", upstreamPath: "/access", binary: false },
-  { method: "POST", path: "upload", capability: "drive.write", upstreamPath: "/upload", binary: false },
+  { method: "POST", path: "upload-ticket", capability: "drive.write", upstreamPath: "/upload", binary: false },
   { method: "GET", path: "preview", capability: "drive.read", upstreamPath: "/preview", binary: true },
   { method: "GET", path: "download", capability: "drive.read", upstreamPath: "/download", binary: true },
 ] as const satisfies ReadonlyArray<{
@@ -51,6 +52,34 @@ async function proxy(request: Request, context: RouteContext) {
   const upstreamUrl = new URL(rule.upstreamPath, `${baseUrl.toString().replace(/\/$/, "")}/`)
   incomingUrl.searchParams.forEach((value, key) => upstreamUrl.searchParams.append(key, value))
 
+  if (requestedPath === "upload-ticket") {
+    const body = await request.json().catch(() => null) as { path?: unknown } | null
+    const transferPath = typeof body?.path === "string" && body.path.startsWith("/") ? body.path : null
+    if (!transferPath) return apiError("VALIDATION_ERROR", "A valid Drive path is required.", correlationId, 400)
+    const expiresAt = Date.now() + 5 * 60_000
+    const ticket = signDriveTransferTicket({
+      action: "upload",
+      path: transferPath,
+      subject: authorization.session.user.id || authorization.session.user.email || "authenticated-user",
+      expiresAt,
+    }, integrationToken)
+    upstreamUrl.searchParams.set("path", transferPath)
+    upstreamUrl.searchParams.set("ticket", ticket)
+    return apiSuccess({ uploadUrl: upstreamUrl.toString(), expiresAt: new Date(expiresAt).toISOString() }, correlationId)
+  }
+
+  if (rule.binary) {
+    const transferPath = incomingUrl.searchParams.get("path")
+    if (!transferPath) return apiError("VALIDATION_ERROR", "A valid Drive path is required.", correlationId, 400)
+    const ticket = signDriveTransferTicket({
+      action: requestedPath as DriveTransferAction,
+      path: transferPath,
+      subject: authorization.session.user.id || authorization.session.user.email || "authenticated-user",
+    }, integrationToken)
+    upstreamUrl.searchParams.set("ticket", ticket)
+    return Response.redirect(upstreamUrl, 307)
+  }
+
   const headers = new Headers({
     "x-correlation-id": correlationId,
     "x-vulpine-actor": authorization.session.user.id || authorization.session.user.email || "authenticated-user",
@@ -66,15 +95,6 @@ async function proxy(request: Request, context: RouteContext) {
       body: request.method === "GET" || request.method === "HEAD" ? undefined : await request.arrayBuffer(),
       cache: "no-store",
     })
-
-    if (rule.binary && upstream.ok) {
-      const responseHeaders = new Headers({ "x-correlation-id": correlationId })
-      for (const name of ["content-type", "content-length", "content-disposition", "cache-control"]) {
-        const value = upstream.headers.get(name)
-        if (value) responseHeaders.set(name, value)
-      }
-      return new Response(upstream.body, { status: upstream.status, headers: responseHeaders })
-    }
 
     const text = await upstream.text()
     let body: unknown = null
