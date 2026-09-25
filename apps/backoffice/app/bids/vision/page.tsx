@@ -5,7 +5,7 @@ import { authConfigured, authOptions } from "@/lib/auth"
 import { visibleSectionsForRoles } from "@/lib/backoffice-access"
 import { hasCapability } from "@vulpine/permissions"
 
-export const metadata = { title: "Vision | Vulpine Backoffice" }
+export const metadata = { title: "Cabinet Brain | Vulpine Backoffice" }
 export const dynamic = "force-dynamic"
 
 export default async function VisionPage() {

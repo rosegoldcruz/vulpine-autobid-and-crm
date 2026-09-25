@@ -110,7 +110,7 @@ const NAV_GROUPS: NavGroup[] = [
       { id: "revenue", label: "Revenue", icon: DollarSign },
       { id: "autobid", label: "Bid Engine", icon: Wrench },
       { id: "bidstracker", label: "Bids Tracker", icon: BarChart3 },
-      { id: "vision", label: "Vision", icon: ScanLine },
+      { id: "vision", label: "Cabinet Brain", icon: ScanLine },
       { id: "emailblaster", label: "Email Blaster", icon: Mail },
     ],
   },
@@ -1264,14 +1264,14 @@ export default function VulpineCommandCenter({
           </main>
 
           {/* Footer */}
-          <footer className="hidden border-t border-border/40 lg:block lg:shrink-0">
+          <footer className={`hidden border-t border-border/40 lg:shrink-0 ${activeSection === "vision" ? "lg:hidden" : "lg:block"}`}>
             <div className="px-5 lg:px-8 xl:px-10 py-4">
               <div className="flex items-center justify-between text-[11px] text-muted-foreground font-sans">
                 <div className="flex items-center gap-2">
                   <div className="size-2 rounded-full bg-fin-gain animate-pulse-soft" />
                   <span className="font-medium">Vulpine Command Center — Shell</span>
                 </div>
-                <span className="font-mono text-muted-foreground/60">v0.2.0 — Bids, Vision &amp; Drive live</span>
+                <span className="font-mono text-muted-foreground/60">v0.2.0 — Bids, Cabinet Brain &amp; Drive live</span>
               </div>
             </div>
           </footer>
