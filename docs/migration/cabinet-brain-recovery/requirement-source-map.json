@@ -1,0 +1,479 @@
+{
+  "schemaVersion": 1,
+  "auditedAt": "2026-09-25",
+  "sourceRoot": "/opt/vulpine-vision",
+  "productionRoot": "/opt/vulpine-platform/apps/backoffice",
+  "statusPolicy": "Statuses report verified source evidence; PARTIAL and external blockers are not promoted to VERIFIED by integration alone.",
+  "requirements": [
+    {
+      "id": 1,
+      "requirement": "Controlled BidJob Workflow State Machine",
+      "implementationFiles": ["types/canonical.ts", "domain/canonical-workflow.ts", "lib/autobidder/services/canonical-bid-service.ts", "lib/autobidder/db/migrations.ts"],
+      "tests": ["tests/canonical-workflow.test.ts", "tests/canonical-bid-service.integration.test.ts"],
+      "dependencies": ["node:sqlite", "authorization"],
+      "databaseChanges": ["bid_jobs.workflow_state", "workflow_events", "approvals", "audit_events"],
+      "auditStatus": "PARTIAL",
+      "gap": "Rejected workflow-event inserts can roll back with the failed transaction, and pre-transition assertion failures leave no durable rejection audit."
+    },
+    {
+      "id": 2,
+      "requirement": "Authoritative Cabinet Workbook Ingestion",
+      "implementationFiles": ["lib/autobidder/services/workbook-parser.ts", "lib/autobidder/services/workflow-service.ts", "lib/autobidder/services/upload-ingestion.ts", "lib/autobidder/services/canonical-bid-service.ts", "app/api/jobs/[id]/catalog/route.ts", "app/api/workbook/route.ts"],
+      "tests": ["tests/workbook-parser.test.ts", "tests/canonical-bid-service.integration.test.ts", "tests/phase-zero-routes.integration.test.ts"],
+      "dependencies": ["xlsx", "file store", "trusted principal"],
+      "databaseChanges": ["catalog_workbooks", "catalog_skus"],
+      "auditStatus": "PARTIAL",
+      "gap": "Raw row JSON reconstructs normalized known fields instead of preserving every original cell; there is no explicit XLS fixture or authoritative-workbook selection UI."
+    },
+    {
+      "id": 3,
+      "requirement": "Cabinet Plan Classification Agent",
+      "implementationFiles": ["lib/autobidder/services/pdf-service.ts", "lib/autobidder/services/cabinet-vision-provider.ts", "lib/autobidder/services/workflow-service.ts", "app/api/plan-sheets/[id]/route.ts", "components/autobidder/blueprint-studio.tsx"],
+      "tests": ["tests/pdf-classifier.test.ts", "tests/cabinet-vision-provider.test.ts", "tests/phase-zero-routes.integration.test.ts"],
+      "dependencies": ["multimodal provider", "PDF text fallback", "PDF raster pipeline"],
+      "databaseChanges": ["plan_sheets classification/review fields", "vision_evidence"],
+      "auditStatus": "VERIFIED_WITH_CAVEAT",
+      "gap": "No live configured-provider network test; image-only fallback correctly requires review."
+    },
+    {
+      "id": 4,
+      "requirement": "Cabinet Page Extraction Agent",
+      "implementationFiles": ["lib/autobidder/services/cabinet-vision-provider.ts", "lib/autobidder/services/cabinet-vision-agent-service.ts", "lib/autobidder/services/canonical-bid-service.ts"],
+      "tests": ["tests/cabinet-vision-provider.test.ts", "tests/canonical-bid-service.integration.test.ts"],
+      "dependencies": ["vision JSON schema", "page renders", "plan evidence"],
+      "databaseChanges": ["vision_evidence", "unit_types", "cabinet_instances", "takeoff_lines"],
+      "auditStatus": "VERIFIED_WITH_CAVEAT",
+      "gap": "Provider-shaped extraction is persisted in integration tests, but no live provider is invoked."
+    },
+    {
+      "id": 5,
+      "requirement": "Unit Mix Agent",
+      "implementationFiles": ["lib/autobidder/compiler/unit-mix.ts", "lib/autobidder/services/canonical-bid-service.ts", "components/autobidder/canonical-actions-panel.tsx"],
+      "tests": ["tests/compiler-unit-mix.test.ts", "tests/canonical-bid-service.integration.test.ts"],
+      "dependencies": ["reviewed schedule/matrix/floor-plan evidence"],
+      "databaseChanges": ["unit_types", "unit_mix_entries", "vision_evidence"],
+      "auditStatus": "VERIFIED",
+      "gap": "Unit-mix entries are project-scoped, so multiple bid jobs in one project can collide."
+    },
+    {
+      "id": 6,
+      "requirement": "Mandatory Human Unit Mix Verification",
+      "implementationFiles": ["lib/autobidder/services/canonical-bid-service.ts", "app/api/jobs/[id]/unit-mix/verify/route.ts", "lib/autobidder/auth/authorization.ts", "components/autobidder/canonical-actions-panel.tsx"],
+      "tests": ["tests/compiler-unit-mix.test.ts", "tests/canonical-bid-service.integration.test.ts", "tests/phase-zero-routes.integration.test.ts"],
+      "dependencies": ["actor permissions", "compiled unit mix", "approval persistence"],
+      "databaseChanges": ["unit_mix_entries approval fields", "approvals", "audit_events"],
+      "auditStatus": "VERIFIED",
+      "gap": null
+    },
+    {
+      "id": 7,
+      "requirement": "Per-Unit Cabinet Takeoff Agent",
+      "implementationFiles": ["lib/autobidder/services/cabinet-vision-provider.ts", "lib/autobidder/services/canonical-bid-service.ts", "app/api/jobs/[id]/takeoff/route.ts", "app/api/jobs/[id]/takeoff/approve/route.ts", "components/autobidder/canonical-actions-panel.tsx"],
+      "tests": ["tests/cabinet-vision-provider.test.ts", "tests/canonical-bid-service.integration.test.ts"],
+      "dependencies": ["cabinet evidence", "verified unit types", "human review"],
+      "databaseChanges": ["cabinet_instances", "takeoff_lines", "approvals", "audit_events"],
+      "auditStatus": "PARTIAL",
+      "gap": "The provider retains richer detail than the human takeoff input/UI, and takeoff approval uses a generic pricing approval type."
+    },
+    {
+      "id": 8,
+      "requirement": "Deterministic SKU Mapping Agent",
+      "implementationFiles": ["lib/autobidder/compiler/sku-mapper.ts", "lib/autobidder/services/canonical-bid-service.ts", "app/api/jobs/[id]/mappings/resolve/route.ts", "components/autobidder/canonical-actions-panel.tsx"],
+      "tests": ["tests/compiler-sku-mapper.test.ts", "tests/canonical-bid-service.integration.test.ts", "tests/integration-auth-routes.test.ts"],
+      "dependencies": ["approved takeoff", "authoritative catalog", "actor approval"],
+      "databaseChanges": ["sku_mappings", "catalog_skus", "audit_events"],
+      "auditStatus": "VERIFIED",
+      "gap": null
+    },
+    {
+      "id": 9,
+      "requirement": "Multifamily Quantity Compiler",
+      "implementationFiles": ["lib/autobidder/compiler/estimate.ts", "lib/autobidder/compiler/invariants.ts", "lib/autobidder/services/canonical-bid-service.ts", "app/api/jobs/[id]/estimate/route.ts"],
+      "tests": ["tests/compiler-estimate.test.ts", "tests/canonical-bid-service.integration.test.ts"],
+      "dependencies": ["verified unit mix", "approved takeoff", "resolved mappings", "catalog costs"],
+      "databaseChanges": ["estimate_lines", "audit_events"],
+      "auditStatus": "PARTIAL",
+      "gap": "Deterministic cabinet/filler/panel/accessory math works; freight, installation, tax, hardware, assembly and generic approved-charge compilation are absent."
+    },
+    {
+      "id": 10,
+      "requirement": "QA Hard-Stop Agent",
+      "implementationFiles": ["lib/autobidder/compiler/qa.ts", "lib/autobidder/services/canonical-bid-service.ts", "app/api/jobs/[id]/qa/route.ts", "app/api/jobs/[id]/qa/approve/route.ts", "components/autobidder/qa-panel.tsx"],
+      "tests": ["tests/compiler-qa.test.ts", "tests/canonical-bid-service.integration.test.ts"],
+      "dependencies": ["compiled estimate", "provenance", "QA approval scopes"],
+      "databaseChanges": ["qa_results", "approvals", "audit_events", "bid_jobs.workflow_state"],
+      "auditStatus": "VERIFIED",
+      "gap": "Warning/information infrastructure exists, but the compiler primarily emits critical hard stops and summary notes."
+    },
+    {
+      "id": 11,
+      "requirement": "Review and Resolution Workspace",
+      "implementationFiles": ["components/autobidder/workspace-client.tsx", "components/autobidder/canonical-actions-panel.tsx", "components/autobidder/review-table.tsx", "components/autobidder/qa-panel.tsx", "components/autobidder/project-comments-panel.tsx", "app/api/jobs/[id]/workspace/route.ts"],
+      "tests": ["tests/canonical-bid-service.integration.test.ts", "tests/project-comments.test.ts", "tests/viewer-evidence-notifications.test.ts", "scripts/browser-qa.mjs"],
+      "dependencies": ["workspace snapshot", "blueprint routes", "comments service"],
+      "databaseChanges": ["project_comments", "approvals", "audit_events"],
+      "auditStatus": "PARTIAL",
+      "gap": "Approval/audit history is not rendered, and qa_failed lacks a clear correction rollback/remediation path."
+    },
+    {
+      "id": 12,
+      "requirement": "Full Evidence Provenance",
+      "implementationFiles": ["lib/autobidder/compiler/provenance.ts", "lib/autobidder/services/canonical-bid-service.ts", "app/api/jobs/[id]/provenance/route.ts", "components/autobidder/review-table.tsx", "components/autobidder/blueprint-studio.tsx"],
+      "tests": ["tests/compiler-provenance.test.ts", "tests/canonical-bid-service.integration.test.ts", "tests/export-snapshot.test.ts", "tests/export-artifact-service.test.ts"],
+      "dependencies": ["canonical relational links"],
+      "databaseChanges": ["relational links across estimate, mapping, takeoff, unit mix, evidence, plan, source and catalog tables"],
+      "auditStatus": "BACKEND_VERIFIED_UI_PARTIAL",
+      "gap": "Backend full traces and broken-link detection work; UI presents source navigation and aggregates rather than every line-by-line provenance chain."
+    },
+    {
+      "id": 13,
+      "requirement": "High-Resolution Server-Side PDF Rasterization",
+      "implementationFiles": ["lib/autobidder/ingestion/pdf-raster-service.ts", "lib/autobidder/services/workflow-service.ts", "lib/autobidder/storage/file-store.ts"],
+      "tests": ["tests/ingestion-pdf-raster.test.ts", "tests/phase-zero-routes.integration.test.ts"],
+      "dependencies": ["pdfjs-dist", "canvas", "binary storage"],
+      "databaseChanges": ["plan_sheets raster metadata", "source_documents"],
+      "auditStatus": "VERIFIED",
+      "gap": "Workflow requests 144 DPI although the service supports higher bounded values."
+    },
+    {
+      "id": 14,
+      "requirement": "Complete Plan Set, ZIP and Folder Ingestion",
+      "implementationFiles": ["lib/autobidder/ingestion/manifest.ts", "lib/autobidder/ingestion/archive.ts", "lib/autobidder/services/upload-ingestion.ts", "app/api/uploads/route.ts", "components/autobidder/ingestion-panel.tsx"],
+      "tests": ["tests/ingestion-manifest.test.ts", "tests/ingestion-archive.test.ts", "tests/phase-zero-routes.integration.test.ts"],
+      "dependencies": ["adm-zip", "directory entries", "SHA-256", "trusted principal"],
+      "databaseChanges": ["ingestion_manifests", "ingestion_manifest_entries", "source_documents"],
+      "auditStatus": "VERIFIED_WITH_CAVEAT",
+      "gap": "An unsafe ZIP member can fail the whole archive, and recursive browser-folder traversal lacks browser automation."
+    },
+    {
+      "id": 15,
+      "requirement": "Multi-File Upload Queue",
+      "implementationFiles": ["lib/autobidder/services/file-queue-service.ts", "lib/autobidder/services/workflow-service.ts", "app/api/jobs/[id]/file-queue/route.ts", "components/autobidder/ingestion-panel.tsx"],
+      "tests": ["tests/file-queue-service.test.ts", "tests/job-control-service.test.ts", "tests/processing-settings.test.ts"],
+      "dependencies": ["SQLite queue", "worker concurrency", "run controls"],
+      "databaseChanges": ["file_queue_items", "processing_settings", "job_runs", "progress_events"],
+      "auditStatus": "PARTIAL",
+      "gap": "Rows begin after the HTTP upload finishes; the uploading state and byte-level durable client-to-server progress are unused."
+    },
+    {
+      "id": 16,
+      "requirement": "Workflow-Oriented Workspace Layout",
+      "implementationFiles": ["components/autobidder/workspace-client.tsx", "components/autobidder/workspace-nav.tsx", "components/autobidder/ingestion-panel.tsx", "components/autobidder/workflow-panel.tsx", "components/autobidder/canonical-actions-panel.tsx", "components/autobidder/review-table.tsx", "components/autobidder/qa-panel.tsx", "components/autobidder/blueprint-studio.tsx", "app/globals.css"],
+      "tests": ["scripts/browser-qa.mjs", "docs/design/cabinet-brain-workspace-desktop.png", "docs/design/cabinet-brain-workspace-mobile.png", "tests/phase-zero-routes.integration.test.ts"],
+      "dependencies": ["React", "Next App Router", "workspace API", "Playwright"],
+      "databaseChanges": [],
+      "auditStatus": "VERIFIED_BUILD_PARTIAL_BROWSER_EVIDENCE",
+      "gap": "Screenshots and a browser script exist, but no retained machine-readable browser log independently proves the original zero-console-error claim."
+    },
+    {
+      "id": 17,
+      "requirement": "Blueprint Full-Screen Viewer",
+      "implementationFiles": ["components/autobidder/blueprint-studio.tsx", "components/autobidder/workspace-client.tsx", "app/api/plan-sheets/[id]/image/route.ts", "lib/autobidder/services/viewer-evidence-service.ts"],
+      "tests": ["tests/viewer-evidence-notifications.test.ts", "scripts/browser-qa.mjs"],
+      "dependencies": ["plan_sheets", "raster artifacts", "node:fs"],
+      "databaseChanges": ["plan_sheets render/page metadata"],
+      "auditStatus": "PARTIAL",
+      "gap": "Controls exist, but browser QA does not exercise all controls and there is no explicit drag-pan."
+    },
+    {
+      "id": 18,
+      "requirement": "Architectural Measurement and Drawing Studio",
+      "implementationFiles": ["components/autobidder/blueprint-studio.tsx", "lib/autobidder/services/viewer-evidence-service.ts", "app/api/projects/[id]/measurements/route.ts", "app/api/measurements/[id]/route.ts"],
+      "tests": ["tests/viewer-evidence-notifications.test.ts"],
+      "dependencies": ["normalized coordinates", "project authorization"],
+      "databaseChanges": ["measurements"],
+      "auditStatus": "PARTIAL",
+      "gap": "UI conflates calibration and measurement points; presets duplicate a scale, and saved labeled measurements are not reloaded/rendered."
+    },
+    {
+      "id": 19,
+      "requirement": "Annotated Evidence Snippet Capture",
+      "implementationFiles": ["lib/autobidder/services/viewer-evidence-service.ts", "app/api/projects/[id]/evidence-snippets/route.ts", "lib/autobidder/exports/review-document.ts", "lib/autobidder/services/export-artifact-service.ts"],
+      "tests": ["tests/viewer-evidence-notifications.test.ts", "tests/export-review-document.test.ts", "tests/export-artifact-service.test.ts"],
+      "dependencies": ["node-canvas", "rendered plan page", "file store"],
+      "databaseChanges": ["evidence_snippets"],
+      "auditStatus": "PARTIAL",
+      "gap": "Real crop and PDF embedding code exists, but no direct route test proves a stored snippet is embedded."
+    },
+    {
+      "id": 20,
+      "requirement": "Real Processing Progress",
+      "implementationFiles": ["lib/autobidder/processing/progress.ts", "lib/autobidder/services/job-control-service.ts", "app/api/runs/[id]/progress/route.ts", "app/api/runs/[id]/events/route.ts", "components/autobidder/workspace-client.tsx", "components/autobidder/workflow-panel.tsx"],
+      "tests": ["tests/processing-control-progress.test.ts"],
+      "dependencies": ["SSE", "job-run ownership"],
+      "databaseChanges": ["progress_events", "job_runs progress/heartbeat fields"],
+      "auditStatus": "SUPPORTED",
+      "gap": null
+    },
+    {
+      "id": 21,
+      "requirement": "Automatic Retry and Recovery",
+      "implementationFiles": ["lib/autobidder/processing/retry-policy.ts", "lib/autobidder/services/workflow-service.ts", "lib/autobidder/services/file-queue-service.ts", "lib/autobidder/services/job-control-service.ts"],
+      "tests": ["tests/processing-retry.test.ts", "tests/file-queue-service.test.ts"],
+      "dependencies": ["transient error classification", "processing settings"],
+      "databaseChanges": ["job_runs retry/checkpoint fields", "file_queue_items retry fields"],
+      "auditStatus": "PARTIAL",
+      "gap": "checkpoint_json is never written, delay sleeps inside the request, and there is no durable scheduler or worker-restart recovery."
+    },
+    {
+      "id": 22,
+      "requirement": "Pause, Resume and Cancel Processing",
+      "implementationFiles": ["lib/autobidder/processing/execution-control.ts", "lib/autobidder/services/job-control-service.ts", "app/api/runs/[id]/control/route.ts", "components/autobidder/workflow-panel.tsx"],
+      "tests": ["tests/job-control-service.test.ts", "tests/processing-control-progress.test.ts"],
+      "dependencies": ["checkpoint polling", "run diagnostics"],
+      "databaseChanges": ["job_runs control/status fields"],
+      "auditStatus": "PARTIAL",
+      "gap": "A raster call cannot be interrupted, checkpoint_json is not persisted, and browser acceptance does not exercise controls."
+    },
+    {
+      "id": 23,
+      "requirement": "Stalled Job Detection",
+      "implementationFiles": ["lib/autobidder/processing/stall-detection.ts", "lib/autobidder/services/job-control-service.ts", "app/api/runs/[id]/diagnostics/route.ts"],
+      "tests": ["tests/processing-eta-stall.test.ts"],
+      "dependencies": ["heartbeats", "stall threshold"],
+      "databaseChanges": ["job_runs heartbeat/status fields"],
+      "auditStatus": "PARTIAL",
+      "gap": "Stall classification runs only when diagnostics are requested; there is no watchdog."
+    },
+    {
+      "id": 24,
+      "requirement": "Honest Estimated Time Remaining",
+      "implementationFiles": ["lib/autobidder/processing/eta.ts", "lib/autobidder/services/job-control-service.ts", "components/autobidder/workflow-panel.tsx"],
+      "tests": ["tests/processing-eta-stall.test.ts"],
+      "dependencies": ["persisted progress samples"],
+      "databaseChanges": [],
+      "auditStatus": "SUPPORTED",
+      "gap": null
+    },
+    {
+      "id": 25,
+      "requirement": "Persistent Processing Settings",
+      "implementationFiles": ["lib/autobidder/processing/settings.ts", "app/api/processing-settings/route.ts", "components/autobidder/processing-settings-panel.tsx"],
+      "tests": ["tests/processing-settings.test.ts"],
+      "dependencies": ["authenticated principal", "validation schemas"],
+      "databaseChanges": ["processing_settings"],
+      "auditStatus": "SUPPORTED",
+      "gap": null
+    },
+    {
+      "id": 26,
+      "requirement": "Error Diagnostics",
+      "implementationFiles": ["lib/autobidder/api/errors.ts", "lib/autobidder/api/response.ts", "lib/autobidder/services/job-control-service.ts", "app/api/runs/[id]/diagnostics/route.ts", "components/autobidder/workflow-panel.tsx"],
+      "tests": ["tests/phase-zero-routes.integration.test.ts", "tests/processing-control-progress.test.ts"],
+      "dependencies": ["correlation IDs", "run/file failure records"],
+      "databaseChanges": ["job_runs error fields", "file_queue_items failure fields", "audit_events"],
+      "auditStatus": "PARTIAL",
+      "gap": "Diagnostics omit logs and stack traces, and several catch paths still suppress errors."
+    },
+    {
+      "id": 27,
+      "requirement": "Real Database Persistence",
+      "implementationFiles": ["lib/autobidder/db/database.ts", "lib/autobidder/db/migrations.ts", "lib/autobidder/storage/file-store.ts"],
+      "tests": ["tests/database-persistence.test.ts", "tests/phase-zero-routes.integration.test.ts"],
+      "dependencies": ["node:sqlite", "local filesystem"],
+      "databaseChanges": ["schema_migrations", "canonical/run/artifact/provider/analytics tables", "SQLite WAL"],
+      "auditStatus": "PARTIAL",
+      "gap": "Single-host restart persistence works; machine-change durability requires externally managed backup or mounted storage."
+    },
+    {
+      "id": 28,
+      "requirement": "localStorage Session Persistence",
+      "implementationFiles": ["components/autobidder/workspace-client.tsx", "src/components/ChatWidget.tsx"],
+      "tests": ["scripts/browser-qa.mjs", "tests/phase-zero-routes.integration.test.ts"],
+      "dependencies": ["server-authoritative workspace endpoint"],
+      "databaseChanges": [],
+      "auditStatus": "SUPPORTED",
+      "gap": null
+    },
+    {
+      "id": 29,
+      "requirement": "Authentication and Authorization",
+      "implementationFiles": ["lib/autobidder/auth/session.ts", "lib/autobidder/auth/authorization.ts", "lib/autobidder/auth/resource-access.ts", "lib/autobidder/auth/request-principal.ts", "lib/platform/trusted-principal.ts", "lib/platform/integration-auth.ts", "middleware.ts"],
+      "tests": ["tests/authorization.test.ts", "tests/integration-auth.test.ts", "tests/integration-auth-routes.test.ts", "tests/trusted-principal.test.ts"],
+      "dependencies": ["HMAC session", "signed Backoffice principal", "organization roles"],
+      "databaseChanges": ["projects.organization_id", "actor IDs on approvals/audit/comments"],
+      "auditStatus": "SUPPORTED_AFTER_RECOVERY",
+      "gap": "Live ZITADEL login and cross-tenant denial must be reverified through the production Backoffice gateway."
+    },
+    {
+      "id": 30,
+      "requirement": "Project-Aware Cabinet Brain Chat",
+      "implementationFiles": ["lib/autobidder/services/project-assistant-service.ts", "lib/autobidder/assistant/context.ts", "lib/autobidder/assistant/tools.ts", "app/api/chat/route.ts", "src/components/ChatWidget.tsx"],
+      "tests": ["tests/project-assistant.test.ts", "tests/project-assistant-routes.test.ts", "tests/project-assistant-support.test.ts"],
+      "dependencies": ["canonical snapshot", "LLM fallback", "citation policy"],
+      "databaseChanges": ["audit and conversation-related records"],
+      "auditStatus": "SUPPORTED_WITH_LIMITATIONS",
+      "gap": "Not every question type is routed, and one citation adapter can emit an evidence ID as sourceDocument with page zero."
+    },
+    {
+      "id": 31,
+      "requirement": "Repo and Product-Aware Engineering Assistant",
+      "implementationFiles": ["lib/autobidder/services/engineering-assistant-service.ts", "app/api/assistant/engineering/route.ts", "components/autobidder/processing-settings-panel.tsx"],
+      "tests": [],
+      "dependencies": ["bounded filesystem paths", "database/provider summaries"],
+      "databaseChanges": [],
+      "auditStatus": "PARTIAL",
+      "gap": "The inspection surface is fixed and has no dedicated automated test; it does not dynamically inspect logs, stacks or history."
+    },
+    {
+      "id": 32,
+      "requirement": "Prompt Optimization Button",
+      "implementationFiles": ["lib/autobidder/assistant/prompt-optimizer.ts", "app/api/assistant/optimize/route.ts", "src/components/ChatWidget.tsx"],
+      "tests": ["tests/project-assistant-routes.test.ts", "tests/project-assistant.test.ts"],
+      "dependencies": ["authorized project context"],
+      "databaseChanges": [],
+      "auditStatus": "SUPPORTED",
+      "gap": null
+    },
+    {
+      "id": 33,
+      "requirement": "Two-Way Voice Assistant",
+      "implementationFiles": ["src/components/ChatWidget.tsx", "app/api/chat/voice/session/route.ts", "lib/autobidder/services/chat-service.ts", "lib/autobidder/services/llm-service.ts"],
+      "tests": [],
+      "dependencies": ["WebRTC realtime session", "browser speech fallback", "project chat"],
+      "databaseChanges": [],
+      "auditStatus": "PARTIAL",
+      "gap": "Voice has no automated tests, and the fallback provider state can be optimistic without verifying XAI configuration."
+    },
+    {
+      "id": 34,
+      "requirement": "Cabinet Data Export Agent",
+      "implementationFiles": ["lib/autobidder/exports/json.ts", "lib/autobidder/exports/csv.ts", "lib/autobidder/exports/xlsx.ts", "lib/autobidder/exports/snapshot.ts", "lib/autobidder/services/export-artifact-service.ts", "app/api/jobs/[id]/export/route.ts", "app/api/exports/[id]/route.ts"],
+      "tests": ["tests/export-serializers.test.ts", "tests/export-snapshot.test.ts", "tests/export-artifact-service.test.ts"],
+      "dependencies": ["approved canonical data", "file store", "artifact hash"],
+      "databaseChanges": ["export_artifacts", "approvals", "audit_events"],
+      "auditStatus": "SUPPORTED",
+      "gap": null
+    },
+    {
+      "id": 35,
+      "requirement": "Compiled Multi-Page Review PDF",
+      "implementationFiles": ["lib/autobidder/exports/review-document.ts", "lib/autobidder/services/export-artifact-service.ts"],
+      "tests": ["tests/export-review-document.test.ts", "tests/export-artifact-service.test.ts"],
+      "dependencies": ["PDFKit", "snippet artifacts", "export approval"],
+      "databaseChanges": ["export_artifacts", "evidence_snippets"],
+      "auditStatus": "SUPPORTED_WITH_TEST_GAP",
+      "gap": "No test proves that an actually stored snippet image is embedded into a generated review PDF."
+    },
+    {
+      "id": 36,
+      "requirement": "Bid Outreach Quick Action",
+      "implementationFiles": ["lib/backoffice/service.ts", "lib/backoffice/provider-service.ts", "components/autobidder/bid-outreach-panel.tsx", "app/api/backoffice/projects/[id]/outreach/route.ts"],
+      "tests": ["tests/backoffice-routes.test.ts", "tests/backoffice-service.integration.test.ts", "scripts/browser-qa.mjs"],
+      "dependencies": ["approved estimate/export", "email provider"],
+      "databaseChanges": ["outreach_activities", "provider_snapshots", "operational_events"],
+      "auditStatus": "SUPPORTED_EXTERNAL_BLOCKED",
+      "gap": "Live delivery remains blocked without an email provider."
+    },
+    {
+      "id": 37,
+      "requirement": "Pipeline Liquidity Dashboard",
+      "implementationFiles": ["lib/backoffice/service.ts", "app/api/backoffice/analytics/route.ts", "components/autobidder/backoffice-dashboard.tsx"],
+      "tests": ["tests/backoffice-analytics.test.ts", "tests/backoffice-routes.test.ts"],
+      "dependencies": ["persisted deals/events"],
+      "databaseChanges": ["deals", "operational_events"],
+      "auditStatus": "SUPPORTED",
+      "gap": null
+    },
+    {
+      "id": 38,
+      "requirement": "Thirty-Day Operating Trend",
+      "implementationFiles": ["lib/backoffice/analytics.ts", "lib/backoffice/service.ts", "app/api/backoffice/analytics/route.ts", "components/autobidder/backoffice-dashboard.tsx"],
+      "tests": ["tests/backoffice-analytics.test.ts", "tests/backoffice-routes.test.ts"],
+      "dependencies": ["timestamped operational events"],
+      "databaseChanges": ["operational_events"],
+      "auditStatus": "PARTIAL",
+      "gap": "Rolling calculations work, but several workflow milestones do not automatically emit operational events."
+    },
+    {
+      "id": 39,
+      "requirement": "Outreach Velocity Trend Indicator",
+      "implementationFiles": ["lib/backoffice/analytics.ts", "lib/backoffice/service.ts", "components/autobidder/backoffice-dashboard.tsx"],
+      "tests": ["tests/backoffice-analytics.test.ts"],
+      "dependencies": ["outreach activity events"],
+      "databaseChanges": ["outreach_activities", "operational_events"],
+      "auditStatus": "SUPPORTED",
+      "gap": null
+    },
+    {
+      "id": 40,
+      "requirement": "Completed Bid Value Visualization",
+      "implementationFiles": ["lib/backoffice/analytics.ts", "lib/backoffice/service.ts", "app/api/backoffice/analytics/route.ts", "components/autobidder/backoffice-dashboard.tsx", "src/components/CompletedJobsChart.tsx"],
+      "tests": ["tests/backoffice-analytics.test.ts", "tests/backoffice-routes.test.ts"],
+      "dependencies": ["persisted deals", "validated grouping/filtering"],
+      "databaseChanges": ["deal bid/expected/realized value and filter fields"],
+      "auditStatus": "PARTIAL",
+      "gap": "Backend grouping and value separation work; the active dashboard renders a table rather than the requested chart."
+    },
+    {
+      "id": 41,
+      "requirement": "Company Intelligence and ZoomInfo Enrichment",
+      "implementationFiles": ["lib/backoffice/providers/company-intelligence.ts", "lib/backoffice/provider-service.ts", "app/api/backoffice/projects/[id]/company-intelligence/route.ts", "components/autobidder/qa-panel.tsx"],
+      "tests": ["tests/backoffice-providers-logistics.test.ts", "tests/backoffice-routes.test.ts"],
+      "dependencies": ["provider configuration", "project authorization"],
+      "databaseChanges": ["provider_snapshots"],
+      "auditStatus": "SUPPORTED_EXTERNAL_BLOCKED",
+      "gap": "Live provider credentials and calls are external and absent."
+    },
+    {
+      "id": 42,
+      "requirement": "Job Site and Supplier Map Grounding",
+      "implementationFiles": ["lib/backoffice/providers/maps.ts", "lib/backoffice/logistics.ts", "lib/backoffice/provider-service.ts", "app/api/backoffice/projects/[id]/logistics/route.ts"],
+      "tests": ["tests/backoffice-providers-logistics.test.ts", "tests/backoffice-routes.test.ts"],
+      "dependencies": ["maps provider", "job-site/supplier inputs"],
+      "databaseChanges": ["provider_snapshots", "freight_quotes"],
+      "auditStatus": "SUPPORTED_EXTERNAL_BLOCKED",
+      "gap": "Live map credentials and calls are external and absent."
+    },
+    {
+      "id": 43,
+      "requirement": "Queue Item Cancel and Remove Control",
+      "implementationFiles": ["lib/autobidder/services/file-queue-service.ts", "lib/autobidder/services/job-control-service.ts", "app/api/jobs/[id]/file-queue/route.ts", "app/api/runs/[id]/control/route.ts", "components/autobidder/ingestion-panel.tsx", "components/autobidder/workflow-panel.tsx"],
+      "tests": ["tests/file-queue-service.test.ts", "tests/job-control-service.test.ts"],
+      "dependencies": ["run/file transition rules"],
+      "databaseChanges": ["file_queue_items dismissal/status", "job_runs dismissal/status"],
+      "auditStatus": "PARTIAL",
+      "gap": "A canceled waiting file stays visible, active per-file removal is disabled, and only whole-run cancel is available."
+    },
+    {
+      "id": 44,
+      "requirement": "Processing Notifications",
+      "implementationFiles": ["lib/autobidder/services/notification-service.ts", "app/api/notifications/route.ts", "app/api/notifications/[id]/route.ts", "components/autobidder/notification-center.tsx"],
+      "tests": ["tests/viewer-evidence-notifications.test.ts", "scripts/browser-qa.mjs"],
+      "dependencies": ["workflow/upload/QA/run events", "authenticated recipient"],
+      "databaseChanges": ["notifications"],
+      "auditStatus": "PARTIAL",
+      "gap": "No retry-start notification, no polling/SSE refresh, and no aria-live region."
+    },
+    {
+      "id": 45,
+      "requirement": "Bento-Style Workspace Design",
+      "implementationFiles": ["app/globals.css", "components/autobidder/workspace-client.tsx", "components/autobidder/workspace-nav.tsx", "components/autobidder/*"],
+      "tests": ["scripts/browser-qa.mjs", "docs/design/cabinet-brain-workspace-desktop.png", "docs/design/cabinet-brain-workspace-mobile.png"],
+      "dependencies": ["functional workflow components"],
+      "databaseChanges": [],
+      "auditStatus": "SUPPORTED",
+      "gap": null
+    },
+    {
+      "id": 46,
+      "requirement": "Generic Fix the Errors",
+      "implementationFiles": ["lib/autobidder/api/errors.ts", "lib/autobidder/api/response.ts", "lib/autobidder/ingestion/*", "docs/SECURITY_AUDIT.md"],
+      "tests": ["tests/phase-zero-routes.integration.test.ts", "full source lint/test/build/browser suites"],
+      "dependencies": ["npm audit", "typed errors", "runtime acceptance"],
+      "databaseChanges": [],
+      "auditStatus": "PARTIAL",
+      "gap": "Swallowed catches and eight recorded residual advisories remain; the recovery must rerun acceptance in the real production path."
+    },
+    {
+      "id": 47,
+      "requirement": "Browser-Based Result Persistence",
+      "implementationFiles": ["components/autobidder/workspace-client.tsx", "lib/autobidder/services/project-comment-service.ts", "lib/autobidder/db/database.ts", "lib/autobidder/storage/file-store.ts"],
+      "tests": ["scripts/browser-qa.mjs", "tests/phase-zero-routes.integration.test.ts", "tests/database-persistence.test.ts"],
+      "dependencies": ["pointer-only localStorage", "workspace endpoint", "persistent SQLite/file store"],
+      "databaseChanges": ["canonical/comment/artifact state remains server-side"],
+      "auditStatus": "SUPPORTED",
+      "gap": null
+    }
+  ]
+}
