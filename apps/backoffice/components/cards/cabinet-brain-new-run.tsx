@@ -10,7 +10,6 @@ type OutputMode = "takeoff" | "workbook" | "priced"
 
 type Props = {
   onReady: (project: VisionProject, job: VisionJob | null) => void
-  onPreview: () => void
 }
 
 const permittedWrites = ["Summary package name", "Summary package quantity", "Unit/package sheets SKU column", "Unit/package sheets quantity column"]
@@ -18,8 +17,8 @@ const lockedFields = ["Workbook formulas", "Workbook formatting", "Hidden catalo
 
 function ModeCard({ id, active, title, description, locked, onSelect }: { id: OutputMode; active: boolean; title: string; description: string; locked?: boolean; onSelect: (id: OutputMode) => void }) {
   return (
-    <button type="button" onClick={() => locked ? toast.warning("Full Priced Bid remains protected", { description: "Pricing authorization and server-side execution contracts must exist before this mode can run." }) : onSelect(id)} className={`relative min-h-40 rounded-xl border p-4 text-left transition ${active ? "border-primary bg-primary/[0.09] shadow-[0_0_0_1px_rgba(45,212,191,.15)]" : "border-border/80 bg-background/25 hover:border-border"}`} aria-pressed={active}>
-      <span className={`mb-4 flex size-10 items-center justify-center rounded-lg border ${active ? "border-primary/30 bg-primary/10 text-primary" : "border-border bg-background/40 text-muted-foreground"}`}>{id === "takeoff" ? <FileText className="size-5" /> : id === "workbook" ? <FileSpreadsheet className="size-5" /> : <PackageCheck className="size-5" />}</span>
+    <button type="button" onClick={() => locked ? toast.warning("Full Priced Bid remains protected", { description: "Pricing authorization and server-side execution contracts must exist before this mode can run." }) : onSelect(id)} className={`relative min-h-28 rounded-xl border p-4 text-left transition sm:min-h-40 ${active ? "border-primary bg-primary/[0.09] shadow-[0_0_0_1px_rgba(45,212,191,.15)]" : "border-border/80 bg-background/25 hover:border-border"}`} aria-pressed={active}>
+      <span className={`mb-3 flex size-9 items-center justify-center rounded-lg border sm:mb-4 sm:size-10 ${active ? "border-primary/30 bg-primary/10 text-primary" : "border-border bg-background/40 text-muted-foreground"}`}>{id === "takeoff" ? <FileText className="size-5" /> : id === "workbook" ? <FileSpreadsheet className="size-5" /> : <PackageCheck className="size-5" />}</span>
       <span className="block text-sm font-black text-foreground">{title}</span>
       <span className="mt-1.5 block text-[10px] leading-4 text-muted-foreground">{description}</span>
       {locked ? <span className="mt-3 inline-flex items-center gap-1 rounded-md border border-amber-400/25 bg-amber-400/10 px-2 py-1 text-[9px] font-black text-amber-300"><LockKeyhole className="size-3" /> Requires authorization</span> : <span className={`absolute right-4 top-4 flex size-5 items-center justify-center rounded-full border ${active ? "border-primary bg-primary text-primary-foreground" : "border-muted-foreground"}`}>{active ? <Check className="size-3" /> : null}</span>}
@@ -27,7 +26,7 @@ function ModeCard({ id, active, title, description, locked, onSelect }: { id: Ou
   )
 }
 
-export function CabinetBrainNewRun({ onReady, onPreview }: Props) {
+export function CabinetBrainNewRun({ onReady }: Props) {
   const [projectName, setProjectName] = useState("New cabinet opportunity")
   const [drawingRevision, setDrawingRevision] = useState("Current issued set")
   const [productLine, setProductLine] = useState("Select after catalog ingestion")
@@ -81,7 +80,6 @@ export function CabinetBrainNewRun({ onReady, onPreview }: Props) {
       <div className="mx-auto max-w-[1420px]">
         <div className="mb-7 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div><h1 className="font-display text-3xl font-black tracking-tight sm:text-4xl">New Cabinet Brain Run</h1><p className="mt-1 text-sm text-muted-foreground">Set project identity, source files, output mode, and mutation boundaries before analysis begins.</p></div>
-          <button type="button" onClick={onPreview} className="flex min-h-11 items-center justify-center gap-2 rounded-lg border border-primary/25 bg-primary/10 px-4 text-xs font-black text-primary"><FileCheck2 className="size-4" /> Preview Plan Room</button>
         </div>
 
         <div className="mb-6 grid grid-cols-4 gap-2" aria-label="Run setup progress">

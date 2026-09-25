@@ -7,7 +7,7 @@ import { signOut } from "next-auth/react"
 import { motion, AnimatePresence } from "motion/react"
 import {
   LayoutDashboard, Users, Building2, DollarSign, Wrench, HardDrive,
-  Settings, ChevronRight, ChevronLeft, Bell, Search, X, Check, AlertTriangle, Info,
+  Settings, ChevronRight, ChevronLeft, Bell, X, Check, AlertTriangle, Info,
   Clock, LogOut, Activity, Zap, Shield, TrendingUp, FileText,
   GitBranch, Package, ClipboardCheck, CircleSlash, BarChart3,
   UserCircle, BellRing, Lock, Monitor, CreditCard, Mail, Send, ScanLine,
@@ -1194,9 +1194,6 @@ export default function VulpineCommandCenter({
 
           {/* Right actions */}
           <div className="flex items-center gap-1.5 ml-auto">
-            <button className="flex size-11 items-center justify-center rounded-xl hover:bg-accent/50" aria-label="Search">
-              <Search className="size-4 text-muted-foreground" />
-            </button>
             <div className="relative">
               <button
                 onClick={() => setNotificationsOpen((prev) => !prev)}

@@ -51,9 +51,7 @@ function envelope(data: unknown) {
 }
 
 async function verifyFrame(page: Page) {
-  await expect(page.getByRole("heading", { name: "Plan Room" })).toBeVisible()
-  await expect(page.getByText("Sample workspace", { exact: true })).toBeVisible()
-  await expect(page.getByRole("heading", { name: "Cabinet Intelligence" })).toBeVisible()
+  await expect(page.getByRole("heading", { name: "New Cabinet Brain Run" })).toBeVisible()
   await expect(page.locator("[data-nextjs-dialog], .vite-error-overlay, #webpack-dev-server-client-overlay")).toHaveCount(0)
   expect((await page.locator("body").innerText()).trim().length).toBeGreaterThan(100)
 }
@@ -61,20 +59,17 @@ async function verifyFrame(page: Page) {
 test("Vision route loads and API access fails closed without ZITADEL", async ({ page }) => {
   await page.goto("/bids/vision")
   await verifyFrame(page)
-  await page.getByRole("button", { name: "New run" }).click()
   await page.getByRole("button", { name: "Create authoritative project" }).click()
   await expect(page.getByText("Backoffice authentication is unavailable", { exact: false }).first()).toBeVisible()
 })
 
-test("Cabinet Brain sample supports evidence review decisions", async ({ page }) => {
+test("mobile More navigation opens the real module drawer", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
   await page.goto("/bids/vision")
   await verifyFrame(page)
-  await page.getByRole("button", { name: "Mark Custom" }).click()
-  await expect(page.getByText("Marked as custom millwork", { exact: true })).toBeVisible()
-  await expect(page.getByText("Custom scope", { exact: true })).toBeVisible()
-  await page.getByRole("button", { name: "Approve & Next" }).click()
-  await expect(page.getByText("Cabinet approved", { exact: true })).toBeVisible()
-  await expect(page.getByText("Verified", { exact: true })).toBeVisible()
+  await page.getByRole("button", { name: "More" }).click()
+  await expect(page.getByRole("heading", { name: "All modules" })).toBeVisible()
+  await expect(page.getByRole("button", { name: "Bids Tracker" })).toBeVisible()
 })
 
 test("Vision create, upload, process, refresh and responsive states render", async ({ page }) => {
@@ -88,8 +83,6 @@ test("Vision create, upload, process, refresh and responsive states render", asy
 
   await page.goto("/bids/vision")
   await verifyFrame(page)
-  await page.getByRole("button", { name: "New run" }).click()
-  await expect(page.getByRole("heading", { name: "New Cabinet Brain Run" })).toBeVisible()
   await page.getByLabel("Project *").fill("Riverside Commons")
   await page.getByRole("button", { name: "Create authoritative project" }).click()
   await expect(page.getByText("Project created", { exact: true })).toBeVisible()
@@ -99,14 +92,18 @@ test("Vision create, upload, process, refresh and responsive states render", asy
   ])
   await page.getByRole("button", { name: "Discover sources" }).click()
   await expect(page.getByText("Discovery complete", { exact: true })).toBeVisible()
-  await expect(page.getByRole("heading", { name: "Plan Room" })).toBeVisible()
+  await expect(page.getByRole("heading", { name: "Cabinet Brain" })).toBeVisible()
   await expect(page.getByText("Riverside Commons", { exact: true }).first()).toBeVisible()
-  await expect(page.getByText("Drawing preview is not available yet", { exact: true })).toBeVisible()
+  await expect(page.getByText("Drawing evidence is not available", { exact: true })).toBeVisible()
+  await page.getByRole("button", { name: "Cabinet Brain actions" }).click()
+  await expect(page.getByRole("heading", { name: "Cabinet Brain" }).last()).toBeVisible()
+  await expect(page.getByText("Run details and actions.", { exact: true })).toBeVisible()
+  await page.keyboard.press("Escape")
 
   const output = process.env.VISION_SCREENSHOT_DIR || test.info().outputDir
   await page.screenshot({ path: path.join(output, "vision-desktop.png"), fullPage: true })
   await page.setViewportSize({ width: 390, height: 844 })
   await page.waitForTimeout(700)
-  await expect(page.getByRole("heading", { name: "Plan Room" })).toBeVisible()
+  await expect(page.getByRole("heading", { name: "Cabinet Brain" })).toBeVisible()
   await page.screenshot({ path: path.join(output, "vision-mobile.png"), fullPage: true })
 })

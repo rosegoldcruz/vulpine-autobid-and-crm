@@ -4,9 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import {
   ChevronDown,
   CircleDollarSign,
-  Expand,
   Loader2,
-  MoreHorizontal,
   Pencil,
   Plus,
   RefreshCw,
@@ -194,7 +192,7 @@ export function BidsTrackerSection() {
 
   return (
     <div id="overview" className="flex min-h-[calc(100vh-4.5rem)] flex-col gap-5 pb-24 text-foreground lg:pb-0">
-      <Toaster position="bottom-center" theme="dark" richColors closeButton />
+      <Toaster position="top-center" theme="dark" richColors closeButton />
       <input ref={fileInputRef} type="file" accept="application/pdf" multiple className="hidden" onChange={(event) => void uploadFiles(event.target.files)} />
 
       <header className="surface-card rounded-2xl p-5 lg:p-6">
@@ -239,7 +237,7 @@ export function BidsTrackerSection() {
 
       {error && <div role="alert" className="rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-xs font-medium text-destructive-foreground">Bids Tracker unavailable: {error}</div>}
 
-      <section aria-label="Bid KPIs" className="scrollbar-none -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0">
+      <section aria-label="Bid KPIs" className="grid grid-cols-3 gap-2 md:gap-3">
         <KpiCard label="Closed Won" value={loading ? "…" : money(metrics.wonValue)} />
         <KpiCard label="Closed Lost" value={loading ? "…" : money(metrics.lostValue)} />
         <KpiCard label="Open Bids" value={loading ? "…" : money(metrics.openValue)} />
@@ -381,7 +379,7 @@ const fieldClass = "w-full border border-transparent bg-transparent py-1 text-[1
 const tooltipStyle = { background: "#191b20", border: "1px solid #343842", borderRadius: 8, boxShadow: "0 12px 30px rgba(0,0,0,.28)", color: "#f0f1f4", fontSize: 11 }
 
 function KpiCard({ label, value }: { label: string; value: string }) {
-  return <article className="surface-card relative min-h-[148px] min-w-[78vw] snap-start overflow-hidden rounded-2xl p-5 md:min-w-0"><div className="flex items-center justify-between"><h2 className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">{label}</h2><div className="flex items-center gap-3 text-muted-foreground/60"><MoreHorizontal className="size-4" /><Expand className="size-3.5" /></div></div><p className="flex min-h-[92px] items-center text-[34px] font-semibold tracking-[-0.035em] text-foreground sm:text-[40px] xl:text-[44px]">{value}</p></article>
+  return <article className="surface-card min-w-0 overflow-hidden rounded-2xl px-3 py-4 md:min-h-[148px] md:p-5"><h2 className="min-h-8 text-[9px] font-semibold uppercase leading-4 tracking-[0.06em] text-muted-foreground md:min-h-0 md:text-[11px] md:tracking-[0.08em]">{label}</h2><p className="mt-2 truncate text-lg font-black tracking-[-0.035em] text-foreground sm:text-2xl md:flex md:min-h-[92px] md:items-center md:text-[40px] xl:text-[44px]">{value}</p></article>
 }
 
 function BidEditDrawer({ bid, mutating, onClose, onSave, onDelete }: { bid: BidRecord; mutating: boolean; onClose: () => void; onSave: (input: UpdateBidInput) => Promise<void>; onDelete: () => Promise<void> }) {
@@ -425,7 +423,7 @@ function MobileField({ label, children }: { label: string; children: React.React
 const mobileFieldClass = "h-12 w-full rounded-xl border border-border/70 bg-background/60 px-3 text-base font-medium text-foreground outline-none focus:border-primary/50"
 
 function ChartPanel({ title, children, className = "" }: { title: string; children: React.ReactNode; className?: string }) {
-  return <article className={`surface-card overflow-hidden rounded-2xl ${className}`}><div className="flex items-center justify-between px-5 pt-5"><h2 className="font-display text-sm font-bold text-foreground">{title}</h2><div className="flex items-center gap-3 text-muted-foreground/60"><MoreHorizontal className="size-4" /><Expand className="size-3.5" /></div></div>{children}</article>
+  return <article className={`surface-card overflow-hidden rounded-2xl ${className}`}><div className="px-5 pt-5"><h2 className="font-display text-sm font-bold text-foreground">{title}</h2></div>{children}</article>
 }
 
 function StatusLegend({ data, mode }: { data: ReturnType<typeof buildBidDashboard>["status"]; mode: "value" | "count" }) {
