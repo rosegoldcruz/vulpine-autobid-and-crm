@@ -1,0 +1,26 @@
+{
+  "baseUrl": "https://backoffice.vulpine.llc",
+  "jobId": "edfaac41-2c88-4892-b18b-b45dfb8da418",
+  "canonicalState": "cabinet bid safe to send",
+  "refreshPersistence": true,
+  "nestedRoutes": {
+    "/": {
+      "status": 200,
+      "finalUrl": "https://backoffice.vulpine.llc/"
+    },
+    "/bids/vision?job=edfaac41-2c88-4892-b18b-b45dfb8da418": {
+      "status": 200,
+      "finalUrl": "https://backoffice.vulpine.llc/bids/vision?job=edfaac41-2c88-4892-b18b-b45dfb8da418"
+    },
+    "/bids/tracker": {
+      "status": 200,
+      "finalUrl": "https://backoffice.vulpine.llc/bids/tracker"
+    },
+    "/drive": {
+      "status": 200,
+      "finalUrl": "https://backoffice.vulpine.llc/drive"
+    }
+  },
+  "consoleErrors": [],
+  "failedResponses": []
+}

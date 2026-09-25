@@ -1,0 +1,44 @@
+{
+  "baseUrl": "https://backoffice.vulpine.llc",
+  "unauthenticated": {
+    "finalUrl": "https://backoffice.vulpine.llc/api/auth/signin?callbackUrl=/",
+    "redirectedToSignIn": true
+  },
+  "authenticated": {
+    "rootStatus": 200,
+    "rootUrl": "https://backoffice.vulpine.llc/",
+    "visionStatus": 200,
+    "visionUrl": "https://backoffice.vulpine.llc/bids/vision",
+    "projectsApiStatus": 200,
+    "title": "Cabinet Brain | Vulpine Backoffice",
+    "finalUrl": "https://backoffice.vulpine.llc/bids/vision"
+  },
+  "workflow": {
+    "projectName": "Live Cabinet Brain QA 1790368590580",
+    "canonicalState": "cabinet bid safe to send",
+    "renderedSheets": 1,
+    "refreshPersistence": true
+  },
+  "nestedRoutes": {
+    "/": {
+      "status": 200,
+      "finalUrl": "https://backoffice.vulpine.llc/"
+    },
+    "/bids/vision": {
+      "status": 200,
+      "finalUrl": "https://backoffice.vulpine.llc/bids/vision"
+    },
+    "/bids/tracker": {
+      "status": 200,
+      "finalUrl": "https://backoffice.vulpine.llc/bids/tracker"
+    },
+    "/drive": {
+      "status": 200,
+      "finalUrl": "https://backoffice.vulpine.llc/drive"
+    }
+  },
+  "consoleErrors": [
+    "Failed to load resource: net::ERR_NETWORK_CHANGED"
+  ],
+  "failedResponses": []
+}
