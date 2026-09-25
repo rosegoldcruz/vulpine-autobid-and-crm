@@ -1,6 +1,7 @@
 export const API_CONTRACT_VERSION = "2026-09-20" as const
 export const CORRELATION_ID_HEADER = "x-correlation-id" as const
 export const VULPINE_INTEGRATION_AUTH_HEADER = "x-vulpine-integration-key" as const
+export const VULPINE_PRINCIPAL_HEADER = "x-vulpine-principal" as const
 
 export type ApiMeta = {
   contractVersion: typeof API_CONTRACT_VERSION

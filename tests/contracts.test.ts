@@ -2,6 +2,7 @@ import assert from "node:assert/strict"
 import test from "node:test"
 import {
   API_CONTRACT_VERSION,
+  VULPINE_PRINCIPAL_HEADER,
   LEADS_VISION_HANDOFF_AUTH_HEADER,
   LEADS_VISION_HANDOFF_VERSION,
   leadsVisionHandoffRequestV1Schema,
@@ -11,6 +12,7 @@ import {
 
 test("API contract version is explicit", () => {
   assert.equal(API_CONTRACT_VERSION, "2026-09-20")
+  assert.equal(VULPINE_PRINCIPAL_HEADER, "x-vulpine-principal")
 })
 
 test("correlation IDs preserve valid callers and replace invalid input", () => {

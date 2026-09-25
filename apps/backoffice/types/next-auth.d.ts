@@ -8,6 +8,7 @@ declare module "next-auth" {
       id: string
       roles: VulpineRole[]
       capabilities: Capability[]
+      organizationId?: string
     }
   }
 }
@@ -16,5 +17,6 @@ declare module "next-auth/jwt" {
   interface JWT extends DefaultJWT {
     roles?: VulpineRole[]
     capabilities?: Capability[]
+    organizationId?: string
   }
 }

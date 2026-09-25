@@ -4,6 +4,7 @@ import ZitadelProvider from "next-auth/providers/zitadel"
 import {
   extractZitadelRolesFromAssignments,
   extractZitadelRolesForProject,
+  resolveZitadelOrganizationId,
   zitadelProjectRolesClaim,
   zitadelRoleClaimKeys,
   ZITADEL_API_AUDIENCE_SCOPE,
@@ -214,6 +215,17 @@ export const authOptions: NextAuthOptions = {
           : []
         token.roles = [...new Set([...claimRoles, ...assignmentRoles])]
         token.capabilities = capabilitiesForRoles(token.roles)
+        const organizationId = audience && typeof subject === "string"
+          ? resolveZitadelOrganizationId(
+              audience,
+              subject,
+              projectInspection?.userRoleAssignments ?? [],
+              profileClaims,
+              idTokenClaims,
+            )
+          : undefined
+        if (organizationId) token.organizationId = organizationId
+        else delete token.organizationId
 
         const audiences = new Set<string>()
         const scopes = new Set<string>(stringValues(account?.scope))
@@ -231,6 +243,7 @@ export const authOptions: NextAuthOptions = {
           roleNames: audience ? assignedRoleNames(audience, ...claimSources) : [],
           normalizedRoles: token.roles,
           normalizedCapabilities: token.capabilities,
+          organizationId: token.organizationId ?? null,
           organizations: audience ? assignedOrganizations(audience, ...claimSources) : [],
         }))
       }
@@ -243,6 +256,7 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.sub ?? ""
         session.user.roles = token.roles ?? []
         session.user.capabilities = capabilitiesForRoles(token.roles ?? [])
+        session.user.organizationId = token.organizationId
       }
       return session
     },
