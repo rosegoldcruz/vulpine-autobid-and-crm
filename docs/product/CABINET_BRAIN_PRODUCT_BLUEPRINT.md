@@ -610,10 +610,9 @@ Bids
     ├── Projects
     ├── New Run
     └── Project
-        ├── Sources
-        ├── Groups
-        ├── Drawings
-        ├── Takeoff
+        ├── Discover
+        ├── Inspect
+        ├── Resolve
         ├── Review
         ├── Compile
         └── QA
@@ -621,21 +620,63 @@ Bids
 
 Pricing and Proposal appear only when the execution mode enables Bid Engine functionality.
 
-### 15.1 New Run / Execution Contract
+The buyer-facing product story is:
 
-The first screen must force the operator to select identity, sources, scope, product line, output mode, and mutation boundary. Processing cannot begin until the contract is locked.
+```text
+Project
+  -> upload plans and approved catalog/workbook
+Discover
+  -> classify hundreds of pages and construct takeoff groups
+Inspect
+  -> review cabinet scope directly on plans and elevations
+Resolve
+  -> normalize dimensions and map catalog-valid SKUs
+Review
+  -> handle exceptions instead of recounting the entire project
+Compile
+  -> write approved results into a fresh workbook copy
+QA
+  -> prove structure, catalog, quantity, and workbook integrity
+```
+
+### 15.1 Flagship Plan Room / Drawings Intelligence
+
+The Plan Room is the product's visual and commercial centerpiece. It is the first screen used in buyer demonstrations and the default destination after discovery completes. It must communicate the labor-replacement story without relying on marketing prose:
+
+- hundreds of pages indexed;
+- cabinet-relevant sheets isolated;
+- unit plans, elevations, schedules, and ignored sheets clearly grouped;
+- cabinet runs highlighted directly on architectural documents;
+- dimensions, normalization, SKU mappings, and exceptions shown as drawing layers;
+- selected intelligence connected to exact source evidence;
+- only ambiguous or unsupported work routed to human review.
+
+The drawing—not a KPI card grid—must occupy most of the viewport. Navigation and intelligence panels support the document instead of competing with it. Color is surgical: neutral plans and graphite chrome, teal for verified evidence, amber for review/custom scope, and red only for blockers.
+
+The right intelligence panel must answer, for any selected cabinet:
+
+- What family is it?
+- What did the drawing actually say?
+- How was the measurement normalized?
+- Which catalog SKU is proposed?
+- Which product line and takeoff group apply?
+- Which exact sheet and region support the decision?
+- Which confidence components agree or disagree?
+- What review action is required?
+
+![Flagship Cabinet Brain Plan Room](./assets/cabinet-brain/04-flagship-plan-room.png)
+
+### 15.2 New Run / Execution Contract
+
+New Run is an operational control surface, not the emotional front door. It forces the operator to select identity, sources, scope, product line, output mode, and mutation boundary. Processing cannot begin until the contract is locked.
 
 ![Cabinet Brain execution contract](./assets/cabinet-brain/01-execution-contract.png)
 
-### 15.2 Takeoff Group Workbench
+### 15.3 Takeoff Group Workbench
 
 This screen makes project structure tangible. It lists every distinct package, its occurrence count, sources, cabinet count, workbook destination, and structural status. Merge is a deliberate, auditable action—not an automatic cleanup operation.
 
 ![Takeoff group reconciliation](./assets/cabinet-brain/02-takeoff-groups.png)
-
-### 15.3 Drawings
-
-The drawing viewer remains evidence-first: sheet navigator, plan/elevation canvas, cabinet overlays, region context, and selected-item inspector. Its job is to answer “why does Cabinet Brain believe this?”
 
 ### 15.4 Takeoff
 
@@ -1065,9 +1106,9 @@ Cabinet Brain V1 is complete only when a real project can satisfy all of the fol
 
 ## 28. Immediate next implementation slice
 
-The first code slice should not attempt automated cabinet vision.
+The first implementation release should run as two coordinated tracks. It should not pretend that automated cabinet extraction is already trustworthy, but it must deliver both the safety foundation and the flagship user experience.
 
-It should implement:
+### Track A: trust and compilation foundation
 
 1. Cabinet Brain run creation
 2. Identity and source manifest
@@ -1080,13 +1121,122 @@ It should implement:
 9. Workbook integrity comparison
 10. QA release gate
 
-Use a controlled fixture and then a copy of a real approved Vulpine workbook. Do not mutate protected source material. Once this slice proves that Cabinet Brain can safely compile known correct takeoff lines without changing anything else, build takeoff-group reconciliation on top of it.
+### Track B: Plan Room foundation
 
-That sequence creates a useful and trustworthy product early, even before automated extraction is mature.
+1. Deterministic PDF indexing from the existing PyMuPDF foundation
+2. Sheet number/title extraction and cabinet-relevance classification
+3. Relevant, Unit Plans, Elevations, Schedules, and Ignored grouping
+4. High-performance plan/elevation viewer
+5. Evidence, Dimensions, SKUs, and Exceptions overlay layers
+6. Selected-cabinet intelligence panel backed by persisted evidence
+7. Related-evidence filmstrip connecting plan, elevation, and schedule sources
+8. Exception queue navigation and auditable review actions
+9. Real progress states for large plan sets
+10. Empty, unavailable, failed, and partial-processing states with no fabricated results
+
+Use one controlled gold-standard project and a copy of a real approved Vulpine workbook. Do not mutate protected source material. The Plan Room may display manually approved evidence before automated extraction is mature, but it may not fabricate backend intelligence for presentation.
+
+The tracks converge at takeoff-group reconciliation: drawing evidence produces structured groups and cabinet instances; approved records flow into the guarded compiler. This creates something buyers can immediately understand without weakening the release controls that make the output trustworthy.
 
 ---
 
-## 29. Final product doctrine
+## 29. Commercial design-partner path
+
+The email describing a need to manually sort 300–500-page bid packages is direct buyer discovery evidence. It validates the pain, the desired output, and the organizational need to justify a solution to a corporate office. It is not yet a purchase order, but it is sufficient to pursue a paid design-partner engagement.
+
+### 29.1 Positioning
+
+Do not sell Cabinet Brain as an inexpensive AI utility or charge according to model-token consumption. Position it as estimator capacity and bid-throughput infrastructure.
+
+The commercial value is:
+
+- fewer estimator hours spent searching irrelevant sheets;
+- faster turnaround on large takeoff requests;
+- more bid opportunities processed with the same team;
+- consistent SKU mapping against the buyer's catalog;
+- fewer structural aggregation and workbook errors;
+- a defensible evidence and audit trail;
+- institutional knowledge that does not disappear with one estimator.
+
+### 29.2 Initial offer
+
+The correct first offer is a paid design-partner pilot, not an unrestricted software license and not free consulting.
+
+The pilot should include:
+
+1. Catalog and workbook onboarding
+2. Agreed execution contract and output format
+3. A limited number of representative plan sets
+4. Cabinet-relevant sheet classification
+5. Takeoff-group construction
+6. Evidence-backed cabinet takeoff
+7. SKU mapping and exception review
+8. Fresh-copy workbook compilation where applicable
+9. Accuracy and reviewer-time report
+10. Joint end-of-pilot decision on production licensing
+
+The pilot must define plan volume, turnaround expectations, supported product lines, review responsibility, data handling, acceptance criteria, and the difference between machine-proposed and human-verified output.
+
+### 29.3 Commercial structure
+
+A durable commercial model can combine:
+
+- an onboarding/configuration fee for catalog and workbook mapping;
+- a paid pilot fee covering the agreed project bundle;
+- an annual platform license for users, workflows, audit history, and integrations;
+- usage based on plan-set volume, pages, or projects after baseline capacity is known;
+- separately scoped services for custom workbook templates or catalog transformations.
+
+Actual pricing requires buyer discovery. It should be anchored to current estimator cost, monthly takeoff demand, backlog, turnaround, bid conversion, and the value of incremental projects—not guessed from AI infrastructure cost.
+
+### 29.4 Discovery questions
+
+Before quoting, establish:
+
+- How many takeoff requests arrive per month?
+- How many are delayed, rejected, or outsourced because of manpower?
+- What is the typical and maximum page count?
+- Which drawing types and cabinet packages are in scope?
+- Which catalogs, product lines, and workbooks must be supported?
+- What output does corporate require: SKU list, workbook, priced bid, or all three?
+- What accuracy and turnaround commitments are required?
+- Who reviews exceptions and signs off final quantities?
+- What is the current labor or outsourcing cost per project?
+- What systems must receive the final result?
+- What security, retention, and procurement requirements apply?
+
+### 29.5 Pilot success criteria
+
+The pilot should be judged by measurable business outcomes:
+
+- relevant-sheet identification accuracy;
+- takeoff-group accuracy;
+- cabinet-instance and SKU accuracy;
+- quantity reconciliation;
+- unauthorized workbook mutations equal zero;
+- reviewer minutes per project;
+- turnaround improvement;
+- percentage of scope requiring human review;
+- buyer acceptance of the final output format.
+
+### 29.6 Demonstration narrative
+
+The flagship demonstration should take less than two minutes to communicate the core value:
+
+1. Open a real 300–500-page project.
+2. Show that Cabinet Brain isolated the cabinet-relevant sheets.
+3. Open the Plan Room and select a detected cabinet.
+4. Show raw dimension, normalization, catalog-valid SKU, takeoff group, and source evidence.
+5. Show a custom-millwork exception that the system refused to fake.
+6. Show structural reconciliation protecting distinct packages.
+7. Show the workbook change manifest and fresh-copy integrity proof.
+8. End with the small exception queue a human must review—not a claim that humans are unnecessary.
+
+That sequence answers the buyer's real question: whether the product can turn hundreds of pages into a defensible SKU-level cabinet takeoff with dramatically less manual searching.
+
+---
+
+## 30. Final product doctrine
 
 Cabinet Brain is not valuable because it can produce a confident-looking answer quickly. It is valuable because it can preserve scope structure, use only valid cabinet knowledge, explain every quantity, constrain every workbook change, surface uncertainty, and deliver a result an estimator can defend.
 
