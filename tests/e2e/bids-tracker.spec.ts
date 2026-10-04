@@ -1,5 +1,7 @@
 import path from "node:path"
 import { expect, test } from "@playwright/test"
+import { localAuth } from './local-auth'
+test.beforeEach(async({context})=>localAuth(context))
 
 const bids = [
   { id: 1, project_name: "Riverside Commons", company_name: "Northline Construction", status: "Sent", units: 84, bid_amount: 248000, projected_profit: 42000, sent_date: "2026-09-18", sent_time: "10:30 AM", sent_to_name: "Casey", sent_to_email: "casey@example.com" },

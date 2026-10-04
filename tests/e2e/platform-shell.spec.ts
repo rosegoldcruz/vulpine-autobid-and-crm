@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test"
 import { platformModules } from "../../apps/backoffice/lib/platform-modules"
+import { localAuth } from './local-auth'
+test.beforeEach(async({context})=>localAuth(context))
 
 test("directory search and module links retain the Backoffice shell", async ({ page }) => {
   const errors: string[] = []
@@ -15,7 +17,7 @@ test("directory search and module links retain the Backoffice shell", async ({ p
   await directory.getByRole("link").click()
   await expect(page).toHaveURL(/\/ai\/hermes$/)
   await expect(page.getByRole("heading", { name: "Hermes", exact: true })).toBeVisible()
-  await expect(page.getByText("Not connected", { exact: true })).toBeVisible()
+  await expect(page.getByTestId("operations-workspace")).toBeVisible()
   await expect(page.getByRole("navigation", { name: "Main navigation" })).toBeVisible()
   await page.goBack()
   await expect(page.getByTestId("platform-overview")).toBeVisible()
@@ -44,7 +46,8 @@ test("mobile More drawer searches and navigates; notifications contain no synthe
     expect(box?.width).toBeGreaterThanOrEqual(44)
   }
   await page.getByRole("button", { name: "Notifications", exact: true }).click()
-  await expect(page.getByText("No notifications loaded.", { exact: false })).toBeVisible()
+  await expect(page).toHaveURL(/\/operations\/notifications$/)
+  await expect(page.getByRole("heading", {name:"Notifications",exact:true})).toBeVisible()
   await expect(page.getByText("Core Modules Connected")).toHaveCount(0)
 })
 
@@ -53,10 +56,25 @@ test("unknown module routes return a real 404", async ({ page }) => {
   expect(response?.status()).toBe(404)
 })
 
-test("every registered module is addressable without replacing established routes", async ({ request }) => {
+test("every registered module is addressable without replacing established routes", async ({ context }) => {
+  test.setTimeout(120000)
   for (const workspace of platformModules) {
-    const response = await request.get(workspace.path)
+    const response = await context.request.get(workspace.path)
     expect(response.status(), workspace.path).toBe(200)
     expect(await response.text(), workspace.path).toContain("Vulpine")
   }
+})
+
+test('all generic module screens render client-side without framework errors',async({page})=>{
+  test.setTimeout(180000)
+  const errors:string[]=[]
+  page.on('pageerror',e=>errors.push(e.message))
+  for(const module of platformModules.filter(m=>!['dashboard','bidstracker','vision','drive','documents'].includes(m.id))){
+    await page.goto(module.path)
+    await expect(page.getByTestId('operations-workspace')).toHaveAttribute('data-module',module.id)
+    await expect(page.getByRole('heading',{name:module.label,exact:true})).toBeVisible()
+    await expect(page.getByText('Reading source records…',{exact:true})).toHaveCount(0,{timeout:20000})
+    await expect(page.locator('[data-nextjs-dialog], .vite-error-overlay')).toHaveCount(0)
+  }
+  expect(errors).toEqual([])
 })

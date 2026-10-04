@@ -1,5 +1,7 @@
 import path from "node:path"
 import { expect, test, type Page } from "@playwright/test"
+import { localAuth } from './local-auth'
+test.beforeEach(async({context})=>localAuth(context))
 
 const createdAt = "2026-09-21T00:00:00.000Z"
 const project = {

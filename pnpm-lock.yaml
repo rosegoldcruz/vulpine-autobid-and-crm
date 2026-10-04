@@ -307,6 +307,8 @@ importers:
         specifier: 5.7.3
         version: 5.7.3
 
+  services/operations: {}
+
   services/vision:
     dependencies:
       '@vulpine/contracts':

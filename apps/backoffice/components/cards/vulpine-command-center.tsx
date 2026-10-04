@@ -1127,7 +1127,8 @@ export default function VulpineCommandCenter({
           <div className="flex items-center gap-1.5 ml-auto">
             <div className="relative">
               <button
-                onClick={() => setNotificationsOpen((prev) => !prev)}
+                onClick={() => handleNavigation("notifications")}
+                disabled={Boolean(allowedSections && !allowedSections.includes("notifications"))}
                 className="relative flex size-11 items-center justify-center rounded-xl hover:bg-accent/50"
                 aria-label="Notifications"
                 aria-expanded={notificationsOpen}
@@ -1186,7 +1187,7 @@ export default function VulpineCommandCenter({
                 exit={{ opacity: 0, y: -12 }}
                 transition={SPRING}
               >
-                {activeSection === "drive" ? <DriveSection canWrite={driveCanWrite} /> : activeSection === "dashboard" ? <PlatformOverviewSection allowedSections={allowedSections} /> : ActiveComponent ? <ActiveComponent /> : <PlatformModuleSection id={activeSection} allowedSections={allowedSections} />}
+                {activeSection === "drive" || activeSection === "documents" ? <DriveSection canWrite={driveCanWrite} /> : activeSection === "dashboard" ? <PlatformOverviewSection allowedSections={allowedSections} /> : (activeSection === "bidstracker" || activeSection === "vision" || (activeSection === "phone" && process.env.NEXT_PUBLIC_VOICE_CONSOLE_URL)) && ActiveComponent ? <ActiveComponent /> : <PlatformModuleSection id={activeSection} allowedSections={allowedSections} />}
               </motion.div>
             </AnimatePresence>
           </main>

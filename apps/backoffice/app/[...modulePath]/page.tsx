@@ -4,6 +4,7 @@ import VulpineCommandCenter from "@/components/cards/vulpine-command-center"
 import { authConfigured, authOptions } from "@/lib/auth"
 import { visibleSectionsForRoles } from "@/lib/backoffice-access"
 import { canAccessModule, moduleForPath } from "@/lib/platform-modules"
+import { hasCapability } from "@vulpine/permissions"
 
 export const dynamic = "force-dynamic"
 
@@ -33,5 +34,5 @@ export default async function PlatformPage({ params }: Props) {
   const session = await getServerSession(authOptions)
   if (!session) redirect(`/api/auth/signin?callbackUrl=${encodeURIComponent(path)}`)
   if (!canAccessModule(session.user.roles, workspace.id)) redirect("/access-denied")
-  return <VulpineCommandCenter initialSection={workspace.id} allowedSections={visibleSectionsForRoles(session.user.roles)} />
+  return <VulpineCommandCenter initialSection={workspace.id} allowedSections={visibleSectionsForRoles(session.user.roles)} driveCanWrite={hasCapability(session.user.roles,"drive.write")} />
 }

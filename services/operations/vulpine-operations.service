@@ -1,0 +1,22 @@
+[Unit]
+Description=Vulpine authenticated operations read models and drafts
+After=network.target
+
+[Service]
+Type=simple
+DynamicUser=yes
+WorkingDirectory=/opt/vulpine-platform/services/operations
+ExecStart=/usr/bin/node src/server.mjs
+EnvironmentFile=/etc/vulpine-operations/runtime.env
+StateDirectory=vulpine-operations
+StateDirectoryMode=0700
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

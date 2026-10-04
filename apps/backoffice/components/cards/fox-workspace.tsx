@@ -1,0 +1,19 @@
+"use client"
+import { useEffect,useState } from "react"
+import { toast } from "sonner"
+import { operationsRequest,type OperationRecord } from "@/lib/operations"
+
+export function FoxWorkspace(){
+  const [projects,setProjects]=useState<OperationRecord[]>([]),[job,setJob]=useState(""),[input,setInput]=useState(""),[busy,setBusy]=useState(false),[error,setError]=useState("")
+  const [messages,setMessages]=useState<{role:"user"|"model";text:string}[]>([])
+  useEffect(()=>{operationsRequest("projects").then(d=>setProjects(d.records.filter(r=>r.details.job_id))).catch(e=>setError(e.message))},[])
+  async function ask(tool?:string){setBusy(true);setError("");try{
+    const prompt=input.trim();if(!tool&&!prompt)return
+    const r=await fetch(tool?"/api/vision/assistant/query":"/api/vision/chat",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(tool?{jobId:job,tool,args:{}}:{jobId:job,message:prompt,history:messages,mode:"text"})})
+    const d=await r.json();if(!r.ok||d.ok===false)throw new Error(d.error?.message||`Assistant failed (${r.status}).`)
+    const result=d.data??d;const text=tool?JSON.stringify(result.result,null,2):result.text
+    if(!text)throw new Error("The assistant returned no answer.")
+    setMessages(m=>[...m,{role:"user",text:tool?tool.replaceAll("_"," "):prompt},{role:"model",text}]);setInput("")
+  }catch(e){setError((e as Error).message)}finally{setBusy(false)}}
+  return <section aria-label="Fox assistant" className="space-y-4 rounded-2xl border border-border/60 bg-card/70 p-5"><h2 className="text-xl font-bold">Ask Fox about a project</h2><p className="text-sm text-muted-foreground">Uses the existing Cabinet Brain assistant and permission-checked project tools. Answers remain attributable to the selected project.</p><select aria-label="Assistant project context" value={job} onChange={e=>{setJob(e.target.value);setMessages([])}} className="min-h-11 w-full rounded-xl border border-border bg-background p-3"><option value="">Select a Cabinet Brain project</option>{projects.map(p=><option key={p.id} value={String(p.details.job_id)}>{p.title}</option>)}</select><div className="flex flex-wrap gap-2">{["workflow_status","qa_blockers","remaining_actions","audit_summary"].map(tool=><button key={tool} disabled={!job||busy} onClick={()=>void ask(tool)} className="min-h-11 rounded-xl border border-border px-3 text-sm capitalize disabled:opacity-40">{tool.replaceAll("_"," ")}</button>)}</div>{error?<p role="alert" className="text-sm text-red-300">{error}</p>:null}<div className="max-h-96 space-y-3 overflow-y-auto" aria-live="polite">{messages.map((m,i)=><div key={i} className={`rounded-xl p-4 ${m.role==="user"?"bg-primary/10":"bg-background"}`}><p className="mb-2 text-xs font-bold">{m.role==="user"?"You":"Fox"}</p><p className="whitespace-pre-wrap break-words text-sm">{m.text}</p></div>)}</div><form className="flex flex-col gap-3 sm:flex-row" onSubmit={e=>{e.preventDefault();void ask()}}><input aria-label="Message Fox" value={input} onChange={e=>setInput(e.target.value)} className="min-h-12 min-w-0 flex-1 rounded-xl border border-border bg-background px-4 text-base" placeholder="Ask about evidence, quantities or unresolved work…"/><button disabled={!job||!input.trim()||busy} className="min-h-12 rounded-xl bg-primary px-5 font-semibold text-primary-foreground disabled:opacity-40">{busy?"Working…":"Send"}</button></form>{messages.length?<button className="min-h-11 text-sm text-primary" onClick={async()=>{try{await operationsRequest("fox","POST",{title:`Conversation ${new Date().toLocaleString()}`,projectId:job,body:messages.map(m=>`${m.role}: ${m.text}`).join("\n\n")});toast.success("Conversation saved to workspace")}catch(e){toast.error((e as Error).message)}}}>Save conversation</button>:null}</section>
+}

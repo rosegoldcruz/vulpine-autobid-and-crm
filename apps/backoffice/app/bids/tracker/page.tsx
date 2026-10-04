@@ -9,7 +9,10 @@ export const metadata = { title: "Bids Tracker | Vulpine Backoffice" }
 export const dynamic = "force-dynamic"
 
 export default async function BidsTrackerPage() {
-  if (!authConfigured()) return <VulpineCommandCenter initialSection="bidstracker" />
+  if (!authConfigured()) {
+    if(process.env.NODE_ENV === "production")return <main className="p-8"><h1>Authentication unavailable</h1><p>The workspace is locked until authentication is configured.</p></main>
+    return <VulpineCommandCenter initialSection="bidstracker" />
+  }
 
   const session = await getServerSession(authOptions)
   if (!session) redirect("/api/auth/signin?callbackUrl=/bids/tracker")
