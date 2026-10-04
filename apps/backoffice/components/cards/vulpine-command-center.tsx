@@ -11,7 +11,7 @@ import {
   Clock, LogOut, Activity, Zap, Shield, TrendingUp, FileText,
   GitBranch, Package, ClipboardCheck, CircleSlash, BarChart3,
   UserCircle, BellRing, Lock, Monitor, CreditCard, Mail, Send, ScanLine,
-  MoreHorizontal, PhoneCall,
+  MoreHorizontal, PhoneCall, ExternalLink,
 } from "lucide-react"
 import {
   Drawer,
@@ -348,6 +348,62 @@ function LeadsSection() {
         ].map((mod, i) => (
           <PlaceholderModule key={mod.title} icon={mod.icon} title={mod.title} description={mod.description} delay={i * 0.07} />
         ))}
+      </div>
+    </div>
+  )
+}
+
+const VOICE_CONSOLE_URL = process.env.NEXT_PUBLIC_VOICE_CONSOLE_URL?.trim() ?? ""
+
+function CommunicationsSection() {
+  if (!VOICE_CONSOLE_URL) {
+    return (
+      <div className={`flex flex-col gap-5 ${SECTION_MIN_H}`}>
+        <SectionPanel>
+          <SectionHeader
+            title="Communications"
+            subtitle="Twilio browser phone, text messaging, call history, voicemail, and number management."
+          />
+          <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
+            <div className="flex size-14 items-center justify-center rounded-2xl bg-primary/10 glow-teal-sm">
+              <PhoneCall className="size-7 text-primary" />
+            </div>
+            <div className="max-w-lg">
+              <p className="font-display text-sm font-bold text-foreground">Voice service URL required</p>
+              <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                Deploy the AEON voice service from services/aeon/voice, then set NEXT_PUBLIC_VOICE_CONSOLE_URL to its public HTTPS URL.
+              </p>
+            </div>
+            <PlaceholderBadge label="Configuration required" />
+          </div>
+        </SectionPanel>
+      </div>
+    )
+  }
+
+  return (
+    <div className={`flex flex-col gap-4 ${SECTION_MIN_H}`}>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="font-display text-xl font-extrabold tracking-tight text-foreground">Communications</h2>
+          <p className="mt-1 text-xs text-muted-foreground">Your Twilio phone, messages, calls, voicemail, and recordings.</p>
+        </div>
+        <a
+          href={VOICE_CONSOLE_URL}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-border/60 bg-card px-4 text-xs font-bold text-foreground transition-colors hover:bg-accent/50"
+        >
+          Open full screen <ExternalLink className="size-3.5" />
+        </a>
+      </div>
+      <div className="min-h-[760px] flex-1 overflow-hidden rounded-2xl border border-border/60 bg-card" style={{ boxShadow: CARD_SHADOW }}>
+        <iframe
+          src={VOICE_CONSOLE_URL}
+          title="Vulpine Communications Console"
+          allow="microphone; autoplay"
+          className="h-[calc(100dvh-11rem)] min-h-[760px] w-full border-0"
+        />
       </div>
     </div>
   )
@@ -796,6 +852,7 @@ const SECTION_COMPONENTS: Partial<Record<SectionId, React.ComponentType>> = {
   leads: LeadsSection,
   contacts: ContactsSection,
   companies: CompaniesSection,
+  phone: CommunicationsSection,
   revenue: RevenueSection,
   autobid: CabinetBidEngineSection,
   bidstracker: BidsTrackerSection,

@@ -34,7 +34,7 @@ All new record workspaces support source-labelled records, search, status/source
 | `/ai/automations` | Existing Paperclip routines and launch | No routine is invented when the source is empty; n8n routine administration not integrated |
 | `/communications/inbox` | GHL conversation adapter | GHL 401; Gmail not integrated |
 | `/communications/sms` | 57 actual Twilio message records and delivery/error details | Read-only; no send action |
-| `/communications/dialer` | Four actual Twilio number records and capabilities | Pending user voice-console work is preserved but not included in this release |
+| `/communications/dialer` | Four actual Twilio number records and capabilities; voice-console source and embed included in GitHub at the user's request | Live console deployment still requires its HTTPS URL and server configuration |
 | `/communications/calls` | First 100 actual Twilio calls, duration/status/detail | Provider pagination beyond 100 and native dialing remain |
 | `/communications/recordings` | Twilio recording metadata adapter; currently zero records | Authenticated audio playback/transcripts not implemented |
 | `/communications/valerie` | Five actual Vapi assistants plus Twilio call history | No autonomous dialing or voice-agent editing |
@@ -79,7 +79,7 @@ Counts are observed source snapshots, not guarantees that external data cannot c
 ## Required external follow-through
 
 1. Restore the existing GHL credential/location access; do not create duplicate contacts as a workaround. Local drafts remain usable meanwhile.
-2. Finish the separately pending voice console before enabling real send/dial actions; no outbound communications were tested against customers.
+2. Deploy/configure the included voice console before enabling real send/dial actions; no outbound communications were tested against customers. Its five API regression tests passed against isolated storage and mocked Twilio actions.
 3. Supply an authorized Hermes conversation API/session integration and public HTTPS launch address.
 4. Add the actual accounting source before recognized revenue reporting.
 5. Extend agency discovery, preview generation and delivery after the real provider/approval contracts are established. Current lead scoring is explicitly operator-evidence-based.

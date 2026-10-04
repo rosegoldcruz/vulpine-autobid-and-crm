@@ -18,9 +18,26 @@ If a required decision is not defined, stop and report the missing decision inst
 
 # Project
 
-This repository contains **Vulpine Command Center**, a CRM and operations platform.
+This repository contains **Vulpine Command Center**, the internal CRM and operations platform for **Vulpine LLC**.
 
 The first production module is the **Bid Engine**.
+
+## Business Identity Contract
+
+This repository belongs to **Vulpine LLC**, the commercial / multifamily supply business.
+
+Canonical business identity:
+
+```text
+Company: Vulpine LLC
+Primary domain: vulpine.llc
+Primary market: commercial and multifamily supply
+Platform role: internal CRM, estimating, bid, sales, and operations system
+```
+
+Do not brand this platform as Vulpine Homes. **Vulpine Homes is a separate residential-facing brand and must not be used as the default identity, domain namespace, or infrastructure namespace for this repository unless an explicit future task says otherwise.**
+
+When creating routes, domains, environment examples, deployment documentation, email/service names, or user-facing platform labels, prefer the Vulpine LLC identity and `vulpine.llc` namespace.
 
 The CRM will expand module-by-module. Do not attempt to build the entire platform in one pass.
 
@@ -95,11 +112,11 @@ The system uses a split hosting model.
 
 ```text
 Frontend:
-crm.vulpinehomes.com
+crm.vulpine.llc
 Hosted on Vercel
 
 Backend:
-api.vulpinehomes.com
+api.vulpine.llc
 Hosted on VPS
 Managed by PM2
 ```
@@ -433,7 +450,7 @@ NEXT_PUBLIC_API_BASE_URL=
 Production value should point to the backend API:
 
 ```text
-https://api.vulpinehomes.com
+https://api.vulpine.llc
 ```
 
 Do not hardcode this value in source code.
@@ -451,7 +468,7 @@ NEXT_PUBLIC_API_BASE_URL=
 Incorrect:
 
 ```env
-NEXT_PUBLIC_API_BASE_URL=https://api.vulpinehomes.com
+NEXT_PUBLIC_API_BASE_URL=https://api.vulpine.llc
 ```
 
 Before changing Vercel env vars, inspect or establish project linkage:
@@ -465,13 +482,13 @@ Then add required env vars.
 Production:
 
 ```bash
-printf "%s" "https://api.vulpinehomes.com" | npx vercel env add NEXT_PUBLIC_API_BASE_URL production
+printf "%s" "https://api.vulpine.llc" | npx vercel env add NEXT_PUBLIC_API_BASE_URL production
 ```
 
 Preview:
 
 ```bash
-printf "%s" "https://api.vulpinehomes.com" | npx vercel env add NEXT_PUBLIC_API_BASE_URL preview
+printf "%s" "https://api.vulpine.llc" | npx vercel env add NEXT_PUBLIC_API_BASE_URL preview
 ```
 
 Development:
@@ -484,7 +501,7 @@ If the env var already exists, update it by removing and re-adding it:
 
 ```bash
 npx vercel env rm NEXT_PUBLIC_API_BASE_URL production
-printf "%s" "https://api.vulpinehomes.com" | npx vercel env add NEXT_PUBLIC_API_BASE_URL production
+printf "%s" "https://api.vulpine.llc" | npx vercel env add NEXT_PUBLIC_API_BASE_URL production
 ```
 
 Do not guess whether an env var exists. Inspect when possible.
@@ -621,8 +638,8 @@ records that must not be touched
 Architecture DNS target:
 
 ```text
-crm.vulpinehomes.com → Vercel frontend
-api.vulpinehomes.com → VPS backend
+crm.vulpine.llc → Vercel frontend
+api.vulpine.llc → VPS backend
 ```
 
 Do not touch unrelated records unless explicitly required:

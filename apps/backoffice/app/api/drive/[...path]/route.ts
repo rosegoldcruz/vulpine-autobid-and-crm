@@ -3,6 +3,7 @@ import { optionalServerEnv, serverEnvNames } from "@vulpine/config"
 import { signDriveTransferTicket, type DriveTransferAction } from "@vulpine/auth"
 import type { Capability } from "@vulpine/permissions"
 import { apiError, apiSuccess } from "@/lib/api-response"
+import { buildDriveUpstreamUrl } from "@/lib/drive-proxy"
 import { requireCapability } from "@/lib/require-capability"
 
 type RouteContext = { params: Promise<{ path: string[] }> }
@@ -25,6 +26,7 @@ const routeRules = [
 const ALLOWED_PROTOCOLS = new Set(["http:", "https:"])
 
 async function proxy(request: Request, context: RouteContext) {
+  const startedAt = Date.now()
   const correlationId = normalizeCorrelationId(request.headers.get("x-correlation-id"))
   const requestedPath = (await context.params).path.join("/")
   const rule = routeRules.find((candidate) => candidate.method === request.method && candidate.path === requestedPath)
@@ -49,7 +51,9 @@ async function proxy(request: Request, context: RouteContext) {
   }
 
   const incomingUrl = new URL(request.url)
-  const upstreamUrl = new URL(rule.upstreamPath, `${baseUrl.toString().replace(/\/$/, "")}/`)
+  // Keep a configured path prefix such as `/documents`. A leading slash in
+  // rule.upstreamPath would otherwise reset the URL to the origin root.
+  const upstreamUrl = buildDriveUpstreamUrl(baseUrl.toString(), rule.upstreamPath)
   incomingUrl.searchParams.forEach((value, key) => upstreamUrl.searchParams.append(key, value))
 
   if (requestedPath === "upload-ticket") {
@@ -101,15 +105,36 @@ async function proxy(request: Request, context: RouteContext) {
     try { body = text ? JSON.parse(text) : null } catch { body = text }
     if (!upstream.ok) {
       const upstreamError = body && typeof body === "object" && "error" in body ? (body as { error?: { code?: string; message?: string } }).error : undefined
+      console.warn(JSON.stringify({
+        event: "drive.proxy.rejected",
+        correlationId,
+        operation: requestedPath,
+        upstreamStatus: upstream.status,
+        durationMs: Date.now() - startedAt,
+      }))
       return apiError(
         (upstreamError?.code as ApiErrorCode) || "UPSTREAM_UNAVAILABLE",
-        upstreamError?.message || "Drive rejected the operation.",
+        upstreamError?.message || `Drive service returned HTTP ${upstream.status}.`,
         correlationId,
         upstream.status,
       )
     }
+    console.info(JSON.stringify({
+      event: "drive.proxy.completed",
+      correlationId,
+      operation: requestedPath,
+      upstreamStatus: upstream.status,
+      durationMs: Date.now() - startedAt,
+    }))
     return apiSuccess(body, correlationId, upstream.status)
-  } catch {
+  } catch (error) {
+    console.error(JSON.stringify({
+      event: "drive.proxy.failed",
+      correlationId,
+      operation: requestedPath,
+      error: error instanceof Error ? error.name : "UnknownError",
+      durationMs: Date.now() - startedAt,
+    }))
     return apiError(
       "UPSTREAM_UNAVAILABLE",
       "Drive is currently unreachable from Backoffice.",

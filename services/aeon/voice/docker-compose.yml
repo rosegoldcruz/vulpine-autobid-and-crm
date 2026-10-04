@@ -1,0 +1,14 @@
+services:
+  twilio-app:
+    build: .
+    container_name: twilio-app
+    ports:
+      - "${PORT:-8080}:8080"
+    env_file:
+      - .env
+    environment:
+      DATA_DIR: /data
+    volumes:
+      # SQLite database persists here
+      - ./data:/data
+    restart: unless-stopped

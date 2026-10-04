@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Twilio SMS / Voice Console</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%234f8cff'/%3E%3Cpath d='M9 8h14v4h-5v12h-4V12H9z' fill='white'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <!-- Login overlay -->
+  <div id="login-overlay" class="overlay hidden">
+    <div class="login-card">
+      <h1>Twilio Console</h1>
+      <p class="muted">Enter the admin password to continue.</p>
+      <form id="login-form">
+        <input type="password" id="login-password" placeholder="Admin password"
+               autocomplete="current-password" />
+        <button type="submit" class="btn primary">Sign in</button>
+        <p id="login-error" class="error hidden"></p>
+      </form>
+    </div>
+  </div>
+
+  <header class="topbar">
+    <div class="brand">Twilio Console</div>
+    <nav class="tabs" id="tabs">
+      <button data-tab="phone" class="active">Phone</button>
+      <button data-tab="numbers">Numbers</button>
+      <button data-tab="campaigns">Campaigns</button>
+      <button data-tab="messages">Messages</button>
+      <button data-tab="calls">Calls</button>
+      <button data-tab="voicemail">Voicemail</button>
+      <button data-tab="recordings">Recordings</button>
+      <button data-tab="accounts">Accounts</button>
+      <button data-tab="settings">Settings</button>
+    </nav>
+    <button id="logout-btn" class="btn ghost">Log out</button>
+  </header>
+
+  <main id="main">
+    <!-- BROWSER PHONE -->
+    <section id="tab-phone" class="tab-panel active">
+      <div class="row">
+        <div>
+          <h2>Browser phone</h2>
+          <p class="muted section-intro">Call and answer through Twilio using this browser's microphone.</p>
+        </div>
+        <div class="phone-status"><span id="phone-status-dot"></span><span id="phone-status">Not connected</span></div>
+      </div>
+      <div class="phone-layout">
+        <div class="card dialer-card">
+          <div class="form-grid">
+            <label>Twilio account <select id="phone-account"></select></label>
+            <label>Caller ID <select id="phone-from"></select></label>
+          </div>
+          <label>Number to call
+            <input id="phone-to" class="phone-number-input mono" inputmode="tel"
+                   autocomplete="tel" placeholder="+16025551234" />
+          </label>
+          <label class="check"><input type="checkbox" id="phone-record" /> Record this call</label>
+          <div id="phone-incoming" class="incoming-call hidden" role="status">
+            <div><span class="muted small">Incoming call</span><strong id="phone-incoming-from" class="mono"></strong></div>
+            <div class="row-actions">
+              <button id="phone-answer" class="btn call">Answer</button>
+              <button id="phone-reject" class="btn danger">Decline</button>
+            </div>
+          </div>
+          <div class="dialer-actions">
+            <button id="phone-enable" class="btn primary">Enable phone</button>
+            <button id="phone-call" class="btn call" disabled>Call</button>
+            <button id="phone-hangup" class="btn danger" disabled>Hang up</button>
+            <button id="phone-mute" class="btn" disabled>Mute</button>
+          </div>
+          <div class="dialpad" id="dialpad" aria-label="Call keypad">
+            <button data-digit="1">1</button><button data-digit="2">2</button><button data-digit="3">3</button>
+            <button data-digit="4">4</button><button data-digit="5">5</button><button data-digit="6">6</button>
+            <button data-digit="7">7</button><button data-digit="8">8</button><button data-digit="9">9</button>
+            <button data-digit="*">*</button><button data-digit="0">0</button><button data-digit="#">#</button>
+          </div>
+          <p id="phone-help" class="muted small">Enable the phone to grant microphone access and register this browser for calls.</p>
+        </div>
+        <div class="card setup-card">
+          <h3>Voice setup</h3>
+          <p id="phone-setup-copy" class="muted">Checking this Twilio account…</p>
+          <button id="phone-provision" class="btn primary hidden">Set up browser calling</button>
+          <p class="muted small">Setup creates a TwiML App and API key in your Twilio account. The secret is encrypted server-side and the browser only receives a one-hour access token.</p>
+          <div class="call-note"><strong>Mobile web works</strong><span>Keep this page open during calls. Native iOS/Android apps are still better for reliable background ringing.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NUMBERS -->
+    <section id="tab-numbers" class="tab-panel">
+      <div class="row">
+        <h2>Phone Numbers</h2>
+        <div class="row-actions">
+          <select id="numbers-account"></select>
+          <button id="numbers-refresh" class="btn">Sync</button>
+          <button id="numbers-buy-open" class="btn primary">Buy number</button>
+        </div>
+      </div>
+      <div id="buy-box" class="card hidden">
+        <h3>Buy a number</h3>
+        <div class="form-grid">
+          <label>Area code
+            <input id="buy-area" maxlength="3" placeholder="602" />
+          </label>
+          <label>&nbsp;<button id="buy-search" class="btn">Search</button></label>
+        </div>
+        <div id="buy-results" class="list"></div>
+      </div>
+      <div id="numbers-list" class="cards"></div>
+      <div id="number-detail" class="card hidden">
+        <h3>Number settings <span id="nd-number" class="mono"></span></h3>
+        <div class="form-grid">
+          <label class="check"><input type="checkbox" id="ns-auto-reply-enabled" /> Auto-reply</label>
+          <label class="check"><input type="checkbox" id="ns-forwarding-enabled" /> Call forwarding</label>
+          <label class="check"><input type="checkbox" id="ns-record-calls" /> Record forwarded calls</label>
+          <label class="check"><input type="checkbox" id="ns-browser-ringing" /> Ring browser phone first</label>
+          <label class="check"><input type="checkbox" id="ns-missed-alert" /> Missed-call SMS alert</label>
+          <label class="check"><input type="checkbox" id="ns-voicemail-enabled" /> Voicemail</label>
+        </div>
+        <div class="form-grid">
+          <label>Auto-reply text
+            <textarea id="ns-auto-reply-text" rows="2" placeholder="Thanks for texting us!"></textarea>
+          </label>
+          <label>Forward calls to
+            <input id="ns-forward-to" placeholder="+16025551234" />
+          </label>
+          <label>Missed-call alert notify number
+            <input id="ns-alert-number" placeholder="+16025551234" />
+          </label>
+          <label>Voicemail greeting
+            <textarea id="ns-voicemail-greeting" rows="2"></textarea>
+          </label>
+        </div>
+        <div class="row-actions">
+          <button id="ns-save" class="btn primary">Save settings</button>
+          <button id="ns-close" class="btn ghost">Close</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- CAMPAIGNS -->
+    <section id="tab-campaigns" class="tab-panel">
+      <div class="row">
+        <h2>Campaigns</h2>
+        <button id="campaign-new-open" class="btn primary">New campaign</button>
+      </div>
+      <div id="campaign-form" class="card hidden">
+        <h3>New bulk SMS / MMS campaign</h3>
+        <div class="form-grid">
+          <label>Campaign name <input id="c-name" placeholder="September promo" /></label>
+          <label>Account <select id="c-account"></select></label>
+          <label>From number <select id="c-from"></select></label>
+          <label>Messages / second
+            <input id="c-rate" type="number" min="0.1" max="100" step="0.1"
+                   placeholder="default" />
+          </label>
+        </div>
+        <label>Message
+          <textarea id="c-message" rows="4" placeholder="Your message..."></textarea>
+        </label>
+        <label>Media URLs (one per line, optional — sends as MMS)
+          <textarea id="c-media" rows="2" placeholder="https://example.com/flyer.jpg"></textarea>
+        </label>
+        <label>Recipients — paste numbers or CSV (one per line, commas/semicolons ok)
+          <textarea id="c-recipients" rows="6" placeholder="+16025551234&#10;+16025555678"></textarea>
+        </label>
+        <div class="row-actions">
+          <button id="c-create" class="btn primary">Create &amp; preview</button>
+          <button id="c-cancel-form" class="btn ghost">Cancel</button>
+        </div>
+      </div>
+      <div id="campaign-preview" class="card hidden">
+        <h3>Preview</h3>
+        <div id="cp-body"></div>
+        <div class="row-actions">
+          <button id="cp-launch" class="btn primary">Launch campaign</button>
+          <button id="cp-discard" class="btn danger">Discard</button>
+        </div>
+      </div>
+      <div id="campaigns-list" class="cards"></div>
+      <div id="campaign-detail" class="card hidden">
+        <h3>Campaign detail <span id="cd-name" class="mono"></span></h3>
+        <div id="cd-body"></div>
+        <div class="row-actions">
+          <button id="cd-close" class="btn ghost">Close</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- MESSAGES -->
+    <section id="tab-messages" class="tab-panel">
+      <div class="row">
+        <h2>Messages</h2>
+        <div class="row-actions"><select id="messages-account"></select><button id="messages-refresh" class="btn">Refresh</button></div>
+      </div>
+      <div class="card message-compose">
+        <h3>New message</h3>
+        <div class="form-grid">
+          <label>From <select id="message-from"></select></label>
+          <label>To <input id="message-to" class="mono" inputmode="tel" placeholder="+16025551234" /></label>
+        </div>
+        <label>Message <textarea id="message-body" rows="3" maxlength="1600" placeholder="Type a message…"></textarea></label>
+        <label>Media URLs (one per line, optional) <textarea id="message-media" rows="2" placeholder="https://example.com/photo.jpg"></textarea></label>
+        <button id="message-send" class="btn primary">Send message</button>
+      </div>
+      <div id="messages-list" class="cards"></div>
+    </section>
+
+    <!-- CALLS -->
+    <section id="tab-calls" class="tab-panel">
+      <div class="row">
+        <h2>Call history</h2>
+        <div class="row-actions"><select id="calls-account"></select><button id="calls-refresh" class="btn">Refresh</button></div>
+      </div>
+      <div id="calls-list" class="cards"></div>
+    </section>
+
+    <!-- VOICEMAIL -->
+    <section id="tab-voicemail" class="tab-panel">
+      <div class="row">
+        <h2>Voicemail inbox</h2>
+        <button id="vm-refresh" class="btn">Refresh</button>
+      </div>
+      <div id="vm-list" class="cards"></div>
+    </section>
+
+    <!-- RECORDINGS -->
+    <section id="tab-recordings" class="tab-panel">
+      <div class="row">
+        <h2>Call recordings</h2>
+        <div class="row-actions">
+          <select id="recordings-account"></select>
+          <button id="recordings-refresh" class="btn">Refresh</button>
+        </div>
+      </div>
+      <div id="recordings-list" class="cards"></div>
+    </section>
+
+    <!-- ACCOUNTS -->
+    <section id="tab-accounts" class="tab-panel">
+      <div class="row">
+        <h2>Twilio accounts</h2>
+        <button id="account-new-open" class="btn primary">Add account</button>
+      </div>
+      <div id="account-form" class="card hidden">
+        <h3 id="af-title">Add account</h3>
+        <div class="form-grid">
+          <label>Label <input id="af-label" placeholder="Twilio" /></label>
+          <label>Account SID <input id="af-sid" class="mono" placeholder="AC..." /></label>
+          <label>Auth token <input id="af-token" type="password" class="mono" /></label>
+          <label class="check"><input type="checkbox" id="af-default" /> Default account</label>
+        </div>
+        <details>
+          <summary>Advanced browser voice credentials (optional)</summary>
+          <p class="muted small">Leave these blank and use “Set up browser calling” to create them automatically.</p>
+          <div class="form-grid">
+            <label>API Key SID <input id="af-api-key-sid" class="mono" placeholder="SK…" /></label>
+            <label>API Key Secret <input id="af-api-key-secret" type="password" class="mono" /></label>
+            <label>TwiML App SID <input id="af-twiml-app-sid" class="mono" placeholder="AP…" /></label>
+          </div>
+        </details>
+        <div class="row-actions">
+          <button id="af-save" class="btn primary">Save</button>
+          <button id="af-cancel" class="btn ghost">Cancel</button>
+        </div>
+      </div>
+      <div id="accounts-list" class="cards"></div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section id="tab-settings" class="tab-panel">
+      <h2>Settings</h2>
+      <div class="card">
+        <h3>Messaging</h3>
+        <div class="form-grid">
+          <label>Default max SMS / second (bulk sends)
+            <input id="set-rate" type="number" min="0.1" max="100" step="0.1" />
+          </label>
+        </div>
+        <p class="muted small">Used when a campaign doesn't set its own rate.
+          The worker spaces sends evenly to stay under this limit.</p>
+        <button id="set-save" class="btn primary">Save</button>
+      </div>
+      <div class="card">
+        <h3>Webhooks</h3>
+        <p class="muted">Twilio must be able to reach this app. Set
+          <span class="mono">PUBLIC_BASE_URL</span> in your <span class="mono">.env</span>
+          to the public HTTPS URL, then use <b>Apply webhooks</b> on each number
+          (Numbers tab) to point its Voice/SMS URLs at:</p>
+        <ul class="mono small">
+          <li id="wh-sms"></li>
+          <li id="wh-voice"></li>
+          <li id="wh-browser-voice"></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast hidden"></div>
+  <script src="/vendor/twilio.min.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>
