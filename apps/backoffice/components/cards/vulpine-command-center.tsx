@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useCallback, useMemo, useRef, useEffect } from "react"
+import React, { useState, useCallback, useMemo, useRef, useEffect, useTransition } from "react"
 import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
 import { signOut } from "next-auth/react"
@@ -11,7 +11,7 @@ import {
   Clock, LogOut, Activity, Zap, Shield, TrendingUp, FileText,
   GitBranch, Package, ClipboardCheck, CircleSlash, BarChart3,
   UserCircle, BellRing, Lock, Monitor, CreditCard, Mail, Send, ScanLine,
-  MoreHorizontal,
+  MoreHorizontal, PhoneCall,
 } from "lucide-react"
 import {
   Drawer,
@@ -24,6 +24,8 @@ import {
 } from "@/components/ui/drawer"
 import { CabinetBidEngineSection } from "./cabinet-bid-engine-section"
 import type { BackofficeSectionId } from "@/lib/backoffice-access"
+import { platformGroups, platformModules, moduleForId } from "@/lib/platform-modules"
+import { PlatformOverviewSection, PlatformModuleSection } from "./platform-workspaces"
 
 const BidsTrackerSection = dynamic(
   () => import("./bids-tracker-section").then((module) => module.BidsTrackerSection),
@@ -89,39 +91,23 @@ interface NavGroup {
   items: NavItem[]
 }
 
-const NAV_GROUPS: NavGroup[] = [
-  {
-    label: "CORE",
-    items: [
-      { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-    ],
-  },
-  {
-    label: "CRM",
-    items: [
-      { id: "leads", label: "Leads", icon: Users },
-      { id: "contacts", label: "Contacts", icon: UserCircle },
-      { id: "companies", label: "Companies", icon: Building2 },
-    ],
-  },
-  {
-    label: "REVENUE",
-    items: [
-      { id: "revenue", label: "Revenue", icon: DollarSign },
-      { id: "autobid", label: "Bid Engine", icon: Wrench },
-      { id: "bidstracker", label: "Bids Tracker", icon: BarChart3 },
-      { id: "vision", label: "Cabinet Brain", icon: ScanLine },
-      { id: "emailblaster", label: "Email Blaster", icon: Mail },
-    ],
-  },
-  {
-    label: "SYSTEM",
-    items: [
-      { id: "drive", label: "Vulpine Drive", icon: HardDrive },
-      { id: "settings", label: "Settings", icon: Settings },
-    ],
-  },
-]
+const MODULE_ICONS: Partial<Record<SectionId, React.ElementType>> = {
+  dashboard: LayoutDashboard, projects: Building2, documents: FileText,
+  activity: Activity, contacts: UserCircle, companies: Building2, leads: Users,
+  revenue: DollarSign, autobid: Wrench, bidstracker: BarChart3, vision: ScanLine,
+  emailblaster: Mail, phone: Send, drive: HardDrive, settings: Settings,
+  pricing: DollarSign, proposals: FileText, catalog: Package, takeoffs: ClipboardCheck,
+  inbox: Mail, sms: Send, calls: PhoneCall, recordings: Monitor, valerie: UserCircle,
+  fox: Zap, agents: Users, paperclip: GitBranch, providers: Monitor, automations: Zap,
+  health: Activity, logs: FileText, users: Users, permissions: Shield,
+}
+
+const NAV_GROUPS: NavGroup[] = platformGroups.map((group) => ({
+  label: group,
+  items: platformModules.filter((module) => module.group === group).map((module) => ({
+    id: module.id, label: module.label, icon: MODULE_ICONS[module.id] ?? GitBranch,
+  })),
+}))
 
 const ALL_NAV_ITEMS: NavItem[] = NAV_GROUPS.flatMap((g) => g.items)
 
@@ -236,10 +222,7 @@ type NotifType = "success" | "warning" | "info"
 
 const NOTIF_ITEMS: Array<{
   id: number; type: NotifType; title: string; message: string; time: string; read: boolean
-}> = [
-  { id: 1, type: "success", title: "Core Modules Connected", message: "Bids Tracker, Vision, and Vulpine Drive are connected to their authoritative services.", time: "just now", read: false },
-  { id: 3, type: "success", title: "Bid Engine Shell Created", message: "Workflow stage placeholders are ready for backend integration.", time: "1 min ago", read: true },
-]
+}> = []
 
 function NotificationIcon({ type }: { type: NotifType }) {
   if (type === "success") return <Check className="size-3.5" />
@@ -300,6 +283,7 @@ function NotificationPanel({
             </div>
           </div>
           <div className="overflow-y-auto max-h-[23rem]">
+            {items.length === 0 ? <p className="p-5 text-sm leading-relaxed text-muted-foreground">No notifications loaded. The notification feed is not connected yet.</p> : null}
             {items.map((notif, i) => (
               <motion.button
                 key={notif.id}
@@ -334,57 +318,6 @@ function NotificationPanel({
 }
 
 // ─── Section: Dashboard ─────────────────────────────────────────
-
-function DashboardSection() {
-  const kpis = [
-    { label: "Active Leads", icon: Users },
-    { label: "Open Bids", icon: Wrench },
-    { label: "Pipeline Value", icon: DollarSign },
-    { label: "Closed This Month", icon: TrendingUp },
-  ]
-
-  const modules = [
-    { icon: Users, title: "Lead Pipeline", description: "Track inbound leads, qualification status, and follow-up cadences." },
-    { icon: Activity, title: "Activity Feed", description: "Live log of CRM events, bid updates, and system actions." },
-    { icon: TrendingUp, title: "Revenue Summary", description: "Monthly and YTD revenue breakdown across all projects." },
-    { icon: Zap, title: "Quick Actions", description: "Shortcuts to create a lead, start a bid, or upload a document." },
-  ]
-
-  return (
-    <div className={`flex flex-col gap-5 ${SECTION_MIN_H}`}>
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={SPRING}
-        className="rounded-2xl surface-card p-5 lg:p-6 relative overflow-hidden"
-        style={{ boxShadow: CARD_SHADOW }}
-      >
-        <GlowOrb className="w-48 h-48 -top-24 -right-24 bg-primary/6" />
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-extrabold text-foreground font-display tracking-tight">Command Overview</h2>
-            <p className="text-xs text-muted-foreground mt-1 font-sans">
-              Live KPIs, activity, and pipeline summary will populate here once the backend is connected.
-            </p>
-          </div>
-          <PlaceholderBadge label="Shell" />
-        </div>
-      </motion.div>
-
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {kpis.map((kpi, i) => (
-          <StatShell key={kpi.label} label={kpi.label} icon={kpi.icon} delay={i * 0.06} />
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {modules.map((mod, i) => (
-          <PlaceholderModule key={mod.title} icon={mod.icon} title={mod.title} description={mod.description} delay={0.1 + i * 0.06} />
-        ))}
-      </div>
-    </div>
-  )
-}
 
 // ─── Section: Leads ─────────────────────────────────────────────
 
@@ -858,8 +791,8 @@ function SettingsSection() {
 
 // ─── Section map ────────────────────────────────────────────────
 
-const SECTION_COMPONENTS: Record<SectionId, React.ComponentType> = {
-  dashboard: DashboardSection,
+const SECTION_COMPONENTS: Partial<Record<SectionId, React.ComponentType>> = {
+  dashboard: PlatformOverviewSection,
   leads: LeadsSection,
   contacts: ContactsSection,
   companies: CompaniesSection,
@@ -891,8 +824,7 @@ function Sidebar({
     <motion.aside
       animate={{ width: isOpen ? 240 : 64 }}
       transition={{ type: "spring", stiffness: 340, damping: 34 }}
-      className={`relative z-20 hidden shrink-0 flex-col overflow-hidden border-r border-border/50 bg-card/70 lg:flex ${isOpen ? "translate-x-0" : "lg:translate-x-0"}`}
-      style={{ minHeight: "100%" }}
+      className="sticky top-16 z-20 hidden h-[calc(100dvh-4rem)] shrink-0 flex-col self-start overflow-hidden border-r border-border/50 bg-card/70 lg:flex"
     >
       {/* Logo row */}
       <div className="flex items-center h-16 px-3.5 border-b border-border/50 shrink-0">
@@ -919,7 +851,7 @@ function Sidebar({
             </div>
             <button
               onClick={onToggle}
-              className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent/40 transition-all duration-200 shrink-0"
+              className="flex size-11 items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent/40 transition-colors shrink-0"
               aria-label="Collapse sidebar"
             >
               <ChevronLeft className="size-4" />
@@ -944,7 +876,7 @@ function Sidebar({
 
       {/* Nav groups */}
       <nav className="flex-1 overflow-y-auto overflow-x-hidden py-3 px-2 flex flex-col gap-0.5" aria-label="Main navigation">
-        {NAV_GROUPS.map((group) => (
+        {NAV_GROUPS.filter((group) => group.items.some((item) => !allowedSections || allowedSections.includes(item.id))).map((group) => (
           <div key={group.label} className="mb-1">
             {/* Section subheading */}
             <AnimatePresence>
@@ -971,7 +903,7 @@ function Sidebar({
                   key={item.id}
                   onClick={() => onNavigate(item.id)}
                   aria-current={isActive ? "page" : undefined}
-                  className={`relative flex items-center gap-3 w-full rounded-xl px-2.5 py-2.5 text-sm font-semibold transition-all duration-200 font-sans group ${
+                  className={`relative flex min-h-11 items-center gap-3 w-full rounded-xl px-2.5 py-2.5 text-sm font-semibold transition-colors font-sans group ${
                     isActive
                       ? "bg-primary/10 text-foreground"
                       : "text-muted-foreground hover:text-foreground hover:bg-accent/40"
@@ -1015,7 +947,7 @@ function Sidebar({
 
       {/* Bottom: user */}
       <div className="border-t border-border/50 p-2 shrink-0">
-        <div className={`flex items-center gap-3 px-2.5 py-2.5 rounded-xl hover:bg-accent/30 transition-colors cursor-pointer ${isOpen ? "" : "justify-center"}`}>
+        <div className={`flex items-center gap-3 px-2.5 py-2.5 rounded-xl ${isOpen ? "" : "justify-center"}`}>
           <div className="size-8 rounded-xl bg-primary/12 flex items-center justify-center glow-teal-sm shrink-0">
             <span className="text-[11px] font-bold text-primary font-display">VC</span>
           </div>
@@ -1028,8 +960,8 @@ function Sidebar({
                 transition={SPRING}
                 className="flex-1 min-w-0"
               >
-                <p className="text-xs font-bold text-foreground truncate font-sans">Vulpine User</p>
-                <p className="text-[10px] text-muted-foreground/60 truncate font-mono">command@vulpine.app</p>
+                <p className="text-xs font-bold text-foreground truncate font-sans">Vulpine OS</p>
+                <p className="text-[10px] text-muted-foreground/60 truncate font-mono">Shared Backoffice workspace</p>
               </motion.div>
             )}
           </AnimatePresence>
@@ -1048,11 +980,12 @@ function MobileNavigation({
   onNavigate: (id: SectionId) => void
   allowedSections?: readonly SectionId[]
 }) {
+  const [moduleQuery, setModuleQuery] = useState("")
   const primaryIds: SectionId[] = ["dashboard", "bidstracker", "vision", "drive"]
   const primary = primaryIds
     .map((id) => ALL_NAV_ITEMS.find((item) => item.id === id))
     .filter((item): item is NavItem => Boolean(item && (!allowedSections || allowedSections.includes(item.id))))
-  const available = ALL_NAV_ITEMS.filter((item) => !allowedSections || allowedSections.includes(item.id))
+  const available = ALL_NAV_ITEMS.filter((item) => (!allowedSections || allowedSections.includes(item.id)) && item.label.toLocaleLowerCase().includes(moduleQuery.trim().toLocaleLowerCase()))
   const moreIsActive = !primaryIds.includes(activeSection)
 
   return (
@@ -1074,7 +1007,7 @@ function MobileNavigation({
             >
               {active ? <motion.span layoutId="mobile-nav-indicator" transition={SPRING} className="absolute inset-x-3 top-1 h-0.5 rounded-full bg-primary shadow-[0_0_10px_rgba(45,212,191,.55)]" /> : null}
               <Icon className="size-5" />
-              <span className="max-w-[4.5rem] truncate">{item.label.replace("Vulpine ", "")}</span>
+              <span className="max-w-[4.5rem] truncate">{item.id === "dashboard" ? "Home" : item.id === "vision" ? "Brain" : item.label.replace("Vulpine ", "")}</span>
             </button>
           )
         })}
@@ -1092,8 +1025,12 @@ function MobileNavigation({
               <DrawerTitle className="font-display text-lg font-black">All modules</DrawerTitle>
               <DrawerDescription>Everything in Vulpine Backoffice, one thumb away.</DrawerDescription>
             </DrawerHeader>
-            <div className="grid max-h-[58dvh] grid-cols-2 gap-2 overflow-y-auto px-4 pb-5">
-              {available.map((item) => {
+            <div className="px-4 pb-3"><input aria-label="Find a module in navigation" type="search" placeholder="Find a module…" value={moduleQuery} onChange={(event) => setModuleQuery(event.target.value)} className="min-h-12 w-full rounded-xl border border-border/60 bg-background/50 px-4 text-base outline-none focus:border-primary" /></div>
+            <div className="max-h-[min(58dvh,calc(100dvh-15rem))] overflow-y-auto px-4 pb-5">
+              {NAV_GROUPS.map((group) => {
+                const items = available.filter((item) => group.items.some((entry) => entry.id === item.id))
+                if (!items.length) return null
+                return <section key={group.label} className="mb-4"><h3 className="mb-2 px-1 font-mono text-[11px] tracking-widest text-muted-foreground">{group.label}</h3><div className="grid grid-cols-2 gap-2">{items.map((item) => {
                 const Icon = item.icon
                 const active = item.id === activeSection
                 return (
@@ -1104,11 +1041,13 @@ function MobileNavigation({
                       className={`flex min-h-16 items-center gap-3 rounded-2xl border px-4 text-left text-sm font-bold ${active ? "border-primary/30 bg-primary/10 text-primary" : "border-border/60 bg-background/30 text-foreground"}`}
                     >
                       <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10"><Icon className="size-5" /></span>
-                      <span className="truncate">{item.label}</span>
+                      <span className="min-w-0 break-words">{item.label}</span>
                     </button>
                   </DrawerClose>
                 )
+              })}</div></section>
               })}
+              {!available.length ? <p role="status" className="p-4 text-sm text-muted-foreground">No modules match your search.</p> : null}
             </div>
           </DrawerContent>
         </Drawer>
@@ -1129,8 +1068,8 @@ export default function VulpineCommandCenter({
   driveCanWrite?: boolean
 }) {
   const router = useRouter()
-  const [activeSection, setActiveSection] = useState<SectionId>(initialSection)
-  const [isTransitioning, setIsTransitioning] = useState(false)
+  const activeSection = initialSection
+  const [isTransitioning, startTransition] = useTransition()
   const [notificationsOpen, setNotificationsOpen] = useState(false)
   const [notifItems, setNotifItems] = useState(NOTIF_ITEMS)
   const [sidebarOpen, setSidebarOpen] = useState(true)
@@ -1143,15 +1082,7 @@ export default function VulpineCommandCenter({
     (sectionId: SectionId) => {
       if (allowedSections && !allowedSections.includes(sectionId)) return
       if (sectionId === activeSection) return
-      if (sectionId === "bidstracker" || sectionId === "vision" || sectionId === "drive") {
-        router.push(sectionId === "vision" ? "/bids/vision" : sectionId === "drive" ? "/drive" : "/bids/tracker")
-        return
-      }
-      setIsTransitioning(true)
-      setTimeout(() => {
-        setActiveSection(sectionId)
-        setIsTransitioning(false)
-      }, 180)
+      startTransition(() => router.push(moduleForId(sectionId).path))
     },
     [activeSection, allowedSections, router],
   )
@@ -1255,7 +1186,7 @@ export default function VulpineCommandCenter({
                 exit={{ opacity: 0, y: -12 }}
                 transition={SPRING}
               >
-                {activeSection === "drive" ? <DriveSection canWrite={driveCanWrite} /> : <ActiveComponent />}
+                {activeSection === "drive" ? <DriveSection canWrite={driveCanWrite} /> : activeSection === "dashboard" ? <PlatformOverviewSection allowedSections={allowedSections} /> : ActiveComponent ? <ActiveComponent /> : <PlatformModuleSection id={activeSection} allowedSections={allowedSections} />}
               </motion.div>
             </AnimatePresence>
           </main>
@@ -1265,10 +1196,9 @@ export default function VulpineCommandCenter({
             <div className="px-5 lg:px-8 xl:px-10 py-4">
               <div className="flex items-center justify-between text-[11px] text-muted-foreground font-sans">
                 <div className="flex items-center gap-2">
-                  <div className="size-2 rounded-full bg-fin-gain animate-pulse-soft" />
-                  <span className="font-medium">Vulpine Command Center — Shell</span>
+                  <span className="font-medium">Vulpine OS · Backoffice</span>
                 </div>
-                <span className="font-mono text-muted-foreground/60">v0.2.0 — Bids, Cabinet Brain &amp; Drive live</span>
+                <span className="font-mono text-muted-foreground/60">One workspace · Shared capabilities</span>
               </div>
             </div>
           </footer>

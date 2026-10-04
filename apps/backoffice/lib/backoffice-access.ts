@@ -1,27 +1,11 @@
-import { hasCapability } from "@vulpine/permissions"
+import { visiblePlatformModules, type PlatformModuleId } from "./platform-modules"
 
-export type BackofficeSectionId =
-  | "dashboard"
-  | "leads"
-  | "contacts"
-  | "companies"
-  | "revenue"
-  | "autobid"
-  | "bidstracker"
-  | "vision"
-  | "emailblaster"
-  | "drive"
-  | "settings"
+export type BackofficeSectionId = PlatformModuleId
 
 export function visibleSectionsForRoles(roles: readonly string[]): BackofficeSectionId[] {
-  const visible: BackofficeSectionId[] = []
-  if (hasCapability(roles, "dashboard.read")) visible.push("dashboard")
-  if (hasCapability(roles, "crm.read")) visible.push("leads", "contacts", "companies")
-  if (hasCapability(roles, "finance.read")) visible.push("revenue")
-  if (hasCapability(roles, "bids.read")) visible.push("autobid", "bidstracker")
-  if (hasCapability(roles, "vision.read")) visible.push("vision")
-  if (hasCapability(roles, "crm.write")) visible.push("emailblaster")
-  if (hasCapability(roles, "drive.read")) visible.push("drive")
-  if (hasCapability(roles, "settings.read")) visible.push("settings")
-  return visible
+  // Preserve legacy section ordering for existing consumers while extending
+  // visibility from the same registry used for direct-route authorization.
+  const legacyOrder: PlatformModuleId[] = ["dashboard", "leads", "contacts", "companies", "phone", "revenue", "autobid", "bidstracker", "vision", "emailblaster", "drive", "settings"]
+  const visible = visiblePlatformModules(roles)
+  return [...legacyOrder.filter((id) => visible.includes(id)), ...visible.filter((id) => !legacyOrder.includes(id))]
 }
