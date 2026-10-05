@@ -109,11 +109,14 @@ export async function writeFile(inputPath: string, data: Buffer) {
   await logAccess(path, "modify").catch(() => undefined)
 }
 
-export async function deleteFile(inputPath: string) {
+export async function deleteItem(inputPath: string, folder = false) {
   const path = validateDeletePath(inputPath)
   await withSftp(async (client) => {
-    if (await client.exists(path) !== "-") throw new Error("Only existing files can be deleted.")
-    await client.delete(path, false)
+    if (await client.exists(path) !== (folder ? "d" : "-")) {
+      throw new Error(`Only existing ${folder ? "folders" : "files"} can be deleted.`)
+    }
+    if (folder) await client.rmdir(path, true)
+    else await client.delete(path, false)
   })
   await logAccess(path, "modify").catch(() => undefined)
 }

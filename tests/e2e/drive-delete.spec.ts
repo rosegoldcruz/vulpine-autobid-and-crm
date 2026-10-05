@@ -4,7 +4,7 @@ import { localAuth } from './local-auth'
 test.skip(!process.env.OPERATIONS_AUTH_QA, 'Requires isolated local authenticated QA')
 
 for (const width of [1440, 390]) {
-  test(`file deletion confirms, handles failure, and clears favorites at ${width}px`, async ({ page, context }) => {
+  test(`file and folder deletion confirms, handles failure, and clears favorites at ${width}px`, async ({ page, context }) => {
     await localAuth(context)
     await page.setViewportSize({ width, height: 900 })
     const file = { name: 'Delete QA.txt', path: '/Delete QA.txt', type: 'file', size: 12, modifiedAt: null }
@@ -14,9 +14,10 @@ for (const width of [1440, 390]) {
     let requests = 0
     const errors: string[] = []
     page.on('pageerror', error => errors.push(error.message))
-    await page.addInitScript(() => localStorage.setItem('vulpine-drive-favorites', JSON.stringify(['/Delete QA.txt'])))
+    await page.addInitScript(() => localStorage.setItem('vulpine-drive-favorites', JSON.stringify(['/Delete QA.txt', '/Keep folder/child.txt', '/Keep folder-other.txt'])))
     await page.route('**/api/drive/**', async route => {
       if (route.request().method() === 'DELETE') {
+        if (route.request().url().includes('Keep%20folder')) expect(new URL(route.request().url()).searchParams.get('type')).toBe('folder')
         requests += 1
         if (!fail) deleted = true
         await route.fulfill({ status: fail ? 500 : 200, json: fail ? { ok: false, error: { code: 'INTERNAL_ERROR', message: 'Permission denied' }, meta: {} } : { ok: true, data: { deleted: true }, meta: {} } })
@@ -41,9 +42,20 @@ for (const width of [1440, 390]) {
     await page.getByRole('button', { name: 'Delete file', exact: true }).click()
     await expect(page.getByText('File deleted', { exact: true })).toBeVisible()
     await expect(actions).toHaveCount(0)
-    expect(await page.evaluate(() => JSON.parse(localStorage.getItem('vulpine-drive-favorites') || '[]'))).toEqual([])
+    expect(await page.evaluate(() => JSON.parse(localStorage.getItem('vulpine-drive-favorites') || '[]'))).toEqual(['/Keep folder/child.txt', '/Keep folder-other.txt'])
     await page.getByRole('button', { name: 'Actions for Keep folder' }).filter({ visible: true }).click()
-    await expect(page.getByRole('button', { name: 'Delete file', exact: true })).toHaveCount(0)
+    await expect(page.getByRole('button', { name: 'Delete folder', exact: true })).toBeVisible()
+    page.once('dialog', dialog => dialog.dismiss())
+    await page.getByRole('button', { name: 'Delete folder', exact: true }).click()
+    expect(requests).toBe(2)
+    page.once('dialog', async dialog => {
+      expect(dialog.message()).toContain('all files and subfolders')
+      await dialog.accept()
+    })
+    await page.getByRole('button', { name: 'Delete folder', exact: true }).click()
+    await expect(page.getByText('Folder deleted', { exact: true })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Actions for Keep folder' })).toHaveCount(0)
+    expect(await page.evaluate(() => JSON.parse(localStorage.getItem('vulpine-drive-favorites') || '[]'))).toEqual(['/Keep folder-other.txt'])
     expect(errors).toEqual([])
     await page.screenshot({ path: `/tmp/drive-delete-${width}.png` })
   })

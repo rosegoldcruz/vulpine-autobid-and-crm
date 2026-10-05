@@ -6,7 +6,7 @@ import { authorizeTransfer, requireIntegration } from "./auth.js"
 import { optionalEnv, positiveIntegerEnv } from "./config.js"
 import { contentDisposition, contentTypeForPath, filenameFromPath, previewKind, zipFilenameFromPath } from "./file-meta.js"
 import { joinRemotePath, validateDeletePath } from "./path.js"
-import { deleteFile, listAllItems, listDirectory, readFile, writeFile, zipDirectory } from "./sftp.js"
+import { deleteItem, listAllItems, listDirectory, readFile, writeFile, zipDirectory } from "./sftp.js"
 
 const app = express()
 const upload = multer({
@@ -135,7 +135,7 @@ app.delete("/files", async (request, response, next) => {
     return
   }
   try {
-    await deleteFile(path)
+    await deleteItem(path, request.query.type === "folder")
     response.json({ deleted: true })
   } catch (error) {
     next(error)

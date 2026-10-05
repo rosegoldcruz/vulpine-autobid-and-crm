@@ -189,7 +189,7 @@ function ActionMenu({
           <a href={drive.downloadUrl(item.path, item.type === "folder")} className="flex h-12 items-center gap-3 rounded-xl border border-border/60 px-4 text-left text-sm font-semibold text-foreground"><Download className="size-5 text-primary" /> {item.type === "folder" ? "Download folder as ZIP" : "Download"}</a>
           <button type="button" onClick={onFavorite} className="flex h-12 items-center gap-3 rounded-xl border border-border/60 px-4 text-left text-sm font-semibold text-foreground"><Star className={`size-5 text-primary ${favorite ? "fill-primary" : ""}`} /> {favorite ? "Remove favorite" : "Add to favorites"}</button>
           <button type="button" onClick={onSelect} className="flex h-12 items-center gap-3 rounded-xl border border-border/60 px-4 text-left text-sm font-semibold text-foreground"><Check className="size-5 text-primary" /> {selected ? "Clear selection" : "Select item"}</button>
-          {onDelete ? <button type="button" onClick={onDelete} disabled={deleting} className="flex h-12 items-center gap-3 rounded-xl border border-destructive/30 px-4 text-left text-sm font-semibold text-destructive disabled:opacity-50">{deleting ? <Loader2 className="size-5 animate-spin" /> : <Trash2 className="size-5" />} {deleting ? "Deleting…" : "Delete file"}</button> : null}
+          {onDelete ? <button type="button" onClick={onDelete} disabled={deleting} className="flex h-12 items-center gap-3 rounded-xl border border-destructive/30 px-4 text-left text-sm font-semibold text-destructive disabled:opacity-50">{deleting ? <Loader2 className="size-5 animate-spin" /> : <Trash2 className="size-5" />} {deleting ? "Deleting…" : item.type === "folder" ? "Delete folder" : "Delete file"}</button> : null}
         </div>
       </DrawerContent>
     </Drawer>
@@ -332,26 +332,31 @@ export function DriveSection({ canWrite = false }: { canWrite?: boolean }) {
     }
   }
 
-  async function deleteFile(item: DriveRecord) {
-    if (!canWrite || item.type !== "file" || deleting) return
-    if (!window.confirm(`Permanently delete "${item.name}"? This cannot be undone.`)) return
+  async function deleteItem(item: DriveRecord) {
+    if (!canWrite || (item.type !== "file" && item.type !== "folder") || deleting) return
+    const folder = item.type === "folder"
+    if (!window.confirm(folder
+      ? `Permanently delete folder "${item.name}" and all files and subfolders inside it? This cannot be undone.`
+      : `Permanently delete "${item.name}"? This cannot be undone.`)) return
+    const isDeleted = (value: string) => value === item.path || (folder && value.startsWith(`${item.path}/`))
     setDeleting(true)
     try {
-      await drive.deleteFile(item.path)
-      setItems((current) => current.filter((record) => record.path !== item.path))
-      setRecentItems((current) => current.filter((record) => record.path !== item.path))
-      setKnownItems((current) => { const next = { ...current }; delete next[item.path]; return next })
-      setFavorites((current) => current.filter((value) => value !== item.path))
+      await drive.deleteItem(item.path, folder)
+      setItems((current) => current.filter((record) => !isDeleted(record.path)))
+      setRecentItems((current) => current.filter((record) => !isDeleted(record.path)))
+      setKnownItems((current) => Object.fromEntries(Object.entries(current).filter(([value]) => !isDeleted(value))))
+      setFavorites((current) => current.filter((value) => !isDeleted(value)))
       try {
         const stored = JSON.parse(window.localStorage.getItem("vulpine-drive-favorites") || "[]") as string[]
-        window.localStorage.setItem("vulpine-drive-favorites", JSON.stringify(stored.filter((value) => value !== item.path)))
+        window.localStorage.setItem("vulpine-drive-favorites", JSON.stringify(stored.filter((value) => !isDeleted(value))))
       } catch { /* Deletion succeeded even if local storage is unavailable. */ }
-      setSelected((current) => { const next = new Set(current); next.delete(item.path); return next })
+      setSelected((current) => new Set([...current].filter((value) => !isDeleted(value))))
       setActionItem(null)
-      if (previewItem?.path === item.path) setPreviewItem(null)
-      toast.success("File deleted", { description: item.name })
+      if (previewItem && isDeleted(previewItem.path)) setPreviewItem(null)
+      if (folder && isDeleted(path)) await loadPath(item.path.split("/").slice(0, -1).join("/") || "/")
+      toast.success(folder ? "Folder deleted" : "File deleted", { description: item.name })
     } catch (caught) {
-      toast.error("Delete failed", { description: caught instanceof Error ? caught.message : "Unable to delete file" })
+      toast.error("Delete failed", { description: caught instanceof Error ? caught.message : "Unable to delete item" })
     } finally {
       setDeleting(false)
     }
@@ -497,7 +502,7 @@ export function DriveSection({ canWrite = false }: { canWrite?: boolean }) {
         <button type="button" onClick={() => activeTab === "recent" ? void loadRecent() : void loadPath(path)} disabled={busy} className="flex size-12 shrink-0 items-center justify-center rounded-xl text-muted-foreground disabled:opacity-50" aria-label="Refresh Drive"><RefreshCw className={`size-5 ${busy ? "animate-spin" : ""}`} /></button>
       </div>
 
-      {actionItem ? <ActionMenu deleting={deleting} onDelete={canWrite && actionItem.type === "file" ? () => void deleteFile(actionItem) : undefined} item={actionItem} favorite={favoriteSet.has(actionItem.path)} selected={selected.has(actionItem.path)} drive={drive} onClose={() => setActionItem(null)} onFavorite={() => { toggleFavorite(actionItem); setActionItem(null) }} onSelect={() => { toggleSelected(actionItem); setActionItem(null) }} onPreview={() => { setPreviewItem(actionItem); setActionItem(null) }} /> : null}
+      {actionItem ? <ActionMenu deleting={deleting} onDelete={canWrite && (actionItem.type === "file" || actionItem.type === "folder") ? () => void deleteItem(actionItem) : undefined} item={actionItem} favorite={favoriteSet.has(actionItem.path)} selected={selected.has(actionItem.path)} drive={drive} onClose={() => setActionItem(null)} onFavorite={() => { toggleFavorite(actionItem); setActionItem(null) }} onSelect={() => { toggleSelected(actionItem); setActionItem(null) }} onPreview={() => { setPreviewItem(actionItem); setActionItem(null) }} /> : null}
       {previewItem ? <QuickView item={previewItem} drive={drive} onClose={() => setPreviewItem(null)} /> : null}
     </div>
   )

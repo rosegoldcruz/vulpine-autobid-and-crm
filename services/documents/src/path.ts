@@ -25,7 +25,7 @@ export function validateDeletePath(input: unknown): string {
   if (typeof input !== "string" || !input.startsWith("/") || input === "/" ||
       input.includes("\\") || input.includes("\0") || input.endsWith("/") ||
       input.split("/").slice(1).some((part) => !part || part === "." || part === "..")) {
-    throw new Error("A valid file path is required; Drive root cannot be deleted.")
+    throw new Error("A valid item path is required; Drive root cannot be deleted.")
   }
   return input
 }
