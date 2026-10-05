@@ -1,9 +1,10 @@
+import type { Readable } from "node:stream"
 import type { Archiver } from "archiver"
 import SftpClient from "ssh2-sftp-client"
 import type { DirectoryListing, DriveItem } from "@vulpine/contracts"
 import { logAccess } from "./access-log.js"
 import { positiveIntegerEnv, requiredEnv } from "./config.js"
-import { joinRemotePath, normalizeRemotePath, parentPath, validateDeletePath } from "./path.js"
+import { normalizeRemotePath, parentPath, validateDeletePath } from "./path.js"
 
 type SftpListItem = {
   name: string
@@ -38,7 +39,7 @@ async function withSftp<T>(handler: (client: SftpClient) => Promise<T>) {
 function toDriveItem(basePath: string, item: SftpListItem): DriveItem {
   return {
     name: item.name,
-    path: joinRemotePath(basePath, item.name),
+    path: `${normalizeRemotePath(basePath).replace(/\/$/, "")}/${item.name}`,
     type: item.type === "d" ? "folder" : item.type === "-" ? "file" : "unknown",
     size: item.size,
     modifiedAt: item.modifyTime ? new Date(item.modifyTime).toISOString() : null,
@@ -47,8 +48,7 @@ function toDriveItem(basePath: string, item: SftpListItem): DriveItem {
 }
 
 function hasUsableName(item: SftpListItem) {
-  const name = item.name?.trim().replaceAll("/", "").replaceAll("\\", "")
-  return Boolean(name && name !== "." && name !== "..")
+  return Boolean(item.name && item.name !== "." && item.name !== "..")
 }
 
 export async function listDirectory(inputPath: string): Promise<DirectoryListing> {
@@ -88,6 +88,18 @@ export async function listAllItems() {
       }
     }
     return allItems
+  })
+}
+
+export async function streamRemoteFile(
+  inputPath: string,
+  handler: (size: number, open: (start?: number, end?: number) => Readable) => Promise<void>,
+) {
+  const path = normalizeRemotePath(inputPath)
+  await withSftp(async (client) => {
+    const stat = await client.stat(path)
+    if (!stat.isFile) throw new Error("Only files can be previewed.")
+    await handler(stat.size, (start, end) => client.createReadStream(path, { start, end }))
   })
 }
 

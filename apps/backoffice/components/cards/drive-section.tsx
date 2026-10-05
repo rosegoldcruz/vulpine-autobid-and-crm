@@ -1,6 +1,6 @@
 "use client"
 
-import Image from "next/image"
+import dynamic from "next/dynamic"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { motion } from "motion/react"
 import {
@@ -110,31 +110,10 @@ function FileTypeIcon({ item, className = "size-4" }: { item: DriveRecord; class
   return <Icon className={`${className} ${color}`} aria-hidden="true" />
 }
 
-function PreviewSurface({ item, drive }: { item: DriveRecord; drive: DriveClient }) {
-  const kind = fileKind(item)
-  const previewUrl = drive.previewUrl(item.path)
-  if (kind === "Image") {
-    return (
-      <div className="relative h-[min(62vh,34rem)] overflow-hidden rounded-xl border border-border/60 bg-black/30">
-        <Image src={previewUrl} alt={item.name} fill unoptimized sizes="(max-width: 768px) 90vw, 720px" className="object-contain" />
-      </div>
-    )
-  }
-  if (kind === "Video") {
-    return <video src={previewUrl} controls className="h-[min(62vh,34rem)] w-full rounded-xl border border-border/60 bg-black object-contain" />
-  }
-  if (kind === "PDF") {
-    return <object data={previewUrl} type="application/pdf" className="h-[min(62vh,34rem)] w-full rounded-xl border border-border/60 bg-white"><p className="p-6 text-sm text-foreground">PDF preview unavailable. Download the file to view it.</p></object>
-  }
-  return (
-    <div className="flex h-72 items-center justify-center rounded-xl border border-border/60 bg-background/40">
-      <div className="text-center">
-        <FileTypeIcon item={item} className="mx-auto size-14" />
-        <p className="mt-4 text-xs font-semibold text-muted-foreground">Preview is not available for this file type.</p>
-      </div>
-    </div>
-  )
-}
+const PreviewSurface = dynamic(() => import("@/components/drive/file-preview"), {
+  loading: () => <p role="status" className="p-4 text-xs text-muted-foreground">Loading preview…</p>,
+  ssr: false,
+})
 
 function QuickView({ item, drive, onClose }: { item: DriveRecord; drive: DriveClient; onClose: () => void }) {
   return (
@@ -144,7 +123,7 @@ function QuickView({ item, drive, onClose }: { item: DriveRecord; drive: DriveCl
           <DrawerTitle className="truncate font-display text-lg font-black">{item.name}</DrawerTitle>
           <DrawerDescription className="truncate font-mono text-[10px]">{item.path}</DrawerDescription>
         </DrawerHeader>
-        <div className="overflow-y-auto px-4"><PreviewSurface item={item} drive={drive} /></div>
+        <div data-vaul-no-drag onPointerDown={(event) => event.stopPropagation()} className="overflow-y-auto px-4"><PreviewSurface key={item.path} item={item} drive={drive} /></div>
         <DrawerFooter className="grid grid-cols-2 gap-2 sm:flex sm:flex-row sm:justify-end">
           <DrawerClose asChild><button type="button" className="h-12 rounded-xl border border-border/60 px-4 text-xs font-semibold text-muted-foreground">Close</button></DrawerClose>
           <a href={drive.downloadUrl(item.path, item.type === "folder")} className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-xs font-bold text-primary-foreground"><Download className="size-4" /> Download</a>

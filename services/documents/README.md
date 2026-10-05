@@ -27,5 +27,7 @@ BACKOFFICE_ORIGIN
 ```
 
 Metadata routes require `x-vulpine-integration-key`. Transfer routes accept either that server-side key or
-a five-minute HMAC ticket scoped to the authenticated subject, action, and exact Drive path. Upload CORS is
+a five-minute HMAC ticket scoped to the authenticated subject, action, and exact Drive path. Upload and preview CORS are
 restricted to `BACKOFFICE_ORIGIN` (production default: `https://backoffice.vulpine.llc`).
+
+Previews stream directly from SFTP and support single HTTP byte ranges and HEAD requests. Stored Unix filenames retain literal backslashes; upload filename sanitization remains separate. Binary formats are returned as bytes for authenticated browser viewers. Unknown formats use a text or hexadecimal preview.

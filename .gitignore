@@ -49,3 +49,6 @@ __pycache__/
 /legacy/bids-tracker/uploads/
 /services/engine/uploads/*
 !/services/engine/uploads/.gitkeep
+
+# Viewer runtime assets are copied from pinned dependencies during build
+/apps/backoffice/public/viewers/

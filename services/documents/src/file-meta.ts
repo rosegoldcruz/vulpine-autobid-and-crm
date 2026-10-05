@@ -1,4 +1,12 @@
 const mimeByExtension: Record<string, string> = {
+  bmp: "image/bmp",
+  ico: "image/x-icon",
+  mp3: "audio/mpeg",
+  wav: "audio/wav",
+  ogg: "audio/ogg",
+  m4a: "audio/mp4",
+  flac: "audio/flac",
+  opus: "audio/ogg",
   jpg: "image/jpeg",
   jpeg: "image/jpeg",
   png: "image/png",
@@ -38,16 +46,6 @@ export function extensionFromPath(path: string) {
 
 export function contentTypeForPath(path: string) {
   return mimeByExtension[extensionFromPath(path)] ?? "application/octet-stream"
-}
-
-export function previewKind(path: string) {
-  const extension = extensionFromPath(path)
-  if (["jpg", "jpeg", "png", "gif", "webp", "avif", "svg"].includes(extension)) return "image"
-  if (["mp4", "mov", "webm", "m4v"].includes(extension)) return "video"
-  if (["glb", "gltf"].includes(extension)) return "model"
-  if (extension === "pdf") return "pdf"
-  if (["txt", "md", "csv", "json"].includes(extension)) return "text"
-  return "file"
 }
 
 export function contentDisposition(type: "attachment" | "inline", filename: string) {

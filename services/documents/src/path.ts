@@ -1,7 +1,6 @@
 export function normalizeRemotePath(input: string | null | undefined) {
   if (!input || input === "/") return "/"
-  const decoded = input.replaceAll("\\", "/")
-  const parts = decoded.split("/").filter(Boolean)
+  const parts = input.split("/").filter(Boolean)
   const safeParts = parts.filter((part) => part !== "." && part !== "..")
   return `/${safeParts.join("/")}`
 }
@@ -23,7 +22,7 @@ export function joinRemotePath(base: string, name: string) {
 
 export function validateDeletePath(input: unknown): string {
   if (typeof input !== "string" || !input.startsWith("/") || input === "/" ||
-      input.includes("\\") || input.includes("\0") || input.endsWith("/") ||
+      input.includes("\0") || input.endsWith("/") ||
       input.split("/").slice(1).some((part) => !part || part === "." || part === "..")) {
     throw new Error("A valid item path is required; Drive root cannot be deleted.")
   }

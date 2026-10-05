@@ -11,3 +11,7 @@ test("uploaded filenames cannot create nested paths", () => {
   assert.equal(joinRemotePath("/projects", "../bid.pdf"), "/projects/..bid.pdf")
   assert.throws(() => joinRemotePath("/projects", ".."), /Invalid filename/)
 })
+
+test("remote reads preserve literal backslashes in Unix filenames", () => {
+  assert.equal(normalizeRemotePath("/\\home\\backup\\image.png"), "/\\home\\backup\\image.png")
+})

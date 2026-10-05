@@ -1,12 +1,14 @@
+import { pipeline } from "node:stream/promises"
 import express, { type NextFunction, type Request, type Response } from "express"
 import multer from "multer"
 import { normalizeCorrelationId } from "@vulpine/contracts"
 import { latestAccessByPath, logAccess, type AccessAction } from "./access-log.js"
 import { authorizeTransfer, requireIntegration } from "./auth.js"
 import { optionalEnv, positiveIntegerEnv } from "./config.js"
-import { contentDisposition, contentTypeForPath, filenameFromPath, previewKind, zipFilenameFromPath } from "./file-meta.js"
+import { contentDisposition, contentTypeForPath, filenameFromPath, zipFilenameFromPath } from "./file-meta.js"
+import { parseByteRange } from "./range.js"
 import { joinRemotePath, validateDeletePath } from "./path.js"
-import { deleteItem, listAllItems, listDirectory, readFile, writeFile, zipDirectory } from "./sftp.js"
+import { deleteItem, listAllItems, listDirectory, readFile, streamRemoteFile, writeFile, zipDirectory } from "./sftp.js"
 
 const app = express()
 const upload = multer({
@@ -69,27 +71,61 @@ app.post("/upload", uploadCors, (request, response, next) => {
   }
 })
 
-app.get("/preview", async (request, response, next) => {
+function previewCors(request: Request, response: Response, next: NextFunction) {
+  const allowedOrigin = optionalEnv("BACKOFFICE_ORIGIN") ?? "https://backoffice.vulpine.llc"
+  if (request.header("origin") === allowedOrigin) {
+    response.set("access-control-allow-origin", allowedOrigin)
+    response.set("access-control-allow-methods", "GET, HEAD, OPTIONS")
+    response.set("access-control-allow-headers", "range")
+    response.set("access-control-expose-headers", "content-length, content-range, accept-ranges")
+    response.vary("origin")
+  }
+  if (request.method === "OPTIONS") {
+    response.status(request.header("origin") === allowedOrigin ? 204 : 403).end()
+    return
+  }
+  next()
+}
+
+app.options("/preview", previewCors)
+app.get("/preview", previewCors, async (request, response, next) => {
   const path = typeof request.query.path === "string" ? request.query.path : ""
   if (!path) {
     response.status(400).json({ error: { code: "VALIDATION_ERROR", message: "Missing path." } })
     return
   }
   if (!authorizeTransfer(request, response, "preview", path)) return
-  if (!["image", "video", "model", "pdf", "text"].includes(previewKind(path))) {
-    response.status(415).json({ error: { code: "UNSUPPORTED_FILE_TYPE", message: "No inline preview available." } })
-    return
-  }
   try {
-    const data = await readFile(path)
-    await logAccess(path, "view").catch(() => undefined)
-    response.set({
-      "content-type": contentTypeForPath(path),
-      "content-length": String(data.byteLength),
-      "content-disposition": contentDisposition("inline", filenameFromPath(path)),
-      "cache-control": "private, max-age=60",
-    }).send(data)
+    await streamRemoteFile(path, async (size, open) => {
+      response.set({
+        "content-type": contentTypeForPath(path),
+        "content-disposition": contentDisposition("inline", filenameFromPath(path)),
+        "cache-control": "private, max-age=60",
+        "accept-ranges": "bytes",
+        "x-content-type-options": "nosniff",
+        // Uploaded HTML/SVG must never run with the API origin's privileges.
+        "content-security-policy": "sandbox",
+      })
+      let start = 0
+      let end = size - 1
+      const range = request.header("range")
+      if (range) {
+        const parsed = parseByteRange(range, size)
+        if (!parsed) {
+          response.status(416).set("content-range", `bytes */${size}`).end()
+          return
+        }
+        start = parsed.start
+        end = parsed.end
+        response.status(206).set("content-range", `bytes ${start}-${end}/${size}`)
+      }
+      response.set("content-length", String(Math.max(0, end - start + 1)))
+      if (request.method === "HEAD" || size === 0) { response.end(); return }
+      await pipeline(open(start, end), response)
+    })
+    void logAccess(path, "view").catch(() => undefined)
   } catch (error) {
+    if (response.headersSent) { response.destroy(); return }
     next(error)
   }
 })
