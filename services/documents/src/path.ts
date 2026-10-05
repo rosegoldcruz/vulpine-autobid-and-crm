@@ -20,3 +20,12 @@ export function joinRemotePath(base: string, name: string) {
   if (!cleanName || cleanName === "." || cleanName === "..") throw new Error("Invalid filename")
   return normalized === "/" ? `/${cleanName}` : `${normalized}/${cleanName}`
 }
+
+export function validateDeletePath(input: unknown): string {
+  if (typeof input !== "string" || !input.startsWith("/") || input === "/" ||
+      input.includes("\\") || input.includes("\0") || input.endsWith("/") ||
+      input.split("/").slice(1).some((part) => !part || part === "." || part === "..")) {
+    throw new Error("A valid file path is required; Drive root cannot be deleted.")
+  }
+  return input
+}

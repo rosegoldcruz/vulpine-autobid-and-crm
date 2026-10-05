@@ -9,6 +9,7 @@ import { requireCapability } from "@/lib/require-capability"
 type RouteContext = { params: Promise<{ path: string[] }> }
 
 const routeRules = [
+  { method: "DELETE", path: "files", capability: "drive.write", upstreamPath: "/files", binary: false },
   { method: "GET", path: "files", capability: "drive.read", upstreamPath: "/files", binary: false },
   { method: "GET", path: "recent", capability: "drive.read", upstreamPath: "/recent", binary: false },
   { method: "POST", path: "access", capability: "drive.read", upstreamPath: "/access", binary: false },
@@ -148,3 +149,4 @@ export const dynamic = "force-dynamic"
 export const runtime = "nodejs"
 export const GET = proxy
 export const POST = proxy
+export const DELETE = proxy

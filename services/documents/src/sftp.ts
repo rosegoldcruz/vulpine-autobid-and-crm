@@ -3,7 +3,7 @@ import SftpClient from "ssh2-sftp-client"
 import type { DirectoryListing, DriveItem } from "@vulpine/contracts"
 import { logAccess } from "./access-log.js"
 import { positiveIntegerEnv, requiredEnv } from "./config.js"
-import { joinRemotePath, normalizeRemotePath, parentPath } from "./path.js"
+import { joinRemotePath, normalizeRemotePath, parentPath, validateDeletePath } from "./path.js"
 
 type SftpListItem = {
   name: string
@@ -105,6 +105,15 @@ export async function writeFile(inputPath: string, data: Buffer) {
   const path = normalizeRemotePath(inputPath)
   await withSftp(async (client) => {
     await client.put(data, path)
+  })
+  await logAccess(path, "modify").catch(() => undefined)
+}
+
+export async function deleteFile(inputPath: string) {
+  const path = validateDeletePath(inputPath)
+  await withSftp(async (client) => {
+    if (await client.exists(path) !== "-") throw new Error("Only existing files can be deleted.")
+    await client.delete(path, false)
   })
   await logAccess(path, "modify").catch(() => undefined)
 }

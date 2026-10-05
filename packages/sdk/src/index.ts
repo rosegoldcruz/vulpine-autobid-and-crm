@@ -141,6 +141,10 @@ export class DriveClient {
     return this.call<DirectoryListing>(`/files?path=${encodeURIComponent(path)}`)
   }
 
+  deleteFile(path: string) {
+    return this.call<{ deleted: true }>(`/files?path=${encodeURIComponent(path)}`, { method: "DELETE" })
+  }
+
   recent() {
     return this.call<DriveRecentListing>("/recent")
   }

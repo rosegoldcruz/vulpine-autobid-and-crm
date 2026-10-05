@@ -5,8 +5,8 @@ import { latestAccessByPath, logAccess, type AccessAction } from "./access-log.j
 import { authorizeTransfer, requireIntegration } from "./auth.js"
 import { optionalEnv, positiveIntegerEnv } from "./config.js"
 import { contentDisposition, contentTypeForPath, filenameFromPath, previewKind, zipFilenameFromPath } from "./file-meta.js"
-import { joinRemotePath } from "./path.js"
-import { listAllItems, listDirectory, readFile, writeFile, zipDirectory } from "./sftp.js"
+import { joinRemotePath, validateDeletePath } from "./path.js"
+import { deleteFile, listAllItems, listDirectory, readFile, writeFile, zipDirectory } from "./sftp.js"
 
 const app = express()
 const upload = multer({
@@ -121,6 +121,22 @@ app.use(requireIntegration)
 app.get("/files", async (request, response, next) => {
   try {
     response.json(await listDirectory(typeof request.query.path === "string" ? request.query.path : "/"))
+  } catch (error) {
+    next(error)
+  }
+})
+
+app.delete("/files", async (request, response, next) => {
+  let path: string
+  try {
+    path = validateDeletePath(request.query.path)
+  } catch (error) {
+    response.status(400).json({ error: { code: "VALIDATION_ERROR", message: (error as Error).message } })
+    return
+  }
+  try {
+    await deleteFile(path)
+    response.json({ deleted: true })
   } catch (error) {
     next(error)
   }
