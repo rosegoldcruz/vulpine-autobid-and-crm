@@ -3,6 +3,7 @@ import test from "node:test"
 import SftpClient from "ssh2-sftp-client"
 import { deleteItem, listDirectory } from "../src/sftp.js"
 import { validateDeletePath } from "../src/path.js"
+import { createHash } from "node:crypto"
 
 test("deletion rejects root, traversal, malformed paths and missing paths", () => {
   for (const path of [undefined, null, "", "/", "relative.txt", "/a/../b", "/a/./b", "/a//b", "/a/", "/a\0b"]) {
@@ -16,6 +17,7 @@ test("deletion checks remote type, deletes files and folders and closes failed c
   process.env.SFTP_HOST = "qa.invalid"
   process.env.SFTP_USERNAME = "qa"
   process.env.SFTP_PASSWORD = "qa-placeholder"
+  process.env.SFTP_HOST_KEY_SHA256 = `SHA256:${createHash("sha256").update("test-host-key").digest("base64").replace(/=+$/, "")}`
   const deleted: string[] = []
   let type: false | "d" | "l" | "-" = "-"
   const removed: string[] = []
@@ -56,7 +58,7 @@ test("deletion checks remote type, deletes files and folders and closes failed c
     assert.deepEqual(removed, ["/qa-folder"])
     assert.equal(closed, 10)
   } finally {
-    for (const key of ["SFTP_HOST", "SFTP_USERNAME", "SFTP_PASSWORD", "DATABASE_URL"]) {
+    for (const key of ["SFTP_HOST", "SFTP_USERNAME", "SFTP_PASSWORD", "SFTP_HOST_KEY_SHA256", "DATABASE_URL"]) {
       if (original[key] === undefined) delete process.env[key]
       else process.env[key] = original[key]
     }

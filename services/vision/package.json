@@ -10,10 +10,10 @@
   },
   "dependencies": {
     "@vulpine/contracts": "workspace:*",
-    "adm-zip": "^0.5.16",
-    "pdfjs-dist": "^5.4.624",
+    "adm-zip": "^0.6.1",
+    "pdfjs-dist": "^6.3.289",
     "server-only": "^0.0.1",
-    "xlsx": "^0.18.5",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
     "zod": "^3.24.1"
   },
   "devDependencies": {

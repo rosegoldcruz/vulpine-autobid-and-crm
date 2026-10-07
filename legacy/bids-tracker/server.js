@@ -1,5 +1,6 @@
 const express = require('express');
-const multer = require('multer');
+const { createIntegrationAuth } = require('./integration-auth');
+const { pdfUpload, hasPdfSignature } = require('./upload-policy');
 const path = require('path');
 const db = require('./db');
 const { extractFromPdf } = require('./extract');
@@ -11,14 +12,20 @@ const PORT = process.env.PORT || 4400;
 const profitIndex = loadProfitIndex();
 const workbookIndex = loadWorkbookIndex();
 
-const upload = multer({ storage: multer.memoryStorage() });
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.get('/health', (_req, res) => {
+  try { db.prepare('SELECT 1').get(); res.json({ status: 'ok', service: 'bids-tracker' }); }
+  catch { res.status(503).json({ status: 'error', service: 'bids-tracker' }); }
+});
+app.use('/api', createIntegrationAuth());
+
 // --- Upload a bid PDF: OCR/text extraction runs, row gets inserted ---
-app.post('/api/upload', upload.single('pdf'), async (req, res) => {
+app.post('/api/upload', pdfUpload.single('pdf'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+  if (!hasPdfSignature(req.file.buffer)) return res.status(400).json({ error: 'Invalid PDF file.' });
 
   try {
     const extracted = await extractFromPdf(req.file.buffer, req.file.originalname);
@@ -132,4 +139,12 @@ app.get('/api/kpis', (req, res) => {
   });
 });
 
-app.listen(PORT, () => console.log(`Bid tracker running on port ${PORT}`));
+app.use((error, _req, res, _next) => {
+  const oversized = error.code === 'LIMIT_FILE_SIZE';
+  const rejected = error.code === 'INVALID_PDF' || String(error.code || '').startsWith('LIMIT_');
+  res.status(oversized ? 413 : rejected ? 400 : 500).json({
+    error: oversized ? 'PDF exceeds the 250 MB upload limit.' : rejected ? 'Invalid upload.' : 'The request could not be completed.',
+  });
+});
+
+app.listen(PORT, '127.0.0.1', () => console.log(`Bid tracker running on port ${PORT}`));

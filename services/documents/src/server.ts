@@ -9,13 +9,18 @@ import { contentDisposition, contentTypeForPath, filenameFromPath, zipFilenameFr
 import { parseByteRange } from "./range.js"
 import { joinRemotePath, validateDeletePath } from "./path.js"
 import { deleteItem, listAllItems, listDirectory, readFile, streamRemoteFile, writeFile, zipDirectory } from "./sftp.js"
+import { boundedMemoryStorage } from "./upload-storage.js"
+import { releaseTransfer, reserveTransfer } from "./transfer-capacity.js"
 
 const app = express()
 const upload = multer({
-  storage: multer.memoryStorage(),
+  storage: boundedMemoryStorage(positiveIntegerEnv("DRIVE_UPLOAD_MAX_BYTES", 250 * 1024 * 1024)),
   limits: {
     fileSize: positiveIntegerEnv("DRIVE_UPLOAD_MAX_BYTES", 250 * 1024 * 1024),
     files: 100,
+    fields: 1,
+    fieldSize: 4096,
+    parts: 101,
   },
 })
 
@@ -51,7 +56,7 @@ app.post("/upload", uploadCors, (request, response, next) => {
     response.status(400).json({ error: { code: "VALIDATION_ERROR", message: "Missing path." } })
     return
   }
-  if (authorizeTransfer(request, response, "upload", path)) next()
+  if (authorizeTransfer(request, response, "upload", path) && reserveTransfer(response)) next()
 }, upload.array("files", 100), async (request, response, next) => {
   try {
     const files = (request.files ?? []) as Express.Multer.File[]
@@ -68,6 +73,8 @@ app.post("/upload", uploadCors, (request, response, next) => {
     response.json({ uploaded: files.length })
   } catch (error) {
     next(error)
+  } finally {
+    releaseTransfer(response)
   }
 })
 
@@ -95,6 +102,7 @@ app.get("/preview", previewCors, async (request, response, next) => {
     return
   }
   if (!authorizeTransfer(request, response, "preview", path)) return
+  if (!reserveTransfer(response)) return
   try {
     await streamRemoteFile(path, async (size, open) => {
       response.set({
@@ -127,6 +135,8 @@ app.get("/preview", previewCors, async (request, response, next) => {
   } catch (error) {
     if (response.headersSent) { response.destroy(); return }
     next(error)
+  } finally {
+    releaseTransfer(response)
   }
 })
 
@@ -137,6 +147,7 @@ app.get("/download", async (request, response, next) => {
     return
   }
   if (!authorizeTransfer(request, response, "download", path)) return
+  if (!reserveTransfer(response)) return
   try {
     const isFolder = request.query.type === "folder"
     const data = isFolder ? await zipDirectory(path) : await readFile(path)
@@ -149,6 +160,8 @@ app.get("/download", async (request, response, next) => {
     }).send(data)
   } catch (error) {
     next(error)
+  } finally {
+    releaseTransfer(response)
   }
 })
 
@@ -210,6 +223,7 @@ app.post("/access", async (request, response, next) => {
 })
 
 app.use((error: unknown, request: Request, response: Response, _next: NextFunction) => {
+  releaseTransfer(response)
   const correlationId = request.correlationId || normalizeCorrelationId(request.header("x-correlation-id"))
   console.error(JSON.stringify({
     event: "documents.request.failed",
@@ -219,8 +233,11 @@ app.use((error: unknown, request: Request, response: Response, _next: NextFuncti
     path: request.path,
     error: error instanceof Error ? error.name : "UnknownError",
   }))
-  response.status(500).json({
-    error: { code: "INTERNAL_ERROR", message: "Document operation failed." },
+  const uploadError = error instanceof multer.MulterError
+  const boundedError = error instanceof Error && "code" in error && error.code === "DOWNLOAD_TOO_LARGE"
+  const status = uploadError ? error.code === "LIMIT_FILE_SIZE" ? 413 : 400 : boundedError ? 413 : 500
+  response.status(status).json({
+    error: { code: uploadError ? "UPLOAD_LIMIT_EXCEEDED" : boundedError ? "DOWNLOAD_TOO_LARGE" : "INTERNAL_ERROR", message: status === 500 ? "Document operation failed." : "Document transfer exceeds the configured limits." },
     correlationId,
   })
 })

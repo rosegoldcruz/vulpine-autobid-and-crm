@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
 
+from shared.security import RequireConfiguredApiAuthentication
 from shared.config import settings
 from shared.database import check_db_connection
 
@@ -31,15 +32,20 @@ app = FastAPI(
     title="Vulpine Autonomous Cabinet Revenue Engine",
     version="0.1.0",
     lifespan=lifespan,
+    docs_url=None,
+    redoc_url=None,
+    openapi_url=None,
 )
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[origin.strip() for origin in settings.cors_allowed_origins.split(",") if origin.strip()],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.add_middleware(RequireConfiguredApiAuthentication)
 
 
 @app.get("/")

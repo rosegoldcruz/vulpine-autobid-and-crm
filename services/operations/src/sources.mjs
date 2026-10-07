@@ -12,7 +12,10 @@ export function createSources(env, diagnostic) {
     if (!r.ok) throw new Error(`Source returned HTTP ${r.status}.`);
     return r.json();
   }
-  const tracker = () => json(`${base('OPS_TRACKER_URL')}/api/bids`);
+  const tracker = () => {
+    if (!env.BIDS_TRACKER_API_TOKEN) throw new Error('Tracker integration authentication is not configured.');
+    return json(`${base('OPS_TRACKER_URL')}/api/bids`, { 'x-vulpine-integration-key': env.BIDS_TRACKER_API_TOKEN });
+  };
   function vision(module) {
     if(!env.OPS_VISION_DATABASE)throw new Error('Vision read model is not configured.');
     const db=new DatabaseSync(env.OPS_VISION_DATABASE,{readOnly:true});

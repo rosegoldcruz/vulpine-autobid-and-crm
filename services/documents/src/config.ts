@@ -8,7 +8,15 @@ function parseEnvFile(path: string) {
   if (cached) return cached
   const values: Record<string, string> = {}
   if (existsSync(path)) {
-    for (const rawLine of readFileSync(path, "utf8").split(/\r?\n/)) {
+    let text: string
+    try {
+      text = readFileSync(path, "utf8")
+    } catch (error) {
+      if (!["EACCES", "EPERM"].includes((error as NodeJS.ErrnoException).code ?? "")) throw error
+      parsedFiles.set(path, values)
+      return values
+    }
+    for (const rawLine of text.split(/\r?\n/)) {
       const line = rawLine.trim()
       if (!line || line.startsWith("#")) continue
       const equalsIndex = line.indexOf("=")

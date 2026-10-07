@@ -34,8 +34,11 @@ services:
     restart: unless-stopped
 
   n8n:
-    image: n8nio/n8n:latest
+    image: n8nio/n8n@sha256:3cd1d3a03f5e059a0757d8c95823ff09ef61d3b6bf7fcb4ac3ac5fd5303b6c6d
     container_name: vulpine-n8n
+    mem_limit: 1g
+    cpus: 1
+    pids_limit: 256
     environment:
       - N8N_BASIC_AUTH_ACTIVE=true
       - N8N_BASIC_AUTH_USER=${N8N_USER:-admin}
@@ -44,6 +47,7 @@ services:
       - N8N_PORT=5678
       - N8N_PROTOCOL=https
       - NODE_ENV=production
+      - NODES_EXCLUDE=["n8n-nodes-base.executeCommand","n8n-nodes-base.localFileTrigger"]
       - WEBHOOK_URL=https://${N8N_HOST:-localhost}/
       - EXECUTIONS_DATA_PRUNE=true
       - EXECUTIONS_DATA_MAX_AGE=168
@@ -51,8 +55,8 @@ services:
       - DB_POSTGRESDB_HOST=postgres
       - DB_POSTGRESDB_PORT=5432
       - DB_POSTGRESDB_DATABASE=vulpine_n8n
-      - DB_POSTGRESDB_USER=vulpine
-      - DB_POSTGRESDB_PASSWORD=${DB_PASSWORD:?DB_PASSWORD is required}
+      - DB_POSTGRESDB_USER=${N8N_DB_USER:?N8N_DB_USER is required}
+      - DB_POSTGRESDB_PASSWORD=${N8N_DB_PASSWORD:?N8N_DB_PASSWORD is required}
     ports:
       - "5678:5678"
     volumes:
@@ -67,17 +71,27 @@ services:
 
   api:
     build: .
+    image: ${ENGINE_API_IMAGE:?ENGINE_API_IMAGE is required}
+    user: "${ENGINE_API_UID:?ENGINE_API_UID is required}:${ENGINE_API_GID:?ENGINE_API_GID is required}"
+    read_only: true
+    tmpfs:
+      - /tmp:rw,nosuid,nodev,size=268435456
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 1g
+    pids_limit: 128
+    cpus: 2
     container_name: vulpine-api
     env_file:
-      - .env
+      - .env.api
     environment:
-      - DATABASE_URL=postgresql+asyncpg://vulpine:${DB_PASSWORD:?DB_PASSWORD is required}@postgres:5432/vulpine
+      - DATABASE_URL=postgresql+asyncpg://${ENGINE_DB_USER:?ENGINE_DB_USER is required}:${ENGINE_DB_PASSWORD:?ENGINE_DB_PASSWORD is required}@postgres:5432/vulpine
       - REDIS_URL=redis://redis:6379/0
     ports:
       - "8000:8000"
     volumes:
-      - ./services:/app/services
-      - ./shared:/app/shared
+      - ./services:/app/services:ro
+      - ./shared:/app/shared:ro
       - ./uploads:/app/uploads
     depends_on:
       postgres:
@@ -85,7 +99,7 @@ services:
       redis:
         condition: service_healthy
     restart: unless-stopped
-    command: uvicorn shared.server:app --host 0.0.0.0 --port 8000 --reload
+    command: uvicorn shared.server:app --host 0.0.0.0 --port 8000
 
 volumes:
   pgdata:

@@ -1,11 +1,13 @@
 "use client";
 
+import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { api, PreflightResponse } from "@/lib/api";
 import { EmptyState } from "@/components/EmptyState";
 import { Loader2, Play, FileText, AlertCircle, Layers, Scan } from "lucide-react";
 
-export default function PreflightPage({ params }: { params: { id: string } }) {
+export default function PreflightPage() {
+  const params = useParams<{ id: string }>();
   const [data, setData] = useState<PreflightResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [running, setRunning] = useState(false);

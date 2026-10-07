@@ -1,11 +1,13 @@
 "use client";
 
+import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { api, BOMResponse, SKUCatalogResponse } from "@/lib/api";
 import { EmptyState } from "@/components/EmptyState";
 import { Loader2, Play, Boxes, Search } from "lucide-react";
 
-export default function SKUMapPage({ params }: { params: { id: string } }) {
+export default function SKUMapPage() {
+  const params = useParams<{ id: string }>();
   const [bom, setBOM] = useState<BOMResponse | null>(null);
   const [skus, setSkus] = useState<SKUCatalogResponse | null>(null);
   const [loading, setLoading] = useState(true);

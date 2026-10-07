@@ -14,10 +14,11 @@ const stages = [
   { key: "PROPOSAL", label: "Proposal", desc: "Generate proposal", icon: FileText, path: "proposal" },
 ];
 
-export default async function ProjectHome({ params }: { params: { id: string } }) {
+export default async function ProjectHome({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   let project = null;
   try {
-    project = await api.getProject(params.id);
+    project = await api.getProject(id);
   } catch (e) {}
 
   const counts = project?.counts || {};
@@ -40,7 +41,7 @@ export default async function ProjectHome({ params }: { params: { id: string } }
           return (
             <Link
               key={stage.key}
-              href={`/projects/${params.id}/${stage.path}`}
+              href={`/projects/${id}/${stage.path}`}
               className={`rounded-xl border p-4 transition-all hover:border-vulpine-orange/50 ${
                 isCurrent
                   ? "border-vulpine-orange/50 bg-vulpine-orange/5"

@@ -5,6 +5,8 @@ import type { DirectoryListing, DriveItem } from "@vulpine/contracts"
 import { logAccess } from "./access-log.js"
 import { positiveIntegerEnv, requiredEnv } from "./config.js"
 import { normalizeRemotePath, parentPath, validateDeletePath } from "./path.js"
+import { sftpHostVerifier } from "./host-key.js"
+import { readBoundedStream } from "./bounded-stream.js"
 
 type SftpListItem = {
   name: string
@@ -23,6 +25,7 @@ function sftpConfig() {
     username: requiredEnv("SFTP_USERNAME", "STORAGE_BOX_USERNAME", "STORAGE_BOX_USER"),
     password: requiredEnv("SFTP_PASSWORD", "STORAGE_BOX_PASSWORD", "HETZNER_STORAGE_BOX_PASSWORD"),
     readyTimeout: 20_000,
+    hostVerifier: sftpHostVerifier(requiredEnv("SFTP_HOST_KEY_SHA256")),
   }
 }
 
@@ -106,10 +109,11 @@ export async function streamRemoteFile(
 export async function readFile(inputPath: string) {
   const path = normalizeRemotePath(inputPath)
   return withSftp(async (client) => {
-    const data = await client.get(path)
-    if (Buffer.isBuffer(data)) return data
-    if (typeof data === "string") return Buffer.from(data)
-    throw new Error("Unable to read remote file")
+    const maxBytes = positiveIntegerEnv("DRIVE_DOWNLOAD_MAX_BYTES", 250 * 1024 * 1024)
+    const stat = await client.stat(path)
+    if (!stat.isFile) throw new Error("Only files can be downloaded.")
+    if (stat.size > maxBytes) throw Object.assign(new Error("Download exceeds the configured byte limit."), { code: "DOWNLOAD_TOO_LARGE", status: 413 })
+    return readBoundedStream(client.createReadStream(path), maxBytes)
   })
 }
 
@@ -133,46 +137,50 @@ export async function deleteItem(inputPath: string, folder = false) {
   await logAccess(path, "modify").catch(() => undefined)
 }
 
-function archiveToBuffer(archive: Archiver) {
-  return new Promise<Buffer>((resolve, reject) => {
-    const chunks: Buffer[] = []
-    archive.on("data", (chunk) => chunks.push(Buffer.from(chunk)))
-    archive.on("warning", reject)
-    archive.on("error", reject)
-    archive.on("end", () => resolve(Buffer.concat(chunks)))
-  })
-}
-
 export async function zipDirectory(inputPath: string) {
   const rootPath = normalizeRemotePath(inputPath)
   const maxFiles = positiveIntegerEnv("FOLDER_DOWNLOAD_MAX_FILES", 750)
+  const maxBytes = positiveIntegerEnv("DRIVE_DOWNLOAD_MAX_BYTES", 250 * 1024 * 1024)
   return withSftp(async (client) => {
     const archiver = (await import("archiver")).default as unknown as ArchiverFactory
     const archive = archiver("zip", { zlib: { level: 6 } })
-    const archiveDone = archiveToBuffer(archive)
+    archive.on("warning", (error) => archive.destroy(error))
+    const archiveDone = readBoundedStream(archive, maxBytes)
+    // Extraction may fail before the result is awaited. Keep rejection handled.
+    void archiveDone.catch(() => undefined)
     const queue = [rootPath]
     let filesAdded = 0
-    while (queue.length) {
-      const currentPath = queue.shift()!
-      const rawItems = (await client.list(currentPath)) as SftpListItem[]
-      for (const rawItem of rawItems) {
-        if (!hasUsableName(rawItem)) continue
-        const item = toDriveItem(currentPath, rawItem)
-        if (item.type === "folder") {
-          queue.push(item.path)
-          continue
+    let directoriesScanned = 0
+    let bytesAdded = 0
+    try {
+      while (queue.length) {
+        if (++directoriesScanned > maxFiles) throw new Error("Folder download contains too many directories.")
+        const currentPath = queue.shift()!
+        const rawItems = (await client.list(currentPath)) as SftpListItem[]
+        for (const rawItem of rawItems) {
+          if (!hasUsableName(rawItem)) continue
+          const item = toDriveItem(currentPath, rawItem)
+          if (item.type === "folder") {
+            queue.push(item.path)
+            continue
+          }
+          if (item.type !== "file") continue
+          filesAdded += 1
+          if (filesAdded > maxFiles) throw new Error(`Folder download exceeds the ${maxFiles}-file limit.`)
+          if (item.size > maxBytes - bytesAdded) throw Object.assign(new Error("Folder download exceeds the configured byte limit."), { code: "DOWNLOAD_TOO_LARGE", status: 413 })
+          const buffer = await readBoundedStream(client.createReadStream(item.path), maxBytes - bytesAdded)
+          bytesAdded += buffer.length
+          archive.append(buffer, { name: item.path.slice(rootPath.length).replace(/^\/+/, "") || item.name })
         }
-        if (item.type !== "file") continue
-        filesAdded += 1
-        if (filesAdded > maxFiles) throw new Error(`Folder download exceeds the ${maxFiles}-file limit.`)
-        const data = await client.get(item.path)
-        const buffer = Buffer.isBuffer(data) ? data : Buffer.from(String(data))
-        archive.append(buffer, { name: item.path.slice(rootPath.length).replace(/^\/+/, "") || item.name })
       }
+      await archive.finalize()
+      const zip = await archiveDone
+      await logAccess(rootPath, "view").catch(() => undefined)
+      return zip
+    } catch (error) {
+      archive.abort()
+      archive.destroy()
+      throw error
     }
-    await archive.finalize()
-    const zip = await archiveDone
-    await logAccess(rootPath, "view").catch(() => undefined)
-    return zip
   })
 }

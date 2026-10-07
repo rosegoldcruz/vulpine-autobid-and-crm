@@ -1,11 +1,13 @@
 "use client";
 
+import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { api, ProposalResponse, PricingResponse, QAResponse } from "@/lib/api";
 import { EmptyState } from "@/components/EmptyState";
 import { Loader2, Play, FileText, Download, CheckCircle } from "lucide-react";
 
-export default function ProposalPage({ params }: { params: { id: string } }) {
+export default function ProposalPage() {
+  const params = useParams<{ id: string }>();
   const [proposal, setProposal] = useState<ProposalResponse | null>(null);
   const [pricing, setPricing] = useState<PricingResponse | null>(null);
   const [qa, setQA] = useState<QAResponse | null>(null);

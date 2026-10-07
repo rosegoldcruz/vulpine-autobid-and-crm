@@ -9,12 +9,13 @@ export default async function ProjectLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
   let project = null;
   let error = null;
   try {
-    project = await api.getProject(params.id);
+    project = await api.getProject(id);
   } catch (e: any) {
     error = e.message;
   }
@@ -40,7 +41,7 @@ export default async function ProjectLayout({
       <Header />
       <div className="flex">
         <WorkflowSidebar
-          projectId={params.id}
+          projectId={id}
           currentStage={project.current_stage}
           stageProgress={project.stage_progress}
         />

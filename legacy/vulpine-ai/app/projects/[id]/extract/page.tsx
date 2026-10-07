@@ -1,11 +1,13 @@
 "use client";
 
+import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { api, EvidenceResponse, CabinetRequirementsResponse } from "@/lib/api";
 import { EmptyState } from "@/components/EmptyState";
 import { Loader2, Play, ScanText, FileSearch } from "lucide-react";
 
-export default function ExtractPage({ params }: { params: { id: string } }) {
+export default function ExtractPage() {
+  const params = useParams<{ id: string }>();
   const [evidence, setEvidence] = useState<EvidenceResponse | null>(null);
   const [reqs, setReqs] = useState<CabinetRequirementsResponse | null>(null);
   const [loading, setLoading] = useState(true);

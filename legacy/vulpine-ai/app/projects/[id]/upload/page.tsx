@@ -1,11 +1,13 @@
 "use client";
 
+import { useParams } from "next/navigation";
 import { useState, useCallback } from "react";
 import { api } from "@/lib/api";
 import { EmptyState } from "@/components/EmptyState";
 import { UploadCloud, FileText, Loader2, CheckCircle } from "lucide-react";
 
-export default function UploadPage({ params }: { params: { id: string } }) {
+export default function UploadPage() {
+  const params = useParams<{ id: string }>();
   const [files, setFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [result, setResult] = useState<{ count: number; names: string[] } | null>(null);

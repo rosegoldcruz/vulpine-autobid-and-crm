@@ -1,11 +1,13 @@
 "use client";
 
+import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { api, PricingResponse, BOMResponse } from "@/lib/api";
 import { EmptyState } from "@/components/EmptyState";
 import { Loader2, Play, DollarSign, CheckCircle, AlertCircle } from "lucide-react";
 
-export default function PricingPage({ params }: { params: { id: string } }) {
+export default function PricingPage() {
+  const params = useParams<{ id: string }>();
   const [pricing, setPricing] = useState<PricingResponse | null>(null);
   const [bom, setBOM] = useState<BOMResponse | null>(null);
   const [loading, setLoading] = useState(true);

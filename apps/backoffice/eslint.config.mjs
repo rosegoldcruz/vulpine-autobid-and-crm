@@ -13,5 +13,6 @@ export default defineConfig([
       "react-hooks/purity": "off",
     },
   },
-  globalIgnores([".next/**", "next-env.d.ts"]),
+  // copy-preview-assets.mjs copies these unmodified vendor bundles at build time.
+  globalIgnores([".next/**", "next-env.d.ts", "public/viewers/**"]),
 ])

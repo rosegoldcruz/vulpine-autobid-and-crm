@@ -51,3 +51,19 @@ test('operator CRUD is durable, audited, scoped, and protects concurrent edits',
   assert.equal((await(await request('GET')).json()).records.length,0);
  }finally{await new Promise(resolve=>server.close(resolve));await rm(root,{recursive:true,force:true});}
 });
+
+
+test('tracker source uses the existing integration credential and fails closed without one', async (t) => {
+ const {createSources}=await import('../src/sources.mjs');
+ const requests=[];
+ t.mock.method(globalThis,'fetch',async(url,options)=>{ requests.push({url,headers:options.headers});return Response.json([]); });
+ const env={OPS_TRACKER_URL:'http://tracker.test',BIDS_TRACKER_API_TOKEN:'test-only-tracker-credential'};
+ const sources=createSources(env,()=>{});
+ const data=await sources.read('revenue');
+ assert.equal(data.sources.find(s=>s.name==='Bids Tracker').status,'CONNECTED');
+ assert.equal(requests[0].headers['x-vulpine-integration-key'],env.BIDS_TRACKER_API_TOKEN);
+ requests.length=0;
+ const denied=await createSources({OPS_TRACKER_URL:env.OPS_TRACKER_URL},()=>{}).read('revenue');
+ assert.equal(denied.sources.find(s=>s.name==='Bids Tracker').status,'ERROR');
+ assert.equal(requests.length,0);
+});

@@ -1,4 +1,4 @@
-FROM python:3.12-slim
+FROM python:3.12.13-slim-trixie@sha256:229a2c5bfa27522db7815ea81f9bed70af17ccb9de9fc7ad142b1877b5830d36
 
 WORKDIR /app
 
@@ -14,10 +14,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
     # tesseract-ocr added in Phase 3 for plan OCR
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements.txt requirements.lock ./
+RUN pip install --no-cache-dir -r requirements.lock
 
-# Install Playwright browsers (Chromium only for scanning)
+# Install shared read-only browser binaries for the unprivileged runtime.
+ENV PLAYWRIGHT_BROWSERS_PATH=/opt/playwright
 RUN playwright install chromium && playwright install-deps chromium
 
 COPY . .

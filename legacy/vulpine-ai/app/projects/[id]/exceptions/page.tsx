@@ -1,11 +1,13 @@
 "use client";
 
+import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { api, ExceptionsResponse } from "@/lib/api";
 import { EmptyState } from "@/components/EmptyState";
 import { Loader2, AlertTriangle, Check, X } from "lucide-react";
 
-export default function ExceptionsPage({ params }: { params: { id: string } }) {
+export default function ExceptionsPage() {
+  const params = useParams<{ id: string }>();
   const [data, setData] = useState<ExceptionsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

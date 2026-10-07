@@ -1,11 +1,13 @@
 "use client";
 
+import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { api, QAResponse } from "@/lib/api";
 import { EmptyState } from "@/components/EmptyState";
 import { Loader2, Play, ShieldCheck, ShieldAlert, ShieldX, Info } from "lucide-react";
 
-export default function QAPage({ params }: { params: { id: string } }) {
+export default function QAPage() {
+  const params = useParams<{ id: string }>();
   const [data, setData] = useState<QAResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [running, setRunning] = useState(false);

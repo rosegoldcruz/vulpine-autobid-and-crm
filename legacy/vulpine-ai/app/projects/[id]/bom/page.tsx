@@ -1,11 +1,13 @@
 "use client";
 
+import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { api, BOMResponse } from "@/lib/api";
 import { EmptyState } from "@/components/EmptyState";
 import { Loader2, Play, CheckCircle, ListTree } from "lucide-react";
 
-export default function BOMPage({ params }: { params: { id: string } }) {
+export default function BOMPage() {
+  const params = useParams<{ id: string }>();
   const [data, setData] = useState<BOMResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [running, setRunning] = useState(false);
