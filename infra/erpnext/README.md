@@ -12,7 +12,15 @@ bid/customer data synchronization implementation.
 
 Base: ERPNext 15.122.0 / Frappe 15.123.0, pinned by image digest in Dockerfile.
 Added app: Frappe HR 15.64.3. Build assets into the image so every worker,
-WebSocket server, and frontend runs the same application code.
+WebSocket server, and frontend runs the same application code. The HR build's
+asset manifest is merged with the upstream manifest; replacing it loses the
+Frappe and ERPNext bundle paths. After image changes, clear the shared asset
+cache as well as the site cache:
+
+```sh
+docker compose exec -T backend bench --site YOUR_SITE execute frappe.cache.delete_value --args '["assets_json"]' --kwargs '{"shared":True}'
+docker compose exec -T backend bench --site YOUR_SITE clear-cache
+```
 Compose follows the service layout in official `frappe/frappe_docker` at
 `71a9a3d6dd0ffdba47bb08a2e0817fa217cf643c`. Both short and long queues,
 configuration initialization, WebSockets, and persistent sites are included.
@@ -60,11 +68,14 @@ country, currency, and chart of accounts. Add other companies and explicitly
 scope users with ERPNext roles and Company user permissions. No company, tax,
 payroll, banking, or opening balance information is invented by this deployment.
 Create named user accounts; do not use Administrator as a shared employee login.
+Public signups are disabled. Login lockout is configured for five failed
+attempts and a 300-second delay. Secure cookies are enforced at the HTTPS proxy;
+Gunicorn trusts forwarded protocol only within its unexposed Docker network.
 
 Configure Net 30 payment terms and assign them to the appropriate customers or
 invoices. Configure payroll structures, deductions, and employee shifts before
 processing payroll. Validate those workflows with the business's actual rules.
-Hide Stock and other unneeded workspaces through role/workspace settings; hiding
+Stock is hidden during provisioning; hide other unneeded workspaces through role/workspace settings; hiding
 navigation does not disable inventory accounting. Use non-stock items and leave
 Update Stock disabled for workflows that must not affect inventory. This change
 does not alter existing bid pricing or treat ERP quotations as approved takeoffs.
@@ -75,7 +86,12 @@ does not alter existing bid pricing or treat ERP quotations as approved takeoffs
 private file archives, and site config backup in the persistent site's backups
 folder. Copy these backups to the approved off-host backup store, protect the
 site config encryption key, and verify a restore before calling disaster
-recovery complete. Local volumes alone are not off-host backups.
+recovery complete. Local volumes alone are not off-host backups. The supplied systemd service and
+timer run the database/file backup daily at 04:15 UTC with up to ten minutes of
+jitter. Install them under `/etc/systemd/system`, run `systemctl daemon-reload`,
+and enable `vulpine-erpnext-backup.timer`. The first backup completed and its
+compressed database/file archives passed integrity checks on 2026-10-14;
+a full restore and off-host replication have not been verified.
 
 Before upgrades, back up the site and files, record the running image, build a
 new pinned image, and test `bench migrate` against a restored copy. Never roll

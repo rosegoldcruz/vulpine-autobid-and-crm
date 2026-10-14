@@ -78,6 +78,9 @@ services:
         condition: service_started
   backend:
     <<: *app
+    # Only the isolated Docker network can reach Gunicorn; trust its nginx proxy.
+    environment:
+      FORWARDED_ALLOW_IPS: '*'
   frontend:
     <<: *app
     command: [nginx-entrypoint.sh]
@@ -124,6 +127,10 @@ services:
         bench new-site "$$ERP_SITE_NAME" --db-root-username root --db-root-password "$$(cat /run/secrets/db_password)" --admin-password "$$(cat /run/secrets/admin_password)" --mariadb-user-host-login-scope '%' --install-app erpnext
         bench --site "$$ERP_SITE_NAME" install-app hrms
         bench --site "$$ERP_SITE_NAME" set-config host_name "https://$$ERP_SITE_NAME"
+        bench --site "$$ERP_SITE_NAME" execute frappe.db.set_single_value --args '["Website Settings","disable_signup",1]'
+        bench --site "$$ERP_SITE_NAME" execute frappe.db.set_single_value --args '["System Settings","allow_consecutive_login_attempts",5]'
+        bench --site "$$ERP_SITE_NAME" execute frappe.db.set_single_value --args '["System Settings","allow_login_after_fail",300]'
+        bench --site "$$ERP_SITE_NAME" execute frappe.db.set_value --args '["Workspace","Stock","is_hidden",1]'
         bench --site "$$ERP_SITE_NAME" enable-scheduler
 
 secrets:
