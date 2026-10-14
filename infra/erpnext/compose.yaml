@@ -3,6 +3,16 @@ name: vulpine-erpnext
 x-app: &app
   image: vulpine-erpnext:15.122.0-hrms15.64.3
   restart: unless-stopped
+  security_opt: [no-new-privileges:true]
+  cap_drop: [ALL]
+  mem_limit: 1g
+  cpus: 2
+  pids_limit: 256
+  logging:
+    driver: json-file
+    options:
+      max-size: 10m
+      max-file: '3'
   volumes:
     - sites:/home/frappe/frappe-bench/sites
     - logs:/home/frappe/frappe-bench/logs
@@ -13,6 +23,10 @@ x-app: &app
 services:
   db:
     image: mariadb:10.11
+    security_opt: [no-new-privileges:true]
+    mem_limit: 2g
+    cpus: 2
+    pids_limit: 256
     restart: unless-stopped
     command: [--character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci, --skip-character-set-client-handshake]
     environment:
@@ -27,9 +41,17 @@ services:
       retries: 30
   redis-cache:
     image: redis:7-alpine
+    security_opt: [no-new-privileges:true]
+    mem_limit: 512m
+    cpus: 1
+    pids_limit: 64
     restart: unless-stopped
   redis-queue:
     image: redis:7-alpine
+    security_opt: [no-new-privileges:true]
+    mem_limit: 512m
+    cpus: 1
+    pids_limit: 64
     restart: unless-stopped
     command: [redis-server, --appendonly, 'yes']
     volumes:
@@ -62,6 +84,7 @@ services:
     environment:
       BACKEND: backend:8000
       SOCKETIO: websocket:9000
+      UPSTREAM_REAL_IP_ADDRESS: ${ERP_PROXY_TRUSTED_IP:-127.0.0.1}
       FRAPPE_SITE_NAME_HEADER: ${ERP_SITE_NAME:?Missing required env var ERP_SITE_NAME}
       PROXY_READ_TIMEOUT: '120'
       CLIENT_MAX_BODY_SIZE: 50m

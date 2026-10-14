@@ -1,0 +1,14 @@
+[Unit]
+Description=ERPNext database and uploaded-file backup
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/vulpine-platform/infra/erpnext
+EnvironmentFile=/opt/vulpine-platform/infra/erpnext/.env
+ExecStart=/opt/vulpine-platform/infra/erpnext/backup.sh
+UMask=0077
+NoNewPrivileges=yes
+PrivateTmp=yes
+TimeoutStartSec=15min

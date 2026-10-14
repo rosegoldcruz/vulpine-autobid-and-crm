@@ -41,14 +41,16 @@ Never run `docker compose down -v` on a provisioned installation.
 
 ## Public routing
 
-Proposed hostname: `erp.vulpine.llc`. DNS changes require explicit instruction
-under this repository's AGENTS.md. Point only that hostname to the VPS, check
-for conflicting A/AAAA records, and leave all unrelated records alone.
-`nginx.conf` is an HTTP bootstrap that returns 503 until TLS is installed. After
-certificate issuance, apply its proxy directives to the HTTPS location and
-redirect HTTP to HTTPS. Verify login, static assets, and `/socket.io/` before
-setting `NEXT_PUBLIC_ERPNEXT_URL` to the verified HTTPS origin in Vercel and
-redeploying Backoffice. Never configure a link to an unverified endpoint.
+Hostname: `pay.vulpine.llc`, selected by the user. DNS points to VPS
+`167.233.89.33`. Obtain TLS before installing `nginx.conf`; it uses the existing
+host's TLS/security snippets and forwards only to loopback port 8090. Set
+`ERP_PROXY_TRUSTED_IP` to the verified Docker network gateway address so the
+frontend accepts client-IP headers only from the host proxy. The outer proxy
+replaces incoming forwarded-IP headers. Check the gateway again if the network
+is recreated. Verify login, static assets, and `/socket.io/` before setting
+`NEXT_PUBLIC_ERPNEXT_URL` to the verified HTTPS origin in Vercel and redeploying.
+The application containers drop all Linux capabilities, prohibit privilege
+escalation, and have memory, CPU, process, and log-rotation limits.
 
 ## First-use setup
 
