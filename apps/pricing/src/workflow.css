@@ -3,3 +3,4 @@
 .printGenerate{width:100%;margin-top:10px;color:var(--accent);border-color:var(--accent)}
 
 .catalogView{display:flex;justify-content:space-between;align-items:center;gap:16px;margin:20px 0;color:var(--muted);font-size:14px}.catalogView>div{display:flex;align-items:center;gap:12px}.catalogView label{margin:0}.catalogView select{width:90px}
+@media screen and (min-width:1001px){#unitsStep main>aside{position:sticky;top:20px;align-self:start;max-height:calc(100dvh - 40px);overflow-y:auto;overscroll-behavior:contain;padding-right:4px;padding-bottom:4px}#unitsStep #add{position:sticky;bottom:0;z-index:1}}
