@@ -1,0 +1,13 @@
+import {readFile,writeFile,mkdir,copyFile} from 'node:fs/promises';
+const root=new URL('../',import.meta.url);
+const template=await readFile(new URL('src/index.html',root),'utf8');
+const catalog=JSON.parse(await readFile(new URL('src/catalog.json',root),'utf8'));
+if(!template.includes('__DATA__'))throw new Error('Missing catalog placeholder');
+let html=template.replace('__DATA__',JSON.stringify(catalog).replaceAll('<','\\u003c'));
+html=html.replace('<meta name="viewport"','<meta name="robots" content="noindex,nofollow"><meta name="viewport"');
+html=html.replace('<span>Purchase pricing · 0.204</span>','<span><a href="/downloads/Vulpine_Cabinet_Pricing_Configurator.xlsx" download style="color:inherit;margin-right:20px">Download Excel</a>Purchase pricing · 0.204</span>');
+await mkdir(new URL('dist/downloads/',root),{recursive:true});
+await writeFile(new URL('dist/index.html',root),html);
+await writeFile(new URL('dist/robots.txt',root),'User-agent: *\nDisallow: /\n');
+await copyFile(new URL('assets/Vulpine_Cabinet_Pricing_Configurator.xlsx',root),new URL('dist/downloads/Vulpine_Cabinet_Pricing_Configurator.xlsx',root));
+console.log('Built protected pricing site with '+(catalog.Shaker.length+catalog.Euro.length)+' product records.');
