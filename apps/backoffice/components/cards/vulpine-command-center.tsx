@@ -26,6 +26,7 @@ import { CabinetBidEngineSection } from "./cabinet-bid-engine-section"
 import type { BackofficeSectionId } from "@/lib/backoffice-access"
 import { ErpnextSection } from "./erpnext-section"
 import { platformGroups, platformModules, moduleForId } from "@/lib/platform-modules"
+import { CabinetPricingSection } from "./cabinet-pricing-section"
 import { PlatformOverviewSection, PlatformModuleSection } from "./platform-workspaces"
 
 const BidsTrackerSection = dynamic(
@@ -1246,7 +1247,7 @@ export default function VulpineCommandCenter({
                 exit={{ opacity: 0, y: -12 }}
                 transition={SPRING}
               >
-                {activeSection === "drive" || activeSection === "documents" ? <DriveSection canWrite={driveCanWrite} /> : activeSection === "dashboard" ? <PlatformOverviewSection allowedSections={allowedSections} /> : (activeSection === "erpnext" || activeSection === "bidstracker" || activeSection === "vision" || (activeSection === "phone" && process.env.NEXT_PUBLIC_VOICE_CONSOLE_URL)) && ActiveComponent ? <ActiveComponent /> : <PlatformModuleSection id={activeSection} allowedSections={allowedSections} />}
+                {activeSection === "pricing" ? <CabinetPricingSection /> : activeSection === "drive" || activeSection === "documents" ? <DriveSection canWrite={driveCanWrite} /> : activeSection === "dashboard" ? <PlatformOverviewSection allowedSections={allowedSections} /> : (activeSection === "erpnext" || activeSection === "bidstracker" || activeSection === "vision" || (activeSection === "phone" && process.env.NEXT_PUBLIC_VOICE_CONSOLE_URL)) && ActiveComponent ? <ActiveComponent /> : <PlatformModuleSection id={activeSection} allowedSections={allowedSections} />}
               </motion.div>
             </AnimatePresence>
           </main>
