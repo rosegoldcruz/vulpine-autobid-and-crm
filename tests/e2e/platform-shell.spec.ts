@@ -69,7 +69,7 @@ test('all generic module screens render client-side without framework errors',as
   test.setTimeout(180000)
   const errors:string[]=[]
   page.on('pageerror',e=>errors.push(e.message))
-  for(const module of platformModules.filter(m=>!['dashboard','bidstracker','vision','drive','documents'].includes(m.id))){
+  for(const module of platformModules.filter(m=>!['dashboard','bidstracker','vision','drive','documents','erpnext'].includes(m.id))){
     await page.goto(module.path)
     await expect(page.getByTestId('operations-workspace')).toHaveAttribute('data-module',module.id)
     await expect(page.getByRole('heading',{name:module.label,exact:true})).toBeVisible()

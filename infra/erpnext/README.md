@@ -1,0 +1,82 @@
+# ERPNext + Frappe HR
+
+Isolated Docker Compose service for the Backoffice ERPNext module at
+`/finance/erpnext`. The existing bid tools and operational databases are not
+changed. ERPNext is the third-party application requested by the user; its own
+MariaDB schema, bench migrations, worker processes, and login are authoritative.
+Backoffice visibility uses `finance.read`; ERPNext permissions must also be
+assigned inside ERPNext. This is an application launcher, not shared SSO or a
+bid/customer data synchronization implementation.
+
+## Versions and upstream
+
+Base: ERPNext 15.122.0 / Frappe 15.123.0, pinned by image digest in Dockerfile.
+Added app: Frappe HR 15.64.3. Build assets into the image so every worker,
+WebSocket server, and frontend runs the same application code.
+Compose follows the service layout in official `frappe/frappe_docker` at
+`71a9a3d6dd0ffdba47bb08a2e0817fa217cf643c`. Both short and long queues,
+configuration initialization, WebSockets, and persistent sites are included.
+
+## Provision
+
+1. Create a root-owned secrets directory outside Git (mode 0700), containing
+   independently generated `db_password` and `admin_password` files. File content
+   must be readable by the container's frappe user through Compose secret mounts;
+   mode 0444 inside the private host directory meets this requirement. Do not
+   print, commit, or put passwords in command history.
+2. Copy `.env.example` to `.env` and fill in `ERP_SITE_NAME` (the public hostname)
+   and `ERP_SECRETS_DIR` (the absolute secrets directory path).
+3. `docker build -t vulpine-erpnext:15.122.0-hrms15.64.3 .`
+4. `docker compose config --quiet`
+5. `docker compose up -d`
+6. `docker compose --profile setup run --rm create-site`
+7. `docker compose exec -T backend bench --site YOUR_SITE list-apps`
+8. Verify `http://127.0.0.1:8090/api/method/ping` and login locally.
+
+The setup command refuses to overwrite an existing site. If HR installation
+fails after site creation, inspect that failure and use `bench --site YOUR_SITE
+install-app hrms` after repairing the cause; do not delete the site to retry.
+Only loopback port 8090 is published. MariaDB and Redis have no host ports.
+Never run `docker compose down -v` on a provisioned installation.
+
+## Public routing
+
+Proposed hostname: `erp.vulpine.llc`. DNS changes require explicit instruction
+under this repository's AGENTS.md. Point only that hostname to the VPS, check
+for conflicting A/AAAA records, and leave all unrelated records alone.
+`nginx.conf` is an HTTP bootstrap that returns 503 until TLS is installed. After
+certificate issuance, apply its proxy directives to the HTTPS location and
+redirect HTTP to HTTPS. Verify login, static assets, and `/socket.io/` before
+setting `NEXT_PUBLIC_ERPNEXT_URL` to the verified HTTPS origin in Vercel and
+redeploying Backoffice. Never configure a link to an unverified endpoint.
+
+## First-use setup
+
+Administrator's bootstrap password is in the private `admin_password` file.
+Complete ERPNext's setup wizard with verified legal company details, fiscal year,
+country, currency, and chart of accounts. Add other companies and explicitly
+scope users with ERPNext roles and Company user permissions. No company, tax,
+payroll, banking, or opening balance information is invented by this deployment.
+Create named user accounts; do not use Administrator as a shared employee login.
+
+Configure Net 30 payment terms and assign them to the appropriate customers or
+invoices. Configure payroll structures, deductions, and employee shifts before
+processing payroll. Validate those workflows with the business's actual rules.
+Hide Stock and other unneeded workspaces through role/workspace settings; hiding
+navigation does not disable inventory accounting. Use non-stock items and leave
+Update Stock disabled for workflows that must not affect inventory. This change
+does not alter existing bid pricing or treat ERP quotations as approved takeoffs.
+
+## Backups, upgrades, recovery
+
+`ERP_SITE_NAME=YOUR_SITE ./backup.sh` creates a bench database backup, public and
+private file archives, and site config backup in the persistent site's backups
+folder. Copy these backups to the approved off-host backup store, protect the
+site config encryption key, and verify a restore before calling disaster
+recovery complete. Local volumes alone are not off-host backups.
+
+Before upgrades, back up the site and files, record the running image, build a
+new pinned image, and test `bench migrate` against a restored copy. Never roll
+an old image back onto a migrated database without a matching restored backup.
+The scheduler runs Frappe scheduled jobs; off-host retention/restore monitoring
+requires integration with the existing backup service.
