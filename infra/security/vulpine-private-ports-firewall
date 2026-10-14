@@ -8,6 +8,8 @@ case "${1:-start}" in
     # Nginx terminates public traffic. New public connections must never go
     # directly to any Docker-published port, including future deployments.
     for tool in /usr/sbin/iptables /usr/sbin/ip6tables; do
+      "$tool" -w -nL DOCKER-USER >/dev/null 2>&1 || "$tool" -w -N DOCKER-USER
+      "$tool" -w -C FORWARD -j DOCKER-USER 2>/dev/null || "$tool" -w -I FORWARD 1 -j DOCKER-USER
       "$tool" -w -C DOCKER-USER -i eth0 -m conntrack --ctstate NEW,INVALID -j DROP 2>/dev/null || \
         "$tool" -w -I DOCKER-USER 1 -i eth0 -m conntrack --ctstate NEW,INVALID -j DROP
     done

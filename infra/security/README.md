@@ -22,9 +22,12 @@ return traffic are preserved. Install this script in `/usr/local/sbin` and
 The existing boot service applies the policy; Docker ExecStartPost reapplies it
 after daemon starts. No Docker restart is required to apply it now.
 
-The user is configuring a separate Hetzner Cloud Firewall. Suggested inbound:
-TCP 22/80/443, UDP 41641, ICMP. Keep outbound allowed. Do not expose MariaDB,
-PostgreSQL, Redis, n8n, application backends, or ERPNext's loopback 8090 port.
+The user provided a Hetzner screenshot showing `vulpine-web` already fully
+applied to one resource, with inbound TCP 22/80/443 and ICMP and unrestricted
+outbound traffic. No provider-side change was performed by this task. Keep the
+existing policy; the server-side Tailscale UDP allowance does not require opening
+another provider port unless direct VPN connectivity is specifically needed.
+Do not expose MariaDB, PostgreSQL, Redis, n8n, backend APIs, or ERPNext's 8090.
 Public SSH requires the installed key; IP allowlisting should only be added
 when a stable source or tested VPN recovery path is established.
 
@@ -37,5 +40,5 @@ Known pre-existing monitor warning: Bids Tracker's PM2 working directory differs
 from `/etc/vulpine-apps`'s recorded release path. Its HTTP health check passes;
 this coincides with the pre-existing uncommitted tracker migration. Do not revert
 or redeploy that work merely to silence the monitor. All other monitor checks
-passed during this task. An external port scan and the Hetzner policy remain
-separate verification steps; no claim of complete compromise assessment is made.
+passed during this task. An external port scan and live verification of the specific Hetzner
+resource attachment remain separate verification steps; no claim of complete compromise assessment is made.
