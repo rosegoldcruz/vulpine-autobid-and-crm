@@ -1,1 +1,27 @@
-/* The two-step quote interface is styled in styles.css. */
+/* Responsive refinements for the combined workspace. */
+.itemFinish{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12px}
+.itemFinish select{min-width:0;max-width:240px;width:100%;min-height:40px;padding:4px 8px;font-size:13px}
+.rowText{min-width:0}.unitMain{min-width:0}
+.bar{padding-bottom:max(14px,env(safe-area-inset-bottom))}
+@media(max-width:600px){
+  input,select,textarea{font-size:16px!important}
+  button,.stepper button{min-height:44px;min-width:44px}
+  .top{flex-wrap:wrap;gap:10px}.topRight{gap:8px}
+  .brand img{height:30px}.themeSeg button{padding:0 8px}
+  .app{padding-left:12px;padding-right:12px;padding-bottom:230px}
+  .projectBar{gap:12px;padding-top:12px;padding-bottom:12px}
+  .unitHead{flex-wrap:wrap;gap:12px}.unitHead .grow{flex-basis:100%}
+  .unitActions{margin-left:auto}.unitList{max-width:100%}
+  .unitCard .uAct{opacity:1;visibility:visible}
+  .listHead{align-items:flex-start;flex-direction:column;gap:12px}
+  .row{grid-template-columns:38px minmax(0,1fr);grid-template-areas:"img text" "each total" "qty qty";gap:10px}
+  .row .thumb{width:38px;height:38px}.row .stepper{justify-self:stretch;justify-content:space-between}
+  .row .rowTotal{justify-self:end}.row .autoQty{justify-self:end}
+  .itemFinish{flex-direction:column;align-items:stretch}.itemFinish select{max-width:none}
+  .dRow{grid-template-columns:38px minmax(0,1fr);grid-template-areas:"img text" "each qty"}
+  .dHead,.dTools,.dList,.dFoot{padding-left:12px;padding-right:12px}
+  .dCats,.tabs{flex-wrap:wrap}.dFoot{gap:8px;font-size:12px}
+  .stats{gap:8px}.stats strong{font-size:clamp(14px,4.4vw,19px)}
+  .bar{padding-left:12px;padding-right:12px}.barBtns{gap:8px}
+  .marginTop{flex-wrap:wrap}.toasts{left:12px;right:12px;max-width:none;bottom:180px}
+}

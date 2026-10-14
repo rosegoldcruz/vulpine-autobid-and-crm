@@ -1,0 +1,22 @@
+[Unit]
+Description=Vulpine cabinet pricing protected backoffice service
+After=network.target
+
+[Service]
+Type=simple
+DynamicUser=yes
+WorkingDirectory=/opt/vulpine-cabinet-pricing
+ExecStart=/usr/bin/node server.mjs
+EnvironmentFile=/etc/vulpine-operations/runtime.env
+Environment=CABINET_STORAGE_PATH=/var/lib/vulpine-cabinet-pricing
+StateDirectory=vulpine-cabinet-pricing
+StateDirectoryMode=0700
+Restart=on-failure
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

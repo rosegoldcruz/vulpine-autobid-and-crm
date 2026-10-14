@@ -14,3 +14,7 @@ await copyFile(new URL('assets/Vulpine_Cabinet_Pricing_Configurator.xlsx',root),
 console.log('Built protected pricing site with '+(catalog.Shaker.length+catalog.Euro.length)+' product records.');
 
 await cp(new URL('assets/catalog-images/',root),new URL('dist/catalog-images/',root),{recursive:true});
+await cp(new URL('assets/brand/',root),new URL('dist/brand/',root),{recursive:true});
+
+await copyFile(new URL('node_modules/xlsx/dist/xlsx.full.min.js',root),new URL('dist/xlsx.full.min.js',root));
+await copyFile(new URL('src/quote-xlsx.mjs',root),new URL('dist/quote-xlsx.mjs',root));

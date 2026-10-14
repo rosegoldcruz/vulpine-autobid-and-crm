@@ -1,12 +1,146 @@
-<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Vulpine | Cabinet quotes</title><link rel="stylesheet" href="/styles.css"><script src="/pdf-lib.min.js" defer></script><script type="module" src="/app.mjs"></script></head><body>
-<header class="appHeader"><a class="brand" href="/" aria-label="Vulpine home">VULPINE<span class="brandDot"></span></a><div class="projectName"><label for="project">Project</label><input id="project" maxlength="120" placeholder="Project name"></div><span id="saveState">Draft saved on this device</span><nav class="steps" aria-label="Quote workflow"><button data-step="units" aria-current="step">Build quote</button><button data-step="document">Prepare PDF</button></nav></header>
-<div id="unitsStep" class="builder"><aside class="unitSidebar"><div class="sidebarHeading"><h2>Units</h2><span id="unitCount"></span></div><div id="unitCards"></div><button id="newUnit" class="addUnit">+ Add unit</button><a class="excelLink" href="/downloads/Vulpine_Cabinet_Pricing_Configurator.xlsx" download>Download Excel ↗</a></aside>
-<main class="unitEditor"><div class="sectionTitle"><h1 id="unitHeading">Unit 01</h1><button id="deleteUnit" class="subtle">Remove unit</button></div><div class="unitFields"><div><label for="unitName">Unit name</label><input id="unitName" maxlength="80"></div><div><label for="repeat">Number of units</label><input id="repeat" type="number" min="0" max="100000" step="1"></div><div><label for="line">Finish / cabinet line</label><select id="line"></select></div></div><p id="finishNote" class="note"></p>
-<div class="quickAdd"><div class="searchbox"><label class="srOnly" for="search">Search SKU or cabinet name</label><span class="searchIcon" aria-hidden="true">⌕</span><input id="search" placeholder="Search SKU or cabinet name…" role="combobox" aria-autocomplete="list" aria-controls="suggestions" aria-expanded="false" autocomplete="off"><div id="suggestions" role="listbox" hidden></div></div><button id="browse">Browse catalog</button></div><div class="listHeading"><h2>Cabinets in this unit</h2><span id="unitTotal"></span></div><div class="cartHead"><span>Item</span><span>Finish</span><span>Quantity</span><span>Cost each</span><span>Line total</span><span></span></div><div id="quoteRows"></div><div class="toeSetting"><label><input type="checkbox" id="autoToe"> Estimate toe kicks automatically</label><span>96-inch TK8 · per unit and finish</span></div><div id="unitIssues" aria-live="polite"></div><details class="sourceNotes"><summary>Catalog sources, rounding & pricing notes</summary><p>Highland Cabinetry Colorado Shaker v8-03252026re, price pages 35–39; Euro v3.11.10.25-RE, PDF pages 15–25. Purchase costs use catalog × 0.204, except shipping and delivery at full catalog rates. Euro cabinets include box + selected fronts; complete Shaker PC/OC items include BOX + FFD. Required separately priced components must be added in matching quantities.</p><p>Unavailable catalog prices remain unavailable. No additional tax, freight, assembly or installation is added unless selected as a catalog item. Automatic toe kicks are estimated independently for each unit type and finish; check layout, cut lengths and waste. Drafts are stored only in this browser on this device.</p></details></main></div>
-<div class="documentWorkspace"><section id="documentStep" hidden><h2>Prepare your quote document</h2><p>Review the totals, choose who this document is for, then generate and download the PDF.</p><div class="docGrid"><section><div class="formGrid"><div><label for="quoteId">Quote reference</label><input id="quoteId" maxlength="50"></div><div><label for="status">Quantities</label><select id="status"><option>Tentative</option><option>Final</option></select></div><div><label for="customer">Customer / recipient company</label><input id="customer" maxlength="120"></div><div><label for="email">Recipient email (optional)</label><input id="email" type="email" maxlength="160"></div><div><label for="preparedBy">Prepared by</label><select id="preparedBy"><option>Daniel Cruz</option><option>Mike Musonda</option></select></div><div><label for="date">Generated on (automatic)</label><input id="date" type="date" readonly></div></div><label for="validUntil">Valid until (45 days from generation)</label><input id="validUntil" type="date" readonly><p class="note">Dates refresh every time you generate the PDF. Customer proposals include cabinet specifications and a dedicated Authorization & Acceptance signing page.</p><label for="notes">Project notes / delivery instructions</label><textarea id="notes" rows="4" maxlength="2500"></textarea><fieldset class="documentTypes"><legend>PDF template</legend><label><input type="radio" name="documentType" value="customer" checked> Customer quote <small>Selling prices only; hides purchase cost and profit.</small></label><label><input type="radio" name="documentType" value="internal"> Internal costing <small>Purchase cost, selling totals, margin and profit.</small></label><label><input type="radio" name="documentType" value="purchase"> Supplier purchase schedule <small>Purchase costs including full-rate shipping; hides selling prices and profit.</small></label></fieldset><label class="check"><input type="checkbox" id="comparisonPdf"> Include all 50 margin scenarios in internal PDF</label></section>
-<aside><h2>Ready to download</h2><div id="documentSummary"></div><div id="documentIssues" class="note error" role="status"></div><button id="generate" class="primary">Generate & download PDF</button><button id="printGenerate" class="printGenerate">Generate PDF to print</button><div id="downloadResult" hidden><p id="downloadMessage" class="note"></p><a id="downloadAgain" class="button" download>Download PDF again</a><a id="gmail" class="button" target="_blank" rel="noopener noreferrer">Open Gmail draft</a><p class="note">Attach the downloaded PDF in Gmail, review the recipient, and send it yourself. No email is sent automatically.</p></div><p class="note">Generating a PDF does not submit an order. Downloaded documents are snapshots; changes require a new PDF.</p></aside></div><div class="nextRow"><button data-step="units">Back to cabinets</button></div></section>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Vulpine | Unit pricing & quotes</title><script>(function(){var t=null;try{t=localStorage.getItem('vulpine-theme')}catch(e){}if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.dataset.theme=t;document.addEventListener('DOMContentLoaded',function(){var b=document.querySelectorAll('[data-theme-set]');function sync(){var c=document.documentElement.dataset.theme;b.forEach(function(x){x.setAttribute('aria-pressed',String(x.dataset.themeSet===c))})}sync();b.forEach(function(x){x.addEventListener('click',function(){document.documentElement.dataset.theme=x.dataset.themeSet;try{localStorage.setItem('vulpine-theme',x.dataset.themeSet)}catch(e){}sync()})})})})();</script><link rel="icon" type="image/png" href="./brand/favicon.png"><link rel="stylesheet" href="./styles.css"><script src="./pdf-lib.min.js" defer></script><script src="./xlsx.full.min.js" defer></script><script type="module" src="./app.mjs"></script></head><body>
+
+<header class="top">
+  <a class="brand" href="./" aria-label="Vulpine, built for multifamily living"><img class="logoLight" src="./brand/logo-light.png" alt="Vulpine — built for multifamily living" width="204" height="46"><img class="logoDark" src="./brand/logo-dark.png" alt="Vulpine — built for multifamily living" width="204" height="46"></a>
+  <div class="topRight"><span id="saveState">Saved on this device</span><button id="exportExcel" class="secondary" type="button">Export Excel</button><span class="factor">Purchase pricing · 0.204</span><div class="themeSeg" role="group" aria-label="Color mode"><button type="button" data-theme-set="light" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span>Light</span></button><button type="button" data-theme-set="dark" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><span>Dark</span></button></div></div>
+</header>
+
+<div class="app">
+
+  <section class="projectBar" aria-label="Project">
+    <div class="field grow"><label for="project">Project name</label><input id="project" maxlength="120" placeholder="e.g. Highland Apartments"></div>
+    <div class="field finishField">
+      <label for="finish">Door style &amp; color <em>· selected unit</em></label>
+      <div class="finishPick"><img id="finishSwatch" alt="" width="46" height="46"><select id="finish"></select></div>
+    </div>
+    <div class="field"><label for="status">Quantities are</label><select id="status"><option>Tentative</option><option>Final</option></select></div>
+  </section>
+
+  <nav class="steps" aria-label="Quote steps">
+    <button data-step="build" aria-current="step"><i>1</i>Build your units</button>
+    <button data-step="quote"><i>2</i>Make the quote</button>
+  </nav>
+
+  <!-- ============ STEP 1 ============ -->
+  <section id="buildStep" class="builder">
+    <aside class="units" aria-label="Units">
+      <div class="unitsHead"><h2>Units</h2></div>
+      <div id="unitList" class="unitList"></div>
+      <button id="addUnit" class="addUnit">+ Add another unit</button>
+      <p class="hint">A <b>unit</b> is one layout, like “2BR kitchen”. Build it once, then say how many you have.</p>
+    </aside>
+
+    <div class="unitMain">
+      <div class="unitHead">
+        <div class="field grow"><label for="unitName">Unit name</label><input id="unitName" class="bigInput" maxlength="80"></div>
+        <div class="field"><label for="repeat">How many of this unit?</label>
+          <div class="stepper big"><button type="button" data-rep="-1" aria-label="One fewer unit">−</button><input id="repeat" type="number" min="0" max="100000" step="1" inputmode="numeric"><button type="button" data-rep="1" aria-label="One more unit">+</button></div>
+        </div>
+        <div class="unitActions"><button id="dupUnit" class="ghost" type="button">Duplicate</button><button id="delUnit" class="ghost danger" type="button">Delete</button></div>
+      </div>
+      <p id="repeatNote" class="hint" hidden></p>
+
+      <div class="quickAdd">
+        <label for="quick" class="srOnly">Add a cabinet or part</label>
+        <div class="quickRow">
+          <input id="quick" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="false" aria-controls="quickList" aria-autocomplete="list" placeholder="Type a SKU or name, then press Enter  (try  B24  or  drawer base  or  scribe)">
+          <button id="browse" type="button" class="secondary">Browse catalog</button>
+        </div>
+        <ul id="quickList" role="listbox" hidden></ul>
+        <p class="hint">Tip: type <b>B24 x3</b> to add 3 at once. Press <kbd>/</kbd> anywhere to jump here.</p>
+      </div>
+
+      <div class="listHead">
+        <h2 id="listTitle">What’s in this unit</h2>
+        <div class="seg" role="group" aria-label="Show prices as"><span>Show</span><button type="button" data-view="cost" aria-pressed="true">Your cost</button><button type="button" data-view="sell" aria-pressed="false">Sell price</button></div>
+      </div>
+      <div id="items"></div>
+      <div id="fixes"></div>
+      <div id="issues" class="issues" role="status"></div>
+      <label class="toe"><input type="checkbox" id="autoToe"> <span><b>Add toe kicks for me</b><small>Figured from the cabinet widths, using 96″ sticks. Double-check the cuts.</small></span></label>
+    </div>
+  </section>
+
+  <!-- ============ STEP 2 ============ -->
+  <section id="quoteStep" hidden>
+    <h2 class="pageTitle">Make the quote</h2>
+    <div class="tableScroll"><table class="summary"><thead><tr><th>Unit</th><th class="num">How many</th><th class="num">Cost each</th><th class="num">Cost total</th><th class="num">Sell total</th><th class="num">Profit</th></tr></thead><tbody id="unitSummary"></tbody></table></div>
+
+    <div class="docGrid">
+      <div class="docForm">
+        <div class="formGrid">
+          <div class="field"><label for="customer">Customer / company</label><input id="customer" maxlength="120"></div>
+          <div class="field"><label for="email">Customer email <em>(optional)</em></label><input id="email" type="email" maxlength="160"></div>
+          <div class="field"><label for="preparedBy">Prepared by</label><select id="preparedBy"><option>Daniel Cruz</option><option>Mike Musonda</option></select></div>
+          <div class="field"><label for="quoteId">Quote number</label><input id="quoteId" maxlength="50"></div>
+          <div class="field"><label for="date">Date <em>(automatic)</em></label><input id="date" type="date" readonly></div>
+          <div class="field"><label for="validUntil">Good until <em>(45 days)</em></label><input id="validUntil" type="date" readonly></div>
+        </div>
+        <div class="field"><label for="notes">Notes / delivery instructions</label><textarea id="notes" rows="4" maxlength="2500"></textarea></div>
+
+        <fieldset class="documentTypes"><legend>Which PDF?</legend>
+          <label><input type="radio" name="documentType" value="customer" checked><span><b>Customer quote</b><small>Selling prices only. Hides your cost and profit.</small></span></label>
+          <label><input type="radio" name="documentType" value="internal"><span><b>Internal costing</b><small>Your cost, selling price, margin and profit.</small></span></label>
+          <label><input type="radio" name="documentType" value="purchase"><span><b>Supplier purchase order</b><small>Your costs including full-rate shipping. Hides selling prices and profit.</small></span></label>
+        </fieldset>
+        <label class="check"><input type="checkbox" id="comparisonPdf"> Add all 50 margin scenarios to the internal PDF</label>
+      </div>
+
+      <aside class="docSide">
+        <h3>Ready to download</h3>
+        <div id="documentSummary"></div>
+        <div id="documentIssues" class="issues" role="status"></div>
+        <button id="generate" class="primary full">Generate &amp; download PDF</button>
+        <button id="printGenerate" class="secondary full">Generate PDF to print</button>
+        <div id="downloadResult" hidden>
+          <p id="downloadMessage" class="hint"></p>
+          <a id="downloadAgain" class="linkBtn" download>Download PDF again</a>
+          <a id="gmail" class="linkBtn" target="_blank" rel="noopener noreferrer">Open Gmail draft</a>
+          <p class="hint">Attach the PDF in Gmail, check the recipient, and send it yourself. Nothing is emailed automatically.</p>
+        </div>
+        <p class="hint">Making a PDF does not place an order. A downloaded PDF is a snapshot: change something, make a new one.</p>
+      </aside>
+    </div>
+  </section>
+
+  <details class="sourceNotes"><summary>Catalog sources, rounding &amp; pricing notes</summary><p>Highland Cabinetry Colorado Shaker v8-03252026re, price pages 35–39; Euro v3.11.10.25-RE, PDF pages 15–25. Purchase costs use catalog × 0.204, except shipping and delivery at full catalog rates. Euro cabinets include box + selected fronts; complete Shaker PC/OC items include BOX + FFD. Required separately priced components must be added in matching quantities.</p><p>Unavailable catalog prices remain unavailable. No additional tax, freight, assembly or installation is added unless selected as a catalog item. Automatic toe kicks are estimated independently for each unit type; check layout, cut lengths and waste. Selling price = cost ÷ (1 − margin). This is gross margin, not markup. Selling prices round to cents per item before quantity multiplication. Drafts are stored only in this browser on this device.</p></details>
 </div>
-<footer id="totalsBar" class="totalsBar"><div class="metric"><span id="costLabel">Cost</span><strong id="purchaseTotal"></strong></div><div class="metric"><span>Sell price</span><strong id="sellingTotal"></strong></div><div class="metric"><span>Profit</span><strong id="profitTotal"></strong></div><div class="marginControl"><div><label for="margin">Margin</label><strong id="marginValue"></strong></div><input id="margin" type="range" min="1" max="50" step="1"><div class="marginPresets"><button data-margin="25">25%</button><button data-margin="30">30%</button><button data-margin="35">35%</button></div></div><button class="primary" data-step="document">Prepare PDF</button><p id="totalsStatus" role="status"></p></footer>
-<dialog id="catalogDrawer" aria-labelledby="catalogTitle"><div class="drawerHeader"><h2 id="catalogTitle">Browse catalog</h2><button id="closeCatalog" aria-label="Close catalog">×</button></div><p id="catalogFinish" class="note"></p><div id="categories" class="categories" aria-label="Catalog categories"></div><label class="srOnly" for="catalogSearch">Search catalog</label><input id="catalogSearch" placeholder="Search SKU or cabinet name…"><div id="products"></div><p id="count" class="note"></p></dialog>
-<div id="toasts" class="toasts" aria-live="polite"></div><dialog id="imageViewer"><button id="closeImage">Close image</button><h2 id="imageTitle"></h2><img id="largeImage" alt=""><p id="imageCaption"></p></dialog></body></html>
+
+<!-- ============ ALWAYS-VISIBLE TOTALS + MARGIN ============ -->
+<footer class="bar" aria-label="Totals and margin">
+  <div class="stats">
+    <div><span>Your cost</span><strong id="tCost">$0.00</strong></div>
+    <div><span>Sell price</span><strong id="tSell">$0.00</strong></div>
+    <div><span>Profit</span><strong id="tProfit">$0.00</strong><small id="tReal"></small></div>
+  </div>
+  <div class="margin" id="mPanel">
+    <div class="marginTop"><label for="mRange">Margin</label>
+      <div class="stepper"><button type="button" id="mDown" aria-label="Lower margin">−</button><output id="mVal" for="mRange">20%</output><button type="button" id="mUp" aria-label="Raise margin">+</button></div>
+      <div id="mChips" class="chips"></div>
+      <button id="compare" type="button" class="link">Compare all</button>
+    </div>
+    <input id="mRange" type="range" min="1" max="50" step="1" aria-label="Target gross margin">
+  </div>
+  <div class="barBtns"><div id="barWarn" class="barWarn" hidden></div><button id="mToggle" type="button" class="mToggle" aria-expanded="false" aria-controls="mPanel">Margin <b id="mTog">20%</b> ▴</button><button id="next" class="primary">Make the quote →</button></div>
+</footer>
+
+<!-- ============ CATALOG DRAWER ============ -->
+<dialog id="drawer" aria-labelledby="drawerTitle">
+  <div class="dHead"><div><h2 id="drawerTitle">Browse catalog</h2><p id="drawerSub" class="hint"></p></div><button id="drawerClose" class="secondary" type="button">Done</button></div>
+  <div class="dTools">
+    <input id="dSearch" placeholder="Search SKU or name" autocomplete="off" aria-label="Search the catalog">
+    <div id="dCats" class="chips tabs" role="group" aria-label="Category"></div>
+    <div id="dTypes" class="chips" role="group" aria-label="Cabinet type"></div>
+  </div>
+  <div id="dList" class="dList"></div>
+  <div class="dFoot"><span id="dFoot"></span><button id="drawerDone" class="primary" type="button">Done</button></div>
+</dialog>
+
+<!-- ============ COMPARE MARGINS ============ -->
+<dialog id="compareDlg" aria-labelledby="compareTitle">
+  <div class="dHead"><div><h2 id="compareTitle">Compare margins</h2><p class="hint">Tap a row to use that margin.</p></div><button id="compareClose" class="secondary" type="button">Close</button></div>
+  <div class="tableScroll"><table class="summary"><thead><tr><th>Margin</th><th class="num">Your cost</th><th class="num">Sell price</th><th class="num">Profit</th></tr></thead><tbody id="comparison"></tbody></table></div>
+</dialog>
+
+<div id="toasts" class="toasts" aria-live="polite" aria-atomic="false"></div>
+</body></html>

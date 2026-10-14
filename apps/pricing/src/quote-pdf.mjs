@@ -2,7 +2,7 @@ import {money,calculateProject,lookup,quoteDates} from './pricing.mjs';
 const safe=s=>String(s??'').replace(/[“”″]/g,'"').replace(/[‘’]/g,"'").replace(/[–—]/g,'-').replace(/×/g,'x').replace(/[^\x20-\x7e\n]/g,'?');
 export async function generateQuote(PDFLib,data,input,type='customer',templateBytes=null,now=new Date()){
  const state={...input,...quoteDates(now)},result=calculateProject(data,state);if(result.issues.length)throw Error('Resolve unit issues before generating the PDF.');if(!state.project.trim())throw Error('Enter a project name.');
- const {PDFDocument,StandardFonts,rgb}=PDFLib,doc=await PDFDocument.create(),template=await PDFDocument.load(templateBytes||await (await fetch('/proposal-template.pdf')).arrayBuffer()),font=await doc.embedFont(StandardFonts.Helvetica),bold=await doc.embedFont(StandardFonts.HelveticaBold),serif=await doc.embedFont(StandardFonts.TimesRoman),gold=rgb(.67,.49,.23),ink=rgb(.13,.14,.13);
+ const {PDFDocument,StandardFonts,rgb}=PDFLib,doc=await PDFDocument.create(),template=await PDFDocument.load(templateBytes||await (await fetch('./proposal-template.pdf')).arrayBuffer()),font=await doc.embedFont(StandardFonts.Helvetica),bold=await doc.embedFont(StandardFonts.HelveticaBold),serif=await doc.embedFont(StandardFonts.TimesRoman),gold=rgb(.67,.49,.23),ink=rgb(.13,.14,.13);
  // Original PDF media box has a 7.83pt origin offset; align to its true top.
  const H=850.079956,shortDate=s=>{const [y,m,d]=s.split('-');return m+'/'+d+'/'+y};
  const stamp=(p,schedule=false,addLine=false)=>{const top=schedule?7:76;if(schedule||addLine)p.drawLine({start:{x:487,y:H-top},end:{x:548,y:H-top},thickness:1.8,color:gold});p.drawText(shortDate(state.date),{x:489,y:H-top-11,size:9,font:serif,color:ink})};
