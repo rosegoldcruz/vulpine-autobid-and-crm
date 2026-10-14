@@ -22,16 +22,62 @@ export async function generateQuote(PDFLib,data,input,type='customer',templateBy
   text(p,money(amount),368,506,70,9,true,rgb(1,1,1));text(p,totalCabinets,449,506,49,8,true,rgb(1,1,1));text(p,totalHardware+' est.',510,506,54,7,true,rgb(1,1,1));
   const values=[money(amount),'Not separately priced','Not added','Only if listed','Only if listed',money(amount)];values.forEach((v,i)=>text(p,v,201,562+i*18.5,83,8,i===5));
   const snapshot=[result.count,result.units.filter(u=>u.repeat>0).length,totalCabinets,totalHardware+' (estimate)','Not included unless listed',state.status+' quantities'];snapshot.forEach((v,i)=>text(p,v,438,562+i*18.5,126,8,i===5));
-  const specifications=['Per selected cabinet line','Per selected catalog specifications','Per selected catalog specifications','Per selected catalog specifications','Per selected catalog specifications','Per selected catalog specifications',finishes.join(', ')];specifications.forEach((v,i)=>text(p,v,215,701+i*14,348,7));
+  // Approved specification wording from the supplied Garden Villas, Sunset Ridge,
+  // and Gracious Manor proposals. Finish names still come from the selected items.
+  const specifications=['HDF','Plywood with maple finish','Plywood','DTC soft-close','Solid wood dovetailed','Undermount soft-close',finishes.join(', ')];specifications.forEach((v,i)=>text(p,v,215,701+i*14,348,7));
   text(p,state.quoteId+' | '+state.status+' | Valid until '+shortDate(state.validUntil)+' | Schedule '+(index+1)+'/'+pages,29,804,536,8);
   text(p,'Cabinets row includes all listed materials. Hardware counts are estimates, not added handle charges.',29,817,536,7);
  }
  // Details retain full descriptions and notes when narrow template cells must abbreviate.
  const needsDetails=state.notes.trim()||state.customer.length>35||state.project.length>40||rows.some(r=>r.unit.name.length>20||r.sku.length>18);
  if(type==='internal'||needsDetails){const detail=await PDFDocument.load(await generateInternalReport(PDFLib,data,state,type));const copied=await doc.copyPages(detail,detail.getPageIndices());copied.forEach(p=>doc.addPage(p))}
+ if(type==='customer')addAcceptancePage(doc,PDFLib,state,result,{totalCabinets,totalHardware,finishes,font,bold,gold,ink});
  const [closing]=await doc.copyPages(template,[3]);doc.addPage(closing);stamp(closing,false,true);
  doc.setTitle((type==='customer'?'Cabinet proposal':type==='internal'?'Internal costing':'Purchase schedule')+' - '+state.project);doc.setAuthor(state.preparedBy||'Vulpine');doc.setSubject(state.quoteId+' | Generated '+state.date+' | Valid until '+state.validUntil);
  return doc.save();
+}
+function addAcceptancePage(doc,PDFLib,state,result,{totalCabinets,totalHardware,finishes,font,bold,gold,ink}){
+ const {rgb}=PDFLib,width=595.5,height=842.25,page=doc.addPage([width,height]);
+ const left=34,right=width-34,contentWidth=right-left,muted=rgb(.39,.4,.39),rule=rgb(.83,.81,.76),paper=rgb(.98,.975,.96);
+ page.drawRectangle({x:0,y:0,width,height,color:paper});
+ page.drawRectangle({x:0,y:0,width:5,height,color:gold});
+ const draw=(value,x,top,size=10,strong=false,color=ink)=>page.drawText(safe(value),{x,y:height-top,size,font:strong?bold:font,color});
+ const line=(x1,x2,top,color=rule)=>page.drawLine({start:{x:x1,y:height-top},end:{x:x2,y:height-top},thickness:.65,color});
+ const wrap=(value,maxWidth,size=9.5)=>{
+  const words=safe(value).split(/\s+/),lines=[];let current='';
+  for(let word of words){
+   while(font.widthOfTextAtSize(word,size)>maxWidth){let cut=1;while(cut<word.length&&font.widthOfTextAtSize(word.slice(0,cut+1),size)<=maxWidth)cut++;if(current){lines.push(current);current=''}lines.push(word.slice(0,cut));word=word.slice(cut)}
+   const next=current?current+' '+word:word;if(font.widthOfTextAtSize(next,size)>maxWidth&&current){lines.push(current);current=word}else current=next;
+  }
+  if(current)lines.push(current);return lines.length?lines:[''];
+ };
+ draw('VULPINE',left,51,25,true);draw('BUILT FOR MULTIFAMILY LIVING',left,69,8,false,muted);
+ wrap(state.quoteId,240,9).forEach((value,i)=>draw(value,right-font.widthOfTextAtSize(value,9),49+i*12,9,false,muted));
+ line(left,right,86,gold);draw('PROJECT SUMMARY',left,119,20,true);
+ let top=139;
+ const section=label=>{page.drawRectangle({x:left,y:height-top-26,width:contentWidth,height:26,color:ink});draw(label,left+11,top+17,10,true,rgb(1,1,1));top+=26};
+ const row=(label,value)=>{const lines=wrap(value,contentWidth-173),rowHeight=Math.max(28,lines.length*12+14);page.drawRectangle({x:left,y:height-top-rowHeight,width:contentWidth,height:rowHeight,color:rgb(1,1,1),borderColor:rule,borderWidth:.5});draw(label,left+11,top+18,8.5,false,muted);lines.forEach((s,i)=>draw(s,left+160,top+18+i*12,9.5));top+=rowHeight};
+ section('I. PROJECT INFORMATION');
+ row('Project name',state.project);
+ row('General contractor / Prepared for',state.customer||'');
+ row('Scope','Cabinet and trim supply as listed in this proposal. '+result.count+' units; '+totalCabinets+' cabinets; '+totalHardware+' hardware pieces (estimate).');
+ row('Cabinet line / finish',finishes.join(', '));
+ row('Proposal date / Valid until',state.date+' / '+state.validUntil);
+ row('Proposal total',money(result.sale)+' | '+state.status+' quantities');
+ top+=20;section('II. PREPARED BY');
+ row('Company / Contact','Vulpine, LLC | '+(state.preparedBy||'Daniel Cruz'));
+ row('Phone / Email','(480) 267-9181 | '+(state.preparedBy==='Mike Musonda'?'info@vulpine.llc':'cruz@vulpine.llc'));
+ top+=22;section('III. AUTHORIZATION & ACCEPTANCE');
+ // No signature from a reference proposal is copied into a new agreement.
+ const signatureTop=top,half=(contentWidth-24)/2,xPositions=[left,left+half+24];
+ for(let i=0;i<2;i++){
+  const x=xPositions[i];draw(i===0?'VULPINE REPRESENTATIVE':'CLIENT AUTHORIZED REPRESENTATIVE',x,signatureTop+23,8.5,true);
+  line(x,x+half,signatureTop+82);draw('Signature',x,signatureTop+95,8,false,muted);
+  line(x,x+half,signatureTop+126);draw('Printed name / Title',x,signatureTop+139,8,false,muted);
+  line(x,x+half,signatureTop+168);draw('Date',x,signatureTop+181,8,false,muted);
+ }
+ line(left,right,height-47,gold);draw('VULPINE, LLC  |  PHOENIX, AZ',left,height-29,8,false,muted);
+ draw('AUTHORIZATION & ACCEPTANCE',right-170,height-29,8,true,gold);
 }
 export async function generateInternalReport(PDFLib,data,state,type='customer'){
  const result=calculateProject(data,state);if(result.issues.length)throw Error('Resolve unit issues before generating the PDF.');
