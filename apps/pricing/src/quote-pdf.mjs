@@ -47,7 +47,7 @@ export async function generateInternalReport(PDFLib,data,state,type='customer'){
  const text=(value,size=10,b=false)=>{for(const line of wrap(value,528,size,b)){room(size+6);draw(line,42,y,size,b);y-=size+6}};
  const pair=(label,value,b=false)=>{room(21);draw(label,42,y,11,b);draw(value,570-font.widthOfTextAtSize(safe(value),11),y,11,b);y-=21};
  newPage();text(state.project,19,true);text([state.customer&&'Prepared for: '+state.customer,state.email&&'Recipient: '+state.email,state.preparedBy&&'Prepared by: '+state.preparedBy].filter(Boolean).join('\n'));text('Status: '+state.status+' | Unit instances: '+result.count,10,true);y-=8;
- if(type==='internal'){pair('Purchase cost (catalog x 0.204)',money(result.purchase));pair('Selling total',money(result.sale));pair('Gross profit',money(result.profit),true);pair('Target / realized margin',state.margin+'% / '+result.actualMargin.toFixed(2)+'%')}
+ if(type==='internal'){pair('Purchase cost',money(result.purchase));pair('Selling total',money(result.sale));pair('Gross profit',money(result.profit),true);pair('Target / realized margin',state.margin+'% / '+result.actualMargin.toFixed(2)+'%')}
  else pair(type==='purchase'?'Purchase total':'Quote total',money(type==='purchase'?result.purchase:result.sale),true);
  text('Quantities are '+state.status.toLowerCase()+'. Additional tax, freight, assembly and installation are excluded unless listed. Prices in USD.',9);y-=12;
  for(const unit of result.units.filter(u=>u.repeat>0)){
@@ -63,7 +63,7 @@ export async function generateInternalReport(PDFLib,data,state,type='customer'){
   if(type==='internal'){text('Purchase / unit: '+money(unit.purchase)+' | Profit / unit: '+money(unit.profit),9);text('Purchase extended: '+money(unit.purchase*unit.repeat)+' | Profit extended: '+money(unit.profit*unit.repeat),9)}y-=12;
  }
  room(70);pair(type==='purchase'?'TOTAL PURCHASE COST':'TOTAL QUOTE',money(type==='purchase'?result.purchase:result.sale),true);
- if(type==='internal'){pair('TOTAL GROSS PROFIT',money(result.profit),true);text('Purchase costs use the fixed 0.204 factor. Gross margin = profit / selling price. Selling price = purchase cost / (1 - target margin). Prices are rounded per item before multiplying quantities, so realized margin may differ slightly.',9)}
+ if(type==='internal'){pair('TOTAL GROSS PROFIT',money(result.profit),true);text('Purchase costs use 0.204 except shipping/delivery, which uses full catalog rates. Gross margin = profit / selling price. Selling price = purchase cost / (1 - target margin). Prices are rounded per item before multiplying quantities, so realized margin may differ slightly.',9)}
  if(state.notes.trim()){y-=8;text('Project notes',12,true);text(state.notes)}
  text('Estimate only; not an order submission or acceptance. Verify finishes, required parts, cut waste and final quantities before ordering.',9);
  if(type!=='customer')text('Sources: Highland Cabinetry Colorado Shaker v8-03252026re, price pages 35-39; Euro v3.11.10.25-RE, PDF price pages 15-25. Unavailable prices cannot be quoted.',8);
