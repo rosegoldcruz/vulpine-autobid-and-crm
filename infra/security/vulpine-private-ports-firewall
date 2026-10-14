@@ -1,0 +1,36 @@
+#!/bin/sh
+set -eu
+
+PORTS="5678,6379,8000"
+
+case "${1:-start}" in
+  start)
+    # Nginx terminates public traffic. New public connections must never go
+    # directly to any Docker-published port, including future deployments.
+    for tool in /usr/sbin/iptables /usr/sbin/ip6tables; do
+      "$tool" -w -C DOCKER-USER -i eth0 -m conntrack --ctstate NEW,INVALID -j DROP 2>/dev/null || \
+        "$tool" -w -I DOCKER-USER 1 -i eth0 -m conntrack --ctstate NEW,INVALID -j DROP
+    done
+    /usr/sbin/iptables -C DOCKER-USER -i eth0 -p tcp -m multiport --dports "$PORTS" -j DROP 2>/dev/null || \
+      /usr/sbin/iptables -I DOCKER-USER 1 -i eth0 -p tcp -m multiport --dports "$PORTS" -j DROP
+    /usr/sbin/ip6tables -C INPUT -i eth0 -p tcp -m multiport --dports "$PORTS" -j DROP 2>/dev/null || \
+      /usr/sbin/ip6tables -I INPUT 1 -i eth0 -p tcp -m multiport --dports "$PORTS" -j DROP
+    ;;
+  stop)
+    for tool in /usr/sbin/iptables /usr/sbin/ip6tables; do
+      while "$tool" -w -C DOCKER-USER -i eth0 -m conntrack --ctstate NEW,INVALID -j DROP 2>/dev/null; do
+        "$tool" -w -D DOCKER-USER -i eth0 -m conntrack --ctstate NEW,INVALID -j DROP
+      done
+    done
+    while /usr/sbin/iptables -C DOCKER-USER -i eth0 -p tcp -m multiport --dports "$PORTS" -j DROP 2>/dev/null; do
+      /usr/sbin/iptables -D DOCKER-USER -i eth0 -p tcp -m multiport --dports "$PORTS" -j DROP
+    done
+    while /usr/sbin/ip6tables -C INPUT -i eth0 -p tcp -m multiport --dports "$PORTS" -j DROP 2>/dev/null; do
+      /usr/sbin/ip6tables -D INPUT -i eth0 -p tcp -m multiport --dports "$PORTS" -j DROP
+    done
+    ;;
+  *)
+    echo "usage: $0 {start|stop}" >&2
+    exit 2
+    ;;
+esac
