@@ -8,7 +8,7 @@ export function mountWorkspace({flush,startQuote,getReference,onArchive,onError}
  async function action(name,action){const r=await fetch('./export',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({format:'project-action',name,action})});const result=await r.json();if(!r.ok)throw Error(result.error);return result;}
  async function refresh(){
   const r=await fetch('./projects',{cache:'no-store'});if(!r.ok)throw Error('Project history could not load. Your current quote is retained.');const data=await r.json();
-  sidebar.replaceChildren();const title=document.createElement('h2');title.textContent='Projects';sidebar.append(title);
+  sidebar.replaceChildren();sidebar.append(button('Close projects',()=>toggle.click()));const title=document.createElement('h2');title.textContent='Projects';sidebar.append(title);
   const hint=document.createElement('p');hint.textContent='Shared with your Vulpine team. Quotes and documents stay here.';sidebar.append(hint);
   const projectName=document.createElement('input');projectName.placeholder='New project name';projectName.maxLength=120;projectName.setAttribute('aria-label','New project name');sidebar.append(projectName);
   sidebar.append(button('+ New project',async()=>{const name=projectName.value;if(!name.trim()){projectName.focus();return;}await flush();await action(name,'create');await startQuote(name.trim());}));
