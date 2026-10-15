@@ -9,7 +9,7 @@ export async function generateQuote(PDFLib,data,input,type='customer',templateBy
  const text=(p,value,x,top,width=120,size=8,b=false,color=ink)=>{value=safe(value);let actual=size;const f=b?bold:font;while(f.widthOfTextAtSize(value,actual)>width&&actual>5.5)actual-=.25;if(f.widthOfTextAtSize(value,actual)>width){while(value.length&&f.widthOfTextAtSize(value+'...',actual)>width)value=value.slice(0,-1);value+='...'}p.drawText(value,{x,y:H-top,size:actual,font:f,color})};
  if(type!=='customer'){const [cover,approach]=await doc.copyPages(template,[0,1]);doc.addPage(cover);doc.addPage(approach);stamp(cover);stamp(approach);text(cover,state.preparedBy.trim()||'Daniel Cruz',34,567,255,27);text(cover,shortDate(state.validUntil),34,649,205,17,true);}
  const activeUnits=result.units.filter(u=>u.repeat>0),rows=activeUnits.flatMap(u=>u.entries.map(r=>({...r,unit:u,extendedQty:r.qty*u.repeat}))),totalCabinets=rows.reduce((s,r)=>s+(lookup(data,r.li,r.sku)?.[5]||0)*r.extendedQty,0),totalHardware=rows.reduce((s,r)=>s+(lookup(data,r.li,r.sku)?.[7]||0)*r.extendedQty,0),finishes=[...new Set(rows.map(r=>r.line))],schedule=type==='customer'?activeUnits:rows,pages=Math.max(1,Math.ceil(schedule.length/20)),amount=type==='purchase'?result.purchase:result.sale;
- const abbreviations=['WHS','GRS','SDW','MSL','ONB','SBS','SSG','MTS','Euro Classic','Euro Deluxe','Euro Custom'];
+ const abbreviations=data.lines?.map(l=>l[0])||['WHS','GRS','SDW','MSL','ONB','SBS','SSG','MTS','Euro Classic','Euro Deluxe','Euro Custom'];
  for(let index=0;index<pages;index++){
   const [p]=await doc.copyPages(template,[2]);doc.addPage(p);stamp(p,true);
   // Fill the supplied page-3 form directly; every amount covers all repeated units.
@@ -21,26 +21,26 @@ export async function generateQuote(PDFLib,data,input,type='customer',templateBy
   schedule.slice(index*20,index*20+20).forEach((r,j)=>{
    const top=125+j*18.8;
    if(type==='customer'){
-    const families=[...new Set(r.entries.map(i=>data.Shaker.some(row=>row[0]===i.sku)&&i.li<8?'Framed':'Frameless'))];
+    const families=[...new Set(r.entries.map(i=>data.families?.[i.li]||(i.li<8?'Framed':'Frameless')))];
     text(p,families.join(' / '),30,top,93,7.5,true);text(p,r.name,134,top,107,8,true);text(p,r.repeat,254,top,31,8);
     text(p,money(r.sale),292,top,66,8);text(p,money(r.sale*r.repeat),368,top,68,8);
-    text(p,r.entries.reduce((s,i)=>s+(lookup(data,i.li,i.sku)?.[5]||0)*i.qty*r.repeat,0),449,top,49,8);
-    text(p,r.entries.reduce((s,i)=>s+(lookup(data,i.li,i.sku)?.[7]||0)*i.qty*r.repeat,0)+' est.',510,top,54,7);
+    text(p,data.countsVerified===false?'Not supplied':r.entries.reduce((s,i)=>s+(lookup(data,i.li,i.sku)?.[5]||0)*i.qty*r.repeat,0),449,top,49,8);
+    text(p,data.countsVerified===false?'Not supplied':r.entries.reduce((s,i)=>s+(lookup(data,i.li,i.sku)?.[7]||0)*i.qty*r.repeat,0)+' est.',510,top,54,7);
    }else{const price=type==='purchase'?r.purchase:r.sale,meta=lookup(data,r.li,r.sku);text(p,r.sku,30,top,93,7.5,true);text(p,r.unit.name+' / '+abbreviations[r.li],134,top-3,107,7);text(p,r.qty+' each x '+r.unit.repeat+' units',134,top+5,107,6);text(p,r.extendedQty,254,top,31,8);text(p,money(price),292,top,66,8);text(p,money(price*r.extendedQty),368,top,68,8);text(p,(meta?.[5]||0)*r.extendedQty,449,top,49,8);text(p,(meta?.[7]||0)*r.extendedQty+' est.',510,top,54,7)}
   });
-  text(p,money(amount),368,506,70,9,true,rgb(1,1,1));text(p,totalCabinets,449,506,49,8,true,rgb(1,1,1));text(p,totalHardware+' est.',510,506,54,7,true,rgb(1,1,1));
+  text(p,money(amount),368,506,70,9,true,rgb(1,1,1));text(p,data.countsVerified===false?'Not supplied':totalCabinets,449,506,49,8,true,rgb(1,1,1));text(p,data.countsVerified===false?'Not supplied':totalHardware+' est.',510,506,54,7,true,rgb(1,1,1));
   const values=[money(amount),'Not separately priced','Not added','Only if listed','Only if listed',money(amount)];values.forEach((v,i)=>text(p,v,201,562+i*18.5,83,8,i===5));
-  const snapshot=[result.count,result.units.filter(u=>u.repeat>0).length,totalCabinets,totalHardware+' (estimate)','Not included unless listed',state.status+' quantities'];snapshot.forEach((v,i)=>text(p,v,438,562+i*18.5,126,8,i===5));
+  const snapshot=[result.count,result.units.filter(u=>u.repeat>0).length,data.countsVerified===false?'Not supplied':totalCabinets,data.countsVerified===false?'Not supplied':totalHardware+' (estimate)','Not included unless listed',state.status+' quantities'];snapshot.forEach((v,i)=>text(p,v,438,562+i*18.5,126,8,i===5));
   // Approved specification wording from the supplied Garden Villas, Sunset Ridge,
   // and Gracious Manor proposals. Finish names still come from the selected items.
-  const specifications=['HDF','Plywood with maple finish','Plywood','DTC soft-close','Solid wood dovetailed','Undermount soft-close',finishes.join(', ')];specifications.forEach((v,i)=>text(p,v,215,701+i*14,348,7));
+  const specifications=[...(data.specifications||['HDF','Plywood with maple finish','Plywood','DTC soft-close','Solid wood dovetailed','Undermount soft-close']),finishes.join(', ')];specifications.forEach((v,i)=>text(p,v,215,701+i*14,348,7));
   text(p,state.quoteId+' | '+state.status+' | Valid until '+shortDate(state.validUntil)+' | Schedule '+(index+1)+'/'+pages,29,804,536,8);
-  text(p,'Cabinets row includes all listed materials. Hardware counts are estimates, not added handle charges.',29,817,536,7);
+  text(p,data.label?data.label+' | '+data.basis:'Cabinets row includes all listed materials. Hardware counts are estimates, not added handle charges.',29,817,536,7);
  }
  // Details retain full descriptions and notes when narrow template cells must abbreviate.
  const needsDetails=state.notes.trim()||state.customer.length>35||state.project.length>40||rows.some(r=>r.unit.name.length>20||r.sku.length>18);
  if(type!=='customer'&&(type==='internal'||needsDetails)){const detail=await PDFDocument.load(await generateInternalReport(PDFLib,data,state,type));const copied=await doc.copyPages(detail,detail.getPageIndices());copied.forEach(p=>doc.addPage(p))}
- if(type==='customer')addAcceptancePage(doc,PDFLib,state,result,{totalCabinets,totalHardware,finishes,font,bold,gold,ink});
+ if(type==='customer')addAcceptancePage(doc,PDFLib,state,result,{totalCabinets:data.countsVerified===false?null:totalCabinets,totalHardware:data.countsVerified===false?null:totalHardware,finishes,font,bold,gold,ink});
  if(type!=='customer'){const [closing]=await doc.copyPages(template,[3]);doc.addPage(closing);stamp(closing,false,true);}
  doc.setTitle((type==='customer'?'Cabinet proposal':type==='internal'?'Internal costing':'Purchase schedule')+' - '+state.project);doc.setAuthor(state.preparedBy||'Vulpine');doc.setSubject(state.quoteId+' | Generated '+state.date+' | Valid until '+state.validUntil);
  return doc.save();
@@ -69,7 +69,7 @@ function addAcceptancePage(doc,PDFLib,state,result,{totalCabinets,totalHardware,
  section('I. PROJECT INFORMATION');
  row('Project name',state.project);
  row('General contractor / Prepared for',state.customer||'');
- row('Scope','Cabinet and trim supply as listed in this proposal. '+result.count+' units; '+totalCabinets+' cabinets; '+totalHardware+' hardware pieces (estimate).');
+ row('Scope','Cabinet and trim supply as listed in this proposal. '+result.count+' units.'+(totalCabinets===null?' Cabinet and hardware counts require review.':' '+totalCabinets+' cabinets; '+totalHardware+' hardware pieces (estimate).'));
  row('Cabinet line / finish',finishes.join(', '));
  row('Proposal date / Valid until',state.date+' / '+state.validUntil);
  row('Proposal total',money(result.sale)+' | '+state.status+' quantities');
@@ -125,10 +125,10 @@ export async function generateInternalReport(PDFLib,data,state,type='customer'){
   if(type==='internal'){text('Purchase / unit: '+money(unit.purchase)+' | Profit / unit: '+money(unit.profit),9);text('Purchase extended: '+money(unit.purchase*unit.repeat)+' | Profit extended: '+money(unit.profit*unit.repeat),9)}y-=12;
  }
  room(70);pair(type==='purchase'?'TOTAL PURCHASE COST':'TOTAL QUOTE',money(type==='purchase'?result.purchase:result.sale),true);
- if(type==='internal'){pair('TOTAL GROSS PROFIT',money(result.profit),true);text('Purchase costs use 0.204 except shipping/delivery, which uses full catalog rates. Gross margin = profit / selling price. Selling price = purchase cost / (1 - target margin). Prices are rounded per item before multiplying quantities, so realized margin may differ slightly.',9)}
+ if(type==='internal'){pair('TOTAL GROSS PROFIT',money(result.profit),true);text((data.basis?data.basis+'. ':'HCI purchase costs use 0.204 except shipping/delivery, which uses full catalog rates. ')+'Gross margin = profit / selling price. Selling price = purchase cost / (1 - target margin). Prices are rounded per item before multiplying quantities, so realized margin may differ slightly.',9)}
  if(state.notes.trim()){y-=8;text('Project notes',12,true);text(state.notes)}
  text('Estimate only; not an order submission or acceptance. Verify finishes, required parts, cut waste and final quantities before ordering.',9);
- if(type!=='customer')text('Sources: Highland Cabinetry Colorado Shaker v8-03252026re, price pages 35-39; Euro v3.11.10.25-RE, PDF price pages 15-25. Unavailable prices cannot be quoted.',8);
+ if(type!=='customer')text(data.source?'Source: '+data.source.file+' | '+data.source.basis:'Sources: Highland Cabinetry Colorado Shaker v8-03252026re, price pages 35-39; Euro v3.11.10.25-RE, PDF price pages 15-25. Unavailable prices cannot be quoted.',8);
  if(type==='internal'&&state.comparison){newPage();text('Margin comparison | 1% to 50%',17,true);text('Same unit quantities and purchase cost: '+money(result.purchase)+'. Selling prices rounded per item.',9);for(let m=1;m<=50;m++){room(20);const r=calculateProject(data,state,m);draw(m+'% margin',42,y,10);draw('Sell '+money(r.sale),190,y,10);draw('Profit '+money(r.profit),390,y,10);y-=19}}
  const pages=doc.getPages();pages.forEach((p,i)=>{p.drawText(safe(state.quoteId)+' | '+(type==='internal'?'CONFIDENTIAL - INTERNAL ONLY':state.status),{x:42,y:30,size:8,font,color:muted});p.drawText('Page '+(i+1)+' of '+pages.length,{x:495,y:30,size:8,font,color:muted})});
  return doc.save();

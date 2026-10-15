@@ -1,8 +1,15 @@
-import {LINES,money,whole,lookup,cost,calculateUnit,calculateProject,quoteDates} from './pricing.mjs';
+import {LINES as HCI_LINES,linesFor,money,whole,lookup,cost,calculateUnit,calculateProject,quoteDates} from './pricing.mjs';
 import {generateQuote} from './quote-pdf.mjs';
 import {exportWorkbook} from './quote-xlsx.mjs';
 
-const [DATA,IMAGES]=await Promise.all([fetch('./catalog.json').then(r=>r.json()),fetch('./catalog-images.json').then(r=>r.json())]);
+const [HCI_DATA,HCI_IMAGES]=await Promise.all([fetch('./catalog.json').then(r=>r.json()),fetch('./catalog-images.json').then(r=>r.json())]);
+let DATA=HCI_DATA,IMAGES=HCI_IMAGES,LINES=HCI_LINES;
+const supplierCatalogs={hci:HCI_DATA};
+async function supplierCatalog(id){
+ if(!['hci','rythern','uscd'].includes(id))throw Error('Unknown supplier.');
+ if(!supplierCatalogs[id]){const response=await fetch('./suppliers/'+id+'.json');if(!response.ok)throw Error('Supplier catalog could not load.');supplierCatalogs[id]=await response.json();}
+ return supplierCatalogs[id];
+}
 const $=id=>document.getElementById(id);
 $('exportExcel').onclick=async()=>{try{if(hosted){const bytes=await serverExport('xlsx');downloadBytes(bytes,'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',safeName()+'_Purchase_Bid.xlsx');}else{if(!window.XLSX)throw Error('The Excel tool is still loading. Try again.');exportWorkbook(window.XLSX,DATA,state);}toast('Purchase workbook exported with your units and quantities.')}catch(error){toast(error.message,{error:true})}};
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -37,6 +44,8 @@ if(hosted){
   $('saveState').textContent='Saved in back office';
 }
 if(!['Daniel Cruz','Mike Musonda'].includes(state.preparedBy))state.preparedBy='Daniel Cruz';
+let supplierDrafts=state.supplierDrafts||{};delete state.supplierDrafts;
+state.supplier=state.supplier||'hci';DATA=await supplierCatalog(state.supplier);LINES=linesFor(DATA);IMAGES=state.supplier==='hci'?HCI_IMAGES:{};
 for(const u of state.units){u.defaultLi=LINES[u.defaultLi]?u.defaultLi:(u.items.find(x=>LINES[x.li])?.li??state.finish??0);for(const it of u.items)it.finishOverride=it.finishOverride??(it.li!==u.defaultLi);}
 
 let view='cost';try{view=localStorage.getItem('vulpine-view')==='sell'?'sell':'cost'}catch{}
@@ -59,7 +68,7 @@ const price=sku=>cost(DATA,selectedFinish(),sku);
 const assetPath=s=>s?.startsWith('/')?'.'+s:(s||'');
 const thumb=(sku,li=selectedFinish())=>assetPath(IMAGES[LINES[li][1]]?.[sku]?.src);
 const qtyOf=(sku,li=selectedFinish())=>unit().items.find(x=>x.sku===sku&&x.li===li)?.qty||0;
-const autoBlocked=sku=>unit().auto&&sku==='TK8';
+const autoBlocked=sku=>DATA.autoToe!==false&&unit().auto&&sku==='TK8';
 
 function search(q,limit=8){
   const terms=norm(q).split(' ').filter(Boolean);if(!terms.length)return[];
@@ -67,7 +76,7 @@ function search(q,limit=8){
   for(const e of rowsFor(fam())){
     if(!terms.every(t=>e.hay.includes(t)))continue;
     const t0=terms[0];
-    const score=e.sku===norm(q)?0:e.sku===t0?0:e.sku.startsWith(t0)?1:e.sku.includes(t0)?2:3;
+    const score=e.sku===norm(q)||norm(e.r[12]?.baseSku||'')===norm(q)?0:e.sku===t0?0:e.sku.startsWith(t0)?1:e.sku.includes(t0)?2:3;
     out.push([score,e]);
   }
   out.sort((a,b)=>a[0]-b[0]||natural(a[1].r[0],b[1].r[0]));
@@ -84,14 +93,14 @@ function toast(message,opts={}){
 function save(){
   if(hosted){
     $('saveState').textContent='Saving to back office…';clearTimeout(saveTimer);
-    const snapshot=structuredClone(state);
+    const snapshot=structuredClone({...state,supplierDrafts});
     saveTimer=setTimeout(()=>{saveQueue=saveQueue.then(async()=>{
       if(serverConflict)throw Error('Draft changed in another tab. Reload before editing.');
       const r=await fetch('./draft',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({draft:snapshot,revision})});
       const result=await r.json();if(!r.ok){if(r.status===409)serverConflict=true;throw Error(result.error||'Server save failed.');}
       revision=result.revision;$('saveState').textContent='Saved in back office';
     }).catch(error=>{$('saveState').textContent='Not saved';toast(error.message,{error:true})});},400);
-  }else try{localStorage.setItem(KEY,JSON.stringify(state));$('saveState').textContent='Saved on this device'}
+  }else try{localStorage.setItem(KEY,JSON.stringify({...state,supplierDrafts}));$('saveState').textContent='Saved on this device'}
   catch{$('saveState').textContent='Not saved — browser storage is off';if(!storageWarning){toast('Browser storage is off. Download your PDF before you close this page.',{error:true});storageWarning=true}}
   invalidatePdf();
 }
@@ -144,9 +153,14 @@ function finishOptions(value){return LINES.map((l,i)=>'<option value="'+i+'"'+(i
 
 /* ----------------------------------------------------------------- render */
 function renderFinish(){
-  $('finish').innerHTML=['Shaker','Euro'].map(f=>'<optgroup label="'+(f==='Shaker'?'Shaker (Highland)':'Euro')+'">'+LINES.map((l,i)=>l[1]===f?'<option value="'+i+'">'+esc(l[0])+'</option>':'').join('')+'</optgroup>').join('');
+  $('finish').innerHTML=finishOptions(selectedFinish());
   $('finish').value=selectedFinish();
   const sw=IMAGES.finishes?.[finishName()]?.src;$('finishSwatch').src=assetPath(sw);$('finishSwatch').style.visibility=sw?'visible':'hidden';
+  $('supplier').value=state.supplier||'hci';
+  document.querySelector('.factor').textContent=DATA.basis||'HCI purchase pricing · 0.204';
+  $('autoToe').disabled=DATA.autoToe===false;
+  $('autoToe').closest('label').hidden=DATA.autoToe===false;
+  $('supplierNotice').textContent=state.supplier==='hci'?'':state.supplier==='rythern'?'Rythern September 2026 DDP. Exact source SKUs; enter trim separately. Cabinet and hardware counts are not supplied in this price sheet.':'USCD captured purchase pricing. Select RTA or Assembled with the finish. Freight and project-specific modifications require separate quotes.';
 }
 function renderUnits(){
   const p=project();
@@ -485,5 +499,19 @@ $('generate').onclick=()=>generateDocument(false);
 $('printGenerate').onclick=()=>generateDocument(true);
 
 /* ------------------------------------------------------------------ start */
+$('supplier').onchange=async()=>{
+ const next=$('supplier').value,previous=state.supplier||'hci';if(next===previous)return;
+ $('supplier').disabled=true;
+ try{
+  const catalog=await supplierCatalog(next);supplierDrafts[previous]=structuredClone(state);
+  const nextLines=linesFor(catalog),defaultLi=next==='uscd'?Math.max(0,nextLines.findIndex(l=>l[0]==='Shaker White (RTA)')):0;
+  state=supplierDrafts[next]?structuredClone(supplierDrafts[next]):{...state,supplier:next,quoteId:state.quoteId+'-'+next.toUpperCase(),units:state.units.map(u=>({id:uid(),name:u.name,repeat:u.repeat,auto:catalog.autoToe!==false,defaultLi,items:[]}))};
+  DATA=catalog;LINES=nextLines;IMAGES=next==='hci'?HCI_IMAGES:{};
+  for(const key of Object.keys(rowCache))delete rowCache[key];
+  for(const key of ['project','status','quoteId','customer','email','preparedBy','notes'])$(key).value=state[key];
+  active=state.units[0].id;save();renderFinish();loadUnit();renderBar();renderQuote();
+  toast('Supplier quote opened. Other supplier quotes are preserved.');
+ }catch(error){$('supplier').value=previous;toast(error.message,{error:true});}finally{$('supplier').disabled=false;}
+};
 renderFinish();refreshDates();loadUnit();renderBar();
 if(storageWarning)toast('Your saved draft couldn’t be loaded, so a fresh project is open.',{error:true});

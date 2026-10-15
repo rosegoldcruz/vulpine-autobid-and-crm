@@ -9,6 +9,7 @@
 <div class="app">
 
   <section class="projectBar" aria-label="Project">
+    <div class="field"><label for="supplier">Supplier</label><select id="supplier"><option value="hci">HCI Colorado</option><option value="rythern">Rythern · DDP</option><option value="uscd">U.S. Cabinet Depot</option></select></div>
     <div class="field grow"><label for="project">Project name</label><input id="project" maxlength="120" placeholder="e.g. Highland Apartments"></div>
     <div class="field finishField">
       <label for="finish">Door style &amp; color <em>· selected unit</em></label>
@@ -16,6 +17,7 @@
     </div>
     <div class="field"><label for="status">Quantities are</label><select id="status"><option>Tentative</option><option>Final</option></select></div>
   </section>
+  <p id="supplierNotice" class="hint" role="status"></p>
 
   <nav class="steps" aria-label="Quote steps">
     <button data-step="build" aria-current="step"><i>1</i>Build your units</button>

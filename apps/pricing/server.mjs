@@ -21,6 +21,8 @@ const studioTypes={'.svg':'image/svg+xml','.ico':'image/x-icon','.planmeasure':'
 const types={'.html':'text/html; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.js':'text/javascript; charset=utf-8','.json':'application/json','.css':'text/css','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp','.pdf':'application/pdf','.xlsx':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'};
 export async function createServer(env,root=path.dirname(fileURLToPath(import.meta.url))){
   const data=JSON.parse(await fs.readFile(path.join(root,'src/catalog.json')));
+  const catalogs={hci:data};
+  for(const supplier of ['rythern','uscd'])catalogs[supplier]=JSON.parse(await fs.readFile(path.join(root,'src/suppliers',supplier+'.json')));
   const template=await fs.readFile(path.join(root,'assets/proposal-template.pdf'));
   const respond=(res,status,value)=>{res.writeHead(status,{'content-type':'application/json','cache-control':'no-store'});res.end(JSON.stringify(value));};
   return http.createServer(async(req,res)=>{
@@ -47,6 +49,7 @@ export async function createServer(env,root=path.dirname(fileURLToPath(import.me
       }
       if(route==='export'&&req.method==='POST'){
         const {state,type,format}=JSON.parse(body);validate(state);
+        const data=catalogs[state.supplier||'hci'];if(!data)return respond(res,400,{error:'Unknown supplier.'});
         const result=calculateProject(data,state);if(result.issues.length)return respond(res,422,{error:result.issues.join(' ')});
         let bytes,mime;
         if(format==='xlsx'){bytes=XLSX.write(createWorkbook(XLSX,data,state),{type:'buffer',bookType:'xlsx',compression:true});mime=types['.xlsx'];}
@@ -66,7 +69,8 @@ export async function createServer(env,root=path.dirname(fileURLToPath(import.me
 let queue=Promise.resolve();
 function validate(s){
   if(!s||s.version!==2||!Number.isInteger(s.margin)||s.margin<1||s.margin>50||!Array.isArray(s.units)||!s.units.length||s.units.length>500)throw Error('Invalid draft.');
-  for(const u of s.units){if(typeof u.id!=='string'||typeof u.name!=='string'||!Array.isArray(u.items)||u.items.length>2000)throw Error('Invalid unit.');for(const i of u.items)if(typeof i.sku!=='string'||!Number.isInteger(i.li)||i.li<0||i.li>10||!Number.isFinite(i.qty))throw Error('Invalid item.');}
+  if(s.supplier&&!['hci','rythern','uscd'].includes(s.supplier))throw Error('Invalid supplier.');
+  for(const u of s.units){if(typeof u.id!=='string'||typeof u.name!=='string'||!Array.isArray(u.items)||u.items.length>2000)throw Error('Invalid unit.');for(const i of u.items)if(typeof i.sku!=='string'||!Number.isInteger(i.li)||i.li<0||i.li>500||!Number.isFinite(i.qty))throw Error('Invalid item.');}
 }
 if(process.argv[1]===fileURLToPath(import.meta.url)){
   for(const name of ['OPS_SIGNING_SECRET','OPS_ORGANIZATION_ID','CABINET_STORAGE_PATH'])if(!process.env[name])throw Error('Missing required env var: '+name);

@@ -2,14 +2,16 @@ export const LINES=[['White Shaker','Shaker',2],['Grey Shaker','Shaker',2],['Dov
 export const money=c=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(c/100);
 export const whole=n=>Number.isSafeInteger(n)&&n>=0&&n<=100000;
 export function quoteDates(now=new Date()){const expiry=new Date(now);expiry.setDate(expiry.getDate()+45);const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');return{date:iso(now),validUntil:iso(expiry)}}
-export const lookup=(data,li,sku)=>data[LINES[li]?.[1]]?.find(r=>r[0]===sku);
-export function cost(data,li,sku){const r=lookup(data,li,sku),l=LINES[li];if(!r||!l||l[0].includes('Slim')&&/glass/i.test(r[1]))return null;return typeof r[l[2]]==='number'?Math.round(r[l[2]]*100):null}
+export const linesFor=data=>data.lines||LINES;
+export const lookup=(data,li,sku)=>data[linesFor(data)[li]?.[1]]?.find(r=>r[0]===sku);
+export function cost(data,li,sku){const r=lookup(data,li,sku),l=linesFor(data)[li];if(!r||!l||!data.supplier&&l[0].includes('Slim')&&/glass/i.test(r[1]))return null;return typeof r[l[2]]==='number'?Math.round(r[l[2]]*100):null}
 export function sell(c,m){if(!Number.isInteger(m)||m<1||m>50)throw Error('Margin must be 1% to 50%.');return Math.round(c*100/(100-m))}
 export function calculateUnit(data,unit,margin){
+ const LINES=linesFor(data);
  let issues=[],entries=unit.items.filter(x=>x.qty!==0).map(x=>({...x}));
  if(!whole(unit.repeat))issues.push('Repeat count must be a whole number from 0 to 100,000.');
  for(const x of entries){if(!whole(x.qty))issues.push(x.sku+': quantity must be a whole number from 0 to 100,000.');if(cost(data,x.li,x.sku)===null)issues.push(x.sku+': price unavailable.');}
- if(unit.auto){entries=entries.filter(x=>x.sku!=='TK8');for(let li=0;li<LINES.length;li++){const width=entries.filter(x=>x.li===li&&whole(x.qty)).reduce((s,x)=>s+(lookup(data,li,x.sku)?.[6]||0)*x.qty,0);if(width>0)entries.push({li,sku:'TK8',qty:Math.ceil(width/96),auto:true})}}
+ if(unit.auto&&data.autoToe!==false){entries=entries.filter(x=>x.sku!=='TK8');for(let li=0;li<LINES.length;li++){const width=entries.filter(x=>x.li===li&&whole(x.qty)).reduce((s,x)=>s+(lookup(data,li,x.sku)?.[6]||0)*x.qty,0);if(width>0)entries.push({li,sku:'TK8',qty:Math.ceil(width/96),auto:true})}}
  for(const x of entries){const r=lookup(data,x.li,x.sku);if(!r)continue;
   const needed=entries.filter(y=>y.li===x.li&&y.sku===x.sku).reduce((s,y)=>s+y.qty,0);
   if(r[8]&&entries.filter(y=>y.li===x.li&&y.sku===r[8]).reduce((s,y)=>s+y.qty,0)<needed)issues.push(x.sku+': add '+needed+' × '+r[8]+' in this unit.');

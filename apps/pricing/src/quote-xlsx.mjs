@@ -31,12 +31,13 @@ export function createWorkbook(XLSX, data, input) {
     summary.push([[...new Set(u.entries.map(x=>x.line))].join(', '),u.name,u.repeat,
       {t:'n',f:`${ref}!G${totalRow}`,v:u.purchase/100,z:'$#,##0.00'},
       {t:'n',f:`ROUND(C${r}*D${r},2)`,v:u.purchase*u.repeat/100,z:'$#,##0.00'},
-      u.entries.reduce((n,x)=>n+(lookup(data,x.li,x.sku)?.[5]?x.qty*u.repeat:0),0),
+      data.countsVerified===false?'Not supplied':u.entries.reduce((n,x)=>n+(lookup(data,x.li,x.sku)?.[5]?x.qty*u.repeat:0),0),
       u.entries.filter(x=>x.sku==='TK8').reduce((n,x)=>n+x.qty*u.repeat,0),u.repeat===0?'Excluded':'Checked']);
   });
   const end=summary.length;
   summary.push(['TOTAL','',result.count,'',{t:'n',f:`SUM(E7:E${end})`,v:result.purchase/100,z:'$#,##0.00'}]);
   summary.push([],['Purchase cost snapshot. Selling prices and profit are not included.'],['No additional tax, freight, installation or assembly unless listed as an item.']);
+  if(data.source)summary.push(['Supplier',data.label],['Price basis',data.source.basis],['Source workbook',data.source.file],['Source SHA-256',data.source.sha256]);
   const sheet=XLSX.utils.aoa_to_sheet(summary);
   sheet['!cols']=[42,28,12,18,22,18,16,18].map(wch=>({wch}));
   XLSX.utils.book_append_sheet(book,sheet,'Summary Sheet');
