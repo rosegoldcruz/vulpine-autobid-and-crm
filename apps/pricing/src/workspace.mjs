@@ -10,7 +10,8 @@ export function mountWorkspace({flush,startQuote,getReference,onArchive,onError}
   const r=await fetch('./projects',{cache:'no-store'});if(!r.ok)throw Error('Project history could not load. Your current quote is retained.');const data=await r.json();
   sidebar.replaceChildren();const title=document.createElement('h2');title.textContent='Projects';sidebar.append(title);
   const hint=document.createElement('p');hint.textContent='Shared with your Vulpine team. Quotes and documents stay here.';sidebar.append(hint);
-  sidebar.append(button('+ New project',async()=>{const name=prompt('Project name');if(!name?.trim())return;await flush();await action(name,'create');await startQuote(name.trim());}));
+  const projectName=document.createElement('input');projectName.placeholder='New project name';projectName.maxLength=120;projectName.setAttribute('aria-label','New project name');sidebar.append(projectName);
+  sidebar.append(button('+ New project',async()=>{const name=projectName.value;if(!name.trim()){projectName.focus();return;}await flush();await action(name,'create');await startQuote(name.trim());}));
   sidebar.append(button('Refresh history',refresh));
   const search=document.createElement('input');search.type='search';search.placeholder='Find a project';search.setAttribute('aria-label','Find a project');sidebar.append(search);
   const list=document.createElement('div');sidebar.append(list);
@@ -24,7 +25,7 @@ export function mountWorkspace({flush,startQuote,getReference,onArchive,onError}
     const date=document.createElement('small');date.textContent=new Date(q.updated_at).toLocaleString();row.append(date);
     row.append(button('Saved PDFs & Excel',async()=>{const r=await fetch('./quotes/'+q.id);if(!r.ok)throw Error('Documents could not load.');const saved=await r.json();const docs=document.createElement('div');docs.className='savedDocuments';for(const d of saved.exports){const a=document.createElement('a');a.href='./documents/'+d.id;a.target='_blank';a.rel='noopener';a.textContent=d.type+' '+d.format.toUpperCase()+' · '+new Date(d.created_at).toLocaleString();docs.append(a);}if(!saved.exports.length)docs.textContent='Generate a PDF or Excel file to save it here.';row.querySelector('.savedDocuments')?.remove();row.append(docs);}));group.append(row);
    }
-   group.append(button('Move project to Trash',async()=>{if(!confirm('Move '+p.name+' and its quotes to Trash? You can restore them.'))return;await flush();await action(p.name,'delete');if(data.quotes.some(q=>q.project_key===p.project_key&&q.id===getReference()?.id))onArchive(true);await refresh();}));list.append(group);
+   group.append(button('Move project to Trash',async()=>{await flush();await action(p.name,'delete');if(data.quotes.some(q=>q.project_key===p.project_key&&q.id===getReference()?.id))onArchive(true);await refresh();}));list.append(group);
   }};search.oninput=draw;draw();
   const trash=document.createElement('details');const label=document.createElement('summary');label.textContent='Trash';trash.append(label);for(const p of data.projects.filter(p=>p.deleted_at))trash.append(button('Restore '+p.name,async()=>{await action(p.name,'restore');onArchive(false);await refresh();}));sidebar.append(trash);
  }
