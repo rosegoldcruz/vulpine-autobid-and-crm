@@ -1,0 +1,34 @@
+import assert from 'node:assert/strict';
+import {randomUUID} from 'node:crypto';
+import {QuoteStore} from '../quote-store.mjs';
+const store=new QuoteStore(process.env.QUOTES_DATABASE_URL||process.env.BIDDING_DATABASE_URL);
+const actor={org:'workspace-test-'+randomUUID(),sub:'tester'},other={org:actor.org+'-other',sub:'tester'};
+try{
+ await store.init();
+ await store.project(actor,' Longmont ','create');
+ await store.project(actor,'LONGMONT','create');
+ assert.equal((await store.projects(actor)).length,1);
+ const state={project:'Longmont',quoteId:'QA',supplier:'hci',units:[],supplierDrafts:{hci:{units:[]}}};
+ const ref=await store.save(actor,state,null);
+ assert.equal((await store.list(actor)).length,1);
+ assert.equal((await store.list(other)).length,0);
+ await assert.rejects(store.get(other,ref.id));
+ const results=await Promise.allSettled([store.save(actor,state,ref),store.save(actor,state,ref)]);
+ assert.equal(results.filter(r=>r.status==='fulfilled').length,1);
+ assert.equal(results.find(r=>r.status==='rejected').reason.status,409);
+ const updated=results.find(r=>r.status==='fulfilled').value;
+ const id=await store.addExport(actor,updated,'customer','pdf',Buffer.from('%PDF-test'));
+ assert.equal((await store.download(actor,id)).bytes.toString(),'%PDF-test');
+ assert.equal(await store.download(other,id),undefined);
+ assert.deepEqual((await store.get(actor,ref.id)).state.supplierDrafts,state.supplierDrafts);
+ await store.project(actor,'longmont','delete');
+ assert.equal((await store.list(actor)).length,0);
+ await assert.rejects(store.save(actor,state,updated),{status:409});
+ await store.project(actor,'longmont','restore');
+ assert.equal((await store.list(actor)).length,1);
+ assert.equal((await store.exports(actor,ref.id)).length,1);
+ console.log('Workspace integration passed: normalization, shared history, org isolation, stale-save rejection, document retention, trash and restore.');
+}finally{
+ for(const table of ['pricing_quote_exports','pricing_quote_revisions','pricing_quotes','pricing_projects'])await store.pool.query('DELETE FROM '+table+' WHERE org=$1',[actor.org]);
+ await store.close();
+}

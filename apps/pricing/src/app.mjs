@@ -1,8 +1,10 @@
+import {mountWorkspace} from './workspace.mjs';
 import {LINES as HCI_LINES,linesFor,money,whole,lookup,cost,calculateUnit,calculateProject,quoteDates} from './pricing.mjs';
 import {generateQuote} from './quote-pdf.mjs';
 import {exportWorkbook} from './quote-xlsx.mjs';
 import {mountBidAssistant} from './bid-assistant.mjs';
 import {mountTax} from './tax-ui.mjs';
+import {newQuote} from './new-quote.mjs';
 import {switchSupplier} from './supplier-switch.mjs';
 
 const [HCI_DATA,HCI_IMAGES]=await Promise.all([fetch('./catalog.json').then(r=>r.json()),fetch('./catalog-images.json').then(r=>r.json())]);
@@ -26,7 +28,7 @@ const MAX=100000;
 const KEY='vulpine-project-v4';
 const hosted=location.pathname.startsWith('/api/cabinet-pricing/');
 let revision=null,saveTimer,saveQueue=Promise.resolve(),serverConflict=false;
-let agentJob=null;
+let agentJob=null,historyRef=null,projectArchived=false;
 const freshUnit=n=>({id:uid(),name:'Unit '+n,repeat:1,auto:true,defaultLi:0,items:[]});
 let state={version:2,finish:0,project:'',status:'Tentative',
   quoteId:'VP-'+new Date().toISOString().slice(0,10).replaceAll('-','')+'-'+Math.random().toString(36).slice(2,6).toUpperCase(),
@@ -45,6 +47,9 @@ if(hosted){
   if(!response.ok)throw Error('Could not load your server draft. Reload after signing in.');
   const saved=await response.json();revision=saved.revision;
   if(saved.draft)state=saved.draft;
+  const quoteId=new URLSearchParams(location.search).get('quote')||state._history?.id;
+  if(quoteId){if(!/^[a-f0-9-]{36}$/.test(quoteId))throw Error('Invalid quote link.');const r=await fetch('./quotes/'+quoteId);if(!r.ok)throw Error('Saved quote could not load.');state=(await r.json()).state;}
+  historyRef=state._history||null;
   $('saveState').textContent='Saved in back office';
   const bidId=new URLSearchParams(location.search).get('bid');
   if(bidId){
@@ -110,9 +115,9 @@ function save(){
     saveTimer=setTimeout(()=>{saveQueue=saveQueue.then(async()=>{
       if(serverConflict)throw Error('Draft changed in another tab. Reload before editing.');
       const jobState=agentJob?cleanJobState(snapshot):null;
-      const r=await fetch(agentJob?'./agent/jobs/'+agentJob.id:'./draft',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify(agentJob?{state:jobState,expected_revision:agentJob.revision}:{draft:snapshot,revision})});
+      const r=await fetch(agentJob?'./agent/jobs/'+agentJob.id:'./draft',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify(agentJob?{state:jobState,expected_revision:agentJob.revision}:{draft:{...snapshot,_history:historyRef},revision})});
       const result=await r.json();if(!r.ok){if(r.status===409)serverConflict=true;throw Error(result.error||'Server save failed.');}
-      if(agentJob)agentJob=result;else revision=result.revision;$('saveState').textContent='Saved in back office';
+      if(agentJob)agentJob=result;else {revision=result.revision;historyRef=result.draft?._history||historyRef;}$('saveState').textContent='Saved in back office';
     }).catch(error=>{$('saveState').textContent='Not saved';toast(error.message,{error:true})});},400);
   }else try{localStorage.setItem(KEY,JSON.stringify({...state,supplierDrafts}));$('saveState').textContent='Saved on this device'}
   catch{$('saveState').textContent='Not saved — browser storage is off';if(!storageWarning){toast('Browser storage is off. Download your PDF before you close this page.',{error:true});storageWarning=true}}
@@ -127,7 +132,7 @@ document.addEventListener('vulpine-open-studio',async()=>{
   location.assign('./studio/index.html');
 });
 const safeName=()=>((state.quoteId||'Vulpine')+'_'+(state.project||'Project')).replace(/[^a-z0-9_-]/gi,'_');
-async function serverExport(format,type=documentType){const response=await fetch('./export',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({state:structuredClone(state),format,type})});if(!response.ok){const data=await response.json();throw Error(data.error?.message||data.error||'Export failed.');}return new Uint8Array(await response.arrayBuffer());}
+async function serverExport(format,type=documentType){await flushWorkspace();const response=await fetch('./export',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({state:{...structuredClone(state),supplierDrafts,_history:agentJob?null:historyRef},format,type})});if(!response.ok){const data=await response.json();throw Error(data.error?.message||data.error||'Export failed.');}return new Uint8Array(await response.arrayBuffer());}
 function downloadBytes(bytes,mime,name){const url=URL.createObjectURL(new Blob([bytes],{type:mime})),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);}
 function refreshDates(){Object.assign(state,quoteDates());$('date').value=state.date;$('validUntil').value=state.validUntil}
 
@@ -529,6 +534,19 @@ $('generate').onclick=()=>generateDocument(false);
 $('printGenerate').onclick=()=>generateDocument(true);
 
 /* ------------------------------------------------------------------ start */
+async function flushWorkspace(){if(projectArchived)return;save();await new Promise(r=>setTimeout(r,450));await saveQueue;if(serverConflict||$('saveState').textContent==='Not saved')throw Error('Changes could not be saved. Reload before continuing.');}
+async function startQuote(name=projectArchived?'Untitled project':state.project){
+ await flushWorkspace();
+ const fresh={...newQuote(),project:name||'Untitled project'};
+ if(hosted){
+  let expected=revision;if(agentJob){const r=await fetch('./draft');if(!r.ok)throw Error('Could not load workspace.');expected=(await r.json()).revision;}
+  const r=await fetch('./draft',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({draft:fresh,revision:expected})});
+  if(!r.ok)throw Error((await r.json()).error||'Could not start quote.');
+ }else localStorage.setItem(KEY,JSON.stringify(fresh));
+ location.assign('./index.html');
+}
+$('clearBoard').onclick=()=>startQuote().catch(e=>toast(e.message,{error:true}));
+if(hosted)mountWorkspace({flush:flushWorkspace,startQuote,getReference:()=>historyRef,onArchive:archived=>{projectArchived=archived;document.querySelector('.app').inert=archived;},onError:e=>toast(e.message,{error:true})});
 $('supplier').onchange=async()=>{
  if(agentJob){$('supplier').value=state.supplier;toast('Create a separate bid for another supplier.');return;}
  const next=$('supplier').value,previous=state.supplier||'hci';if(next===previous)return;

@@ -1,3 +1,4 @@
+import {QuoteStore} from './quote-store.mjs';
 import {lookupTax,taxProvider,verifyTax} from './tax-provider.mjs';
 import http from 'node:http';
 import fs from 'node:fs/promises';
@@ -26,14 +27,21 @@ export async function createServer(env,root=path.dirname(fileURLToPath(import.me
   for(const supplier of ['rythern','uscd'])catalogs[supplier]=JSON.parse(await fs.readFile(path.join(root,'src/suppliers',supplier+'.json')));
   const template=await fs.readFile(path.join(root,'assets/proposal-template.pdf'));
   const respond=(res,status,value)=>{res.writeHead(status,{'content-type':'application/json','cache-control':'no-store'});res.end(JSON.stringify(value));};
-  return http.createServer(async(req,res)=>{
+  const history=env.QUOTES_DATABASE_URL?new QuoteStore(env.QUOTES_DATABASE_URL):null;
+  if(history)await history.init();
+  const server=http.createServer(async(req,res)=>{
     try{
       const url=new URL(req.url,'http://internal'),route=url.pathname.slice(1);
       if(route==='health')return respond(res,200,{status:'ok',service:'cabinet-pricing'});
       let body='';for await(const chunk of req){body+=chunk;if(Buffer.byteLength(body)>(route.startsWith('agent/sources/')?3145728:1048576))return respond(res,413,{error:'Request too large.'});}
       const claim=verify(req.headers['x-vulpine-operations'],env.OPS_SIGNING_SECRET,{org:env.OPS_ORGANIZATION_ID,path:route,method:req.method,bodyHash:hash(body)});
       if(!claim)return respond(res,401,{error:'Verified backoffice session required.'});
-      if(route==='tax/status'&&req.method==='GET')return respond(res,200,{configured:!!taxProvider(env),provider:taxProvider(env)});
+      if(history&&req.method==='GET'){
+        if(route==='projects')return respond(res,200,{projects:await history.projects(claim),quotes:await history.list(claim)});
+        if(/^quotes\/[a-f0-9-]{36}$/.test(route)){const q=await history.get(claim,route.split('/')[1]);return respond(res,200,{state:{...q.state,_history:{id:q.id,revision:q.revision}},exports:await history.exports(claim,q.id)});}
+        if(/^documents\/[a-f0-9-]{36}$/.test(route)){const doc=await history.download(claim,route.split('/')[1]);if(!doc)return respond(res,404,{error:'Document not found.'});res.writeHead(200,{'content-type':types['.'+doc.format],'cache-control':'no-store','content-disposition':'inline; filename="Vulpine-'+doc.type+'.'+doc.format+'"'});res.end(doc.bytes);return;}
+      }
+      if(route==='tax/status' &&req.method==='GET')return respond(res,200,{configured:!!taxProvider(env),provider:taxProvider(env)});
       if(route==='tax/lookup'&&req.method==='POST'){
         try{return respond(res,200,await lookupTax(JSON.parse(body).address,env));}
         catch(e){return respond(res,e.status||422,{error:e.message});}
@@ -51,6 +59,7 @@ export async function createServer(env,root=path.dirname(fileURLToPath(import.me
           const task=queue.then(async()=>{
             let previous=null;try{previous=JSON.parse(await fs.readFile(filename,'utf8'));}catch(e){if(e.code!=='ENOENT')throw e;}
             if((previous?.revision??null)!==(input.revision??null))return respond(res,409,{error:'This draft changed in another tab. Reload before saving.'});
+            if(history)input.draft._history=await history.save(claim,input.draft,input.draft._history);
             const saved={draft:input.draft,revision:randomUUID(),updatedAt:new Date().toISOString(),updatedBy:claim.sub};
             await fs.mkdir(dir,{recursive:true,mode:0o700});const tmp=filename+'.'+randomUUID();await fs.writeFile(tmp,JSON.stringify(saved),{mode:0o600});await fs.rename(tmp,filename);respond(res,200,saved);
           });queue=task.catch(()=>{});await task;return;
@@ -59,6 +68,7 @@ export async function createServer(env,root=path.dirname(fileURLToPath(import.me
       }
       if(route==='export'&&req.method==='POST'){
         const input=JSON.parse(body);
+        if(input.format==='project-action'){if(!history)return respond(res,503,{error:'Project storage is unavailable.'});return respond(res,200,await history.project(claim,input.name,input.action));}
         // Use the existing authenticated, same-origin POST proxy for the read-only rate calculation.
         if(input.format==='tax-rate'){
           try{return respond(res,200,await lookupTax(input.address,env));}
@@ -71,6 +81,7 @@ export async function createServer(env,root=path.dirname(fileURLToPath(import.me
         if(format==='xlsx'){bytes=XLSX.write(createWorkbook(XLSX,data,state),{type:'buffer',bookType:'xlsx',compression:true});mime=types['.xlsx'];}
         else if(format==='pdf'&&['customer','internal','purchase'].includes(type)){bytes=await generateQuote(PDFLib,data,state,type,template);mime=types['.pdf'];}
         else return respond(res,400,{error:'Unknown export format.'});
+        if(history){const ref=state._history||await history.save(claim,state,null);const saved=await history.get(claim,ref.id);if(saved.revision!==ref.revision)throw Object.assign(Error('Quote changed. Reopen before exporting.'),{status:409});await history.addExport(claim,ref,type,format,Buffer.from(bytes));}
         res.writeHead(200,{'content-type':mime,'cache-control':'no-store'});res.end(bytes);return;
       }
       if(req.method!=='GET')return respond(res,405,{error:'Method not allowed.'});
@@ -79,8 +90,10 @@ export async function createServer(env,root=path.dirname(fileURLToPath(import.me
       if(file.includes('..')||file.includes('\\')||!mime||!/^[-a-zA-Z0-9_./ ()]+$/.test(file))return respond(res,404,{error:'Not found.'});
       const bytes=await fs.readFile(path.join(root,'dist',file));
       res.writeHead(200,{'content-type':mime,'cache-control':'no-store','x-content-type-options':'nosniff','content-security-policy':"frame-ancestors 'self'; object-src 'none'; base-uri 'self'"});res.end(bytes);
-    }catch(e){respond(res,e.code==='ENOENT'?404:400,{error:e.code==='ENOENT'?'Not found.':'Could not process the cabinet request.'});}
+    }catch(e){respond(res,e.status||(e.code==='ENOENT'?404:400),{error:e.status?e.message:e.code==='ENOENT'?'Not found.':'Could not process the cabinet request.'});}
   });
+  server.on('close',()=>history?.close());
+  return server;
 }
 let queue=Promise.resolve();
 function validate(s){
