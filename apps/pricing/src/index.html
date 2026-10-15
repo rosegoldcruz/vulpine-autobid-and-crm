@@ -17,6 +17,22 @@
     </div>
     <div class="field"><label for="status">Quantities are</label><select id="status"><option>Tentative</option><option>Final</option></select></div>
   </section>
+  <section class="taxPanel" aria-label="Project location and sales tax">
+    <div class="taxHeading"><h2>Project location &amp; tax</h2><label class="check"><input id="taxEnabled" type="checkbox"> Include sales tax</label></div>
+    <div id="taxFields" hidden>
+      <div class="taxAddress">
+        <div class="field"><label for="taxState">Project state</label><select id="taxState" autocomplete="address-level1"></select></div>
+        <div class="field"><label for="taxCity">Project city</label><input id="taxCity" maxlength="100" autocomplete="address-level2" placeholder="City"></div>
+        <div class="field"><label for="taxStreet">Delivery street address</label><input id="taxStreet" maxlength="200" autocomplete="address-line1" placeholder="Street address"></div>
+        <div class="field"><label for="taxZip">ZIP code</label><input id="taxZip" maxlength="10" autocomplete="postal-code" inputmode="numeric" placeholder="ZIP or ZIP+4"></div>
+        <button id="taxLookup" type="button" class="secondary">Refresh tax</button>
+      </div>
+      <p class="hint">All 50 states + D.C. Rates follow the delivery address, including county and special districts. Standard taxable cabinet-supply estimate; exemptions, installation contracts and collection obligations require separate review.</p>
+      <div id="taxBreakdown" class="taxBreakdown" tabindex="0" role="region" aria-label="Scrollable tax rate breakdown"></div>
+    </div>
+    <p id="taxMessage" class="hint" role="status" aria-live="polite"></p>
+    <div class="taxTotals"><span>Sales tax <strong id="taxAmount">Off</strong></span><span>Customer total <strong id="taxTotal">$0.00</strong></span></div>
+  </section>
   <p id="supplierNotice" class="hint" role="status"></p>
 
   <nav class="steps" aria-label="Quote steps">

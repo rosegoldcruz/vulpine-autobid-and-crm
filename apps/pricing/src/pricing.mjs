@@ -1,3 +1,4 @@
+import {taxSummary} from './tax.mjs';
 export const LINES=[['White Shaker','Shaker',2],['Grey Shaker','Shaker',2],['Dove White Slim Shaker','Shaker',2],['Modern Slate Shaker','Shaker',3],['Onyx Shaker','Shaker',3],['Signature Blue Shaker','Shaker',3],['Saige Green Slim Shaker','Shaker',3],['Mountain Timber Shaker','Shaker',4],['Euro Classic','Euro',2],['Euro Deluxe','Euro',3],['Euro Custom Deluxe','Euro',4]];
 export const money=c=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(c/100);
 export const whole=n=>Number.isSafeInteger(n)&&n>=0&&n<=100000;
@@ -29,5 +30,7 @@ export function calculateProject(data,state,margin=state.margin){
  if(!active.length)issues.push('Include at least one unit with a positive repeat count.');
  const purchase=active.reduce((s,u)=>s+u.purchase*(whole(u.repeat)?u.repeat:0),0),sale=active.reduce((s,u)=>s+u.sale*(whole(u.repeat)?u.repeat:0),0);
  if(!Number.isSafeInteger(purchase)||!Number.isSafeInteger(sale))issues.push('Project amount exceeds the supported range.');
- return{units,issues,purchase,sale,profit:sale-purchase,count:active.reduce((s,u)=>s+(whole(u.repeat)?u.repeat:0),0),margin,actualMargin:sale?(sale-purchase)/sale*100:0};
+ const tax=taxSummary(state.tax,sale);if(tax.issue)issues.push(tax.issue);
+ if(tax.total!==null&&!Number.isSafeInteger(tax.total))issues.push('Tax-inclusive total exceeds the supported range.');
+ return{units,issues,purchase,sale,tax,total:tax.total,profit:sale-purchase,count:active.reduce((s,u)=>s+(whole(u.repeat)?u.repeat:0),0),margin,actualMargin:sale?(sale-purchase)/sale*100:0};
 }

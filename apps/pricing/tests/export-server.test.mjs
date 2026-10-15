@@ -34,6 +34,12 @@ test('server denies unsigned / cross-organization requests, isolates drafts, rej
     assert.equal((await fetch(base+'/catalog.json')).status,401);
     assert.equal((await request('catalog.json','GET',undefined,'qa-user','other-org')).status,401);
     assert.equal((await request('catalog.json')).status,200);
+    assert.equal((await fetch(base+'/tax/status')).status,401);
+    assert.equal((await (await request('tax/status')).json()).configured,false);
+    const missingTax=await request('export','POST',{format:'tax-rate',address:{street:'123 Test St',city:'Phoenix',state:'AZ',zip:'85001'}});
+    assert.equal(missingTax.status,503);assert.match((await missingTax.json()).error,/connected tax service/);
+    const pendingTax=await request('export','POST',{state:{...state,tax:{enabled:true,address:{street:'123 Test St',city:'Phoenix',state:'AZ',zip:'85001'},lookup:null}},format:'pdf',type:'customer'});
+    assert.notEqual(pendingTax.status,200);
     assert.equal((await fetch(base+'/studio/index.html')).status,401);
     const studio=await request('studio/index.html');assert.equal(studio.status,200);assert.match(await studio.text(),/Plan Measure/);
     const studioFiles=await fs.readdir(new URL('../dist/studio/assets/',import.meta.url));

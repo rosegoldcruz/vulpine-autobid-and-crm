@@ -31,7 +31,7 @@ export async function generateQuote(PDFLib,data,input,type='customer',templateBy
    }else{const price=type==='purchase'?r.purchase:r.sale,meta=lookup(data,r.li,r.sku);text(p,r.sku,30,top,93,7.5,true);text(p,r.unit.name+' / '+abbreviations[r.li],134,top-3,107,7);text(p,r.qty+' each x '+r.unit.repeat+' units',134,top+5,107,6);text(p,r.extendedQty,254,top,31,8);text(p,money(price),292,top,66,8);text(p,money(price*r.extendedQty),368,top,68,8);text(p,(meta?.[5]||0)*r.extendedQty,449,top,49,8);text(p,(meta?.[7]||0)*r.extendedQty+' est.',510,top,54,7)}
   });
   text(p,money(amount),368,506,70,9,true,rgb(1,1,1));text(p,data.countsVerified===false?'Not supplied':totalCabinets,449,506,49,8,true,rgb(1,1,1));text(p,data.countsVerified===false?'Not supplied':totalHardware+' est.',510,506,54,7,true,rgb(1,1,1));
-  const values=[money(amount),'Not separately priced','Not added','Only if listed','Only if listed',money(amount)];values.forEach((v,i)=>text(p,v,201,562+i*18.5,83,8,i===5));
+  const values=[money(amount),'Not separately priced',type==='purchase'?'Not added':state.tax?.enabled?money(result.tax.amount):'Not added','Only if listed','Only if listed',money(type==='purchase'?amount:result.total)];values.forEach((v,i)=>text(p,v,201,562+i*18.5,83,8,i===5));
   const snapshot=[result.count,result.units.filter(u=>u.repeat>0).length,data.countsVerified===false?'Not supplied':totalCabinets,data.countsVerified===false?'Not supplied':totalHardware+' (estimate)','Not included unless listed',state.status+' quantities'];snapshot.forEach((v,i)=>text(p,v,438,562+i*18.5,126,8,i===5));
   // Approved specification wording from the supplied Garden Villas, Sunset Ridge,
   // and Gracious Manor proposals. Finish names still come from the selected items.
@@ -44,6 +44,17 @@ export async function generateQuote(PDFLib,data,input,type='customer',templateBy
  if(type!=='customer'&&(type==='internal'||needsDetails)){const detail=await PDFDocument.load(await generateInternalReport(PDFLib,data,state,type));const copied=await doc.copyPages(detail,detail.getPageIndices());copied.forEach(p=>doc.addPage(p))}
  if(type==='customer')addAcceptancePage(doc,PDFLib,state,result,{totalCabinets:data.countsVerified===false?null:totalCabinets,totalHardware:data.countsVerified===false?null:totalHardware,finishes,font,bold,gold,ink});
  if(type!=='customer'){const [closing]=await doc.copyPages(template,[3]);doc.addPage(closing);stamp(closing,false,true);}
+ if(type!=='purchase'&&state.tax?.enabled){
+  const p=doc.addPage([595.5,842.25]);let y=790;
+  const line=(s,b=false)=>{p.drawText(safe(s),{x:34,y,size:10,font:b?bold:font,color:ink});y-=22;};
+  line('PROJECT SALES TAX ESTIMATE',true);
+  const a=state.tax.address;line(a.street);line(a.city+', '+a.state+' '+a.zip);
+  line('Source: '+state.tax.lookup.provider+' | '+state.tax.lookup.retrievedAt.slice(0,10));
+  for(const c of result.tax.components)line(c.name.slice(0,65)+': '+(c.rate*100).toFixed(4)+'%');
+  line('Combined rate: '+(result.tax.rate*100).toFixed(4)+'%');
+  line('Taxable supply subtotal: '+money(result.sale));line('Sales tax: '+money(result.tax.amount));line('Customer total: '+money(result.total),true);
+  line('Standard taxable goods estimate. Exemptions and installation are not evaluated.');
+ }
  doc.setTitle((type==='customer'?'Cabinet proposal':type==='internal'?'Internal costing':'Purchase schedule')+' - '+state.project);doc.setAuthor(state.preparedBy||'Vulpine');doc.setSubject(state.quoteId+' | Generated '+state.date+' | Valid until '+state.validUntil);
  return doc.save();
 }
@@ -74,7 +85,8 @@ function addAcceptancePage(doc,PDFLib,state,result,{totalCabinets,totalHardware,
  row('Scope','Cabinet and trim supply as listed in this proposal. '+result.count+' units.'+(totalCabinets===null?' Cabinet and hardware counts require review.':' '+totalCabinets+' cabinets; '+totalHardware+' hardware pieces (estimate).'));
  row('Cabinet line / finish',finishes.join(', '));
  row('Proposal date / Valid until',state.date+' / '+state.validUntil);
- row('Proposal total',money(result.sale)+' | '+state.status+' quantities');
+ row('Proposal total',money(result.total)+' | '+state.status+' quantities');
+ if(state.tax?.enabled)row('Sales tax included',money(result.tax.amount)+' ('+(result.tax.rate*100).toFixed(4)+'%) | '+state.tax.address.city+', '+state.tax.address.state);
  // Notes must never trigger the itemized costing report in a customer proposal.
  // Long notes get their own continuation pages instead of clipping the signatures.
  const noteLines=wrap(state.notes.trim(),contentWidth,9);
@@ -112,8 +124,8 @@ export async function generateInternalReport(PDFLib,data,state,type='customer'){
  const pair=(label,value,b=false)=>{room(21);draw(label,42,y,11,b);draw(value,570-font.widthOfTextAtSize(safe(value),11),y,11,b);y-=21};
  newPage();text(state.project,19,true);text([state.customer&&'Prepared for: '+state.customer,state.email&&'Recipient: '+state.email,state.preparedBy&&'Prepared by: '+state.preparedBy].filter(Boolean).join('\n'));text('Status: '+state.status+' | Unit instances: '+result.count,10,true);y-=8;
  if(type==='internal'){pair('Purchase cost',money(result.purchase));pair('Selling total',money(result.sale));pair('Gross profit',money(result.profit),true);pair('Target / realized margin',state.margin+'% / '+result.actualMargin.toFixed(2)+'%')}
- else pair(type==='purchase'?'Purchase total':'Quote total',money(type==='purchase'?result.purchase:result.sale),true);
- text('Quantities are '+state.status.toLowerCase()+'. Additional tax, freight, assembly and installation are excluded unless listed. Prices in USD.',9);y-=12;
+ else pair(type==='purchase'?'Purchase total':'Quote total',money(type==='purchase'?result.purchase:result.total),true);
+ text('Quantities are '+state.status.toLowerCase()+'. Freight, assembly and installation are excluded unless listed. Sales tax is included only when enabled. Prices in USD.',9);y-=12;
  for(const unit of result.units.filter(u=>u.repeat>0)){
   room(100);text(unit.name+' | '+unit.repeat+' unit'+(unit.repeat===1?'':'s'),14,true);
   const cols=[42,312,370,452,528];
@@ -126,7 +138,7 @@ export async function generateInternalReport(PDFLib,data,state,type='customer'){
   pair('One '+unit.name,money(type==='purchase'?unit.purchase:unit.sale));pair(unit.name+' x '+unit.repeat,money((type==='purchase'?unit.purchase:unit.sale)*unit.repeat),true);
   if(type==='internal'){text('Purchase / unit: '+money(unit.purchase)+' | Profit / unit: '+money(unit.profit),9);text('Purchase extended: '+money(unit.purchase*unit.repeat)+' | Profit extended: '+money(unit.profit*unit.repeat),9)}y-=12;
  }
- room(70);pair(type==='purchase'?'TOTAL PURCHASE COST':'TOTAL QUOTE',money(type==='purchase'?result.purchase:result.sale),true);
+ room(70);pair(type==='purchase'?'TOTAL PURCHASE COST':'TOTAL QUOTE',money(type==='purchase'?result.purchase:result.total),true);
  if(type==='internal'){pair('TOTAL GROSS PROFIT',money(result.profit),true);text((data.basis?data.basis+'. ':'HCI purchase costs use 0.204 except shipping/delivery, which uses full catalog rates. ')+'Gross margin = profit / selling price. Selling price = purchase cost / (1 - target margin). Prices are rounded per item before multiplying quantities, so realized margin may differ slightly.',9)}
  if(state.notes.trim()){y-=8;text('Project notes',12,true);text(state.notes)}
  text('Estimate only; not an order submission or acceptance. Verify finishes, required parts, cut waste and final quantities before ordering.',9);

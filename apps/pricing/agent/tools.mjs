@@ -1,3 +1,4 @@
+import {verifyTax} from '../tax-provider.mjs';
 import {randomUUID,createHash} from 'node:crypto';
 import {McpServer} from '@modelcontextprotocol/server';
 import {inputs,outputs,BidError} from './schemas.mjs';
@@ -23,7 +24,7 @@ const descriptions={
  save_bid:'Persist the draft at the expected revision. Saving does not approve final pricing or authorize sending.',
  export_bid:'Generate a draft PDF or Excel workbook using existing export generators. Returns an expiring download link. Does not send the proposal.'
 };
-export function createBidTools({store,catalogs,template,publicUrl}){
+export function createBidTools({store,catalogs,template,publicUrl,env=process.env}){
  const hashes=Object.fromEntries(Object.entries(catalogs).map(([id,data])=>[id,hash(JSON.stringify(data))]));
  const get=async(actor,id)=>{const value=await store.get(actor,id);if(value.catalog_hash!==hashes[value.state.supplier||'hci'])throw new BidError('CATALOG_CHANGED','Catalog changed since this bid was created. Human repricing review required.');return value;};
  const checkEvidence=(job,e)=>{
@@ -88,6 +89,7 @@ export function createBidTools({store,catalogs,template,publicUrl}){
      const j=current;if(j.revision!==a.expected_revision)throw new BidError('REVISION_CONFLICT','Bid changed. Reload before export.');
      const all=issues(j);if(all.length)throw new BidError('VALIDATION_FAILED',all.join(' '));
      if(!j.saved)throw new BidError('UNSAVED_DRAFT','Save the draft before exporting.');
+     verifyTax(j.state.tax,env);
      const bytes=a.format==='xlsx'?XLSX.write(createWorkbook(XLSX,data,j.state),{type:'buffer',bookType:'xlsx',compression:true}):Buffer.from(await generateQuote(PDFLib,data,j.state,a.type,template));
      const token=randomUUID()+randomUUID(),expires=Date.now()+15*60*1000,filename=j.state.quoteId+'_'+a.type+'_DRAFT.'+a.format,mime=a.format==='pdf'?'application/pdf':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
      await store.putExport(actor,j,{id:hash(token),expires,filename,mime,bytes});

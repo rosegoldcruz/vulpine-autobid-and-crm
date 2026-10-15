@@ -2,6 +2,7 @@ import {LINES as HCI_LINES,linesFor,money,whole,lookup,cost,calculateUnit,calcul
 import {generateQuote} from './quote-pdf.mjs';
 import {exportWorkbook} from './quote-xlsx.mjs';
 import {mountBidAssistant} from './bid-assistant.mjs';
+import {mountTax} from './tax-ui.mjs';
 import {switchSupplier} from './supplier-switch.mjs';
 
 const [HCI_DATA,HCI_IMAGES]=await Promise.all([fetch('./catalog.json').then(r=>r.json()),fetch('./catalog-images.json').then(r=>r.json())]);
@@ -62,6 +63,7 @@ for(const u of state.units){u.defaultLi=LINES[u.defaultLi]?u.defaultLi:(u.items.
 let view='cost';try{view=localStorage.getItem('vulpine-view')==='sell'?'sell':'cost'}catch{}
 let active=state.units[0].id,step='build',documentType='customer',pdfUrl=null,flashSku=null;
 
+let taxUI;
 const unit=()=>state.units.find(u=>u.id===active)||state.units[0];
 const selectedFinish=()=>unit().defaultLi;
 const fam=()=>LINES[selectedFinish()][1];
@@ -117,7 +119,7 @@ function save(){
   invalidatePdf();
 }
 function invalidatePdf(){if(pdfUrl){URL.revokeObjectURL(pdfUrl);pdfUrl=null}$('downloadResult').hidden=true}
-function cleanJobState(s){return Object.fromEntries(['version','supplier','project','status','quoteId','date','validUntil','customer','email','preparedBy','notes','margin','comparison','units'].map(k=>[k,k==='status'?'Tentative':k==='units'?s.units.map(u=>({id:u.id,name:u.name,repeat:u.repeat,defaultLi:u.defaultLi,auto:u.auto,items:u.items.map(i=>({sku:i.sku,li:i.li,qty:i.qty}))})):s[k]]));}
+function cleanJobState(s){return Object.fromEntries(['version','supplier','project','status','quoteId','date','validUntil','customer','email','preparedBy','notes','margin','comparison','tax','units'].map(k=>[k,k==='status'?'Tentative':k==='units'?s.units.map(u=>({id:u.id,name:u.name,repeat:u.repeat,defaultLi:u.defaultLi,auto:u.auto,items:u.items.map(i=>({sku:i.sku,li:i.li,qty:i.qty}))})):s[k]]));}
 document.addEventListener('vulpine-open-studio',async()=>{
   // Let the existing debounced save finish before leaving the pricing document.
   await new Promise(resolve=>setTimeout(resolve,450));await saveQueue;
@@ -274,6 +276,7 @@ function renderItems(){
 }
 function renderBar(){
   const r=project(),ok=Number.isSafeInteger(r.purchase)&&Number.isSafeInteger(r.sale);
+  taxUI?.draw(r.sale);
   $('tCost').textContent=ok?money(r.purchase):'—';$('tSell').textContent=ok?money(r.sale):'—';$('tProfit').textContent=ok?money(r.profit):'—';
   $('tReal').textContent=ok&&r.sale?r.actualMargin.toFixed(2)+'% realized':'';
   $('mVal').textContent=state.margin+'%';$('mTog').textContent=state.margin+'%';$('mRange').value=state.margin;
@@ -300,7 +303,7 @@ function renderQuote(){
   if(state.email&&!$('email').validity.valid)problems.push('That customer email doesn’t look right. Fix it or leave it blank.');
   $('documentIssues').textContent=problems.join('\n');$('documentIssues').hidden=!problems.length;
   $('generate').disabled=$('printGenerate').disabled=problems.length>0;
-  const amount=documentType==='purchase'?r.purchase:r.sale;
+  const amount=documentType==='purchase'?r.purchase:r.total;
   $('documentSummary').innerHTML='<p class="sumName">'+esc(state.project||'Unnamed project')+'<br><small>'+esc([...new Set(r.units.filter(u=>u.repeat>0).flatMap(u=>u.entries.map(x=>x.line)))].join(', '))+' · '+r.count+' unit'+(r.count===1?'':'s')+' · '+esc(state.status)+'</small></p><strong class="sumAmt">'+(ok?money(amount):'Check units')+'</strong><p class="hint">'+(documentType==='customer'?'Customer selling total. Your cost and profit are hidden.':documentType==='purchase'?'Supplier purchase total. Shipping and delivery use full catalog rates.':'Internal document: shows cost, selling price, margin and profit.')+'</p>';
   $('comparisonPdf').disabled=documentType!=='internal';
 }
@@ -541,6 +544,7 @@ $('supplier').onchange=async()=>{
   toast('Units and SKUs carried over. Prices use this supplier only. Review finishes and flagged items.');
  }catch(error){$('supplier').value=previous;toast(error.message,{error:true});}finally{$('supplier').disabled=false;}
 };
+taxUI=mountTax({getState:()=>state,save,refresh:()=>{renderBar();if(step==='quote')renderQuote()},hosted,money});
 renderFinish();refreshDates();loadUnit();renderBar();
 if(hosted){
  if(agentJob){$('supplier').disabled=true;const notice=document.createElement('p');notice.className='hint';notice.textContent='Saved agent draft. Review quantities and source evidence before customer submission.';document.querySelector('.projectBar').after(notice);}

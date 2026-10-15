@@ -37,6 +37,7 @@ export function createWorkbook(XLSX, data, input) {
   const end=summary.length;
   summary.push(['TOTAL','',result.count,'',{t:'n',f:`SUM(E7:E${end})`,v:result.purchase/100,z:'$#,##0.00'}]);
   summary.push([],['Purchase cost snapshot. Selling prices and profit are not included.'],['No additional tax, freight, installation or assembly unless listed as an item.']);
+  if(state.tax?.enabled)summary.push(['Project tax location',state.tax.address.city+', '+state.tax.address.state],['Customer sales tax rate (not supplier purchase tax)',state.tax.lookup.rate],['Tax source',state.tax.lookup.provider],['Tax lookup date',state.tax.lookup.retrievedAt]);
   if(data.source)summary.push(['Supplier',data.label],['Price basis',data.source.basis],['Source workbook',data.source.file],['Source SHA-256',data.source.sha256]);
   const sheet=XLSX.utils.aoa_to_sheet(summary);
   sheet['!cols']=[42,28,12,18,22,18,16,18].map(wch=>({wch}));

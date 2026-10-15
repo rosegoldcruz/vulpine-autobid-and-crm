@@ -1,3 +1,4 @@
+import {lookupTax,taxProvider,verifyTax} from './tax-provider.mjs';
 import http from 'node:http';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -32,6 +33,11 @@ export async function createServer(env,root=path.dirname(fileURLToPath(import.me
       let body='';for await(const chunk of req){body+=chunk;if(Buffer.byteLength(body)>(route.startsWith('agent/sources/')?3145728:1048576))return respond(res,413,{error:'Request too large.'});}
       const claim=verify(req.headers['x-vulpine-operations'],env.OPS_SIGNING_SECRET,{org:env.OPS_ORGANIZATION_ID,path:route,method:req.method,bodyHash:hash(body)});
       if(!claim)return respond(res,401,{error:'Verified backoffice session required.'});
+      if(route==='tax/status'&&req.method==='GET')return respond(res,200,{configured:!!taxProvider(env),provider:taxProvider(env)});
+      if(route==='tax/lookup'&&req.method==='POST'){
+        try{return respond(res,200,await lookupTax(JSON.parse(body).address,env));}
+        catch(e){return respond(res,e.status||422,{error:e.message});}
+      }
       if(route.startsWith('agent/')){
         const upstream=await fetch('http://127.0.0.1:3022/'+route,{method:req.method,headers:{'x-vulpine-operations':req.headers['x-vulpine-operations'],'content-type':'application/json'},body:['GET','HEAD'].includes(req.method)?undefined:body,signal:AbortSignal.timeout(45000)});
         res.writeHead(upstream.status,{'content-type':'application/json','cache-control':'no-store'});res.end(await upstream.text());return;
@@ -52,7 +58,13 @@ export async function createServer(env,root=path.dirname(fileURLToPath(import.me
         return respond(res,405,{error:'Method not allowed.'});
       }
       if(route==='export'&&req.method==='POST'){
-        const {state,type,format}=JSON.parse(body);validate(state);
+        const input=JSON.parse(body);
+        // Use the existing authenticated, same-origin POST proxy for the read-only rate calculation.
+        if(input.format==='tax-rate'){
+          try{return respond(res,200,await lookupTax(input.address,env));}
+          catch(e){return respond(res,e.status||422,{error:e.message});}
+        }
+        const {state,type,format}=input;validate(state);verifyTax(state.tax,env);
         const data=catalogs[state.supplier||'hci'];if(!data)return respond(res,400,{error:'Unknown supplier.'});
         const result=calculateProject(data,state);if(result.issues.length)return respond(res,422,{error:result.issues.join(' ')});
         let bytes,mime;
