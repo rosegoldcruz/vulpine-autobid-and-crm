@@ -12,7 +12,8 @@ async function proxy(request: Request, context: { params: Promise<{ path: string
   }
   const path = segments.join("/")
   const write = request.method !== "GET"
-  if (write && !((path === "draft" && request.method === "PUT") || (path === "export" && request.method === "POST"))) {
+  const agentWrite = (request.method === "POST" && (path === "agent/tools" || path === "agent/runs" || /^agent\/sources\/[a-f0-9-]{36}$/.test(path))) || (request.method === "PUT" && /^agent\/jobs\/[a-f0-9-]{36}$/.test(path))
+  if (write && !((path === "draft" && request.method === "PUT") || (path === "export" && request.method === "POST") || agentWrite)) {
     return Response.json({ error: "Method not allowed." }, { status: 405 })
   }
   const auth = await requireCapability(write ? "bids.write" : "bids.read", correlationId)
@@ -24,7 +25,7 @@ async function proxy(request: Request, context: { params: Promise<{ path: string
   const base = process.env.OPERATIONS_API_URL, secret = process.env.OPERATIONS_API_SECRET
   if (!base || !secret) return Response.json({ error: "Cabinet service connection unavailable." }, { status: 503 })
   const body = write ? await request.text() : ""
-  if (Buffer.byteLength(body) > 1048576) return Response.json({ error: "Request too large." }, { status: 413 })
+  if (Buffer.byteLength(body) > (path.startsWith("agent/sources/") ? 3145728 : 1048576)) return Response.json({ error: "Request too large." }, { status: 413 })
   const claim = { sub: user.id, org: user.organizationId, module: "pricing", path, method: request.method, exp: Math.floor(Date.now()/1000)+60, bodyHash: createHash("sha256").update(body).digest("hex") }
   const payload = Buffer.from(JSON.stringify(claim)).toString("base64url")
   const token = payload + "." + createHmac("sha256", secret).update(payload).digest("base64url")
