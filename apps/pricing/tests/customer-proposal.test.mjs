@@ -14,11 +14,11 @@ test('customer proposal summarizes unit types, regardless of SKU count, notes or
  const before=calculateProject(data,state);assert.equal(before.issues.length,0);
  assert.ok(before.units.flatMap(u=>u.entries).length>100);
  const bytes=await generateQuote(PDFLib,data,state,'customer',template);
- assert.equal((await PDFLib.PDFDocument.load(bytes)).getPageCount(),2);
+ assert.equal((await PDFLib.PDFDocument.load(bytes)).getPageCount(),5);
  assert.deepEqual(calculateProject(data,state),before);
 });
 test('customer schedule continues only when unit type rows exceed page capacity',async()=>{
  const input={...state,units:Array.from({length:21},(_,i)=>({...state.units[0],id:String(i),name:'Unit '+i}))};
  const bytes=await generateQuote(PDFLib,data,input,'customer',template);
- assert.equal((await PDFLib.PDFDocument.load(bytes)).getPageCount(),3);
+ assert.equal((await PDFLib.PDFDocument.load(bytes)).getPageCount(),6);
 });

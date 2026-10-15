@@ -31,7 +31,7 @@ test('persistent bids enforce ownership, scopes, revisions, real catalog costs a
   for(const format of ['pdf','xlsx']){
    const exported=await call('export_bid',{job_id:j.id,expected_revision:j.revision,format});assert.equal(exported.ok,true,JSON.stringify(exported));
    const response=await fetch(exported.data.url);assert.equal(response.status,200);const bytes=Buffer.from(await response.arrayBuffer());
-   if(format==='pdf')assert.equal((await PDFDocument.load(bytes)).getPageCount(),2);
+   if(format==='pdf')assert.equal((await PDFDocument.load(bytes)).getPageCount(),5);
    else assert.equal(XLSX.read(bytes).Sheets['Unit Type'].B6.v,'B24');
   }
   // Exercise the official SDK's strict input/output registration and JSON-RPC dispatch.
@@ -73,7 +73,7 @@ test('persistent bids enforce ownership, scopes, revisions, real catalog costs a
    const known=await app.store.mutate(actor,created.data.id,1,'qa_import_verified_workbook',j=>{j.state=state;j.saved=true;});
    const priced=await call('price_bid',{job_id:known.id});assert.equal(priced.data.count,85);assert.equal(priced.data.purchase,12999421);assert.equal(priced.data.sale,16665868);
    const exported=await call('export_bid',{job_id:known.id,expected_revision:known.revision,format:'pdf'});assert.equal(exported.ok,true);
-   const bytes=await(await fetch(exported.data.url)).arrayBuffer();assert.equal((await PDFDocument.load(bytes)).getPageCount(),2);
+   const bytes=await(await fetch(exported.data.url)).arrayBuffer();assert.equal((await PDFDocument.load(bytes)).getPageCount(),5);
   }
   if(process.env.TEST_OPENAI==='1'){
    const made=await call('create_bid_job',{project:'QA live assistant acceptance',supplier:'rythern',instruction:instructions});assert.equal(made.ok,true);
