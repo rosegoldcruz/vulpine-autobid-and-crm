@@ -17,6 +17,7 @@ export function verify(token,secret,expected){
   try{const c=JSON.parse(Buffer.from(payload,'base64url'));return c.sub&&c.org===expected.org&&c.module==='pricing'&&c.path===expected.path&&c.method===expected.method&&c.bodyHash===expected.bodyHash&&c.exp>Date.now()/1000&&c.exp<Date.now()/1000+90?c:null;}catch{return null;}
 }
 const hash=s=>createHash('sha256').update(s).digest('hex');
+const studioTypes={'.svg':'image/svg+xml','.ico':'image/x-icon','.planmeasure':'application/octet-stream','.txt':'text/plain; charset=utf-8'};
 const types={'.html':'text/html; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.js':'text/javascript; charset=utf-8','.json':'application/json','.css':'text/css','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp','.pdf':'application/pdf','.xlsx':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'};
 export async function createServer(env,root=path.dirname(fileURLToPath(import.meta.url))){
   const data=JSON.parse(await fs.readFile(path.join(root,'src/catalog.json')));
@@ -55,9 +56,10 @@ export async function createServer(env,root=path.dirname(fileURLToPath(import.me
       }
       if(req.method!=='GET')return respond(res,405,{error:'Method not allowed.'});
       const file=route||'index.html';
-      if(file.includes('..')||file.includes('\\')||!types[path.extname(file)]||!/^[-a-zA-Z0-9_./ ()]+$/.test(file))return respond(res,404,{error:'Not found.'});
+      const mime=types[path.extname(file)]||(file.startsWith('studio/')?studioTypes[path.extname(file)]:null);
+      if(file.includes('..')||file.includes('\\')||!mime||!/^[-a-zA-Z0-9_./ ()]+$/.test(file))return respond(res,404,{error:'Not found.'});
       const bytes=await fs.readFile(path.join(root,'dist',file));
-      res.writeHead(200,{'content-type':types[path.extname(file)],'cache-control':'no-store','x-content-type-options':'nosniff','content-security-policy':"frame-ancestors 'self'; object-src 'none'; base-uri 'self'"});res.end(bytes);
+      res.writeHead(200,{'content-type':mime,'cache-control':'no-store','x-content-type-options':'nosniff','content-security-policy':"frame-ancestors 'self'; object-src 'none'; base-uri 'self'"});res.end(bytes);
     }catch(e){respond(res,e.code==='ENOENT'?404:400,{error:e.code==='ENOENT'?'Not found.':'Could not process the cabinet request.'});}
   });
 }

@@ -5,7 +5,7 @@ const catalog=JSON.parse(await readFile(new URL('src/catalog.json',root),'utf8')
 let html=template;
 await mkdir(new URL('dist/downloads/',root),{recursive:true});
 await writeFile(new URL('dist/index.html',root),html);
-for(const file of ['app.mjs','pricing.mjs','quote-pdf.mjs','catalog.json','catalog-images.json'])await copyFile(new URL('src/'+file,root),new URL('dist/'+file,root));
+for(const file of ['app.mjs','studio-shell.mjs','pricing.mjs','quote-pdf.mjs','catalog.json','catalog-images.json'])await copyFile(new URL('src/'+file,root),new URL('dist/'+file,root));
 await writeFile(new URL('dist/styles.css',root),(await readFile(new URL('src/styles.css',root),'utf8'))+'\n'+(await readFile(new URL('src/workflow.css',root),'utf8')));
 await copyFile(new URL('node_modules/pdf-lib/dist/pdf-lib.min.js',root),new URL('dist/pdf-lib.min.js',root));
 await copyFile(new URL('assets/proposal-template.pdf',root),new URL('dist/proposal-template.pdf',root));
@@ -18,3 +18,4 @@ await cp(new URL('assets/brand/',root),new URL('dist/brand/',root),{recursive:tr
 
 await copyFile(new URL('node_modules/xlsx/dist/xlsx.full.min.js',root),new URL('dist/xlsx.full.min.js',root));
 await copyFile(new URL('src/quote-xlsx.mjs',root),new URL('dist/quote-xlsx.mjs',root));
+await cp(new URL('assets/plan-studio/',root),new URL('dist/studio/',root),{recursive:true});

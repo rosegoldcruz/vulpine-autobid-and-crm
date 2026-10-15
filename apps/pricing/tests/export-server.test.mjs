@@ -34,6 +34,13 @@ test('server denies unsigned / cross-organization requests, isolates drafts, rej
     assert.equal((await fetch(base+'/catalog.json')).status,401);
     assert.equal((await request('catalog.json','GET',undefined,'qa-user','other-org')).status,401);
     assert.equal((await request('catalog.json')).status,200);
+    assert.equal((await fetch(base+'/studio/index.html')).status,401);
+    const studio=await request('studio/index.html');assert.equal(studio.status,200);assert.match(await studio.text(),/Plan Measure/);
+    const studioFiles=await fs.readdir(new URL('../dist/studio/assets/',import.meta.url));
+    const worker=studioFiles.find(n=>n.startsWith('pdf.worker')&&n.endsWith('.mjs'));
+    assert.ok(worker);assert.equal((await request('studio/assets/'+worker)).status,200);
+    const sample=studioFiles.find(n=>n.endsWith('.planmeasure'));
+    assert.ok(sample);assert.equal((await request('studio/assets/'+sample)).status,200);
     let saved=await request('draft','PUT',{draft:state,revision:null});assert.equal(saved.status,200);
     assert.deepEqual((await (await request('draft')).json()).draft,state);
     assert.equal((await (await request('draft','GET',undefined,'other-user')).json()).draft,null);
