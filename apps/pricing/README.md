@@ -33,3 +33,12 @@ The preparer dropdown contains Daniel Cruz and Mike Musonda. Generation dates ar
 Optional nationwide destination sales-tax estimates are documented in [docs/tax.md](docs/tax.md). Tax is added to customer totals only when enabled with a fresh provider lookup. A configured TaxJar or Avalara account is required. No additional markup, freight, assembly or installation is applied. Priced service entries count only when added explicitly. Missing prices stay unavailable: Euro BLS36-Tray, and Mountain Timber MIRROR2430, MIRROR3030, WMC3030, WMC3036 and WMC3042. Slim Shaker glass doors cannot be quoted. Confirm the Euro B24FHD door layout with the vendor.
 
 Source editions: `HighlandCabinetryCO_ShakerCatalog_v8-03252026re.pdf`, pricing pages 35–39; `EURO-CATALOG-v3.11.10.25-RE.pdf`, PDF pricing pages 15–25. These are fixed catalog editions, not a live pricing feed.
+
+
+### Project workspace
+
+The hosted pricing app now stores organization-shared projects, quote snapshots, and generated PDF/Excel bytes in Postgres. Set `QUOTES_DATABASE_URL` for the pricing service; startup applies the additive schema in `deploy/quote-history.sql`. Existing personal drafts are preserved and copied into history on first workspace load. Project names are normalized for whitespace and case. New quote / Clear board saves the current quote and starts a separate quote in the project. Trash is reversible; it retains quotes and documents. Concurrent quote edits reject stale revisions rather than overwriting a teammate's work.
+
+Existing back-office authorization protects all workspace routes. The sidebar uses authenticated GET routes and the existing export POST proxy for project actions. Include the new pricing tables in database backups; PDFs are stored in the database, not browser storage. `node tests/workspace.integration.mjs` exercises the configured database using an isolated temporary organization and cleans up its own records.
+
+The nationwide tax selector remains available, but free official-source nationwide rate lookup is not implemented by the workspace change. Tax retrieval still requires a configured provider; unverified rates block taxed exports.

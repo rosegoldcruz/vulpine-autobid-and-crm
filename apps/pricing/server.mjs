@@ -38,7 +38,7 @@ export async function createServer(env,root=path.dirname(fileURLToPath(import.me
       if(!claim)return respond(res,401,{error:'Verified backoffice session required.'});
       if(history&&req.method==='GET'){
         if(route==='projects')return respond(res,200,{projects:await history.projects(claim),quotes:await history.list(claim)});
-        if(/^quotes\/[a-f0-9-]{36}$/.test(route)){const q=await history.get(claim,route.split('/')[1]);return respond(res,200,{state:{...q.state,_history:{id:q.id,revision:q.revision}},exports:await history.exports(claim,q.id)});}
+        if(/^quotes\/[a-f0-9-]{36}$/.test(route)){const q=await history.get(claim,route.split('/')[1]);return respond(res,200,{archived:!!q.deleted_at,state:{...q.state,_history:{id:q.id,revision:q.revision}},exports:await history.exports(claim,q.id)});}
         if(/^documents\/[a-f0-9-]{36}$/.test(route)){const doc=await history.download(claim,route.split('/')[1]);if(!doc)return respond(res,404,{error:'Document not found.'});res.writeHead(200,{'content-type':types['.'+doc.format],'cache-control':'no-store','content-disposition':'inline; filename="Vulpine-'+doc.type+'.'+doc.format+'"'});res.end(doc.bytes);return;}
       }
       if(route==='tax/status' &&req.method==='GET')return respond(res,200,{configured:!!taxProvider(env),provider:taxProvider(env)});

@@ -6,7 +6,7 @@ export class QuoteStore {
  constructor(connectionString){this.pool=new pg.Pool({connectionString,max:4,connectionTimeoutMillis:5000});}
  async init(){await this.pool.query(await fs.readFile(new URL('./deploy/quote-history.sql',import.meta.url),'utf8'));}
  async list(actor){return (await this.pool.query(`SELECT id,project_name,project_key,quote_number,revision,created_by,updated_by,updated_at,state->>'supplier' AS supplier FROM pricing_quotes WHERE org=$1 AND project_key IN (SELECT project_key FROM pricing_projects WHERE org=$1 AND deleted_at IS NULL) ORDER BY updated_at DESC`,[actor.org])).rows;}
- async get(actor,id,db=this.pool){const q=(await db.query('SELECT * FROM pricing_quotes WHERE id=$1 AND org=$2',[id,actor.org])).rows[0];if(!q)throw Object.assign(Error('Quote not found.'),{status:404});return q;}
+ async get(actor,id,db=this.pool){const q=(await db.query('SELECT q.*,p.deleted_at FROM pricing_quotes q JOIN pricing_projects p ON p.org=q.org AND p.project_key=q.project_key WHERE q.id=$1 AND q.org=$2',[id,actor.org])).rows[0];if(!q)throw Object.assign(Error('Quote not found.'),{status:404});return q;}
  async save(actor,state,reference){
   const db=await this.pool.connect();
   try{

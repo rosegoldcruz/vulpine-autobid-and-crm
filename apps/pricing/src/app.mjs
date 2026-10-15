@@ -48,7 +48,7 @@ if(hosted){
   const saved=await response.json();revision=saved.revision;
   if(saved.draft)state=saved.draft;
   const quoteId=new URLSearchParams(location.search).get('quote')||state._history?.id;
-  if(quoteId){if(!/^[a-f0-9-]{36}$/.test(quoteId))throw Error('Invalid quote link.');const r=await fetch('./quotes/'+quoteId);if(!r.ok)throw Error('Saved quote could not load.');state=(await r.json()).state;}
+  if(quoteId){if(!/^[a-f0-9-]{36}$/.test(quoteId))throw Error('Invalid quote link.');const r=await fetch('./quotes/'+quoteId);if(!r.ok)throw Error('Saved quote could not load.');const loaded=await r.json();state=loaded.state;projectArchived=loaded.archived===true;}
   historyRef=state._history||null;
   $('saveState').textContent='Saved in back office';
   const bidId=new URLSearchParams(location.search).get('bid');
@@ -109,6 +109,7 @@ function toast(message,opts={}){
   $('toasts').append(el);setTimeout(()=>el.remove(),opts.action?7000:3800);
 }
 function save(){
+  if(projectArchived)return;
   if(hosted){
     $('saveState').textContent='Saving to back office…';clearTimeout(saveTimer);
     const snapshot=structuredClone({...state,supplierDrafts});
@@ -546,6 +547,7 @@ async function startQuote(name=projectArchived?'Untitled project':state.project)
  location.assign('./index.html');
 }
 $('clearBoard').onclick=()=>startQuote().catch(e=>toast(e.message,{error:true}));
+document.querySelector('.app').inert=projectArchived;
 if(hosted)mountWorkspace({flush:flushWorkspace,startQuote,getReference:()=>historyRef,onArchive:archived=>{projectArchived=archived;document.querySelector('.app').inert=archived;},onError:e=>toast(e.message,{error:true})});
 $('supplier').onchange=async()=>{
  if(agentJob){$('supplier').value=state.supplier;toast('Create a separate bid for another supplier.');return;}
