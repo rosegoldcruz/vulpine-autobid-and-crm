@@ -2,6 +2,7 @@ import {LINES as HCI_LINES,linesFor,money,whole,lookup,cost,calculateUnit,calcul
 import {generateQuote} from './quote-pdf.mjs';
 import {exportWorkbook} from './quote-xlsx.mjs';
 import {mountBidAssistant} from './bid-assistant.mjs';
+import {switchSupplier} from './supplier-switch.mjs';
 
 const [HCI_DATA,HCI_IMAGES]=await Promise.all([fetch('./catalog.json').then(r=>r.json()),fetch('./catalog-images.json').then(r=>r.json())]);
 let DATA=HCI_DATA,IMAGES=HCI_IMAGES,LINES=HCI_LINES;
@@ -242,8 +243,9 @@ function renderItems(){
         const note=[row?.[11],row?.[8]?'needs '+row[8]:''].filter(Boolean).join(' · ');
         html+='<div class="row'+(x.sku===flashSku?' flash':'')+'" data-li="'+x.li+'" data-row="'+esc(x.sku)+'">'
           +(t?'<img class="thumb" src="'+esc(t)+'" alt="" loading="lazy" width="48" height="48">':'<span class="thumb none"></span>')
-          +'<div class="rowText"><b>'+esc(x.sku)+(x.auto?' <span class="pill">Auto</span>':'')+'</b><span>'+esc(x.description)+'</span>'+(note?'<small>'+esc(note)+'</small>':'')+(x.auto?'<small>'+esc(x.line)+'</small>':'<label class="itemFinish"><span>Finish</span><select data-item-finish="'+esc(x.sku)+'" aria-label="Finish for '+esc(x.sku)+'">'+finishOptions(x.li)+'</select></label>')+'</div>'
-          +'<div class="rowEach">'+(unit1===null?'<span class="bad">No price</span>':money(unit1)+'<small>each</small>')+'</div>'
+          +'<div class="rowText"><b>'+esc(x.sku)+(x.auto?' <span class="pill">Auto</span>':'')+'</b><span>'+esc(x.description)+'</span>'+(note?'<small>'+esc(note)+'</small>':'')+(x.auto?'<small>'+esc(x.line)+'</small>':'<label class="itemFinish"><span>Finish</span><select data-item-finish="'+esc(x.sku)+'" aria-label="Finish for '+esc(x.sku)+'">'+finishOptions(x.li)+'</select></label>')
+          +(unit1===null?'<label class="itemFinish">Replacement SKU<input data-replace="'+esc(x.sku)+'" aria-label="Replacement SKU for '+esc(x.sku)+'" placeholder="Exact supplier SKU"><button type="button" data-apply-replacement>Replace</button></label>':'')+'</div>'
+          +'<div class="rowEach">'+(unit1===null?'<span class="bad">SKU / finish needs review</span>':money(unit1)+'<small>each</small>')+'</div>'
           +(x.auto?'<div class="rowQty autoQty">'+x.qty+' stick'+(x.qty===1?'':'s')+'</div>'
             :'<div class="stepper"><button type="button" data-dec="'+esc(x.sku)+'" aria-label="One fewer '+esc(x.sku)+'">'+(x.qty===1?'×':'−')+'</button><input type="number" min="0" max="'+MAX+'" step="1" inputmode="numeric" value="'+x.qty+'" data-qty="'+esc(x.sku)+'" aria-label="Quantity of '+esc(x.sku)+'"><button type="button" data-inc="'+esc(x.sku)+'" aria-label="One more '+esc(x.sku)+'">+</button></div>')
           +'<div class="rowTotal">'+(unit1===null?'—':money(unit1*x.qty))+'</div></div>';
@@ -368,7 +370,7 @@ function drawerRowHtml(e){
   return '<div class="dRow'+(q?' in':'')+'" data-drow="'+esc(sku)+'">'
     +(t?'<img class="thumb" src="'+esc(t)+'" alt="" loading="lazy" width="48" height="48">':'<span class="thumb none"></span>')
     +'<div class="rowText"><b>'+esc(sku)+'</b><span>'+esc(e.r[1])+'</span>'+(e.r[8]?'<small>needs '+esc(e.r[8])+'</small>':'')+(blocked?'<small>Automatic in this unit</small>':'')+'</div>'
-    +'<div class="rowEach">'+(c===null?'<span class="bad">No price</span>':money(c))+'</div>'
+          +'<div class="rowEach">'+(c===null?'<span class="bad">SKU / finish needs review</span>':money(c))+'</div>'
     +(c===null||blocked?'<div class="stepper off"></div>':'<div class="stepper"><button type="button" data-ddec="'+esc(sku)+'" aria-label="One fewer '+esc(sku)+'"'+(q?'':' disabled')+'>−</button><input type="number" min="0" max="'+MAX+'" step="1" inputmode="numeric" value="'+q+'" data-dqty="'+esc(sku)+'" aria-label="Quantity of '+esc(sku)+' in this unit"><button type="button" data-dinc="'+esc(sku)+'" aria-label="Add one '+esc(sku)+'">+</button></div>')
     +'</div>';
 }
@@ -447,12 +449,25 @@ $('autoToe').onchange=()=>{unit().auto=$('autoToe').checked;save();refreshUnit()
 document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{view=b.dataset.view;try{localStorage.setItem('vulpine-view',view)}catch{}renderItems();updateDrawerFooter()});
 
 $('items').addEventListener('click',e=>{
+  const apply=e.target.closest('[data-apply-replacement]');
+  if(apply){apply.closest('label').querySelector('input').dispatchEvent(new Event('change',{bubbles:true}));return;}
   const inc=e.target.closest('[data-inc]'),dec=e.target.closest('[data-dec]');
   if(inc){const li=+inc.closest('[data-li]').dataset.li;setQty(inc.dataset.inc,qtyOf(inc.dataset.inc,li)+1,{li});}
   else if(dec){const li=+dec.closest('[data-li]').dataset.li;setQty(dec.dataset.dec,qtyOf(dec.dataset.dec,li)-1,{li});}
   else if(e.target.closest('[data-open-browse]'))openDrawer();
 });
 $('items').addEventListener('change',e=>{
+  const replacement=e.target.closest('[data-replace]');
+  if(replacement){
+    const li=+replacement.closest('[data-li]').dataset.li,sku=replacement.value.trim();
+    if(cost(DATA,li,sku)===null){toast('Choose an exact SKU priced in this supplier and finish.',{error:true});return;}
+    const u=unit(),old=u.items.find(x=>x.sku===replacement.dataset.replace&&x.li===li);
+    if(!old)return;
+    const existing=u.items.find(x=>x!==old&&x.sku===sku&&x.li===li);
+    if(existing&&existing.qty+old.qty>MAX){toast('Combined quantity exceeds 100,000.',{error:true});return;}
+    if(existing){existing.qty+=old.qty;u.items.splice(u.items.indexOf(old),1);}else old.sku=sku;
+    save();refreshUnit();return;
+  }
   const row=e.target.closest('[data-li]');if(!row)return;const li=+row.dataset.li;
   const finish=e.target.closest('[data-item-finish]');
   if(finish){const it=unit().items.find(x=>x.sku===finish.dataset.itemFinish&&x.li===li),next=+finish.value;
@@ -517,13 +532,13 @@ $('supplier').onchange=async()=>{
  $('supplier').disabled=true;
  try{
   const catalog=await supplierCatalog(next);supplierDrafts[previous]=structuredClone(state);
-  const nextLines=linesFor(catalog),defaultLi=next==='uscd'?Math.max(0,nextLines.findIndex(l=>l[0]==='Shaker White (RTA)')):0;
-  state=supplierDrafts[next]?structuredClone(supplierDrafts[next]):{...state,supplier:next,quoteId:state.quoteId+'-'+next.toUpperCase(),units:state.units.map(u=>({id:uid(),name:u.name,repeat:u.repeat,auto:catalog.autoToe!==false,defaultLi,items:[]}))};
+  const nextLines=linesFor(catalog);
+  state=switchSupplier(state,DATA,catalog,next,supplierDrafts[next]);
   DATA=catalog;LINES=nextLines;IMAGES=next==='hci'?HCI_IMAGES:{};
   for(const key of Object.keys(rowCache))delete rowCache[key];
   for(const key of ['project','status','quoteId','customer','email','preparedBy','notes'])$(key).value=state[key];
   active=state.units[0].id;save();renderFinish();loadUnit();renderBar();renderQuote();
-  toast('Supplier quote opened. Other supplier quotes are preserved.');
+  toast('Units and SKUs carried over. Prices use this supplier only. Review finishes and flagged items.');
  }catch(error){$('supplier').value=previous;toast(error.message,{error:true});}finally{$('supplier').disabled=false;}
 };
 renderFinish();refreshDates();loadUnit();renderBar();

@@ -1,6 +1,8 @@
 import {readFile,writeFile,mkdir,copyFile,cp} from 'node:fs/promises';
 const root=new URL('../',import.meta.url);
 const template=await readFile(new URL('src/index.html',root),'utf8');
+await mkdir(new URL('dist/',root),{recursive:true});
+await copyFile(new URL('src/supplier-switch.mjs',root),new URL('dist/supplier-switch.mjs',root));
 const catalog=JSON.parse(await readFile(new URL('src/catalog.json',root),'utf8'));
 let html=template;
 await mkdir(new URL('dist/downloads/',root),{recursive:true});
