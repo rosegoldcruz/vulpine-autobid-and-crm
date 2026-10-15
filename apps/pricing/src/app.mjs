@@ -1,6 +1,7 @@
 import {LINES as HCI_LINES,linesFor,money,whole,lookup,cost,calculateUnit,calculateProject,quoteDates} from './pricing.mjs';
 import {generateQuote} from './quote-pdf.mjs';
 import {exportWorkbook} from './quote-xlsx.mjs';
+import {mountBidAssistant} from './bid-assistant.mjs';
 
 const [HCI_DATA,HCI_IMAGES]=await Promise.all([fetch('./catalog.json').then(r=>r.json()),fetch('./catalog-images.json').then(r=>r.json())]);
 let DATA=HCI_DATA,IMAGES=HCI_IMAGES,LINES=HCI_LINES;
@@ -23,6 +24,7 @@ const MAX=100000;
 const KEY='vulpine-project-v4';
 const hosted=location.pathname.startsWith('/api/cabinet-pricing/');
 let revision=null,saveTimer,saveQueue=Promise.resolve(),serverConflict=false;
+let agentJob=null;
 const freshUnit=n=>({id:uid(),name:'Unit '+n,repeat:1,auto:true,defaultLi:0,items:[]});
 let state={version:2,finish:0,project:'',status:'Tentative',
   quoteId:'VP-'+new Date().toISOString().slice(0,10).replaceAll('-','')+'-'+Math.random().toString(36).slice(2,6).toUpperCase(),
@@ -42,6 +44,14 @@ if(hosted){
   const saved=await response.json();revision=saved.revision;
   if(saved.draft)state=saved.draft;
   $('saveState').textContent='Saved in back office';
+  const bidId=new URLSearchParams(location.search).get('bid');
+  if(bidId){
+    if(!/^[a-f0-9-]{36}$/.test(bidId))throw Error('Invalid bid link.');
+    const r=await fetch('./agent/jobs/'+bidId,{cache:'no-store'});if(!r.ok)throw Error('This bid could not be loaded. Your existing draft is retained.');
+    agentJob=await r.json();state=structuredClone(agentJob.state);
+    if(!state.units.length)state.units=[freshUnit('01')];
+    $('saveState').textContent='Saved bid · revision '+agentJob.revision;
+  }
 }
 if(!['Daniel Cruz','Mike Musonda'].includes(state.preparedBy))state.preparedBy='Daniel Cruz';
 let supplierDrafts=state.supplierDrafts||{};delete state.supplierDrafts;
@@ -96,15 +106,17 @@ function save(){
     const snapshot=structuredClone({...state,supplierDrafts});
     saveTimer=setTimeout(()=>{saveQueue=saveQueue.then(async()=>{
       if(serverConflict)throw Error('Draft changed in another tab. Reload before editing.');
-      const r=await fetch('./draft',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({draft:snapshot,revision})});
+      const jobState=agentJob?cleanJobState(snapshot):null;
+      const r=await fetch(agentJob?'./agent/jobs/'+agentJob.id:'./draft',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify(agentJob?{state:jobState,expected_revision:agentJob.revision}:{draft:snapshot,revision})});
       const result=await r.json();if(!r.ok){if(r.status===409)serverConflict=true;throw Error(result.error||'Server save failed.');}
-      revision=result.revision;$('saveState').textContent='Saved in back office';
+      if(agentJob)agentJob=result;else revision=result.revision;$('saveState').textContent='Saved in back office';
     }).catch(error=>{$('saveState').textContent='Not saved';toast(error.message,{error:true})});},400);
   }else try{localStorage.setItem(KEY,JSON.stringify({...state,supplierDrafts}));$('saveState').textContent='Saved on this device'}
   catch{$('saveState').textContent='Not saved — browser storage is off';if(!storageWarning){toast('Browser storage is off. Download your PDF before you close this page.',{error:true});storageWarning=true}}
   invalidatePdf();
 }
 function invalidatePdf(){if(pdfUrl){URL.revokeObjectURL(pdfUrl);pdfUrl=null}$('downloadResult').hidden=true}
+function cleanJobState(s){return Object.fromEntries(['version','supplier','project','status','quoteId','date','validUntil','customer','email','preparedBy','notes','margin','comparison','units'].map(k=>[k,k==='status'?'Tentative':k==='units'?s.units.map(u=>({id:u.id,name:u.name,repeat:u.repeat,defaultLi:u.defaultLi,auto:u.auto,items:u.items.map(i=>({sku:i.sku,li:i.li,qty:i.qty}))})):s[k]]));}
 document.addEventListener('vulpine-open-studio',async()=>{
   // Let the existing debounced save finish before leaving the pricing document.
   await new Promise(resolve=>setTimeout(resolve,450));await saveQueue;
@@ -500,6 +512,7 @@ $('printGenerate').onclick=()=>generateDocument(true);
 
 /* ------------------------------------------------------------------ start */
 $('supplier').onchange=async()=>{
+ if(agentJob){$('supplier').value=state.supplier;toast('Create a separate bid for another supplier.');return;}
  const next=$('supplier').value,previous=state.supplier||'hci';if(next===previous)return;
  $('supplier').disabled=true;
  try{
@@ -514,4 +527,8 @@ $('supplier').onchange=async()=>{
  }catch(error){$('supplier').value=previous;toast(error.message,{error:true});}finally{$('supplier').disabled=false;}
 };
 renderFinish();refreshDates();loadUnit();renderBar();
+if(hosted){
+ if(agentJob){$('supplier').disabled=true;const notice=document.createElement('p');notice.className='hint';notice.textContent='Saved agent draft. Review quantities and source evidence before customer submission.';document.querySelector('.projectBar').after(notice);}
+ mountBidAssistant({currentJob:agentJob,flush:async()=>{await new Promise(r=>setTimeout(r,450));await saveQueue;if(serverConflict||$('saveState').textContent==='Not saved')throw Error('Save your current changes before running the assistant.');}});
+}
 if(storageWarning)toast('Your saved draft couldn’t be loaded, so a fresh project is open.',{error:true});

@@ -29,9 +29,13 @@ export async function createServer(env,root=path.dirname(fileURLToPath(import.me
     try{
       const url=new URL(req.url,'http://internal'),route=url.pathname.slice(1);
       if(route==='health')return respond(res,200,{status:'ok',service:'cabinet-pricing'});
-      let body='';for await(const chunk of req){body+=chunk;if(Buffer.byteLength(body)>1048576)return respond(res,413,{error:'Request too large.'});}
+      let body='';for await(const chunk of req){body+=chunk;if(Buffer.byteLength(body)>(route.startsWith('agent/sources/')?3145728:1048576))return respond(res,413,{error:'Request too large.'});}
       const claim=verify(req.headers['x-vulpine-operations'],env.OPS_SIGNING_SECRET,{org:env.OPS_ORGANIZATION_ID,path:route,method:req.method,bodyHash:hash(body)});
       if(!claim)return respond(res,401,{error:'Verified backoffice session required.'});
+      if(route.startsWith('agent/')){
+        const upstream=await fetch('http://127.0.0.1:3022/'+route,{method:req.method,headers:{'x-vulpine-operations':req.headers['x-vulpine-operations'],'content-type':'application/json'},body:['GET','HEAD'].includes(req.method)?undefined:body,signal:AbortSignal.timeout(45000)});
+        res.writeHead(upstream.status,{'content-type':'application/json','cache-control':'no-store'});res.end(await upstream.text());return;
+      }
       if(route==='draft'){
         const dir=path.join(env.CABINET_STORAGE_PATH,hash(claim.org)),filename=path.join(dir,hash(claim.sub)+'.json');
         if(req.method==='GET'){try{return respond(res,200,JSON.parse(await fs.readFile(filename,'utf8')));}catch(e){if(e.code==='ENOENT')return respond(res,200,{draft:null,revision:null});throw e;}}

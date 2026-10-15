@@ -37,3 +37,16 @@ body.studioOpen{height:100dvh;overflow:hidden;display:flex;flex-direction:column
 .studioOpen #exportExcel,.studioOpen .factor,.studioOpen #saveState{display:none}
 .studioOpen .app,.studioOpen .bar{display:none!important}
 @media(max-width:640px){.workspaceSwitch{padding:8px 12px;gap:8px;flex-wrap:wrap}.workspaceSwitch button{padding:8px 18px}#studioStorageNote{font-size:11px}}
+.bidAssistant{margin:12px 0;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.bidAssistant summary{padding:14px 16px;cursor:pointer;font-weight:700;min-height:48px}
+.bidAssistant summary small{margin-left:12px;color:var(--muted);font-weight:400}
+.assistantBody{padding:0 16px 16px;display:grid;gap:14px}
+.assistantBody label{display:grid;gap:6px;font-size:14px}
+.assistantBody textarea,.assistantBody input,.assistantBody select{width:100%;min-width:0;padding:10px;border:1px solid var(--line);border-radius:6px;background:var(--bg)}
+.assistantFields{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.assistantActions{display:flex;flex-wrap:wrap;gap:10px}
+#agentProgress{white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px}
+#agentDownloads{display:flex;flex-wrap:wrap;gap:12px;overflow-wrap:anywhere}
+#agentJobs{display:grid;gap:8px;max-height:240px;overflow:auto}
+.assistantBody a{color:var(--accent-text)}
+@media(max-width:600px){.assistantFields{grid-template-columns:1fr}.assistantActions button{flex:1;min-height:46px}}
