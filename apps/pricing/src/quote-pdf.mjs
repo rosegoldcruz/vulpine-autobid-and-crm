@@ -7,8 +7,8 @@ export async function generateQuote(PDFLib,data,input,type='customer',templateBy
  const H=850.079956,shortDate=s=>{const [y,m,d]=s.split('-');return m+'/'+d+'/'+y};
  const stamp=(p,schedule=false,addLine=false)=>{const top=schedule?7:76;if(schedule||addLine)p.drawLine({start:{x:487,y:H-top},end:{x:548,y:H-top},thickness:1.8,color:gold});p.drawText(shortDate(state.date),{x:489,y:H-top-11,size:9,font:serif,color:ink})};
  const text=(p,value,x,top,width=120,size=8,b=false,color=ink)=>{value=safe(value);let actual=size;const f=b?bold:font;while(f.widthOfTextAtSize(value,actual)>width&&actual>5.5)actual-=.25;if(f.widthOfTextAtSize(value,actual)>width){while(value.length&&f.widthOfTextAtSize(value+'...',actual)>width)value=value.slice(0,-1);value+='...'}p.drawText(value,{x,y:H-top,size:actual,font:f,color})};
- const [cover,approach]=await doc.copyPages(template,[0,1]);doc.addPage(cover);doc.addPage(approach);stamp(cover);stamp(approach);text(cover,state.preparedBy.trim()||'Daniel Cruz',34,567,255,27);text(cover,shortDate(state.validUntil),34,649,205,17,true);
- const rows=result.units.filter(u=>u.repeat>0).flatMap(u=>u.entries.map(r=>({...r,unit:u,extendedQty:r.qty*u.repeat}))),totalCabinets=rows.reduce((s,r)=>s+(lookup(data,r.li,r.sku)?.[5]||0)*r.extendedQty,0),totalHardware=rows.reduce((s,r)=>s+(lookup(data,r.li,r.sku)?.[7]||0)*r.extendedQty,0),finishes=[...new Set(rows.map(r=>r.line))],pages=Math.max(1,Math.ceil(rows.length/20)),amount=type==='purchase'?result.purchase:result.sale;
+ if(type!=='customer'){const [cover,approach]=await doc.copyPages(template,[0,1]);doc.addPage(cover);doc.addPage(approach);stamp(cover);stamp(approach);text(cover,state.preparedBy.trim()||'Daniel Cruz',34,567,255,27);text(cover,shortDate(state.validUntil),34,649,205,17,true);}
+ const activeUnits=result.units.filter(u=>u.repeat>0),rows=activeUnits.flatMap(u=>u.entries.map(r=>({...r,unit:u,extendedQty:r.qty*u.repeat}))),totalCabinets=rows.reduce((s,r)=>s+(lookup(data,r.li,r.sku)?.[5]||0)*r.extendedQty,0),totalHardware=rows.reduce((s,r)=>s+(lookup(data,r.li,r.sku)?.[7]||0)*r.extendedQty,0),finishes=[...new Set(rows.map(r=>r.line))],schedule=type==='customer'?activeUnits:rows,pages=Math.max(1,Math.ceil(schedule.length/20)),amount=type==='purchase'?result.purchase:result.sale;
  const abbreviations=['WHS','GRS','SDW','MSL','ONB','SBS','SSG','MTS','Euro Classic','Euro Deluxe','Euro Custom'];
  for(let index=0;index<pages;index++){
   const [p]=await doc.copyPages(template,[2]);doc.addPage(p);stamp(p,true);
@@ -18,7 +18,16 @@ export async function generateQuote(PDFLib,data,input,type='customer',templateBy
   // Restore the blank body grid to align with the supplied printed column headings.
   for(let j=0;j<20;j++)p.drawRectangle({x:25.5,y:H-114-(j+1)*18.8,width:545,height:18.8,color:j%2?rgb(.94,.925,.89):rgb(1,1,1)});
   for(const x of [25.5,127,245,289,365,443,505,570.5])p.drawLine({start:{x,y:H-114},end:{x,y:H-490},thickness:.3,color:rgb(.85,.82,.76)});
-  rows.slice(index*20,index*20+20).forEach((r,j)=>{const top=125+j*18.8,price=type==='purchase'?r.purchase:r.sale,meta=lookup(data,r.li,r.sku);text(p,r.sku,30,top,93,7.5,true);text(p,r.unit.name+' / '+abbreviations[r.li],134,top-3,107,7);text(p,r.qty+' each x '+r.unit.repeat+' units',134,top+5,107,6);text(p,r.extendedQty,254,top,31,8);text(p,money(price),292,top,66,8);text(p,money(price*r.extendedQty),368,top,68,8);text(p,(meta?.[5]||0)*r.extendedQty,449,top,49,8);text(p,(meta?.[7]||0)*r.extendedQty+' est.',510,top,54,7)});
+  schedule.slice(index*20,index*20+20).forEach((r,j)=>{
+   const top=125+j*18.8;
+   if(type==='customer'){
+    const families=[...new Set(r.entries.map(i=>data.Shaker.some(row=>row[0]===i.sku)&&i.li<8?'Framed':'Frameless'))];
+    text(p,families.join(' / '),30,top,93,7.5,true);text(p,r.name,134,top,107,8,true);text(p,r.repeat,254,top,31,8);
+    text(p,money(r.sale),292,top,66,8);text(p,money(r.sale*r.repeat),368,top,68,8);
+    text(p,r.entries.reduce((s,i)=>s+(lookup(data,i.li,i.sku)?.[5]||0)*i.qty*r.repeat,0),449,top,49,8);
+    text(p,r.entries.reduce((s,i)=>s+(lookup(data,i.li,i.sku)?.[7]||0)*i.qty*r.repeat,0)+' est.',510,top,54,7);
+   }else{const price=type==='purchase'?r.purchase:r.sale,meta=lookup(data,r.li,r.sku);text(p,r.sku,30,top,93,7.5,true);text(p,r.unit.name+' / '+abbreviations[r.li],134,top-3,107,7);text(p,r.qty+' each x '+r.unit.repeat+' units',134,top+5,107,6);text(p,r.extendedQty,254,top,31,8);text(p,money(price),292,top,66,8);text(p,money(price*r.extendedQty),368,top,68,8);text(p,(meta?.[5]||0)*r.extendedQty,449,top,49,8);text(p,(meta?.[7]||0)*r.extendedQty+' est.',510,top,54,7)}
+  });
   text(p,money(amount),368,506,70,9,true,rgb(1,1,1));text(p,totalCabinets,449,506,49,8,true,rgb(1,1,1));text(p,totalHardware+' est.',510,506,54,7,true,rgb(1,1,1));
   const values=[money(amount),'Not separately priced','Not added','Only if listed','Only if listed',money(amount)];values.forEach((v,i)=>text(p,v,201,562+i*18.5,83,8,i===5));
   const snapshot=[result.count,result.units.filter(u=>u.repeat>0).length,totalCabinets,totalHardware+' (estimate)','Not included unless listed',state.status+' quantities'];snapshot.forEach((v,i)=>text(p,v,438,562+i*18.5,126,8,i===5));
@@ -30,9 +39,9 @@ export async function generateQuote(PDFLib,data,input,type='customer',templateBy
  }
  // Details retain full descriptions and notes when narrow template cells must abbreviate.
  const needsDetails=state.notes.trim()||state.customer.length>35||state.project.length>40||rows.some(r=>r.unit.name.length>20||r.sku.length>18);
- if(type==='internal'||needsDetails){const detail=await PDFDocument.load(await generateInternalReport(PDFLib,data,state,type));const copied=await doc.copyPages(detail,detail.getPageIndices());copied.forEach(p=>doc.addPage(p))}
+ if(type!=='customer'&&(type==='internal'||needsDetails)){const detail=await PDFDocument.load(await generateInternalReport(PDFLib,data,state,type));const copied=await doc.copyPages(detail,detail.getPageIndices());copied.forEach(p=>doc.addPage(p))}
  if(type==='customer')addAcceptancePage(doc,PDFLib,state,result,{totalCabinets,totalHardware,finishes,font,bold,gold,ink});
- const [closing]=await doc.copyPages(template,[3]);doc.addPage(closing);stamp(closing,false,true);
+ if(type!=='customer'){const [closing]=await doc.copyPages(template,[3]);doc.addPage(closing);stamp(closing,false,true);}
  doc.setTitle((type==='customer'?'Cabinet proposal':type==='internal'?'Internal costing':'Purchase schedule')+' - '+state.project);doc.setAuthor(state.preparedBy||'Vulpine');doc.setSubject(state.quoteId+' | Generated '+state.date+' | Valid until '+state.validUntil);
  return doc.save();
 }
@@ -64,6 +73,10 @@ function addAcceptancePage(doc,PDFLib,state,result,{totalCabinets,totalHardware,
  row('Cabinet line / finish',finishes.join(', '));
  row('Proposal date / Valid until',state.date+' / '+state.validUntil);
  row('Proposal total',money(result.sale)+' | '+state.status+' quantities');
+ // Notes must never trigger the itemized costing report in a customer proposal.
+ // Long notes get their own continuation pages instead of clipping the signatures.
+ const noteLines=wrap(state.notes.trim(),contentWidth,9);
+ if(state.notes.trim()&&noteLines.length<=5){top+=8;noteLines.forEach(value=>{draw(value,left,top+12,9);top+=12});}
  top+=20;section('II. PREPARED BY');
  row('Company / Contact','Vulpine, LLC | '+(state.preparedBy||'Daniel Cruz'));
  row('Phone / Email','(480) 267-9181 | '+(state.preparedBy==='Mike Musonda'?'info@vulpine.llc':'cruz@vulpine.llc'));
@@ -78,6 +91,9 @@ function addAcceptancePage(doc,PDFLib,state,result,{totalCabinets,totalHardware,
  }
  line(left,right,height-47,gold);draw('VULPINE, LLC  |  PHOENIX, AZ',left,height-29,8,false,muted);
  draw('AUTHORIZATION & ACCEPTANCE',right-170,height-29,8,true,gold);
+ if(state.notes.trim()&&noteLines.length>5){
+  for(let offset=0;offset<noteLines.length;offset+=48){const notesPage=doc.addPage([width,height]);notesPage.drawText('PROJECT NOTES - '+safe(state.project).slice(0,55),{x:left,y:height-50,size:13,font:bold,color:ink});noteLines.slice(offset,offset+48).forEach((value,i)=>notesPage.drawText(value,{x:left,y:height-82-i*14,size:9,font,color:ink}));}
+ }
 }
 export async function generateInternalReport(PDFLib,data,state,type='customer'){
  const result=calculateProject(data,state);if(result.issues.length)throw Error('Resolve unit issues before generating the PDF.');

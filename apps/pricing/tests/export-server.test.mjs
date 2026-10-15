@@ -39,6 +39,6 @@ test('server denies unsigned / cross-organization requests, isolates drafts, rej
     assert.equal((await (await request('draft','GET',undefined,'other-user')).json()).draft,null);
     assert.equal((await request('draft','PUT',{draft:state,revision:null})).status,409);
     const excel=await request('export','POST',{state,format:'xlsx'});assert.equal(excel.status,200);assert.equal(XLSX.read(await excel.arrayBuffer()).Sheets['Unit Type'].B6.v,'B24');
-    const pdf=await request('export','POST',{state,format:'pdf',type:'customer'});assert.equal(pdf.status,200);assert.equal((await PDFDocument.load(await pdf.arrayBuffer())).getPageCount(),5);
+    const pdf=await request('export','POST',{state,format:'pdf',type:'customer'});assert.equal(pdf.status,200);assert.equal((await PDFDocument.load(await pdf.arrayBuffer())).getPageCount(),2);
   }finally{await new Promise(resolve=>server.close(resolve));await fs.rm(storage,{recursive:true,force:true});}
 });
