@@ -547,8 +547,8 @@ async function startQuote(name=projectArchived?'Untitled project':state.project)
  location.assign('./index.html');
 }
 $('clearBoard').onclick=()=>startQuote().catch(e=>toast(e.message,{error:true}));
-document.querySelector('.app').inert=projectArchived;
-if(hosted)mountWorkspace({flush:flushWorkspace,startQuote,getReference:()=>historyRef,onArchive:archived=>{projectArchived=archived;document.querySelector('.app').inert=archived;},onError:e=>toast(e.message,{error:true})});
+document.querySelectorAll('.app,.bar').forEach(el=>el.inert=projectArchived);
+if(hosted)mountWorkspace({flush:flushWorkspace,startQuote,getReference:()=>historyRef,onArchive:archived=>{projectArchived=archived;document.querySelectorAll('.app,.bar').forEach(el=>el.inert=archived);},onError:e=>toast(e.message,{error:true})});
 $('supplier').onchange=async()=>{
  if(agentJob){$('supplier').value=state.supplier;toast('Create a separate bid for another supplier.');return;}
  const next=$('supplier').value,previous=state.supplier||'hci';if(next===previous)return;
