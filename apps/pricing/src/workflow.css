@@ -50,3 +50,4 @@ body.studioOpen{height:100dvh;overflow:hidden;display:flex;flex-direction:column
 #agentJobs{display:grid;gap:8px;max-height:240px;overflow:auto}
 .assistantBody a{color:var(--accent-text)}
 @media(max-width:600px){.assistantFields{grid-template-columns:1fr}.assistantActions button{flex:1;min-height:46px}}
+.builder > *{min-width:0}

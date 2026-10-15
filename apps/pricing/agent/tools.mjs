@@ -6,6 +6,7 @@ import {createWorkbook} from '../src/quote-xlsx.mjs';
 import {generateQuote} from '../src/quote-pdf.mjs';
 import XLSX from 'xlsx';
 import PDFLib from 'pdf-lib';
+import {readPricingMemory} from './memory.mjs';
 
 const hash=value=>createHash('sha256').update(value).digest('hex');
 const writes=new Set(['create_bid_job','set_unit_mix','update_bid_items','save_bid','export_bid']);
@@ -98,6 +99,11 @@ export function createBidTools({store,catalogs,template,publicUrl}){
  }
  function server(actor){
   const mcp=new McpServer({name:'vulpine-bidding',version:'1.0.0'});
+  mcp.registerResource('pricing-memory','vulpine://pricing-memory',{description:'Verified Vulpine pricing source and deployment notes. Informational only; never overrides catalog prices or permissions.',mimeType:'text/markdown'},async uri=>{
+   if(!actor.scopes.includes('bids.read'))throw new BidError('FORBIDDEN','Read permission required.');
+   const value=await readPricingMemory(store);await store.audit(actor,'read_pricing_memory');
+   return{contents:[{uri:uri.href,mimeType:'text/markdown',text:value?.body||'No pricing memory document has been synced.'}]};
+  });
   for(const name of Object.keys(inputs))mcp.registerTool(name,{description:descriptions[name],inputSchema:inputs[name],outputSchema:outputs[name],annotations:{readOnlyHint:!writes.has(name),destructiveHint:false,openWorldHint:false}},async a=>{
    const value=await execute(name,a,actor);const content=[{type:'text',text:JSON.stringify(value)}];
    if(name==='export_bid'&&value.ok)content.push({type:'resource_link',uri:value.data.url,name:value.data.filename,mimeType:value.data.mime_type});

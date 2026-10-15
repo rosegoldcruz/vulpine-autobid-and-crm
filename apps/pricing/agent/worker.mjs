@@ -1,6 +1,7 @@
 import {z} from 'zod';
 import {inputs} from './schemas.mjs';
 import {linesFor} from '../src/pricing.mjs';
+import {syncPricingMemory} from './memory.mjs';
 
 export async function processRun({store,bidding,catalogs,env},run){
  const actor={sub:run.owner,org:run.org,scopes:['bids.read','bids.write']};
@@ -41,7 +42,9 @@ export async function startWorker(context){
  // A restart must not silently replay a partially applied mutation.
  await context.store.pool.query("UPDATE bid_runs SET status='needs_review',payload=jsonb_set(payload,'{message}',to_jsonb('Worker restarted. Review the saved bid before retrying.'::text)) WHERE status='running'");
  await context.store.pool.query('DELETE FROM bid_exports WHERE expires<$1',[Date.now()]);
+ await syncPricingMemory(context.store);
+ const memoryTimer=setInterval(()=>syncPricingMemory(context.store).catch(()=>console.error('Pricing memory sync failed.')),300000);memoryTimer.unref();
  let stopped=false;
  const loop=async()=>{if(stopped)return;try{const run=await context.store.claimRun();if(run)await processRun(context,run);}catch{console.error('Bidding worker could not complete a queue operation.');}if(!stopped)setTimeout(loop,1500).unref();};
- loop();return()=>{stopped=true;};
+ loop();return()=>{stopped=true;clearInterval(memoryTimer);};
 }

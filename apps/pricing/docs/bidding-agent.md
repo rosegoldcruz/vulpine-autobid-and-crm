@@ -12,6 +12,8 @@ The official MCP SDK serves Streamable HTTP. Ten tools use the existing pricing 
 
 Postgres database `vulpine_bidding` holds owned jobs, CAS revisions, source evidence, audit records, queued runs, catalog snapshots and expiring exports. Existing workspace files remain intact; `agent/import-workspace.mjs --run` imports additive snapshots. It is idempotent for an unchanged workspace.
 
+The Obsidian page `projects/Vulpine Pricing and Agent Access.md` is indexed in the existing vault and synced to Postgres every five minutes. Only this explicit page is included; personal vault content is excluded. Authorized MCP readers can retrieve it through `vulpine://pricing-memory`. Memory notes cannot change pricing rules. The dedicated daily database backup timer writes private archives to `/var/backups/vulpine-bidding` and verifies their archive manifests; this is a local backup, not offsite disaster recovery.
+
 Auto Bid in Pricing starts the persistent server worker. Saved bids open in the ordinary Pricing interface through `?bid=<id>`. Edits to these jobs save back to Postgres without overwriting the original workspace draft. The worker uses the OpenAI Responses API and the same tool handlers exposed by MCP. Agents cannot submit prices, margins or arbitrary SKUs. Human edits retain the normal pricing controls.
 
 Uploads accept a schedule PDF up to 2 MB, or text/CSV. PDF text extraction uses installed `pdftotext`; scanned plans without text require a human takeoff. Plan-derived quantities are flagged and block agent export until a human reviews them in the source evidence panel. The assistant never sends customer messages or places orders. Export links are unguessable bearer capabilities, expire after 15 minutes, and are not access-logged by Nginx. Downloaded files remain on the recipient's device.
@@ -19,6 +21,8 @@ Uploads accept a schedule PDF up to 2 MB, or text/CSV. PDF text extraction uses 
 ## Verified and blocked
 
 The database/tool integration test covers ownership and organization isolation, read-only permission enforcement, stale revisions, unknown SKU and price-input rejection, canonical pricing, two-page PDF, XLSX, official SDK tool discovery, and authenticated Streamable HTTP tool calls. Existing pricing/export regressions remain separate in `npm test`.
+
+The supplied Longmont II workbook was also exercised through the new tools: 85 units, purchase $129,994.21, sell $166,658.68 at 22%, and a two-page customer PDF. The current saved workspace is a later snapshot with different quantities; its own $130,735.93 purchase and $167,609.56 sell totals were preserved exactly during import. These are separate snapshots, not interchangeable totals.
 
 The real OpenAI worker acceptance request returned HTTP 429 `credit_balance_exhausted` on 2026-10-14 (Phoenix). No completed live AI run is claimed. Restore API credits in https://platform.openai.com/settings/organization/billing before rerunning `TEST_OPENAI=1 node --env-file=/etc/vulpine-bidding/runtime.env --test tests/bidding.integration.mjs`. API billing is separate from ChatGPT subscriptions. A smaller model such as `gpt-6-luna` can reduce experiment costs after funding; it cannot bypass an exhausted balance.
 

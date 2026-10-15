@@ -5,6 +5,7 @@ import {createBiddingServer} from '../agent/server.mjs';
 import {processRun} from '../agent/worker.mjs';
 import {PDFDocument} from 'pdf-lib';
 import XLSX from 'xlsx';
+import fs from 'node:fs/promises';
 
 test('persistent bids enforce ownership, scopes, revisions, real catalog costs and valid exports',async()=>{
  const env={...process.env,OPS_ORGANIZATION_ID:'qa-'+randomUUID(),BIDDING_PUBLIC_URL:'http://127.0.0.1:3029/'};
@@ -53,6 +54,14 @@ test('persistent bids enforce ownership, scopes, revisions, real catalog costs a
   const unsigned=await fetch('http://127.0.0.1:3029/agent/jobs');assert.equal(unsigned.status,401);
   const path='agent/jobs',body='',claim={sub:actor.sub,org:actor.org,module:'pricing',path,method:'GET',exp:Math.floor(Date.now()/1000)+60,bodyHash:createHash('sha256').update(body).digest('hex')},payload=Buffer.from(JSON.stringify(claim)).toString('base64url');
   const response=await fetch('http://127.0.0.1:3029/'+path,{headers:{'x-vulpine-operations':payload+'.'+createHmac('sha256',env.OPS_SIGNING_SECRET).update(payload).digest('base64url')}});assert.equal(response.status,200);assert.ok((await response.json()).jobs.some(x=>x.id===j.id));
+  if(process.env.TEST_VERIFIED_BID_PATH){
+   const state=JSON.parse(await fs.readFile(process.env.TEST_VERIFIED_BID_PATH,'utf8'));
+   const created=await call('create_bid_job',{project:state.project,supplier:'hci',instruction:'Reconcile the previously verified, human-authored workbook snapshot.'});assert.equal(created.ok,true);
+   const known=await app.store.mutate(actor,created.data.id,1,'qa_import_verified_workbook',j=>{j.state=state;j.saved=true;});
+   const priced=await call('price_bid',{job_id:known.id});assert.equal(priced.data.count,85);assert.equal(priced.data.purchase,12999421);assert.equal(priced.data.sale,16665868);
+   const exported=await call('export_bid',{job_id:known.id,expected_revision:known.revision,format:'pdf'});assert.equal(exported.ok,true);
+   const bytes=await(await fetch(exported.data.url)).arrayBuffer();assert.equal((await PDFDocument.load(bytes)).getPageCount(),2);
+  }
   if(process.env.TEST_OPENAI==='1'){
    const made=await call('create_bid_job',{project:'QA live assistant acceptance',supplier:'rythern',instruction:instructions});assert.equal(made.ok,true);
    const run=await app.store.saveRun(actor,made.data.id,instructions,1),claimed=await app.store.claimRun();assert.equal(claimed.id,run.id);
