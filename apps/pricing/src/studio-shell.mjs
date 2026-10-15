@@ -7,6 +7,9 @@ const panel=document.createElement('section');panel.id='planStudio';panel.hidden
 const frame=document.createElement('iframe');frame.title='Plan Measure Studio';frame.allow='fullscreen';panel.append(frame);switcher.after(panel);
 const pricing=document.querySelector('.app'),totals=document.querySelector('.bar');
 function showStudio(open){
+ if(open&&location.pathname.startsWith('/api/cabinet-pricing/')){
+  document.dispatchEvent(new Event('vulpine-open-studio'));return;
+ }
  if(open&&!frame.hasAttribute('src'))frame.src='./studio/index.html';
  panel.hidden=!open;pricing.hidden=open;totals.hidden=open;
  document.body.classList.toggle('studioOpen',open);

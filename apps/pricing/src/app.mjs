@@ -96,6 +96,12 @@ function save(){
   invalidatePdf();
 }
 function invalidatePdf(){if(pdfUrl){URL.revokeObjectURL(pdfUrl);pdfUrl=null}$('downloadResult').hidden=true}
+document.addEventListener('vulpine-open-studio',async()=>{
+  // Let the existing debounced save finish before leaving the pricing document.
+  await new Promise(resolve=>setTimeout(resolve,450));await saveQueue;
+  if(serverConflict||$('saveState').textContent==='Not saved'){toast('Save your pricing changes before opening Studio.',{error:true});return;}
+  location.assign('./studio/index.html');
+});
 const safeName=()=>((state.quoteId||'Vulpine')+'_'+(state.project||'Project')).replace(/[^a-z0-9_-]/gi,'_');
 async function serverExport(format,type=documentType){const response=await fetch('./export',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({state:structuredClone(state),format,type})});if(!response.ok){const data=await response.json();throw Error(data.error?.message||data.error||'Export failed.');}return new Uint8Array(await response.arrayBuffer());}
 function downloadBytes(bytes,mime,name){const url=URL.createObjectURL(new Blob([bytes],{type:mime})),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);}

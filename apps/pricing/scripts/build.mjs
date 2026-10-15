@@ -19,3 +19,7 @@ await cp(new URL('assets/brand/',root),new URL('dist/brand/',root),{recursive:tr
 await copyFile(new URL('node_modules/xlsx/dist/xlsx.full.min.js',root),new URL('dist/xlsx.full.min.js',root));
 await copyFile(new URL('src/quote-xlsx.mjs',root),new URL('dist/quote-xlsx.mjs',root));
 await cp(new URL('assets/plan-studio/',root),new URL('dist/studio/',root),{recursive:true});
+// Deployment shell only; the supplied Studio source and compiled app stay intact.
+const studioPath=new URL('dist/studio/index.html',root);
+const studioNav='<nav aria-label="Pricing workspace" style="height:48px;display:flex;align-items:center;gap:18px;padding:0 16px;background:#17212b;color:#fff;font:14px system-ui;border-bottom:1px solid #46515d"><a href="../index.html" style="color:#fff;text-decoration:none;padding:8px 14px">Pricing</a><span aria-current="page" style="background:#fff;color:#17212b;border-radius:6px;padding:8px 14px">Plan Studio</span><span style="font-size:11px">Saved on this device · Export backups in Studio</span></nav>';
+await writeFile(studioPath,(await readFile(studioPath,'utf8')).replace('<body>','<body>'+studioNav).replace('<div id="root">','<div id="root" style="height:calc(100% - 48px)">'));

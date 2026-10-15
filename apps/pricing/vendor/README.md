@@ -8,4 +8,4 @@ No source or interface changes were made. Build on Node 24 with `npm ci` then `n
 
 The prebuilt assets are committed so the existing Node 22 pricing server can deploy through its normal build without installing or executing a second application runtime. The main build copies them to `dist/studio/`.
 
-The outer Pricing shell mounts Studio in a same-origin iframe behind the existing Back Office session and signed asset proxy. The iframe stays mounted during view changes. Studio retains its original device-local IndexedDB persistence and backup/export functionality; this integration does not promise cloud sync or automatic transfer into pricing.
+The outer Pricing shell exposes a Pricing / Plan Studio toggle behind the existing Back Office session and signed asset proxy. Hosted mode opens Studio as a full workspace after pending pricing saves finish; a deployment-only navigation strip returns to Pricing. Standalone mode embeds it. The supplied app source and compiled JavaScript are unchanged. Studio retains its original device-local IndexedDB persistence and backup/export functionality; this integration does not promise cloud sync or automatic transfer into pricing.
