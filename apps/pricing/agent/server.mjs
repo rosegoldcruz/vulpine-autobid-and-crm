@@ -1,16 +1,17 @@
 import http from 'node:http';
 import fs from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
-import {createHash,randomUUID} from 'node:crypto';
+import {createHash} from 'node:crypto';
 import {createRemoteJWKSet,jwtVerify} from 'jose';
 import {NodeStreamableHTTPServerTransport} from '@modelcontextprotocol/node';
 import {z} from 'zod';
-import os from 'node:os';
-import path from 'node:path';
-import {execFile} from 'node:child_process';
-import {promisify} from 'node:util';
+
+
+
+
 import {verify} from '../server.mjs';
 import {BidStore} from './store.mjs';
+import {prepareSource} from './sources.mjs';
 import {createBidTools} from './tools.mjs';
 import {startWorker} from './worker.mjs';
 import {id,state as stateSchema,BidError} from './schemas.mjs';
@@ -88,15 +89,8 @@ export async function createBiddingServer(env,{worker=true}={}){
    if(/^\/agent\/sources\/[^/]+$/.test(route)&&req.method==='POST'){
     const input=z.strictObject({expected_revision:z.number().int().positive(),name:z.string().min(1).max(200),text:z.string().min(1).max(300000).optional(),pdf_base64:z.string().max(2800000).optional()}).refine(v=>Boolean(v.text)!==Boolean(v.pdf_base64)).parse(a);
     const jobId=uuid(route.split('/').at(-1));await store.get(actor,jobId);
-    let text=input.text,sourceHash=text?hash(text):null;
-    if(input.pdf_base64){
-     const bytes=Buffer.from(input.pdf_base64,'base64');if(bytes.length>2097152||bytes.subarray(0,5).toString()!=='%PDF-')throw new BidError('INVALID_INPUT','Upload a PDF schedule smaller than 2 MB.');
-     sourceHash=hash(bytes);const dir=await fs.mkdtemp(path.join(os.tmpdir(),'vulpine-plan-'));
-     try{const file=path.join(dir,'schedule.pdf');await fs.writeFile(file,bytes,{mode:0o600});const result=await promisify(execFile)('/usr/bin/pdftotext',['-layout','-nopgbrk',file,'-'],{timeout:20000,maxBuffer:1200000});text=result.stdout.trim();}finally{await fs.rm(dir,{recursive:true,force:true});}
-     if(!text)throw new BidError('REVIEW_REQUIRED','This PDF has no extractable text. Upload the schedule as text; scanned drawings require a human takeoff.');
-     if(text.length>300000)throw new BidError('INVALID_INPUT','Upload only the relevant schedule pages.');
-    }
-    return json(res,200,await store.mutate(actor,jobId,input.expected_revision,'upload_source',j=>{if(j.sources.length>=20)throw new BidError('SOURCE_LIMIT','This bid already has 20 sources.');j.sources.push({id:randomUUID(),kind:'plan',name:input.name,text,sha256:sourceHash});j.saved=false;}));
+    const source=await prepareSource(input);
+    return json(res,200,await store.mutate(actor,jobId,input.expected_revision,'upload_source',j=>{if(j.sources.length>=20)throw new BidError('SOURCE_LIMIT','This bid already has 20 sources.');j.sources.push(source);j.saved=false;}));
    }
    throw new BidError('NOT_FOUND','Not found.');
   }catch(e){const code=e instanceof BidError?e.code:e.name==='ZodError'?'INVALID_INPUT':'INTERNAL_ERROR';const status={UNAUTHENTICATED:401,FORBIDDEN:403,NOT_FOUND:404,REVISION_CONFLICT:409,OAUTH_NOT_CONFIGURED:503,INVALID_INPUT:400}[code]||400;json(res,status,{error:{code,message:e instanceof BidError?e.message:code==='INVALID_INPUT'?'Invalid request.':'Request could not be completed.'}},status===401?{'www-authenticate':'Bearer resource_metadata="'+new URL('.well-known/oauth-protected-resource',env.BIDDING_PUBLIC_URL).href+'"'}:{});}

@@ -12,6 +12,10 @@ The official MCP SDK serves Streamable HTTP. Ten tools use the existing pricing 
 
 Postgres database `vulpine_bidding` holds owned jobs, CAS revisions, source evidence, audit records, queued runs, catalog snapshots and expiring exports. Existing workspace files remain intact; `agent/import-workspace.mjs --run` imports additive snapshots. It is idempotent for an unchanged workspace.
 
+Every new job revision retains its payload in `bid_job_revisions` for recovery. Recovery is currently an administrative database operation; the UI does not yet expose a revision browser.
+
+`extract_takeoff` accepts either an existing `source_id`, or `name`, `expected_revision` and exactly one of `text` / `pdf_base64`. Uploads require write permission and advance the job revision. Both the mobile upload and MCP tool use the same PDF extraction implementation.
+
 The Obsidian page `projects/Vulpine Pricing and Agent Access.md` is indexed in the existing vault and synced to Postgres every five minutes. Only this explicit page is included; personal vault content is excluded. Authorized MCP readers can retrieve it through `vulpine://pricing-memory`. Memory notes cannot change pricing rules. The dedicated daily database backup timer writes private archives to `/var/backups/vulpine-bidding` and verifies their archive manifests; this is a local backup, not offsite disaster recovery.
 
 Auto Bid in Pricing starts the persistent server worker. Saved bids open in the ordinary Pricing interface through `?bid=<id>`. Edits to these jobs save back to Postgres without overwriting the original workspace draft. The worker uses the OpenAI Responses API and the same tool handlers exposed by MCP. Agents cannot submit prices, margins or arbitrary SKUs. Human edits retain the normal pricing controls.

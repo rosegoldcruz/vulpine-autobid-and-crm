@@ -51,6 +51,19 @@ test('persistent bids enforce ownership, scopes, revisions, real catalog costs a
   await remote.connect(new StreamableHTTPClientTransport(new URL('http://127.0.0.1:3029/agent/mcp'),{fetch:signedFetch}));
   assert.equal((await remote.listTools()).tools.length,10);
   assert.equal((await remote.callTool({name:'price_bid',arguments:{job_id:j.id}})).structuredContent.data.sale,367224);await remote.close();
+  const pdfExport=await call('export_bid',{job_id:j.id,expected_revision:j.revision,format:'pdf'}),pdfBytes=Buffer.from(await(await fetch(pdfExport.data.url)).arrayBuffer());
+  const upload=await signedFetch('http://127.0.0.1:3029/agent/sources/'+j.id,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({expected_revision:j.revision,name:'Acceptance schedule.pdf',pdf_base64:pdfBytes.toString('base64')})});assert.equal(upload.status,200);j=await upload.json();
+  const source=j.sources.at(-1);assert.equal(source.kind,'plan');assert.ok(source.text.includes('Kitchen'));
+  const extracted=await call('extract_takeoff',{job_id:j.id,source_id:source.id});assert.equal(extracted.data.review_required,true);
+  const attachment={job_id:j.id,expected_revision:j.revision,name:'MCP schedule',text:instructions};
+  assert.equal((await call('extract_takeoff',attachment,{...actor,scopes:['bids.read']})).error.code,'FORBIDDEN');
+  const attached=await call('extract_takeoff',attachment);assert.equal(attached.ok,true,JSON.stringify(attached));assert.equal(attached.data.revision,j.revision+1);
+  assert.equal((await call('extract_takeoff',attachment)).error.code,'REVISION_CONFLICT');
+  const attachedPdf=await call('extract_takeoff',{job_id:j.id,expected_revision:attached.data.revision,name:'MCP PDF',pdf_base64:pdfBytes.toString('base64')});assert.equal(attachedPdf.ok,true,JSON.stringify(attachedPdf));assert.ok(attachedPdf.data.source.text.includes('Kitchen'));
+  j=(await call('get_bid_job',{job_id:j.id})).data;
+  const reviewedMix=await call('set_unit_mix',{job_id:j.id,expected_revision:j.revision,units:[{id:j.state.units[0].id,name:'Kitchen',repeat:12,defaultLi:0,evidence:{source_id:source.id,quote:'Kitchen'}}]});assert.equal(reviewedMix.ok,true);j=reviewedMix.data;
+  assert.equal((await call('validate_bid',{job_id:j.id})).data.valid,false);
+  assert.equal((await call('export_bid',{job_id:j.id,expected_revision:j.revision,format:'pdf'})).error.code,'VALIDATION_FAILED');
   const unsigned=await fetch('http://127.0.0.1:3029/agent/jobs');assert.equal(unsigned.status,401);
   const path='agent/jobs',body='',claim={sub:actor.sub,org:actor.org,module:'pricing',path,method:'GET',exp:Math.floor(Date.now()/1000)+60,bodyHash:createHash('sha256').update(body).digest('hex')},payload=Buffer.from(JSON.stringify(claim)).toString('base64url');
   const response=await fetch('http://127.0.0.1:3029/'+path,{headers:{'x-vulpine-operations':payload+'.'+createHmac('sha256',env.OPS_SIGNING_SECRET).update(payload).digest('base64url')}});assert.equal(response.status,200);assert.ok((await response.json()).jobs.some(x=>x.id===j.id));
@@ -69,7 +82,7 @@ test('persistent bids enforce ownership, scopes, revisions, real catalog costs a
    const totals=await call('price_bid',{job_id:made.data.id});assert.equal(totals.data.purchase,293784);assert.equal(totals.data.sale,367224);
   }
  }finally{
-  for(const table of ['bid_exports','bid_runs','bid_audit','bid_jobs'])await app.store.pool.query('DELETE FROM '+table+' WHERE org=$1',[actor.org]);
+  for(const table of ['bid_exports','bid_runs','bid_audit','bid_job_revisions','bid_jobs'])await app.store.pool.query('DELETE FROM '+table+' WHERE org=$1',[actor.org]);
   await app.close();
  }
 });

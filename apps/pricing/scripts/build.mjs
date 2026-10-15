@@ -11,6 +11,7 @@ await copyFile(new URL('node_modules/pdf-lib/dist/pdf-lib.min.js',root),new URL(
 await copyFile(new URL('assets/proposal-template.pdf',root),new URL('dist/proposal-template.pdf',root));
 await writeFile(new URL('dist/robots.txt',root),'User-agent: *\nDisallow: /\n');
 await copyFile(new URL('assets/Vulpine_Cabinet_Pricing_Configurator.xlsx',root),new URL('dist/downloads/Vulpine_Cabinet_Pricing_Configurator.xlsx',root));
+await copyFile(new URL('assets/Vulpine_Rythern_DDP_Purchase_Bid.xlsx',root),new URL('dist/downloads/Vulpine_Rythern_DDP_Purchase_Bid.xlsx',root));
 console.log('Built protected pricing site with '+(catalog.Shaker.length+catalog.Euro.length)+' product records.');
 
 await cp(new URL('assets/catalog-images/',root),new URL('dist/catalog-images/',root),{recursive:true});

@@ -6,6 +6,7 @@ export class BidStore{
  constructor(connectionString){this.pool=new pg.Pool({connectionString,max:5,connectionTimeoutMillis:5000});}
  async init(){await this.pool.query(`
   CREATE TABLE IF NOT EXISTS bid_jobs(id uuid PRIMARY KEY,org text NOT NULL,owner text NOT NULL,revision integer NOT NULL,payload jsonb NOT NULL);
+  CREATE TABLE IF NOT EXISTS bid_job_revisions(job_id uuid NOT NULL,revision integer NOT NULL,org text NOT NULL,owner text NOT NULL,payload jsonb NOT NULL,created_at timestamptz NOT NULL DEFAULT now(),PRIMARY KEY(job_id,revision));
   CREATE TABLE IF NOT EXISTS bid_audit(id uuid PRIMARY KEY,at timestamptz NOT NULL DEFAULT now(),org text NOT NULL,actor text NOT NULL,job_id uuid,action text NOT NULL,revision integer,outcome text NOT NULL);
   CREATE TABLE IF NOT EXISTS bid_exports(id text PRIMARY KEY,job_id uuid NOT NULL,org text NOT NULL,owner text NOT NULL,expires bigint NOT NULL,filename text NOT NULL,mime text NOT NULL,bytes bytea NOT NULL);
   CREATE TABLE IF NOT EXISTS bid_runs(id uuid PRIMARY KEY,job_id uuid NOT NULL,org text NOT NULL,owner text NOT NULL,status text NOT NULL,payload jsonb NOT NULL,updated_at timestamptz NOT NULL DEFAULT now());
@@ -24,13 +25,15 @@ export class BidStore{
  async transaction(fn){const db=await this.pool.connect();try{await db.query('BEGIN');const value=await fn(db);await db.query('COMMIT');return value;}catch(e){await db.query('ROLLBACK');throw e;}finally{db.release();}}
  async create(actor,value){
   const parsed=jobSchema.parse(value);
-  return this.transaction(async db=>{await db.query('INSERT INTO bid_jobs VALUES($1,$2,$3,$4,$5)',[parsed.id,actor.org,actor.sub,parsed.revision,parsed]);await this.audit(actor,'create_bid_job',parsed.id,parsed.revision,'ok',db);return parsed;});
+  return this.transaction(async db=>{await db.query('INSERT INTO bid_jobs VALUES($1,$2,$3,$4,$5)',[parsed.id,actor.org,actor.sub,parsed.revision,parsed]);await db.query('INSERT INTO bid_job_revisions(job_id,revision,org,owner,payload) VALUES($1,$2,$3,$4,$5)',[parsed.id,parsed.revision,actor.org,actor.sub,parsed]);await this.audit(actor,'create_bid_job',parsed.id,parsed.revision,'ok',db);return parsed;});
  }
  async mutate(actor,id,revision,action,fn){
   return this.transaction(async db=>{
    const value=await this.get(actor,id,db,true);if(value.revision!==revision)throw new BidError('REVISION_CONFLICT','Bid changed. Reload it before applying changes.');
+   await db.query('INSERT INTO bid_job_revisions(job_id,revision,org,owner,payload) VALUES($1,$2,$3,$4,$5) ON CONFLICT DO NOTHING',[id,value.revision,actor.org,actor.sub,value]);
    await fn(value);value.revision++;value.updated_at=new Date().toISOString();const parsed=jobSchema.parse(value);
    await db.query('UPDATE bid_jobs SET revision=$1,payload=$2 WHERE id=$3 AND org=$4 AND owner=$5',[parsed.revision,parsed,id,actor.org,actor.sub]);
+   await db.query('INSERT INTO bid_job_revisions(job_id,revision,org,owner,payload) VALUES($1,$2,$3,$4,$5)',[id,parsed.revision,actor.org,actor.sub,parsed]);
    await this.audit(actor,action,id,parsed.revision,'ok',db);return parsed;
   });
  }
@@ -42,8 +45,10 @@ export class BidStore{
    if(j.revision!==revision)throw new BidError('REVISION_CONFLICT','Bid changed. Reload before continuing.');
    if((await db.query("SELECT id FROM bid_runs WHERE job_id=$1 AND status IN ('queued','running')",[jobId])).rowCount)throw new BidError('RUN_ACTIVE','This bid already has an active run.');
    if(!j.sources.some(s=>s.kind==='instruction'&&s.text===instruction)){
+    await db.query('INSERT INTO bid_job_revisions(job_id,revision,org,owner,payload) VALUES($1,$2,$3,$4,$5) ON CONFLICT DO NOTHING',[jobId,j.revision,actor.org,actor.sub,j]);
     j.sources.push({id:randomUUID(),kind:'instruction',name:'User instructions',sha256:createHash('sha256').update(instruction).digest('hex'),text:instruction});j.revision++;j.saved=false;j.updated_at=new Date().toISOString();
     await db.query('UPDATE bid_jobs SET revision=$1,payload=$2 WHERE id=$3',[j.revision,jobSchema.parse(j),jobId]);
+    await db.query('INSERT INTO bid_job_revisions(job_id,revision,org,owner,payload) VALUES($1,$2,$3,$4,$5)',[jobId,j.revision,actor.org,actor.sub,j]);
    }
    const id=randomUUID();await db.query('INSERT INTO bid_runs(id,job_id,org,owner,status,payload) VALUES($1,$2,$3,$4,$5,$6)',[id,jobId,actor.org,actor.sub,'queued',{instruction,events:[]}]);await this.audit(actor,'start_agent',jobId,j.revision,'ok',db);return{id,status:'queued'};
   });
