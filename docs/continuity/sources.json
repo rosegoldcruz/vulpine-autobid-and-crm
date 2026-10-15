@@ -1,0 +1,17 @@
+[
+  "AGENTS.md",
+  "README.md",
+  "package.json",
+  "docs/continuity/current.md",
+  "docs/continuity/decisions.md",
+  "docs/continuity/audit.md",
+  "docs/continuity/verification.md",
+  "docs/continuity/sources.json",
+  "scripts/continuity.mjs",
+  "apps/backoffice/app/globals.css",
+  "apps/backoffice/app/layout.tsx",
+  "apps/backoffice/lib/platform-modules.ts",
+  "packages/permissions/src/index.ts",
+  "services/aeon/README.md",
+  "services/operations/src/server.mjs"
+]

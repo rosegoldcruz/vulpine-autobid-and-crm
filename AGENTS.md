@@ -1,5 +1,50 @@
 # AGENTS.md
 
+## Session continuity — mandatory entry point
+
+At session start, run `node scripts/continuity.mjs start` from this repository
+(or invoke it by absolute path). It resolves its own Git root and loads this file,
+the project brief, decisions and last saved handoff. Inspect live Git status,
+reported HEAD/worktree changes and evidence drift; recheck changed source and
+task-relevant runtime before modifying anything. Do not repeat completed broad
+discovery when the persisted evidence still applies. Runtime and actual source
+override stale notes. The current monorepo layout in README.md/current source
+supersedes the older proposed layout below; preserve existing authorization rules.
+
+Read `docs/continuity/current.md` and `docs/continuity/decisions.md` for verified
+observations, user requirements, preserved design and outstanding work. Organizational
+context remains in the existing Obsidian vault; see `docs/continuity/audit.md`.
+
+At completion, update the brief/decisions only when facts or approved requirements
+change. Prepare a reviewed JSON file outside the repo with these fields:
+
+```json
+{
+  "last_change": "Actual completed work and relevant paths",
+  "verification": ["Exact commands/results; identify failures and checks not run"],
+  "decisions": ["Decision and reason; distinguish owner approval from implementation choice"],
+  "open_work": ["Unfinished work; an empty array is allowed"],
+  "blockers": [],
+  "next_action": "Next valid step"
+}
+```
+
+Run `node scripts/continuity.mjs end /absolute/path/to/reviewed-handoff.json`.
+It records actual HEAD, branch, worktree filenames and source fingerprints and
+atomically saves `docs/continuity/handoff.json`. Review that file for accuracy
+and sensitive text, then commit only this task's files and push when authorized.
+Use `git log -- docs/continuity/handoff.json` to find the commit that saved a
+handoff; its snapshot HEAD is the preceding source baseline, not a self-reference
+to the commit containing it. Keep test evidence in the handoff or linked evidence
+record. Never put credentials, raw conversations or unrelated personal records here.
+
+This is command-driven continuity, not an installed session lifecycle hook. Agents
+must invoke it; interrupted sessions can leave older prose. Fingerprints cover the
+explicit `docs/continuity/sources.json` list, not every source or runtime dependency.
+Extend that list with task-relevant non-secret files when appropriate. A changed
+HEAD is expected after committing a handoff; it is a reconciliation signal, not
+proof of failure. Run `node --test scripts/continuity.test.mjs` to verify restoration.
+
 ## Purpose
 
 This file defines how AI coding agents must work inside this repository.

@@ -1,0 +1,46 @@
+{
+  "last_change": "Implemented repository continuity: scripts/continuity.mjs, three acceptance tests, AGENTS.md start/end protocol, and docs/continuity project brief, audit, design constraints, decisions and evidence manifest. Added a pointer in the existing Obsidian vault without importing personal context.",
+  "verification": [
+    "node --test scripts/continuity.test.mjs: 3/3 passed (separate-process restore, drift/deletion/HEAD detection, invalid handoff and secret evidence-path rejection).",
+    "node --check scripts/continuity.mjs and scripts/continuity.test.mjs: passed.",
+    "GET http://127.0.0.1:3020/health: HTTP 200, status ok, vulpine-operations version 1 during audit.",
+    "No UI, pricing, database or deployment change; app build/browser suite not run for this documentation and standalone CLI task.",
+    "Fresh agent with no inherited history restored five required facts from AGENTS.md; caught the missing verification.md reference, now repaired and fingerprinted. See docs/continuity/verification.md.",
+    "Remote reconciliation: fast-forwarded existing upstream 4499fe7 before continuity commit; no unrelated file fingerprints changed."
+  ],
+  "decisions": [
+    "Use Git-versioned engineering memory and existing Obsidian organizational memory; no new database or provider dependency.",
+    "Preserve observed Backoffice design and existing auth/workbook authority, as required by the user.",
+    "Start/end invocation remains explicit; no universal lifecycle hook or automatic vault synchronization is claimed."
+  ],
+  "open_work": [
+    "Reconcile pre-existing staged tracker moves and unstaged repository changes with their owner before changing or committing them.",
+    "Recheck dated provider/OAuth/credit blockers when selecting the next module; they are historical reports, not live verification.",
+    "Quartz content symlink has an absent target; publisher repair is outside this task."
+  ],
+  "blockers": [],
+  "next_action": "Run the continuity start entry point, reconcile any live Git/evidence drift, and select the next module for targeted authorized integration verification; preserve unrelated tracker work.",
+  "recorded_at": "2026-10-15T09:24:46.493Z",
+  "snapshot": {
+    "head": "4499fe79ee5cbc17aa304a2a170c20d7e68d90fb",
+    "branch": "codex/cabinet-brain-integration-recovery",
+    "worktree": " M .gitignore\nM  AGENTS.md\n M docs/architecture/current-system-map.md\nA  docs/continuity/audit.md\nA  docs/continuity/current.md\nA  docs/continuity/decisions.md\nA  docs/continuity/handoff.json\nA  docs/continuity/sources.json\nAM docs/continuity/verification.md\n M pnpm-lock.yaml\nA  scripts/continuity.mjs\nA  scripts/continuity.test.mjs\nR  legacy/bids-tracker/.npmrc -> services/bids-tracker/.npmrc\nR  legacy/bids-tracker/README.monorepo.md -> services/bids-tracker/README.monorepo.md\nRM legacy/bids-tracker/db.js -> services/bids-tracker/db.js\nR  legacy/bids-tracker/ecosystem.config.js -> services/bids-tracker/ecosystem.config.js\nRM legacy/bids-tracker/extract.js -> services/bids-tracker/extract.js\nR  legacy/bids-tracker/integration-auth.js -> services/bids-tracker/integration-auth.js\nR  legacy/bids-tracker/package-lock.json -> services/bids-tracker/package-lock.json\nR  legacy/bids-tracker/package.json -> services/bids-tracker/package.json\nRM legacy/bids-tracker/profit.js -> services/bids-tracker/profit.js\nRM legacy/bids-tracker/public/app.js -> services/bids-tracker/public/app.js\nRM legacy/bids-tracker/public/index.html -> services/bids-tracker/public/index.html\nRM legacy/bids-tracker/public/style.css -> services/bids-tracker/public/style.css\nR  legacy/bids-tracker/scripts/reimport_uploads.js -> services/bids-tracker/scripts/reimport_uploads.js\nRM legacy/bids-tracker/server.js -> services/bids-tracker/server.js\nR  legacy/bids-tracker/test/dependency-compatibility.test.js -> services/bids-tracker/test/dependency-compatibility.test.js\nR  legacy/bids-tracker/test/integration-auth.test.js -> services/bids-tracker/test/integration-auth.test.js\nR  legacy/bids-tracker/test/upload-policy.test.js -> services/bids-tracker/test/upload-policy.test.js\nR  legacy/bids-tracker/upload-policy.js -> services/bids-tracker/upload-policy.js\nRM legacy/bids-tracker/workbook.js -> services/bids-tracker/workbook.js\n?? infra/deploy/README.md\n?? infra/deploy/check-next-processes.py\n?? infra/deploy/engine-runtime.override.yml\n?? infra/deploy/next-process-monitor.service\n?? infra/deploy/next-process-monitor.timer\n?? services/bids-tracker/scripts/import-email-audit.js",
+    "sources": {
+      "AGENTS.md": "1803e44bfd2e9b5595e744bffef060efa342b600f459620ac2e5c26d0256b0d9",
+      "README.md": "7951ca56e47884a6a9b802d018e69ff82845ffcacf1877024fbd5cf094d55ec1",
+      "package.json": "fafa60aeae85182092017dfc87134dabfa1df3484315a510e118b4d879566a49",
+      "docs/continuity/current.md": "71a2a09c02455ec8da4d03bbc3b8d0051f14c56af14603f4cbc36efd532d019b",
+      "docs/continuity/decisions.md": "f522a92cf5ed45963551d946b40bff4b4eced5b2a88513a6efca5c6e4549b9d5",
+      "docs/continuity/audit.md": "c849de622d00377d1fadd3ba41cda2933eb9370b6fa13c2baf53bf36c0c471b2",
+      "docs/continuity/verification.md": "95b10fa8e6d19a3224bfff92165bb284cbd5d7073368c178b1e6f39fc5a71f1b",
+      "docs/continuity/sources.json": "92f71a43aa04553c265d76870ad620bfa831666dffff18e40a734cf967bc7b9c",
+      "scripts/continuity.mjs": "9b65e574e6405d808aa6ba85a387e1e27e8d34f4659f4660c62b4ad581609dfe",
+      "apps/backoffice/app/globals.css": "4dce1fa9ddb547628d3296f3f5e75fa9f9acf336d5a04565859965567fea4927",
+      "apps/backoffice/app/layout.tsx": "24d7abd0d14bfc6dc7548de9d04bc5baf9d97d55ba3b8bf47125025f48b1c27d",
+      "apps/backoffice/lib/platform-modules.ts": "f30902d8f247dccf88f7da58e6a8cff5b9c5098310a497951cdcc9dd4bce2e9c",
+      "packages/permissions/src/index.ts": "948dbeb60979b021c51724cc15194046a1c11a8fd322013cedc73667a1a73645",
+      "services/aeon/README.md": "b54e4e1bc554ccd957733a424903552d1b3d4f8565f98c9dc0a158a5f2b32336",
+      "services/operations/src/server.mjs": "e7da70b221bf487363d3bdda8f9f5b2ac40884a94c1b820e639010dc4316a679"
+    }
+  }
+}
