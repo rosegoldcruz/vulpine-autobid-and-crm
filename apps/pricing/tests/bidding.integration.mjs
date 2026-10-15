@@ -51,7 +51,10 @@ test('persistent bids enforce ownership, scopes, revisions, real catalog costs a
   await remote.connect(new StreamableHTTPClientTransport(new URL('http://127.0.0.1:3029/agent/mcp'),{fetch:signedFetch}));
   assert.equal((await remote.listTools()).tools.length,10);
   assert.equal((await remote.callTool({name:'price_bid',arguments:{job_id:j.id}})).structuredContent.data.sale,367224);await remote.close();
-  const pdfExport=await call('export_bid',{job_id:j.id,expected_revision:j.revision,format:'pdf'}),pdfBytes=Buffer.from(await(await fetch(pdfExport.data.url)).arrayBuffer());
+  const pdfExport=await call('export_bid',{job_id:j.id,expected_revision:j.revision,format:'pdf'});
+  const proposal=await PDFDocument.load(await(await fetch(pdfExport.data.url)).arrayBuffer()),schedule=await PDFDocument.create();
+  const [schedulePage]=await schedule.copyPages(proposal,[3]);schedule.addPage(schedulePage);
+  const pdfBytes=Buffer.from(await schedule.save());
   const upload=await signedFetch('http://127.0.0.1:3029/agent/sources/'+j.id,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({expected_revision:j.revision,name:'Acceptance schedule.pdf',pdf_base64:pdfBytes.toString('base64')})});assert.equal(upload.status,200);j=await upload.json();
   const source=j.sources.at(-1);assert.equal(source.kind,'plan');assert.ok(source.text.includes('Kitchen'));
   const extracted=await call('extract_takeoff',{job_id:j.id,source_id:source.id});assert.equal(extracted.data.review_required,true);
