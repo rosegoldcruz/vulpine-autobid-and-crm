@@ -49,7 +49,7 @@ test('persistent bids enforce ownership, scopes, revisions, real catalog costs a
   const {Client}=await import('@modelcontextprotocol/client');
   const [clientTransport,serverTransport]=InMemoryTransport.createLinkedPair();const mcp=app.bidding.server(actor),client=new Client({name:'vulpine-acceptance',version:'1'});
   await mcp.connect(serverTransport);await client.connect(clientTransport);
-  assert.equal((await client.listTools()).tools.length,15);
+  assert.equal((await client.listTools()).tools.length,17);
   assert.equal((await client.callTool({name:'price_bid',arguments:{job_id:j.id}})).structuredContent.data.purchase,293784);
   await client.close();await mcp.close();
   const {StreamableHTTPClientTransport}=await import('@modelcontextprotocol/client');
@@ -59,7 +59,7 @@ test('persistent bids enforce ownership, scopes, revisions, real catalog costs a
    headers.set('x-vulpine-operations',payload+'.'+createHmac('sha256',env.OPS_SIGNING_SECRET).update(payload).digest('base64url'));return fetch(url,{...init,headers});
   };
   await remote.connect(new StreamableHTTPClientTransport(new URL('http://127.0.0.1:3029/agent/mcp'),{fetch:signedFetch}));
-  assert.equal((await remote.listTools()).tools.length,15);
+  assert.equal((await remote.listTools()).tools.length,17);
   assert.equal((await remote.callTool({name:'price_bid',arguments:{job_id:j.id}})).structuredContent.data.sale,367224);
   const remoteQuote=await remote.callTool({name:'get_project_quote',arguments:{quote_id:published.data.quote_id}});assert.equal(remoteQuote.structuredContent.data.quote_id,published.data.quote_id);
   const remotePdf=await remote.callTool({name:'get_project_document',arguments:{quote_id:published.data.quote_id,document_id:published.data.document_id}});assert.equal(remotePdf.structuredContent.data.sha256,storedPdf.data.sha256);assert.ok(remotePdf.content.some(c=>c.type==='resource_link'));
@@ -83,6 +83,27 @@ test('persistent bids enforce ownership, scopes, revisions, real catalog costs a
   const unsigned=await fetch('http://127.0.0.1:3029/agent/jobs');assert.equal(unsigned.status,401);
   const path='agent/jobs',body='',claim={sub:actor.sub,org:actor.org,module:'pricing',path,method:'GET',exp:Math.floor(Date.now()/1000)+60,bodyHash:createHash('sha256').update(body).digest('hex')},payload=Buffer.from(JSON.stringify(claim)).toString('base64url');
   const response=await fetch('http://127.0.0.1:3029/'+path,{headers:{'x-vulpine-operations':payload+'.'+createHmac('sha256',env.OPS_SIGNING_SECRET).update(payload).digest('base64url')}});assert.equal(response.status,200);assert.ok((await response.json()).jobs.some(x=>x.id===j.id));
+  const originalState=structuredClone(j.state),marginArgs={job_id:j.id,expected_revision:j.revision,margin:25};
+  assert.equal((await call('set_bid_margin',marginArgs,{...actor,scopes:['bids.read']})).error.code,'FORBIDDEN');
+  assert.equal((await call('set_bid_margin',marginArgs,{...actor,sub:'another-user'})).error.code,'NOT_FOUND');
+  for(const margin of [0,51,20.5])assert.equal((await call('set_bid_margin',{...marginArgs,margin})).error.code,'INVALID_INPUT');
+  const changed=await call('set_bid_margin',marginArgs);assert.equal(changed.ok,true,JSON.stringify(changed));
+  assert.equal(changed.data.revision,j.revision+1);assert.equal(changed.data.saved,false);
+  assert.deepEqual(changed.data.state,{...originalState,margin:25});
+  assert.equal((await call('set_bid_margin',marginArgs)).error.code,'REVISION_CONFLICT');
+  const changedPrice=await call('price_bid',{job_id:j.id});assert.equal(changedPrice.data.purchase,293784);assert.ok(changedPrice.data.sale>367224);
+  const custom=await call('create_bid_job',{project:'QA selected margin',supplier:'hci',instruction:'User requests 15% margin.',margin:15});assert.equal(custom.data.state.margin,15);
+  const quoteArgs={quote_id:published.data.quote_id,expected_revision:published.data.revision,margin:30};
+  assert.equal((await call('set_project_quote_margin',quoteArgs,{...actor,scopes:['bids.read']})).error.code,'FORBIDDEN');
+  assert.equal((await call('set_project_quote_margin',quoteArgs,{...actor,org:'another-org'})).error.code,'NOT_FOUND');
+  for(const margin of [0,51,20.5])assert.equal((await call('set_project_quote_margin',{...quoteArgs,margin})).error.code,'INVALID_INPUT');
+  const revised=await call('set_project_quote_margin',quoteArgs,{...actor,sub:'teammate'});assert.equal(revised.ok,true,JSON.stringify(revised));
+  assert.deepEqual(revised.data.state,{...shared.data.state,margin:30});assert.equal(revised.data.revision,2);
+  assert.equal(revised.data.totals.purchase,293784);assert.ok(revised.data.totals.sale>changedPrice.data.sale);
+  assert.equal((await call('set_project_quote_margin',quoteArgs)).error.code,'REVISION_CONFLICT');
+  assert.equal(revised.data.documents[0].revision,1);
+  const oldPdf=await call('get_project_document',{quote_id:quoteArgs.quote_id,document_id:published.data.document_id});assert.equal(oldPdf.data.sha256,storedPdf.data.sha256);
+  const history=await app.store.pool.query('SELECT state FROM pricing_quote_revisions WHERE quote_id=$1 AND revision=1',[quoteArgs.quote_id]);assert.equal(history.rows[0].state.margin,20);
   if(process.env.TEST_VERIFIED_BID_PATH){
    const state=JSON.parse(await fs.readFile(process.env.TEST_VERIFIED_BID_PATH,'utf8'));
    const created=await call('create_bid_job',{project:state.project,supplier:'hci',instruction:'Reconcile the previously verified, human-authored workbook snapshot.'});assert.equal(created.ok,true);

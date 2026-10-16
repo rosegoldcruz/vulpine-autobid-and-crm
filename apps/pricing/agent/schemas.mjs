@@ -14,12 +14,14 @@ export const job=z.strictObject({id,revision:z.number().int().positive(),state,s
 const key={job_id:id};
 const mutation={...key,expected_revision:z.number().int().positive()};
 export const inputs={
+ set_bid_margin:z.strictObject({...mutation,margin:z.number().int().min(1).max(50)}),
+ set_project_quote_margin:z.strictObject({quote_id:id,expected_revision:z.number().int().positive(),margin:z.number().int().min(1).max(50)}),
  get_project_document:z.strictObject({quote_id:id,document_id:id}),
  list_bid_jobs:z.strictObject({}),
  list_projects:z.strictObject({}),
  get_project_quote:z.strictObject({quote_id:id}),
  save_bid_to_project:z.strictObject(mutation),
- create_bid_job:z.strictObject({project:text,supplier:z.enum(['hci','rythern','uscd']).default('hci'),instruction:z.string().min(1).max(300000)}),
+ create_bid_job:z.strictObject({project:text,supplier:z.enum(['hci','rythern','uscd']).default('hci'),instruction:z.string().min(1).max(300000),margin:z.number().int().min(1).max(50).default(20)}),
  get_bid_job:z.strictObject(key),
  extract_takeoff:z.strictObject({...key,source_id:id.optional(),expected_revision:z.number().int().positive().optional(),name:text.optional(),text:z.string().min(1).max(300000).optional(),pdf_base64:z.string().max(2800000).optional()}).refine(v=>v.source_id?!v.text&&!v.pdf_base64&&!v.name&&!v.expected_revision:!!v.expected_revision&&!!v.name&&(!!v.text!==!!v.pdf_base64)),
  set_unit_mix:z.strictObject({...mutation,units:z.array(z.strictObject({id:id.optional(),name:text,repeat:count,defaultLi:finish,evidence})).min(1).max(500)}),
@@ -35,6 +37,8 @@ export const totals=z.strictObject({purchase:cents,sale:cents,profit:cents,count
 const error=z.strictObject({ok:z.literal(false),error:z.strictObject({code:z.string(),message:z.string(),retryable:z.boolean()})});
 const success=data=>z.strictObject({ok:z.boolean(),data:data.optional(),error:error.shape.error.optional()}).refine(v=>v.ok?!!v.data&&!v.error:!!v.error&&!v.data);
 export const outputs={
+ set_bid_margin:success(job),
+ set_project_quote_margin:success(z.object({quote_id:id,revision:z.number().int(),state:z.record(z.string(),z.unknown()),totals,documents:z.array(z.record(z.string(),z.unknown()))})),
  get_project_document:success(z.strictObject({url:z.url(),filename:z.string(),mime_type:z.string(),expires_at:z.string(),sha256:z.string().length(64)})),
  list_bid_jobs:success(z.object({jobs:z.array(z.record(z.string(),z.unknown()))})),
  list_projects:success(z.object({projects:z.array(z.record(z.string(),z.unknown())),quotes:z.array(z.record(z.string(),z.unknown()))})),

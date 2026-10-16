@@ -8,7 +8,7 @@ Protected-resource metadata: https://api.vulpinehomes.com/bidding/.well-known/oa
 
 ## Implementation
 
-The official MCP SDK serves Streamable HTTP. Fifteen tools use the existing pricing engine and PDF/Excel generators: `create_bid_job`, `get_bid_job`, `extract_takeoff`, `set_unit_mix`, `search_catalog`, `update_bid_items`, `price_bid`, `validate_bid`, `save_bid`, `export_bid`, `list_bid_jobs`, `list_projects`, `get_project_quote`, `get_project_document`, `save_bid_to_project`.
+The official MCP SDK serves Streamable HTTP. Seventeen tools use the existing pricing engine and PDF/Excel generators: `create_bid_job`, `get_bid_job`, `extract_takeoff`, `set_unit_mix`, `search_catalog`, `update_bid_items`, `price_bid`, `validate_bid`, `save_bid`, `export_bid`, `list_bid_jobs`, `list_projects`, `get_project_quote`, `get_project_document`, `save_bid_to_project`, `set_bid_margin`, `set_project_quote_margin`.
 
 Postgres database `vulpine_bidding` holds owned jobs, CAS revisions, source evidence, audit records, queued runs, catalog snapshots and expiring exports. Existing workspace files remain intact; `agent/import-workspace.mjs --run` imports additive snapshots. It is idempotent for an unchanged workspace.
 
@@ -18,7 +18,7 @@ Every new job revision retains its payload in `bid_job_revisions` for recovery. 
 
 The Obsidian page `projects/Vulpine Pricing and Agent Access.md` is indexed in the existing vault and synced to Postgres every five minutes. Only this explicit page is included; personal vault content is excluded. Authorized MCP readers can retrieve it through `vulpine://pricing-memory`. Memory notes cannot change pricing rules. The dedicated daily database backup timer writes private archives to `/var/backups/vulpine-bidding` and verifies their archive manifests; this is a local backup, not offsite disaster recovery.
 
-Auto Bid in Pricing starts the persistent server worker. Saved bids open in the ordinary Pricing interface through `?bid=<id>`. Edits to these jobs save back to Postgres without overwriting the original workspace draft. The worker uses the OpenAI Responses API and the same tool handlers exposed by MCP. Agents cannot submit prices, margins or arbitrary SKUs. Human edits retain the normal pricing controls.
+Auto Bid in Pricing starts the persistent server worker. Saved bids open in the ordinary Pricing interface through `?bid=<id>`. Edits to these jobs save back to Postgres without overwriting the original workspace draft. The worker uses the OpenAI Responses API and the same tool handlers exposed by MCP. Agents cannot submit catalog prices or arbitrary SKUs. They can set user-requested margins through the dedicated revision-checked tools. Human edits retain the normal pricing controls.
 
 Uploads accept a schedule PDF up to 2 MB, or text/CSV. PDF text extraction uses installed `pdftotext`; scanned plans without text require a human takeoff. Plan-derived quantities are flagged and block agent export until a human reviews them in the source evidence panel. The assistant never sends customer messages or places orders. Export links are unguessable bearer capabilities, expire after 15 minutes, and are not access-logged by Nginx. Downloaded files remain on the recipient's device.
 
@@ -62,3 +62,7 @@ Run `npm test`, `npm run build`, then the real Postgres integration test. The op
 Verified against real Postgres and the official MCP SDK: fifteen-tool discovery, project listing, teammate access within the same organization, cross-organization denial, read-only write rejection, stale job protection, saved PDF retention, and signed internal HTTP calls. The external ChatGPT OAuth read-only test also passed as described above.
 
 `get_project_document` retrieves the exact saved PDF/Excel bytes through a 15-minute download link, after checking both organization and quote membership. It supports read-only users and does not regenerate historical files.
+
+## Agent margin editing
+
+`create_bid_job` accepts an optional integer `margin` from 1 to 50 (percentage, not fraction); 20 is only the default. `set_bid_margin` accepts `job_id`, `expected_revision`, and `margin`, preserves costs/items, increments the revision, and marks the draft unsaved. Reprice and save before export. `set_project_quote_margin` accepts `quote_id`, `expected_revision`, and `margin`; it saves a new shared quote revision and returns recalculated totals. Both require write permission. Existing PDF bytes remain attached to their original revisions; changing a margin does not rewrite a previously issued document. Read-only users, cross-organization access, invalid percentages, and stale revisions are rejected. The internal worker may change its assigned bid margin only on an explicit user request.
