@@ -15,6 +15,7 @@ import {BidStore} from './store.mjs';
 import {prepareSource} from './sources.mjs';
 import {createBidTools} from './tools.mjs';
 import {startWorker} from './worker.mjs';
+import {introspectScopes,pricingPermissions} from './oauth.mjs';
 import {id,state as stateSchema,BidError} from './schemas.mjs';
 
 const hash=s=>createHash('sha256').update(s).digest('hex');
@@ -28,26 +29,25 @@ export async function createBiddingServer(env,{worker=true}={}){
  for(const [supplier,catalog]of Object.entries(catalogs))await store.pool.query('INSERT INTO catalog_snapshots(hash,supplier,source,catalog) VALUES($1,$2,$3,$4) ON CONFLICT DO NOTHING',[bidding.hashes[supplier],supplier,catalog.source||{},catalog]);
  const issuer=env.ZITADEL_ISSUER?.replace(/\/$/,''),resource=new URL('mcp',env.BIDDING_PUBLIC_URL).href;
  const jwks=issuer?createRemoteJWKSet(new URL(issuer+'/oauth/v2/keys')):null;
- const metadata={resource,authorization_servers:issuer?[issuer]:[],scopes_supported:['openid','bids.read','bids.write'],bearer_methods_supported:['header'],resource_name:'Vulpine Bidding'};
+ const oauthConfigured=!!(jwks&&env.ZITADEL_MCP_AUDIENCE&&env.ZITADEL_MCP_CLIENT_IDS&&env.ZITADEL_INTROSPECTION_CLIENT_ID&&env.ZITADEL_INTROSPECTION_CLIENT_SECRET);
+ const metadata={resource,authorization_servers:issuer?[issuer]:[],scopes_supported:['openid',...(env.ZITADEL_MCP_AUDIENCE?['urn:zitadel:iam:org:project:id:'+env.ZITADEL_MCP_AUDIENCE+':aud']:[]),'urn:zitadel:iam:org:projects:roles'],bearer_methods_supported:['header'],resource_name:'Vulpine Bidding'};
  const json=(res,status,value,headers={})=>{res.writeHead(status,{'content-type':'application/json','cache-control':'no-store','x-content-type-options':'nosniff',...headers});res.end(JSON.stringify(value));};
  const authenticate=async req=>{
-  if(!jwks||!env.ZITADEL_MCP_AUDIENCE||!env.ZITADEL_MCP_CLIENT_IDS)throw new BidError('OAUTH_NOT_CONFIGURED','Remote OAuth client registration is not configured.');
+  if(!oauthConfigured)throw new BidError('OAUTH_NOT_CONFIGURED','Remote OAuth client registration is not configured.');
   const token=/^Bearer (\S+)$/.exec(req.headers.authorization||'')?.[1];if(!token)throw new BidError('UNAUTHENTICATED','Zitadel access token required.');
   let p;try{p=(await jwtVerify(token,jwks,{issuer,audience:env.ZITADEL_MCP_AUDIENCE,requiredClaims:['exp','sub']})).payload;}catch{throw new BidError('UNAUTHENTICATED','Invalid access token.');}
   if(!env.ZITADEL_MCP_CLIENT_IDS.split(',').includes(p.client_id||p.azp))throw new BidError('FORBIDDEN','OAuth client is not authorized.');
   const roles=p['urn:zitadel:iam:org:project:roles']||{},org=env.OPS_ORGANIZATION_ID;
   const ownRoles=Object.keys(roles).filter(r=>roles[r]&&Object.hasOwn(roles[r],org));
   if(!ownRoles.length)throw new BidError('FORBIDDEN','Organization membership required.');
-  const requested=new Set(String(p.scope||'').split(' ')),scopes=[];
-  if(ownRoles.some(r=>['admin','estimator','operations','nbc','executive','finance','sales'].includes(r))&&requested.has('bids.read'))scopes.push('bids.read');
-  if(ownRoles.some(r=>['admin','estimator','operations','nbc'].includes(r))&&requested.has('bids.write'))scopes.push('bids.write');
+  const requested=await introspectScopes(env,token,p),scopes=pricingPermissions(env,ownRoles,requested);
   if(!scopes.length)throw new BidError('FORBIDDEN','Bid permission required.');
   return{sub:p.sub,org,scopes};
  };
  const server=http.createServer(async(req,res)=>{
   try{
    const route=new URL(req.url,'http://localhost').pathname;
-   if(route==='/health')return json(res,200,{status:'ok',service:'vulpine-bidding',remoteOAuthConfigured:!!(env.ZITADEL_MCP_AUDIENCE&&env.ZITADEL_MCP_CLIENT_IDS)});
+   if(route==='/health')return json(res,200,{status:'ok',service:'vulpine-bidding',remoteOAuthConfigured:oauthConfigured});
    if(route==='/.well-known/oauth-protected-resource')return json(res,200,metadata);
    if(route.startsWith('/downloads/')&&req.method==='GET'){
     const token=route.slice('/downloads/'.length);if(!/^[a-f0-9-]{72}$/.test(token))throw new BidError('NOT_FOUND','Download expired or not found.');
@@ -57,7 +57,8 @@ export async function createBiddingServer(env,{worker=true}={}){
    let body='';for await(const chunk of req){body+=chunk;if(Buffer.byteLength(body)>3145728)return json(res,413,{error:'Request too large.'});}
    if(route==='/mcp'){
     const origin=req.headers.origin;if(origin&&!String(env.MCP_ALLOWED_ORIGINS||'').split(',').includes(origin))throw new BidError('FORBIDDEN','Origin is not allowed.');
-    const actor=await authenticate(req),mcp=bidding.server(actor),transport=new NodeStreamableHTTPServerTransport({sessionIdGenerator:undefined,enableJsonResponse:true});
+    let actor;try{actor=await authenticate(req);}catch(e){console.warn('MCP authorization rejected:',e.code,e.message);throw e;}
+    const mcp=bidding.server(actor),transport=new NodeStreamableHTTPServerTransport({sessionIdGenerator:undefined,enableJsonResponse:true});
     res.on('close',()=>{transport.close();mcp.close();});await mcp.connect(transport);await transport.handleRequest(req,res,body?JSON.parse(body):undefined);return;
    }
    if(!route.startsWith('/agent/'))throw new BidError('NOT_FOUND','Not found.');
