@@ -37,3 +37,24 @@ Git observations, fingerprints and atomic handoff persistence; they do not run
 automatically on every tool, IDE or agent exit. No supported cross-agent hook was
 established. An interrupted agent may leave the previous handoff; live Git state
 and source drift must be reconciled before continuing.
+
+## 2026-10-15 — complete the existing vault-to-session-to-vault cycle
+
+Status: implemented within the user's explicit organizational-memory integration task.
+
+Use an explicit per-project note selection rather than crawling personal records.
+Preserve original notes; append private, provenance-backed session source records,
+accumulate reviewed decisions in the existing project note, and update the index
+and mutation log. Facts require evidence; assumptions and reported verification
+remain labeled. No generic report becomes implicit owner approval.
+
+Use the existing start/end commands, a shared Linux flock, session baselines,
+atomic file replacement and a write-ahead recovery journal with receipts. Stale
+completion inputs and conflicting edits fail visibly; exact retries deduplicate.
+These guarantees require cooperating writers; Obsidian UI and generic MCP editors
+must pause managed-record writes or adopt the same lock. No universal hook exists.
+
+Correct Quartz's source only after applying an explicit-publish/private-note filter
+and disabling unconditional attachment copying. Preserve web access restrictions.
+Maintain the installer/policy in this canonical monorepo rather than pushing AEON
+customizations to the upstream Quartz project's remote. No real vault publication.

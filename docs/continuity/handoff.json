@@ -1,45 +1,65 @@
 {
-  "last_change": "Revalidated existing continuity implementation at 97c8ffa in a subsequent conversation; updated docs/continuity/verification.md and this handoff. No application or infrastructure changes.",
+  "last_change": "Completed shared Obsidian organizational-memory integration in existing continuity start/end commands, project selection, evidence-backed source records, accumulated decisions, indexed/logged write-back, conflict detection, flock serialization, atomic writes and recovery. Installed versioned Quartz privacy policy and corrected its content symlink to the actual vault. No business notes were published.",
   "verification": [
-    "node scripts/continuity.mjs start: restored project identity, last change, design requirements, open work and next action; evidence_drift empty before follow-up record updates.",
-    "node --test scripts/continuity.test.mjs: 3 passed, 0 failed; independent Node-process restoration tested.",
-    "node --check scripts/continuity.mjs and scripts/continuity.test.mjs: passed.",
-    "GET http://127.0.0.1:3020/health: HTTP 200, status ok, service vulpine-operations version 1.",
-    "git ls-remote confirmed working branch on GitHub at 97c8ffa before this follow-up commit.",
-    "Existing Obsidian project pointer inspected and correct. No new model-agent session, app build, authenticated integration, browser or deployment verification performed."
+    "node --test scripts/continuity.test.mjs scripts/vault-memory.test.mjs scripts/quartz-privacy.test.mjs: 22 tests passed, 0 failed, including independent-process round trip, duplicate retries, concurrent writers, stale/external edits, nine interruption scenarios, secret exclusion and Quartz privacy policy.",
+    "node --check scripts/continuity.mjs, scripts/vault-memory.mjs and scripts/configure-quartz.mjs: passed.",
+    "Installed /opt/quartz: ./node_modules/.bin/tsc --noEmit --incremental false: exit 0.",
+    "Installed Quartz CLI fixture build: exit 0; 3 Markdown inputs, 2 filtered, 58 generated files; approved fixture marker present and private/unapproved/raw/attachment markers absent. Fixture inputs/output are under /tmp only.",
+    "Real startup loaded four selected organizational notes and returned a session ID. Actual reviewed end and fresh-process restoration are executed as the final acceptance step.",
+    "31 pre-existing unrelated repository paths retain their baseline contents. No auth, pricing, database, application UI or web serving configuration changed; those suites were not run.",
+    "Exploratory direct Quartz imports failed on SCSS/inline-script loading; supported Quartz CLI fixture build and TypeScript verification passed instead."
   ],
   "decisions": [
-    "Reuse existing Git-versioned engineering continuity and Obsidian organizational pointer; no duplicate memory system.",
-    "Retain command-driven start/end protocol; unsupported universal hooks are not claimed."
+    "User-required preservation: retain approved Vulpine design identity, existing fonts and teal/obsidian tokens; this task changes no UI.",
+    "Implemented engineering choice: explicitly select relevant vault notes, store source-backed execution records and accumulate decisions without rewriting existing company/person/raw records.",
+    "Implemented concurrency contract: supported writers use the shared vault flock and session baselines; conflicting or interrupted external edits require explicit reconciliation.",
+    "Implemented privacy choice within authorized Quartz repair: require explicit publish approval, deny private/draft content and disable automatic attachment copying; preserve existing web access controls.",
+    "Retain command-based invocation; no universal agent hook, background synchronization or implicit owner/commercial approval is installed."
   ],
   "open_work": [
-    "Preserve and reconcile pre-existing staged tracker moves and unstaged edits with their owner.",
-    "Recheck historical provider blockers only for the next selected module.",
-    "Previously recorded Quartz publishing-path issue is outside this task; not revalidated this session."
+    "Preserve pre-existing staged tracker migration and other unrelated working-tree changes; reconcile with their owner before separate commits.",
+    "Obsidian UI and generic filesystem MCP editors must pause writes to managed records or adopt the shared lock; their final comparison/rename race cannot be excluded by advisory locking.",
+    "Vault backup policy, cross-host/network filesystem coordination and linked Git worktrees are not certified. No background lifecycle hook is installed.",
+    "Future project onboarding must select relevant notes in vault.json; no broad personal-record crawl is performed. Public attachments require a separately approved process."
   ],
   "blockers": [],
-  "next_action": "Run continuity start, reconcile live changes, and select the next module for targeted authorized runtime/integration verification; preserve unrelated tracker work.",
-  "recorded_at": "2026-10-16T03:57:51.921Z",
+  "next_action": "Use continuity start for the next selected Vulpine task, retain its session ID, reconcile live drift and preserve approved design; after verified work submit an evidence-backed end handoff. Commit/push this integration after final review.",
+  "recorded_at": "2026-10-16T04:16:52.625Z",
   "snapshot": {
-    "head": "97c8ffa4af3abf3331fbf0724d3f41bd5d0ca3b9",
+    "head": "31f9f25e3db4f58f8f9919ee0593d40f1a52926b",
     "branch": "codex/cabinet-brain-integration-recovery",
-    "worktree": " M .gitignore\n M docs/architecture/current-system-map.md\n M docs/continuity/verification.md\n M pnpm-lock.yaml\nR  legacy/bids-tracker/.npmrc -> services/bids-tracker/.npmrc\nR  legacy/bids-tracker/README.monorepo.md -> services/bids-tracker/README.monorepo.md\nRM legacy/bids-tracker/db.js -> services/bids-tracker/db.js\nR  legacy/bids-tracker/ecosystem.config.js -> services/bids-tracker/ecosystem.config.js\nRM legacy/bids-tracker/extract.js -> services/bids-tracker/extract.js\nR  legacy/bids-tracker/integration-auth.js -> services/bids-tracker/integration-auth.js\nR  legacy/bids-tracker/package-lock.json -> services/bids-tracker/package-lock.json\nR  legacy/bids-tracker/package.json -> services/bids-tracker/package.json\nRM legacy/bids-tracker/profit.js -> services/bids-tracker/profit.js\nRM legacy/bids-tracker/public/app.js -> services/bids-tracker/public/app.js\nRM legacy/bids-tracker/public/index.html -> services/bids-tracker/public/index.html\nRM legacy/bids-tracker/public/style.css -> services/bids-tracker/public/style.css\nR  legacy/bids-tracker/scripts/reimport_uploads.js -> services/bids-tracker/scripts/reimport_uploads.js\nRM legacy/bids-tracker/server.js -> services/bids-tracker/server.js\nR  legacy/bids-tracker/test/dependency-compatibility.test.js -> services/bids-tracker/test/dependency-compatibility.test.js\nR  legacy/bids-tracker/test/integration-auth.test.js -> services/bids-tracker/test/integration-auth.test.js\nR  legacy/bids-tracker/test/upload-policy.test.js -> services/bids-tracker/test/upload-policy.test.js\nR  legacy/bids-tracker/upload-policy.js -> services/bids-tracker/upload-policy.js\nRM legacy/bids-tracker/workbook.js -> services/bids-tracker/workbook.js\n?? infra/deploy/README.md\n?? infra/deploy/check-next-processes.py\n?? infra/deploy/engine-runtime.override.yml\n?? infra/deploy/next-process-monitor.service\n?? infra/deploy/next-process-monitor.timer\n?? services/bids-tracker/scripts/import-email-audit.js",
+    "worktree": " M .gitignore\n M AGENTS.md\n M docs/architecture/current-system-map.md\n M docs/continuity/current.md\n M docs/continuity/decisions.md\n M docs/continuity/sources.json\n M docs/continuity/verification.md\n M pnpm-lock.yaml\n M scripts/continuity.mjs\n M scripts/continuity.test.mjs\nR  legacy/bids-tracker/.npmrc -> services/bids-tracker/.npmrc\nR  legacy/bids-tracker/README.monorepo.md -> services/bids-tracker/README.monorepo.md\nRM legacy/bids-tracker/db.js -> services/bids-tracker/db.js\nR  legacy/bids-tracker/ecosystem.config.js -> services/bids-tracker/ecosystem.config.js\nRM legacy/bids-tracker/extract.js -> services/bids-tracker/extract.js\nR  legacy/bids-tracker/integration-auth.js -> services/bids-tracker/integration-auth.js\nR  legacy/bids-tracker/package-lock.json -> services/bids-tracker/package-lock.json\nR  legacy/bids-tracker/package.json -> services/bids-tracker/package.json\nRM legacy/bids-tracker/profit.js -> services/bids-tracker/profit.js\nRM legacy/bids-tracker/public/app.js -> services/bids-tracker/public/app.js\nRM legacy/bids-tracker/public/index.html -> services/bids-tracker/public/index.html\nRM legacy/bids-tracker/public/style.css -> services/bids-tracker/public/style.css\nR  legacy/bids-tracker/scripts/reimport_uploads.js -> services/bids-tracker/scripts/reimport_uploads.js\nRM legacy/bids-tracker/server.js -> services/bids-tracker/server.js\nR  legacy/bids-tracker/test/dependency-compatibility.test.js -> services/bids-tracker/test/dependency-compatibility.test.js\nR  legacy/bids-tracker/test/integration-auth.test.js -> services/bids-tracker/test/integration-auth.test.js\nR  legacy/bids-tracker/test/upload-policy.test.js -> services/bids-tracker/test/upload-policy.test.js\nR  legacy/bids-tracker/upload-policy.js -> services/bids-tracker/upload-policy.js\nRM legacy/bids-tracker/workbook.js -> services/bids-tracker/workbook.js\n?? docs/continuity/vault-integration.md\n?? docs/continuity/vault.json\n?? infra/deploy/README.md\n?? infra/deploy/check-next-processes.py\n?? infra/deploy/engine-runtime.override.yml\n?? infra/deploy/next-process-monitor.service\n?? infra/deploy/next-process-monitor.timer\n?? infra/quartz/\n?? scripts/configure-quartz.mjs\n?? scripts/quartz-privacy.test.mjs\n?? scripts/vault-memory.mjs\n?? scripts/vault-memory.test.mjs\n?? services/bids-tracker/scripts/import-email-audit.js",
     "sources": {
-      "AGENTS.md": "1803e44bfd2e9b5595e744bffef060efa342b600f459620ac2e5c26d0256b0d9",
+      "AGENTS.md": "945842e20060647f2cbdab0909a08df38f5d96f28e25d423d1badfe0d2a78876",
       "README.md": "7951ca56e47884a6a9b802d018e69ff82845ffcacf1877024fbd5cf094d55ec1",
       "package.json": "fafa60aeae85182092017dfc87134dabfa1df3484315a510e118b4d879566a49",
-      "docs/continuity/current.md": "71a2a09c02455ec8da4d03bbc3b8d0051f14c56af14603f4cbc36efd532d019b",
-      "docs/continuity/decisions.md": "f522a92cf5ed45963551d946b40bff4b4eced5b2a88513a6efca5c6e4549b9d5",
+      "docs/continuity/current.md": "7d68fc988d0e562f923e8f129d8f51eb7f7ce7dc5b281638f5f6efc882b5bc88",
+      "docs/continuity/decisions.md": "6a08dbe6a6c9591ec7f999428d6ed9a390bc605bd2ff244da13b47289d497098",
       "docs/continuity/audit.md": "c849de622d00377d1fadd3ba41cda2933eb9370b6fa13c2baf53bf36c0c471b2",
-      "docs/continuity/verification.md": "9405f12222d13a3a46eb2b7e450f928f7371392d2a3bbbc551bbc8542c78d07c",
-      "docs/continuity/sources.json": "92f71a43aa04553c265d76870ad620bfa831666dffff18e40a734cf967bc7b9c",
-      "scripts/continuity.mjs": "9b65e574e6405d808aa6ba85a387e1e27e8d34f4659f4660c62b4ad581609dfe",
+      "docs/continuity/verification.md": "cc9e540c8ebc652e17c5aed26bb66117ea5f9a5d62fb2423f940840a4ddbf682",
+      "docs/continuity/sources.json": "92d6c3379bfd7c6277f52b5420e070755785f35e9da1e709af6c92bffce5eef9",
+      "scripts/continuity.mjs": "f53000b18326ec7bbf262e44be4dbe7aa1d8c62cc442438f902102afe045777c",
       "apps/backoffice/app/globals.css": "4dce1fa9ddb547628d3296f3f5e75fa9f9acf336d5a04565859965567fea4927",
       "apps/backoffice/app/layout.tsx": "24d7abd0d14bfc6dc7548de9d04bc5baf9d97d55ba3b8bf47125025f48b1c27d",
       "apps/backoffice/lib/platform-modules.ts": "f30902d8f247dccf88f7da58e6a8cff5b9c5098310a497951cdcc9dd4bce2e9c",
       "packages/permissions/src/index.ts": "948dbeb60979b021c51724cc15194046a1c11a8fd322013cedc73667a1a73645",
       "services/aeon/README.md": "b54e4e1bc554ccd957733a424903552d1b3d4f8565f98c9dc0a158a5f2b32336",
-      "services/operations/src/server.mjs": "e7da70b221bf487363d3bdda8f9f5b2ac40884a94c1b820e639010dc4316a679"
+      "services/operations/src/server.mjs": "e7da70b221bf487363d3bdda8f9f5b2ac40884a94c1b820e639010dc4316a679",
+      "docs/continuity/vault.json": "5b5f79c10a3c900e72237ac7459639f6693b0b568fb30feced5bbcb10bf31ee9",
+      "docs/continuity/vault-integration.md": "e84a91acc2892e129c7e86c13592cfebab3d6db7680e63662b45f06863d019dd",
+      "scripts/vault-memory.mjs": "a693e3e66d4b4ee1eecab86c9425f3f0079bf48e417fc18aafac49aed74fac7b",
+      "scripts/vault-memory.test.mjs": "2422699b650501be8f9afff1a0e7437352cbc10275f26a76ad2ec283711edd6f",
+      "scripts/continuity.test.mjs": "cab1d0d73b425f5d1c6a2dea0ac17d6035421dbf0b6ea855f63e7e915d78f2c5",
+      "scripts/configure-quartz.mjs": "7fd2ea17aa06115de770cb99012bb87ad6d89b0454ca0aeed2f45748b5bacec7",
+      "scripts/quartz-privacy.test.mjs": "d3b9f2184701be03496b939edae5d5e8a578c19962a25d71a8da0b72ea4e071c",
+      "infra/quartz/privacy.mjs": "1740bffad3c2756dff3146f544f8ab537b2594b91f354216f4a25ebe99b829d0",
+      "infra/quartz/privacy.d.mts": "0fe79eae2ecb5dbea7a1e2ac4da0cdbe5b974c28172de454147a2a1443ed0b00",
+      "infra/quartz/quartz.ts": "088a01cd09632dba537cfb08eac722b773c7904d9622975a134aa2cef1f29198"
     }
+  },
+  "vault": {
+    "project": "vulpine-platform",
+    "session_id": "c27d0f0d-258b-4ff8-bfb3-9dc90c6894f7",
+    "record": "sources/aeon-sessions/vulpine-platform/c27d0f0d-258b-4ff8-bfb3-9dc90c6894f7.md"
   }
 }

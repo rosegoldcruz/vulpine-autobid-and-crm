@@ -1,5 +1,36 @@
 # Continuity verification — 2026-10-15
 
+## Shared-vault integration verification — 2026-10-15 (America/Phoenix)
+
+- `node --test scripts/continuity.test.mjs scripts/vault-memory.test.mjs scripts/quartz-privacy.test.mjs`:
+  **22 tests passed, 0 failed** (13 top-level tests plus 9 interruption subtests).
+  Fixtures verify selected identity/company/people/source/design/task context;
+  verified write-back and second-process retrieval; accumulated decisions; exact
+  retry deduplication; changed retry rejection; stale/human-edited context; competing
+  processes; SIGKILL after the journal and each of six target renames; interruption
+  before journal/source renames; recovery conflicts and deliberate reconciliation;
+  secret redaction/rejection; path/symlink rejection; and private publishing policy.
+- `node --check` passed for continuity.mjs, vault-memory.mjs and configure-quartz.mjs.
+- Installed Quartz `./node_modules/.bin/tsc --noEmit --incremental false`: exit 0.
+- Installed Quartz `node ./quartz/bootstrap-cli.mjs build -d <temporary-fixture>/content -o <temporary-fixture>/output`:
+  exit 0; 3 parsed Markdown files, 2 filtered, 58 generated files. Output inspection
+  confirmed the approved marker exists and private, unapproved, raw-capture and
+  attachment markers are absent. All input/output was disposable fixture material.
+- The installed `content` symlink resolves to the real vault; repeated configuration
+  installation succeeded. Existing notes have no explicit publish approval added.
+- Real startup loaded the four configured project-context notes and returned a
+  session ID. The task's actual reviewed completion is submitted through the same
+  end command; see the latest handoff/source record for that session's provenance.
+
+Two exploratory direct config imports failed on Quartz's SCSS/inline-script loader
+requirements. Those are not supported build invocations. The actual Quartz CLI
+fixture build and TypeScript check above passed; no business-vault build was run.
+Application/provider/browser suites were not run: no application, auth, pricing,
+database or web serving changes were made. Fixture data never entered business
+records. This evidence supersedes the older pointer-only integration limitation;
+cooperating-writer and pattern-based secret-detection boundaries remain explicit
+in `vault-integration.md`.
+
 ## Subsequent-session revalidation — 2026-10-15 (America/Phoenix)
 
 An independent conversation entered at `/opt` with the original continuity request,

@@ -47,7 +47,8 @@ From the explicit persistent-project-intelligence task and project instructions:
 - Keep verified facts, user-approved decisions, tentative plans and historical notes
   distinct. Persist actual verification outcomes, including failures and blockers.
 - Repository memory owns engineering handoffs; existing Obsidian owns organizational
-  knowledge. No duplicate database, broker or framework is needed for continuity.
+  knowledge. Startup/completion now load and write selected vault context through
+  the same commands; see `vault-integration.md`. No duplicate database is needed.
 - Keep provider secrets server-side. Do not copy environment files, personal history,
   raw conversations, customer documents or operational databases into this memory.
 - Final commercial submission, orders, financial commitments and consequential
@@ -87,7 +88,7 @@ not newly approved redesigns:
 
 - Start: `node scripts/continuity.mjs start`
 - End: `node scripts/continuity.mjs end /absolute/path/to/reviewed-handoff.json`
-- Continuity acceptance: `node --test scripts/continuity.test.mjs`
+- Continuity acceptance: `node --test scripts/continuity.test.mjs scripts/vault-memory.test.mjs scripts/quartz-privacy.test.mjs`
 - Existing app checks: `corepack pnpm test`, `corepack pnpm typecheck`,
   `corepack pnpm lint`, `corepack pnpm build`; browser suite: `corepack pnpm test:e2e`.
   Run affected checks; listing them is not evidence they passed this session.
@@ -95,3 +96,19 @@ not newly approved redesigns:
   `docs/continuity/decisions.md` for decisions; `docs/continuity/verification.md`
   for acceptance evidence. Older system maps and delivery notes remain historical
   supporting records and are not overwritten by this task.
+
+## Shared organizational memory integration
+
+Implemented 2026-10-15 (America/Phoenix). `docs/continuity/vault.json` selects this
+project's company, AEON direction, pricing/access decision context and existing
+continuity project note. Startup returns selected notes, latest execution record,
+accumulated decisions and a session ID. Completion uses that ID plus evidence-backed
+facts and explicit assumptions to write the vault source record, project summary,
+index, mutation log and repository handoff through a recoverable transaction.
+See `vault-integration.md` for commands, conflict handling, credentials and limits.
+
+Quartz's source now resolves to `/opt/pai-obsidian/obsidian-vault`. The versioned
+installer enforces explicit publication, private/draft exclusion and no automatic
+attachment copying. Existing web access controls were not changed. Only disposable
+fixture content was built; no business notes were published. This supersedes the
+earlier dated publishing-path issue, without certifying a live publishing service.

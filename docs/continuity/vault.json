@@ -1,0 +1,16 @@
+{
+  "vault": "/opt/pai-obsidian/obsidian-vault",
+  "default_project": "vulpine-platform",
+  "projects": {
+    "vulpine-platform": {
+      "identity": "Vulpine LLC commercial platform; AEON shared engineering and organizational continuity",
+      "note": "projects/AEON Project Continuity.md",
+      "records": [
+        { "role": "identity", "path": "companies/Vulpine.md" },
+        { "role": "organizational-direction", "path": "entities/AEON.md" },
+        { "role": "project-decisions-source-references", "path": "projects/Vulpine Pricing and Agent Access.md" },
+        { "role": "design-decisions-open-tasks-next-action", "path": "projects/AEON Project Continuity.md" }
+      ]
+    }
+  }
+}

@@ -13,5 +13,15 @@
   "apps/backoffice/lib/platform-modules.ts",
   "packages/permissions/src/index.ts",
   "services/aeon/README.md",
-  "services/operations/src/server.mjs"
+  "services/operations/src/server.mjs",
+  "docs/continuity/vault.json",
+  "docs/continuity/vault-integration.md",
+  "scripts/vault-memory.mjs",
+  "scripts/vault-memory.test.mjs",
+  "scripts/continuity.test.mjs",
+  "scripts/configure-quartz.mjs",
+  "scripts/quartz-privacy.test.mjs",
+  "infra/quartz/privacy.mjs",
+  "infra/quartz/privacy.d.mts",
+  "infra/quartz/quartz.ts"
 ]

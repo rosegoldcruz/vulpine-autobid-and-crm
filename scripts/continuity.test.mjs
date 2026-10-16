@@ -18,6 +18,7 @@ function fixture(t) {
   const git = (...args) => execFileSync('git', ['-C', root, ...args], { encoding: 'utf8' }).trim()
   put('scripts/continuity.mjs', '')
   copyFileSync(entry, join(root, 'scripts/continuity.mjs'))
+  copyFileSync(fileURLToPath(new URL('./vault-memory.mjs', import.meta.url)), join(root, 'scripts/vault-memory.mjs'))
   put('AGENTS.md', 'Start: node scripts/continuity.mjs start\n')
   put('docs/continuity/current.md', 'Project: Vulpine Platform\nDesign: preserve existing teal tokens\n')
   put('docs/continuity/decisions.md', 'Preserve approved design and server authorization.\n')
