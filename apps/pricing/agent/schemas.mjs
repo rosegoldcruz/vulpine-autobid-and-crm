@@ -20,7 +20,7 @@ export const inputs={
  list_bid_jobs:z.strictObject({}),
  list_projects:z.strictObject({}),
  get_project_quote:z.strictObject({quote_id:id}),
- save_bid_to_project:z.strictObject(mutation),
+ save_bid_to_project:z.strictObject({...mutation,scope_notes:z.string().max(10000).optional()}),
  create_bid_job:z.strictObject({project:text,supplier:z.enum(['hci','rythern','uscd']).default('hci'),instruction:z.string().min(1).max(300000),margin:z.number().int().min(1).max(50).default(20)}),
  get_bid_job:z.strictObject(key),
  extract_takeoff:z.strictObject({...key,source_id:id.optional(),expected_revision:z.number().int().positive().optional(),name:text.optional(),text:z.string().min(1).max(300000).optional(),pdf_base64:z.string().max(2800000).optional()}).refine(v=>v.source_id?!v.text&&!v.pdf_base64&&!v.name&&!v.expected_revision:!!v.expected_revision&&!!v.name&&(!!v.text!==!!v.pdf_base64)),
@@ -30,7 +30,7 @@ export const inputs={
  price_bid:z.strictObject(key),
  validate_bid:z.strictObject(key),
  save_bid:z.strictObject(mutation),
- export_bid:z.strictObject({...mutation,format:z.enum(['xlsx','pdf']),type:z.enum(['customer','internal','purchase']).default('customer')})
+ export_bid:z.strictObject({...mutation,scope_notes:z.string().max(10000).optional(),format:z.enum(['xlsx','pdf']),type:z.enum(['customer','internal','purchase']).default('customer')})
 };
 const cents=z.number().int();
 export const totals=z.strictObject({purchase:cents,sale:cents,profit:cents,count,margin:z.number(),issues:z.array(z.string())});

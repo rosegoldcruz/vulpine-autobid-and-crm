@@ -79,7 +79,15 @@ test('persistent bids enforce ownership, scopes, revisions, real catalog costs a
   j=(await call('get_bid_job',{job_id:j.id})).data;
   const reviewedMix=await call('set_unit_mix',{job_id:j.id,expected_revision:j.revision,units:[{id:j.state.units[0].id,name:'Kitchen',repeat:12,defaultLi:0,evidence:{source_id:source.id,quote:'Kitchen'}}]});assert.equal(reviewedMix.ok,true);j=reviewedMix.data;
   assert.equal((await call('validate_bid',{job_id:j.id})).data.valid,false);
-  assert.equal((await call('export_bid',{job_id:j.id,expected_revision:j.revision,format:'pdf'})).error.code,'VALIDATION_FAILED');
+  assert.equal((await call('export_bid',{job_id:j.id,expected_revision:j.revision,format:'pdf'})).error.code,'UNSAVED_DRAFT');
+  j=(await call('save_bid',{job_id:j.id,expected_revision:j.revision})).data;
+  const reviewExport=await call('export_bid',{job_id:j.id,expected_revision:j.revision,format:'pdf',scope_notes:'Brighton Pearl not priced; no substitution approved.'});
+  assert.equal(reviewExport.ok,true,JSON.stringify(reviewExport));
+  const reviewBytes=Buffer.from(await (await fetch(reviewExport.data.url)).arrayBuffer());
+  assert.ok((await PDFDocument.load(reviewBytes)).getPageCount()>0);
+  assert.deepEqual((await call('get_bid_job',{job_id:j.id})).data.exceptions,j.exceptions);
+  const reviewSnapshot=await call('save_bid_to_project',{job_id:j.id,expected_revision:j.revision,scope_notes:'Brighton Pearl excluded pending supplier pricing.'});
+  assert.equal(reviewSnapshot.ok,true,JSON.stringify(reviewSnapshot));
   const unsigned=await fetch('http://127.0.0.1:3029/agent/jobs');assert.equal(unsigned.status,401);
   const path='agent/jobs',body='',claim={sub:actor.sub,org:actor.org,module:'pricing',path,method:'GET',exp:Math.floor(Date.now()/1000)+60,bodyHash:createHash('sha256').update(body).digest('hex')},payload=Buffer.from(JSON.stringify(claim)).toString('base64url');
   const response=await fetch('http://127.0.0.1:3029/'+path,{headers:{'x-vulpine-operations':payload+'.'+createHmac('sha256',env.OPS_SIGNING_SECRET).update(payload).digest('base64url')}});assert.equal(response.status,200);assert.ok((await response.json()).jobs.some(x=>x.id===j.id));
