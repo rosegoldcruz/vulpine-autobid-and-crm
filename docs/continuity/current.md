@@ -112,3 +112,15 @@ installer enforces explicit publication, private/draft exclusion and no automati
 attachment copying. Existing web access controls were not changed. Only disposable
 fixture content was built; no business notes were published. This supersedes the
 earlier dated publishing-path issue, without certifying a live publishing service.
+
+## Server-wide Codex entry
+
+On 2026-10-16, installed `/root/.codex/AGENTS.md` and a supported SessionStart
+hook definition from `infra/codex/`. The global memory instructions were observed
+in live Codex context and verified by `codex debug prompt-input`. The hook requires
+one-time review/trust in `/hooks` before automatic execution. Its loader supplies
+organizational context outside this checkout and invokes project continuity inside
+it. Global instructions require a fallback loader if hook context is absent.
+This supersedes the earlier no-hook-definition statement; completion still requires
+a reviewed end handoff. The vault's foundational notes are dated context, not a
+complete live inventory of all server projects.

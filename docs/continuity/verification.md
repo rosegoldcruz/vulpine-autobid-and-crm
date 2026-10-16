@@ -1,5 +1,26 @@
 # Continuity verification — 2026-10-15
 
+## Server-wide startup verification — 2026-10-16
+
+- Installed Codex CLI: `codex-cli 0.163.0`; `codex features list` reports hooks stable/enabled.
+- Installed global AGENTS.md and SessionStart definition from `infra/codex/`; no
+  trust store, authentication, sandbox or approval settings were changed.
+- `codex debug prompt-input`: global AEON instructions present in model-visible
+  input. The same instructions subsequently appeared in the live conversation.
+- Explicit loader invocation with cwd `/opt`: organization context loaded without
+  incorrectly selecting the Vulpine project. Invocation with cwd inside this
+  checkout restored the prior result and returned a continuity session ID.
+- `node --test scripts/continuity.test.mjs scripts/vault-memory.test.mjs scripts/quartz-privacy.test.mjs scripts/codex-session-start.test.mjs`:
+  **25 passed, 0 failed**. Three new tests cover organizational fallback, project
+  invocation and failure reporting. Startup/installer syntax checks passed.
+- Hook lifecycle execution itself is not certified: the installed non-managed hook
+  needs explicit review/trust via `/hooks`. No bypass or model-agent test was used.
+
+Vault inventory at inspection: 137 Markdown notes, 30 source PDFs, 2 images,
+plus tracker/contact data files. There are 2 dedicated project notes and dated
+foundational notes; this is useful organizational context, not a complete current
+server map. Raw sources and unrelated notes were not rewritten.
+
 ## Shared-vault integration verification — 2026-10-15 (America/Phoenix)
 
 - `node --test scripts/continuity.test.mjs scripts/vault-memory.test.mjs scripts/quartz-privacy.test.mjs`:

@@ -49,9 +49,12 @@ state. All agents writing these managed records must use this protocol; ordinary
 Obsidian/MCP editors do not take its lock. See the concurrent-editor boundary and
 recovery instructions in `docs/continuity/vault-integration.md`.
 
-This automation runs **within these two commands**. No universal Codex/IDE/MCP
-session hook or background vault synchronization is installed. Agents still invoke
-start/end. Interrupted sessions with no submitted completion cannot invent a handoff.
+This automation runs **within these two commands**. Root Codex now has global
+AEON instructions and a SessionStart hook definition; the hook runs only after
+Codex hook trust review. It restores this project automatically when opened here,
+and organizational orientation elsewhere. Until trusted, the global instructions
+require the startup loader as the first action. Other IDE/MCP clients still invoke
+start/end; no background vault synchronization is installed. Interrupted sessions with no submitted completion cannot invent a handoff.
 Selected fingerprints do not certify all source/runtime state. Git history locates
 the commit saving a handoff; its snapshot HEAD is the preceding source baseline.
 Review and commit only this task's files, then push when authorized. Never stage

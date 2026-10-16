@@ -58,3 +58,16 @@ Correct Quartz's source only after applying an explicit-publish/private-note fil
 and disabling unconditional attachment copying. Preserve web access restrictions.
 Maintain the installer/policy in this canonical monorepo rather than pushing AEON
 customizations to the upstream Quartz project's remote. No real vault publication.
+
+## 2026-10-16 — server-wide Codex discovery and a supported SessionStart hook
+
+Status: global instructions installed and observed in live Codex context; hook
+definition installed, execution pending Codex's explicit hook trust review.
+
+Installed Codex CLI 0.163.0 reports stable hooks enabled. Current official docs
+define global AGENTS.md and SessionStart hooks, including the trust requirement.
+Use global instructions as the fallback, and a SessionStart handler to supply
+organizational context for every root Codex workspace and full project restoration
+inside the registered checkout. Do not assign unrelated projects to this monorepo.
+Do not modify trust records or bypass the review. Reviewed completion remains the
+agent's responsibility. Other accounts/clients are not automatically covered.

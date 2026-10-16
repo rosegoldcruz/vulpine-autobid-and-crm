@@ -121,3 +121,32 @@ Quartz's source link is a source-location correction, not an authenticated publi
 service. No vault note was marked publishable by this work. Universal agent hook,
 remote access, UI write integration, semantic retrieval and vault backup automation
 are outside this implementation.
+
+## Server-wide Codex startup — 2026-10-16
+
+`node scripts/install-codex-memory.mjs` installs the versioned `infra/codex/AGENTS.md`
+and `infra/codex/hooks.json` into the active CODEX_HOME (this server: `/root/.codex`).
+It refuses to overwrite differing files. Global instructions are loaded by Codex
+regardless of the selected repository; verified using `codex debug prompt-input`.
+They require the fallback loader before work if no hook context was supplied.
+
+The SessionStart handler runs `scripts/codex-session-start.mjs` for startup, resume,
+clear, compact and fork. It delivers AEON/SNRG organizational context from the vault.
+When cwd is inside this registered checkout it invokes continuity start and includes
+the resulting project state/session ID. Elsewhere it supplies organizational context
+and discovery instructions, without assigning unrelated repositories to Vulpine.
+The exact checkout's instructions and current source still govern implementation.
+
+Non-managed hooks require review and trust via Codex `/hooks`. This installation
+does not change trust records, bypass hook trust, adjust sandbox permissions, or
+claim that the hook ran automatically before trust. Global instructions are active
+independently and have been observed in the live instruction context. Other Codex
+homes/accounts and clients need their own supported installation. Completion still
+uses a reviewed end handoff; startup hooks cannot invent verified test results.
+
+Official references:
+- https://learn.chatgpt.com/docs/agent-configuration/agents-md
+- https://learn.chatgpt.com/docs/hooks
+
+This section supersedes earlier dated statements that no Codex hook definition is
+installed. Actual automatic hook execution remains gated by Codex trust.

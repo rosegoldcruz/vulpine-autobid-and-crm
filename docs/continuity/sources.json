@@ -23,5 +23,10 @@
   "scripts/quartz-privacy.test.mjs",
   "infra/quartz/privacy.mjs",
   "infra/quartz/privacy.d.mts",
-  "infra/quartz/quartz.ts"
+  "infra/quartz/quartz.ts",
+  "infra/codex/AGENTS.md",
+  "infra/codex/hooks.json",
+  "scripts/codex-session-start.mjs",
+  "scripts/codex-session-start.test.mjs",
+  "scripts/install-codex-memory.mjs"
 ]

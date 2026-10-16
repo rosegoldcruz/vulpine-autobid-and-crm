@@ -1,0 +1,19 @@
+{
+  "description": "AEON server organizational memory and registered-project restoration",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "^(startup|resume|clear|compact|fork)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node /opt/vulpine-platform/scripts/codex-session-start.mjs",
+            "timeout": 20,
+            "additionalContextLimit": 12000,
+            "statusMessage": "Loading AEON organizational and project memory"
+          }
+        ]
+      }
+    ]
+  }
+}
