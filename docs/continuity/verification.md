@@ -1,5 +1,27 @@
 # Continuity verification — 2026-10-15
 
+## Subsequent-session revalidation — 2026-10-15 (America/Phoenix)
+
+An independent conversation entered at `/opt` with the original continuity request,
+found the existing implementation, and restored it using the documented start command.
+No replacement memory store or infrastructure was needed. At source commit `97c8ffa`:
+
+- Start recovered this checkout's identity, last completed continuity change,
+  preserved design requirements, open tracker work and next integration-verification
+  action. `evidence_drift` was empty. Changed HEAD/worktree flags correctly reflected
+  the handoff commit and existing unrelated edits; neither was silently ignored.
+- All three acceptance tests passed again, and both CLI/test syntax checks passed.
+  These tests launch independent Node processes; no new separate model-agent session
+  was launched during this revalidation.
+- Operations loopback health returned HTTP 200 with status ok and version 1.
+  Authenticated integrations and application/browser checks were not exercised.
+- `git ls-remote` confirmed GitHub's configured working branch contained `97c8ffa`.
+  The existing Obsidian project pointer still targets this repository's entry point.
+
+This follow-up changes only this verification record and the latest session handoff.
+The original audit below remains historical. Explicit agent invocation, bounded
+fingerprint coverage and task-specific runtime verification remain required.
+
 ## Executed checks
 
 - `node --test scripts/continuity.test.mjs`: 3 tests passed, 0 failed.
