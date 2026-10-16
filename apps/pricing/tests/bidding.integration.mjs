@@ -36,6 +36,10 @@ test('persistent bids enforce ownership, scopes, revisions, real catalog costs a
   }
   const published=await call('save_bid_to_project',{job_id:j.id,expected_revision:j.revision});assert.equal(published.ok,true,JSON.stringify(published));
   const shared=await call('get_project_quote',{quote_id:published.data.quote_id},{...actor,sub:'teammate'});assert.equal(shared.ok,true);assert.equal(shared.data.documents.length,1);
+  const storedPdf=await call('get_project_document',{quote_id:published.data.quote_id,document_id:published.data.document_id},{...actor,sub:'teammate',scopes:['bids.read']});assert.equal(storedPdf.ok,true,JSON.stringify(storedPdf));
+  const storedBytes=Buffer.from(await(await fetch(storedPdf.data.url)).arrayBuffer());assert.equal((await PDFDocument.load(storedBytes)).getPageCount(),5);assert.equal(createHash('sha256').update(storedBytes).digest('hex'),storedPdf.data.sha256);
+  assert.equal((await call('get_project_document',{quote_id:published.data.quote_id,document_id:published.data.document_id},{...actor,org:'another-org'})).error.code,'NOT_FOUND');
+  assert.equal((await call('get_project_document',{quote_id:published.data.quote_id,document_id:randomUUID()})).error.code,'NOT_FOUND');
   assert.equal((await call('list_projects',{})).data.quotes.length,1);
   assert.equal((await call('list_bid_jobs',{})).data.jobs.length,1);
   assert.equal((await call('get_project_quote',{quote_id:published.data.quote_id},{...actor,org:'another-org'})).error.code,'NOT_FOUND');
@@ -45,7 +49,7 @@ test('persistent bids enforce ownership, scopes, revisions, real catalog costs a
   const {Client}=await import('@modelcontextprotocol/client');
   const [clientTransport,serverTransport]=InMemoryTransport.createLinkedPair();const mcp=app.bidding.server(actor),client=new Client({name:'vulpine-acceptance',version:'1'});
   await mcp.connect(serverTransport);await client.connect(clientTransport);
-  assert.equal((await client.listTools()).tools.length,14);
+  assert.equal((await client.listTools()).tools.length,15);
   assert.equal((await client.callTool({name:'price_bid',arguments:{job_id:j.id}})).structuredContent.data.purchase,293784);
   await client.close();await mcp.close();
   const {StreamableHTTPClientTransport}=await import('@modelcontextprotocol/client');
@@ -55,8 +59,11 @@ test('persistent bids enforce ownership, scopes, revisions, real catalog costs a
    headers.set('x-vulpine-operations',payload+'.'+createHmac('sha256',env.OPS_SIGNING_SECRET).update(payload).digest('base64url'));return fetch(url,{...init,headers});
   };
   await remote.connect(new StreamableHTTPClientTransport(new URL('http://127.0.0.1:3029/agent/mcp'),{fetch:signedFetch}));
-  assert.equal((await remote.listTools()).tools.length,14);
-  assert.equal((await remote.callTool({name:'price_bid',arguments:{job_id:j.id}})).structuredContent.data.sale,367224);await remote.close();
+  assert.equal((await remote.listTools()).tools.length,15);
+  assert.equal((await remote.callTool({name:'price_bid',arguments:{job_id:j.id}})).structuredContent.data.sale,367224);
+  const remoteQuote=await remote.callTool({name:'get_project_quote',arguments:{quote_id:published.data.quote_id}});assert.equal(remoteQuote.structuredContent.data.quote_id,published.data.quote_id);
+  const remotePdf=await remote.callTool({name:'get_project_document',arguments:{quote_id:published.data.quote_id,document_id:published.data.document_id}});assert.equal(remotePdf.structuredContent.data.sha256,storedPdf.data.sha256);assert.ok(remotePdf.content.some(c=>c.type==='resource_link'));
+  assert.equal(createHash('sha256').update(Buffer.from(await(await fetch(remotePdf.structuredContent.data.url)).arrayBuffer())).digest('hex'),storedPdf.data.sha256);await remote.close();
   const pdfExport=await call('export_bid',{job_id:j.id,expected_revision:j.revision,format:'pdf'});
   const proposal=await PDFDocument.load(await(await fetch(pdfExport.data.url)).arrayBuffer()),schedule=await PDFDocument.create();
   const [schedulePage]=await schedule.copyPages(proposal,[3]);schedule.addPage(schedulePage);

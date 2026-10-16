@@ -8,7 +8,7 @@ Protected-resource metadata: https://api.vulpinehomes.com/bidding/.well-known/oa
 
 ## Implementation
 
-The official MCP SDK serves Streamable HTTP. Fourteen tools use the existing pricing engine and PDF/Excel generators: `create_bid_job`, `get_bid_job`, `extract_takeoff`, `set_unit_mix`, `search_catalog`, `update_bid_items`, `price_bid`, `validate_bid`, `save_bid`, `export_bid`, `list_bid_jobs`, `list_projects`, `get_project_quote`, `save_bid_to_project`.
+The official MCP SDK serves Streamable HTTP. Fifteen tools use the existing pricing engine and PDF/Excel generators: `create_bid_job`, `get_bid_job`, `extract_takeoff`, `set_unit_mix`, `search_catalog`, `update_bid_items`, `price_bid`, `validate_bid`, `save_bid`, `export_bid`, `list_bid_jobs`, `list_projects`, `get_project_quote`, `get_project_document`, `save_bid_to_project`.
 
 Postgres database `vulpine_bidding` holds owned jobs, CAS revisions, source evidence, audit records, queued runs, catalog snapshots and expiring exports. Existing workspace files remain intact; `agent/import-workspace.mjs --run` imports additive snapshots. It is idempotent for an unchanged workspace.
 
@@ -40,7 +40,7 @@ Store credentials only in `/etc/vulpine-bidding/runtime.env`, root-owned mode 06
 
 ## Client connection steps (after OAuth provisioning)
 
-ChatGPT web: in an eligible Business or Enterprise/Edu workspace, open Plugins → plus → Add custom MCP server. Enter the endpoint above, configure OAuth, review the warning, create the plugin and authenticate. Review the fourteen tools, install, then make a real read/write draft test in a new conversation. The current documentation says custom MCP connections are web-only; Pro is limited to read/fetch. https://help.openai.com/en/articles/12584461-connecting-custom-mcp-servers-in-chatgpt
+ChatGPT web: in an eligible Business or Enterprise/Edu workspace, open Plugins → plus → Add custom MCP server. Enter the endpoint above, configure OAuth, review the warning, create the plugin and authenticate. Review the fifteen tools, install, then make a real read/write draft test in a new conversation. The current documentation says custom MCP connections are web-only; Pro is limited to read/fetch. https://help.openai.com/en/articles/12584461-connecting-custom-mcp-servers-in-chatgpt
 
 Claude: Customize → Connectors → Add custom connector. Enter the same endpoint, select OAuth with your registered client, authenticate and enable it in the conversation. Team/Enterprise owners configure the organization connector first. Anthropic documents remote connectors across web, desktop and mobile, but this Vulpine connection has not been tested on those clients. https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp
 
@@ -57,4 +57,6 @@ Run `npm test`, `npm run build`, then the real Postgres integration test. The op
 
 `list_projects` and `get_project_quote` access the same organization-scoped Postgres history as the pricing sidebar. `list_bid_jobs` lists the caller's own Auto Bid jobs. `save_bid_to_project` requires write permission, a current saved job revision, and successful validation. It creates a separate editable quote snapshot and stores a customer PDF in the matching project. Each call creates a new snapshot; do not retry blindly. It never replaces a human quote or sends the document. Agent provenance is retained with the snapshot. The internal single-job worker does not receive the organization-wide discovery tools.
 
-Verified against real Postgres and the official MCP SDK: fourteen-tool discovery, project listing, teammate access within the same organization, cross-organization denial, read-only write rejection, stale job protection, saved PDF retention, and signed internal HTTP calls. Remote OAuth remains unconfigured and has NOT passed an external agent login test. The Zitadel console requires an administrator sign-in; server SSH access alone does not provide that account session.
+Verified against real Postgres and the official MCP SDK: fifteen-tool discovery, project listing, teammate access within the same organization, cross-organization denial, read-only write rejection, stale job protection, saved PDF retention, and signed internal HTTP calls. Remote OAuth remains unconfigured and has NOT passed an external agent login test. The Zitadel console requires an administrator sign-in; server SSH access alone does not provide that account session.
+
+`get_project_document` retrieves the exact saved PDF/Excel bytes through a 15-minute download link, after checking both organization and quote membership. It supports read-only users and does not regenerate historical files.
