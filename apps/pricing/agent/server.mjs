@@ -1,3 +1,4 @@
+import {QuoteStore} from '../quote-store.mjs';
 import http from 'node:http';
 import fs from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
@@ -22,7 +23,8 @@ export async function createBiddingServer(env,{worker=true}={}){
  const root=new URL('../',import.meta.url),catalogs={};
  for(const supplier of ['hci','rythern','uscd'])catalogs[supplier]=JSON.parse(await fs.readFile(new URL(supplier==='hci'?'src/catalog.json':'src/suppliers/'+supplier+'.json',root)));
  const store=new BidStore(env.BIDDING_DATABASE_URL);await store.init();
- const bidding=createBidTools({store,catalogs,env,template:await fs.readFile(new URL('assets/proposal-template.pdf',root)),publicUrl:env.BIDDING_PUBLIC_URL});
+ const workspace=new QuoteStore(env.QUOTES_DATABASE_URL||env.BIDDING_DATABASE_URL);await workspace.init();
+ const bidding=createBidTools({workspace,store,catalogs,env,template:await fs.readFile(new URL('assets/proposal-template.pdf',root)),publicUrl:env.BIDDING_PUBLIC_URL});
  for(const [supplier,catalog]of Object.entries(catalogs))await store.pool.query('INSERT INTO catalog_snapshots(hash,supplier,source,catalog) VALUES($1,$2,$3,$4) ON CONFLICT DO NOTHING',[bidding.hashes[supplier],supplier,catalog.source||{},catalog]);
  const issuer=env.ZITADEL_ISSUER?.replace(/\/$/,''),resource=new URL('mcp',env.BIDDING_PUBLIC_URL).href;
  const jwks=issuer?createRemoteJWKSet(new URL(issuer+'/oauth/v2/keys')):null;
@@ -96,7 +98,7 @@ export async function createBiddingServer(env,{worker=true}={}){
   }catch(e){const code=e instanceof BidError?e.code:e.name==='ZodError'?'INVALID_INPUT':'INTERNAL_ERROR';const status={UNAUTHENTICATED:401,FORBIDDEN:403,NOT_FOUND:404,REVISION_CONFLICT:409,OAUTH_NOT_CONFIGURED:503,INVALID_INPUT:400}[code]||400;json(res,status,{error:{code,message:e instanceof BidError?e.message:code==='INVALID_INPUT'?'Invalid request.':'Request could not be completed.'}},status===401?{'www-authenticate':'Bearer resource_metadata="'+new URL('.well-known/oauth-protected-resource',env.BIDDING_PUBLIC_URL).href+'"'}:{});}
  });
  const stopWorker=worker?await startWorker({store,bidding,catalogs,env}):()=>{};
- return{server,store,bidding,catalogs,close:async()=>{stopWorker();await new Promise(r=>server.close(r));await store.close();}};
+ return{server,store,bidding,catalogs,close:async()=>{stopWorker();await new Promise(r=>server.close(r));await store.close();await workspace.close();}};
 }
 if(process.argv[1]===fileURLToPath(import.meta.url)){
  const app=await createBiddingServer(process.env);app.server.listen(Number(process.env.BIDDING_PORT||3022),'127.0.0.1');

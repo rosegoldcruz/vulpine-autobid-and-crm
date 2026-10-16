@@ -34,12 +34,18 @@ test('persistent bids enforce ownership, scopes, revisions, real catalog costs a
    if(format==='pdf')assert.equal((await PDFDocument.load(bytes)).getPageCount(),5);
    else assert.equal(XLSX.read(bytes).Sheets['Unit Type'].B6.v,'B24');
   }
+  const published=await call('save_bid_to_project',{job_id:j.id,expected_revision:j.revision});assert.equal(published.ok,true,JSON.stringify(published));
+  const shared=await call('get_project_quote',{quote_id:published.data.quote_id},{...actor,sub:'teammate'});assert.equal(shared.ok,true);assert.equal(shared.data.documents.length,1);
+  assert.equal((await call('list_projects',{})).data.quotes.length,1);
+  assert.equal((await call('list_bid_jobs',{})).data.jobs.length,1);
+  assert.equal((await call('get_project_quote',{quote_id:published.data.quote_id},{...actor,org:'another-org'})).error.code,'NOT_FOUND');
+  assert.equal((await call('save_bid_to_project',{job_id:j.id,expected_revision:j.revision},{...actor,scopes:['bids.read']})).error.code,'FORBIDDEN');
   // Exercise the official SDK's strict input/output registration and JSON-RPC dispatch.
   const {InMemoryTransport}=await import('@modelcontextprotocol/server');
   const {Client}=await import('@modelcontextprotocol/client');
   const [clientTransport,serverTransport]=InMemoryTransport.createLinkedPair();const mcp=app.bidding.server(actor),client=new Client({name:'vulpine-acceptance',version:'1'});
   await mcp.connect(serverTransport);await client.connect(clientTransport);
-  assert.equal((await client.listTools()).tools.length,10);
+  assert.equal((await client.listTools()).tools.length,14);
   assert.equal((await client.callTool({name:'price_bid',arguments:{job_id:j.id}})).structuredContent.data.purchase,293784);
   await client.close();await mcp.close();
   const {StreamableHTTPClientTransport}=await import('@modelcontextprotocol/client');
@@ -49,7 +55,7 @@ test('persistent bids enforce ownership, scopes, revisions, real catalog costs a
    headers.set('x-vulpine-operations',payload+'.'+createHmac('sha256',env.OPS_SIGNING_SECRET).update(payload).digest('base64url'));return fetch(url,{...init,headers});
   };
   await remote.connect(new StreamableHTTPClientTransport(new URL('http://127.0.0.1:3029/agent/mcp'),{fetch:signedFetch}));
-  assert.equal((await remote.listTools()).tools.length,10);
+  assert.equal((await remote.listTools()).tools.length,14);
   assert.equal((await remote.callTool({name:'price_bid',arguments:{job_id:j.id}})).structuredContent.data.sale,367224);await remote.close();
   const pdfExport=await call('export_bid',{job_id:j.id,expected_revision:j.revision,format:'pdf'});
   const proposal=await PDFDocument.load(await(await fetch(pdfExport.data.url)).arrayBuffer()),schedule=await PDFDocument.create();
@@ -85,7 +91,7 @@ test('persistent bids enforce ownership, scopes, revisions, real catalog costs a
    const totals=await call('price_bid',{job_id:made.data.id});assert.equal(totals.data.purchase,293784);assert.equal(totals.data.sale,367224);
   }
  }finally{
-  for(const table of ['bid_exports','bid_runs','bid_audit','bid_job_revisions','bid_jobs'])await app.store.pool.query('DELETE FROM '+table+' WHERE org=$1',[actor.org]);
+  for(const table of ['pricing_quote_exports','pricing_quote_revisions','pricing_quotes','pricing_projects','bid_exports','bid_runs','bid_audit','bid_job_revisions','bid_jobs'])await app.store.pool.query('DELETE FROM '+table+' WHERE org=$1',[actor.org]);
   await app.close();
  }
 });

@@ -14,6 +14,10 @@ export const job=z.strictObject({id,revision:z.number().int().positive(),state,s
 const key={job_id:id};
 const mutation={...key,expected_revision:z.number().int().positive()};
 export const inputs={
+ list_bid_jobs:z.strictObject({}),
+ list_projects:z.strictObject({}),
+ get_project_quote:z.strictObject({quote_id:id}),
+ save_bid_to_project:z.strictObject(mutation),
  create_bid_job:z.strictObject({project:text,supplier:z.enum(['hci','rythern','uscd']).default('hci'),instruction:z.string().min(1).max(300000)}),
  get_bid_job:z.strictObject(key),
  extract_takeoff:z.strictObject({...key,source_id:id.optional(),expected_revision:z.number().int().positive().optional(),name:text.optional(),text:z.string().min(1).max(300000).optional(),pdf_base64:z.string().max(2800000).optional()}).refine(v=>v.source_id?!v.text&&!v.pdf_base64&&!v.name&&!v.expected_revision:!!v.expected_revision&&!!v.name&&(!!v.text!==!!v.pdf_base64)),
@@ -30,6 +34,10 @@ export const totals=z.strictObject({purchase:cents,sale:cents,profit:cents,count
 const error=z.strictObject({ok:z.literal(false),error:z.strictObject({code:z.string(),message:z.string(),retryable:z.boolean()})});
 const success=data=>z.strictObject({ok:z.boolean(),data:data.optional(),error:error.shape.error.optional()}).refine(v=>v.ok?!!v.data&&!v.error:!!v.error&&!v.data);
 export const outputs={
+ list_bid_jobs:success(z.object({jobs:z.array(z.record(z.string(),z.unknown()))})),
+ list_projects:success(z.object({projects:z.array(z.record(z.string(),z.unknown())),quotes:z.array(z.record(z.string(),z.unknown()))})),
+ get_project_quote:success(z.object({quote_id:id,revision:z.number().int(),archived:z.boolean(),state:z.record(z.string(),z.unknown()),documents:z.array(z.record(z.string(),z.unknown()))})),
+ save_bid_to_project:success(z.object({quote_id:id,revision:z.number().int(),url:z.url(),document_id:id})),
  create_bid_job:success(job),get_bid_job:success(job),set_unit_mix:success(job),update_bid_items:success(job),save_bid:success(job),
  extract_takeoff:success(z.strictObject({source,revision:z.number().int().positive(),review_required:z.literal(true),instructions:z.string()})),
  search_catalog:success(z.strictObject({matches:z.array(z.strictObject({sku:z.string(),description:z.string(),li:finish,available:z.boolean(),required_sku:z.string().nullable()}))})),
