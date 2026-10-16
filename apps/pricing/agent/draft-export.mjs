@@ -13,14 +13,3 @@ export function draftExportState(job, scopeNotes = '') {
   job.state.notes
  ].filter(Boolean).join('\n\n')};
 }
-
-export async function markDraftPdf(PDFLib, bytes) {
- const doc=await PDFLib.PDFDocument.load(bytes);
- const font=await doc.embedFont(PDFLib.StandardFonts.HelveticaBold);
- for(const page of doc.getPages()) {
-  const width=page.getWidth();
-  page.drawRectangle({x:0,y:page.getHeight()-22,width,height:22,color:PDFLib.rgb(1,.94,.8)});
-  page.drawText('DRAFT - PRICED SCOPE ONLY - SEE NOTES / EXCLUSIONS',{x:18,y:page.getHeight()-15,size:9,font,color:PDFLib.rgb(.35,.15,0)});
- }
- return Buffer.from(await doc.save());
-}

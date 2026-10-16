@@ -1,4 +1,4 @@
-import {planReviewWarnings,draftExportState,markDraftPdf} from './draft-export.mjs';
+import {planReviewWarnings,draftExportState} from './draft-export.mjs';
 import {verifyTax} from '../tax-provider.mjs';
 import {randomUUID,createHash} from 'node:crypto';
 import {McpServer} from '@modelcontextprotocol/server';
@@ -88,7 +88,7 @@ export function createBidTools({workspace,store,catalogs,template,publicUrl,env=
      if(!j.saved)throw new BidError('UNSAVED_DRAFT','Save the bid first.');
      const all=issues(j).filter(value=>!planReviewWarnings.has(value));if(all.length)throw new BidError('VALIDATION_FAILED',all.join(' '));verifyTax(j.state.tax,env);
      const exportState=draftExportState(j,a.scope_notes);
-     const bytes=await markDraftPdf(PDFLib,await generateQuote(PDFLib,data,exportState,'customer',template));
+     const bytes=Buffer.from(await generateQuote(PDFLib,data,exportState,'customer',template));
      const ref=await workspace.save(actor,{...exportState,_agent:{job_id:j.id,revision:j.revision,provenance:j.provenance,exceptions:j.exceptions}},null);
      const documentId=await workspace.addExport(actor,ref,'customer','pdf',bytes);
      result={quote_id:ref.id,revision:ref.revision,url:'https://backoffice.vulpine.llc/api/cabinet-pricing/index.html?quote='+ref.id,document_id:documentId};break;
@@ -141,7 +141,7 @@ export function createBidTools({workspace,store,catalogs,template,publicUrl,env=
      if(!j.saved)throw new BidError('UNSAVED_DRAFT','Save the draft before exporting.');
      verifyTax(j.state.tax,env);
      const exportState=draftExportState(j,a.scope_notes);
-     const bytes=a.format==='xlsx'?XLSX.write(createWorkbook(XLSX,data,exportState),{type:'buffer',bookType:'xlsx',compression:true}):await markDraftPdf(PDFLib,await generateQuote(PDFLib,data,exportState,a.type,template));
+     const bytes=a.format==='xlsx'?XLSX.write(createWorkbook(XLSX,data,exportState),{type:'buffer',bookType:'xlsx',compression:true}):Buffer.from(await generateQuote(PDFLib,data,exportState,a.type,template));
      const token=randomUUID()+randomUUID(),expires=Date.now()+15*60*1000,filename=j.state.quoteId+'_'+a.type+'_DRAFT.'+a.format,mime=a.format==='pdf'?'application/pdf':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
      await store.putExport(actor,j,{id:hash(token),expires,filename,mime,bytes});
      result={url:new URL('downloads/'+token,publicUrl).href,filename,mime_type:mime,expires_at:new Date(expires).toISOString(),sha256:hash(bytes)};break;
