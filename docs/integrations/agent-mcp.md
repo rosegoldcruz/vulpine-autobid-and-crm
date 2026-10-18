@@ -6,7 +6,7 @@ The owner's latest explicit grant includes pricing and bid creation/editing,
 bids tracker, Cabinet Brain, Bid Engine, takeoffs, Paperclip, automations, Fox,
 agents, SKU catalog, proposals, inbox, SMS, dialer, calls, recordings, Valerie,
 SOPs, ERPNext, revenue, integrations, services, health, logs, users, permissions
-and settings. This supersedes the earlier read-only and pricing-only releases.
+and settings. Drive was subsequently added with owner-approved read/write access. This supersedes the earlier read-only and pricing-only releases.
 General leads, contacts, companies, opportunities and project-feed tools remain
 excluded. Pricing's `list_projects` means its own saved pricing folders/quotes.
 Access does not by itself instruct an agent to send messages, place calls, submit
@@ -14,14 +14,18 @@ proposals or order materials.
 
 ## Tools and authentication
 
-The gateway forwards the pricing application's 17 native tools to its existing
+The gateway forwards the pricing application's 19 native tools to its existing
 MCP at `/bidding/agent/mcp`. Agents can create bids, attach source evidence,
 set unit mixes and catalog items, calculate, validate, save and export PDF/Excel.
 Catalog costs, revisions, source provenance and existing approval gates remain
 owned by the pricing engine; the gateway contains no copied pricing math.
 
-Seven additional tools use existing authenticated backends:
+Eight additional tools use existing authenticated backends:
 
+- `vulpine_drive`: browse/filter files and folders, preview/download plans, upload
+  files and delete files/folders. Small uploads accept base64; large plans use
+  the existing five-minute signed multipart upload flow, avoiding the MCP body
+  limit. Transfers reuse Drive authentication and path/action-bound tickets.
 - `read_aeon_context`: project-selected vault records and engineering continuity,
   with hashes and retrieval time. It does not load an execution skill or begin a
   continuity session. Full private vault browsing is a separate owner web view.
@@ -35,7 +39,7 @@ Seven additional tools use existing authenticated backends:
   credential-management endpoints are excluded. Missing authentication fails.
 
 `MCP_CLIENTS_JSON` is a server-only array of `{id, tokenHash, organizationId,
-modules, roles}`. Seven independent identities currently have the 27 requested
+modules, roles}`. Seven independent identities currently have the 28 requested
 module grants and the owner-approved admin role. Production stores SHA-256
 credential digests. Raw values stay outside Git. Missing/invalid credentials
 return 401; absent/malformed registry fails closed. Browser origins require
@@ -117,3 +121,41 @@ Relevant regression checks: `tests/mcp.test.ts`, `tests/agent-access.test.ts`,
 A read probe does not prove provider mutations; verification should exercise a
 clearly labeled disposable pricing draft and download its PDF/Excel, while leaving
 real customer records and communications untouched.
+
+
+## Drive and bid deletion verification — 2026-10-18
+
+Owner's final scope is Drive read **and write**, superseding the intermediate
+read-only correction. All seven configured identities discovered `vulpine_drive`
+and listed real storage. Muse uploaded, previewed, downloaded and deleted a
+uniquely named disposable text file; the large-plan multipart transfer-ticket
+flow also passed. The verification file was removed. `DRIVE_API_URL` and
+`DRIVE_API_TOKEN` reuse the existing server-only Drive connection. Raw service
+credentials are never returned to agents. Transfer URLs expire in five minutes.
+
+Pricing now exposes `delete_bid` and `delete_project_quote`, bringing production
+tool discovery to 27 (19 pricing plus 8 backoffice tools). Read the current object
+and pass `expected_revision`. Auto Bid deletion is owner-scoped; project-quote
+deletion is organization-scoped. Active runs block deletion; saved copies are
+independent. UI Delete bid buttons use the same backend contracts. Old active
+editors do not recreate deleted bids, and old source download links stop working.
+These changes are maintained in the independent vulpine-cabinet-pricing repository.
+
+Live cleanup through Muse's MCP identity removed its explicitly labeled demo job
+and two Workspace QA quotes. Other records remained. The empty QA project was
+moved to the existing project Trash. Disposable database/browser tests use unique
+fixture organizations and clean their own rows; no additional customer bids were
+created by Drive verification.
+
+
+Folder uploads are supported by the existing Drive transfer endpoint: include
+`paths` as a JSON array of relative filenames, in multipart file order. Nested
+parents are created and duplicate basenames in different subfolders stay separate.
+The destination-scoped transfer ticket still applies. Unsafe manifests are rejected
+before writes. The backoffice Upload folder picker uses this contract and batches
+larger selections into 100-file batches with a 250 MiB target; a larger individual
+file gets its own batch. Uploads spool to private temporary disk and stream to
+SFTP. Single-file downloads stream as well. UI progress and Resume upload retain
+remaining files after an acknowledged partial failure while the tab stays open.
+The standalone drive.vulpine.llc website is retired (410); Backoffice Drive and
+shared storage remain active.

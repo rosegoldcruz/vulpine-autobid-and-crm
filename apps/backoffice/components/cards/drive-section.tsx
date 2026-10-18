@@ -31,7 +31,7 @@ import {
 } from "lucide-react"
 import { toast, Toaster } from "sonner"
 import type { DriveItem, RecentDriveItem } from "@vulpine/contracts"
-import { DriveClient } from "@vulpine/sdk"
+import { DriveClient, DriveClientError } from "@vulpine/sdk"
 import {
   Drawer,
   DrawerClose,
@@ -193,9 +193,12 @@ export function DriveSection({ canWrite = false }: { canWrite?: boolean }) {
   const [actionItem, setActionItem] = useState<DriveRecord | null>(null)
   const [previewItem, setPreviewItem] = useState<DriveRecord | null>(null)
   const [uploading, setUploading] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState<{ completed: number; total: number } | null>(null)
+  const [uploadFailure, setUploadFailure] = useState<{ files: File[]; destination: string; completed: number; total: number; message: string } | null>(null)
   const [deleting, setDeleting] = useState(false)
   const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const folderInputRef = useRef<HTMLInputElement>(null)
   const cameraInputRef = useRef<HTMLInputElement>(null)
 
   const remember = useCallback((records: readonly DriveRecord[]) => {
@@ -341,26 +344,36 @@ export function DriveSection({ canWrite = false }: { canWrite?: boolean }) {
     }
   }
 
-  async function uploadFiles(fileList: FileList | null) {
-    if (!fileList?.length) return
+  async function uploadSelection(files: File[], destination: string, offset: number, total: number) {
     setUploading(true)
-    setError("")
-    const files = Array.from(fileList)
-    const pending = toast.loading(`Uploading ${files.length} file${files.length === 1 ? "" : "s"}…`)
+    setUploadFailure(null)
+    setUploadProgress({ completed: offset, total })
+    const pending = toast.loading(`Uploading ${offset} of ${total} files…`)
+    let completed = 0
     try {
-      const result = await drive.upload(path, files)
-      toast.success(`${result.uploaded} file${result.uploaded === 1 ? "" : "s"} uploaded`, { id: pending, description: path === "/" ? "Saved to Drive root." : `Saved to ${path}.` })
-      await loadPath(path)
+      const result = await drive.upload(destination, files, (count) => {
+        completed = count
+        setUploadProgress({ completed: offset + count, total })
+        toast.loading(`Uploading ${offset + count} of ${total} files…`, { id: pending })
+      })
+      toast.success(`${offset + result.uploaded} file${total === 1 ? "" : "s"} uploaded`, { id: pending, description: destination === "/" ? "Saved to Drive root." : `Saved to ${destination}.` })
+      await loadPath(destination)
       if (activeTab === "recent") await loadRecent()
     } catch (caught) {
       const message = caught instanceof Error ? caught.message : "Unable to upload files"
-      setError(message)
-      toast.error("Upload failed", { id: pending, description: message })
+      const count = caught instanceof DriveClientError ? caught.uploaded : completed
+      setUploadFailure({ files: files.slice(count), destination, completed: offset + count, total, message })
+      toast.error("Upload paused", { id: pending, description: message })
     } finally {
       setUploading(false)
       if (fileInputRef.current) fileInputRef.current.value = ""
+      if (folderInputRef.current) folderInputRef.current.value = ""
       if (cameraInputRef.current) cameraInputRef.current.value = ""
     }
+  }
+
+  async function uploadFiles(fileList: FileList | null) {
+    if (fileList?.length) await uploadSelection(Array.from(fileList), path, 0, fileList.length)
   }
 
   const busy = loading || recentLoading
@@ -369,6 +382,7 @@ export function DriveSection({ canWrite = false }: { canWrite?: boolean }) {
     <div className="flex min-h-[calc(100vh-4.5rem)] flex-col gap-5 pb-24 text-foreground lg:pb-0">
       <Toaster position="bottom-center" theme="dark" richColors closeButton />
       {canWrite ? <input ref={fileInputRef} type="file" multiple className="hidden" onChange={(event) => void uploadFiles(event.currentTarget.files)} /> : null}
+      {canWrite ? <input ref={folderInputRef} type="file" multiple {...{ webkitdirectory: "", directory: "" }} className="hidden" aria-label="Upload folder" onChange={(event) => void uploadFiles(event.currentTarget.files)} /> : null}
       {canWrite ? <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={(event) => void uploadFiles(event.currentTarget.files)} /> : null}
 
       <section className="surface-card overflow-hidden rounded-2xl">
@@ -382,6 +396,7 @@ export function DriveSection({ canWrite = false }: { canWrite?: boolean }) {
           </div>
           <div className="hidden flex-wrap items-center gap-2 lg:flex">
             {canWrite ? <button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploading} className="flex h-9 items-center gap-2 rounded-xl border border-primary/25 bg-primary/10 px-3 text-xs font-bold text-primary hover:bg-primary/15 disabled:opacity-50">{uploading ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />} Upload files</button> : null}
+            {canWrite ? <button type="button" onClick={() => folderInputRef.current?.click()} disabled={uploading} className="flex h-9 items-center gap-2 rounded-xl border border-primary/25 bg-primary/10 px-3 text-xs font-bold text-primary hover:bg-primary/15 disabled:opacity-50"><Folder className="size-4" /> Upload folder</button> : null}
             {canWrite ? <button type="button" onClick={() => cameraInputRef.current?.click()} disabled={uploading} className="flex h-9 items-center gap-2 rounded-xl border border-border/60 px-3 text-xs font-semibold text-muted-foreground hover:bg-accent/40 hover:text-foreground disabled:opacity-50"><Camera className="size-4" /> Capture photo</button> : null}
             <div className="ml-1 hidden min-w-28 items-center gap-2 border-l border-border/50 pl-3 sm:flex">
               <span className={`size-2 rounded-full ${error ? "bg-destructive" : busy ? "animate-pulse bg-amber-400" : "bg-fin-gain"}`} />
@@ -408,6 +423,8 @@ export function DriveSection({ canWrite = false }: { canWrite?: boolean }) {
           </div>
         </div>
       </section>
+
+      {uploadProgress ? <section aria-label="Upload progress" className="surface-card rounded-xl px-4 py-3"><p role="status" className="text-xs font-semibold text-foreground">{uploading ? "Uploading" : uploadFailure ? "Upload paused" : "Uploaded"} {uploadProgress.completed.toLocaleString()} of {uploadProgress.total.toLocaleString()} files</p><progress value={uploadProgress.completed} max={uploadProgress.total} className="mt-2 h-2 w-full accent-primary" />{uploading ? <p className="mt-1 text-xs text-muted-foreground">Keep this tab open until the upload finishes.</p> : null}{uploadFailure ? <div role="alert" className="mt-2 flex flex-wrap items-center gap-3"><p className="text-xs text-destructive">{uploadFailure.message}</p><button type="button" onClick={() => void uploadSelection(uploadFailure.files, uploadFailure.destination, uploadFailure.completed, uploadFailure.total)} className="rounded-lg bg-primary px-3 py-2 text-xs font-bold text-primary-foreground">Resume upload</button></div> : null}</section> : null}
 
       {error ? <div role="alert" className="rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-xs font-medium text-destructive-foreground">Vulpine Drive unavailable: {error}</div> : null}
 
@@ -477,6 +494,7 @@ export function DriveSection({ canWrite = false }: { canWrite?: boolean }) {
       <div className="mobile-action-dock lg:hidden">
         {path !== "/" && activeTab === "files" ? <button type="button" onClick={() => { const parent = path.split("/").slice(0, -1).join("/") || "/"; void loadPath(parent) }} className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl text-xs font-bold text-foreground"><ArrowLeft className="size-4" /> Back</button> : null}
         {canWrite ? <button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploading} className="flex h-12 flex-[2] items-center justify-center gap-2 rounded-xl bg-primary px-4 text-xs font-black text-primary-foreground disabled:opacity-50">{uploading ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />} Upload</button> : null}
+        {canWrite ? <button type="button" onClick={() => folderInputRef.current?.click()} disabled={uploading} className="flex size-12 shrink-0 items-center justify-center rounded-xl border border-primary/25 text-primary disabled:opacity-50" aria-label="Upload folder"><Folder className="size-5" /></button> : null}
         {canWrite ? <button type="button" onClick={() => cameraInputRef.current?.click()} disabled={uploading} className="flex size-12 shrink-0 items-center justify-center rounded-xl text-muted-foreground disabled:opacity-50" aria-label="Capture photo"><Camera className="size-5" /></button> : null}
         <button type="button" onClick={() => activeTab === "recent" ? void loadRecent() : void loadPath(path)} disabled={busy} className="flex size-12 shrink-0 items-center justify-center rounded-xl text-muted-foreground disabled:opacity-50" aria-label="Refresh Drive"><RefreshCw className={`size-5 ${busy ? "animate-spin" : ""}`} /></button>
       </div>

@@ -217,3 +217,76 @@ A tracker same-value status update passed, preserving all 44 records. Twilio
 SMS/number/call/recording and Valerie reads passed. No communication was sent.
 Inbox provider requests return 401 and need credential repair; ZITADEL management
 authentication is absent. These failures remain explicit and are not bypassed.
+
+
+## 2026-10-18 — Drive access and pricing deletion
+
+Owner's final Drive instruction is read/write. Added vulpine_drive to the existing
+MCP surface, using the existing Drive backend and its signed transfer tickets.
+All seven identities have the drive grant (28 modules) and live listing passed.
+Muse upload, preview, download, large-plan multipart upload and deletion passed;
+the unique verification text file was removed. Production Vercel deployment
+ dpl_Dra3RBkvkwKQjGNzRJhi7Xvpu32E is READY at backoffice.vulpine.llc.
+
+The owner also requested UI and MCP deletion of saved pricing bids and removal
+of clearly fake test entries. Independent source /opt/vulpine-cabinet-pricing now
+has Delete bid buttons for saved project quotes and owned Auto Bid drafts, plus
+delete_bid and delete_project_quote tools. Permanent deletion is revision checked,
+organization/owner scoped, blocks active runs and preserves metadata audits.
+Deleted source download links fail; active editor/reload tests prove no accidental
+recreation. Live Muse MCP cleanup removed one clearly named demo job and two
+Workspace QA quotes; the empty QA project was archived. Other bids were retained.
+Tool count is now 27 (19 pricing, 8 backoffice). Both pricing systemd services were
+restarted after confirming no queued/running jobs. Provider credential blockers
+and external-account enrollment limits from the previous section remain.
+
+
+The owner subsequently requested folder uploads. Added desktop/mobile Upload folder
+controls, preservation of directory-relative paths in multipart uploads, recursive
+SFTP parent creation, manifest validation before writes and bounded multi-request
+batching for large selections. Existing file upload behavior and authorization are
+preserved. Live nested upload/download, same-name files in different subfolders,
+unsafe-path rejection before writes and verification-folder cleanup passed.
+The active vulpine-documents PM2 release's three affected source files matched
+canonical HEAD before applying these targeted changes; only that process restarted.
+Latest production frontend deployment: dpl_BPN6C1ngoW8kJTZtgYEiDggHFWu9 (READY).
+Pricing deletion source was committed and pushed as dfeab93 on its own repository's
+main branch; generated dist files remain ignored and are served by its existing
+protected pricing service.
+
+Desktop/mobile folder-picker browser checks and a read-only role check passed
+(3 tests). Browser verification caught and corrected duplicate desktop/missing
+mobile controls. The isolated QA server was stopped afterward. A deployment from
+the wrong working directory created a stray empty backoffice Vercel project and
+failed installation; that project and its failed deployment were removed, the
+nested link was deleted, and deployment from the canonical project root succeeded.
+The existing production project/domain were preserved throughout.
+
+
+## 2026-10-18 — Backoffice Drive preserved, standalone retired
+
+Latest owner direction retires only drive.vulpine.llc (verified HTTP 410). Its
+frontend PM2 process was removed; vulpine-documents and shared SFTP storage stay.
+Backoffice /drive still redirects unauthenticated users to sign-in; documents
+health returns 200. Standalone callback registration is no longer needed.
+
+Large uploads now stream to private temporary files, then SFTP, with cleanup and
+one connection per batch. No default upload byte cap; an optional operator cap
+remains available. Nginx documents ingress allows large streamed requests. Single
+file downloads stream; folder ZIP download bounds remain. Upload folder preserves
+nesting and batches at most 100 files, targeting 250 MiB except individual larger
+files. Progress and Resume upload retain remaining files in the current tab.
+
+Production deployment dpl_DxkqTmyQXx6U2xZ1T1JEdecTdvrz is READY and aliased to
+backoffice.vulpine.llc. Root tests passed 48 plus services 36; full typecheck passed.
+Four browser tests passed, including desktop/mobile folder selection, read-only
+controls and a 3,000-file selection resuming after 125 acknowledged files. The
+first bulk browser assertion incorrectly assumed sorted filesystem order; corrected
+it to assert the actual first unacknowledged path, then all checks passed.
+A live 257 MiB upload succeeded; full download exceeded the verification client's
+four-minute timeout, and that unique verification folder was removed afterward.
+
+Repeated live 257 MiB upload passed; streamed download headers matched full size
+and a one-MiB range readback matched SHA256. Service RSS grew approximately 4 MiB.
+The unique verification folder was removed and absence verified. All seven
+configured MCP clients again discovered 27 tools including Drive and bid deletion.

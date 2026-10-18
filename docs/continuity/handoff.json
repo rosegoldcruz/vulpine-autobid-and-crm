@@ -1,48 +1,45 @@
 {
-  "last_change": "Expanded authenticated MCP to native pricing writes and existing backoffice services; restored private full-vault Quartz; retired standalone tracker frontend. Preserved and reviewed owner-authorized dirty tracker migration/deployment sources, excluding private runtime data.",
+  "last_change": "Added authenticated MCP Drive read/write for seven configured identities; folder uploads with large-file disk spooling, streamed downloads, batching, progress and session resume. Retired standalone Drive only; preserved Backoffice Drive and shared storage. Pricing deletion implemented and pushed separately as dfeab93.",
   "verification": [
-    "corepack pnpm test: passed 43 root tests plus tracker 8, operations 10, Vision 4 and documents 13. Initial Vision run lacked locally installed adm-zip; frozen-lockfile filtered dependency installation repaired the environment, then full rerun passed.",
-    "node --test scripts/continuity.test.mjs scripts/vault-memory.test.mjs scripts/quartz-privacy.test.mjs: all 23 checks passed, including private output isolation and unchanged ordinary publishing restrictions.",
-    "Backoffice typecheck and targeted ESLint lib/mcp.ts lib/agent-access.ts passed. Engine authentication unittest: 2 passed. New provisioning/build/import scripts passed syntax checks.",
-    "Production Vercel deployment dpl_57vXYfbKSM1renppyuf93u4i7nKV READY, build passed and aliased backoffice.vulpine.llc.",
-    "Live SDK probes: codex, claude, qwen, opencode, copilot, hermes and muse independently initialized, discovered 24 tools and 27 module grants, and retrieved four matching selected vault note hashes.",
-    "Muse credential created a disposable pricing draft with exact catalog SKU and evidence, priced and saved it, downloaded valid PDF and Excel exports. Removed only the verification UUID under its organization and mcp:muse owner, preserving audit history. No customer submission.",
-    "Tracker update preserving existing status succeeded with all 44 records retained. Live Cabinet Brain, Paperclip, automations, Bid Engine, ERPNext and health reads passed. Twilio SMS, phone-number, call and recording reads and Valerie assistant read passed. No communications sent.",
-    "Inbox configured credential and legacy-prefix variant both returned 401 with configured location; ZITADEL provider action explicitly reports management authentication absent.",
-    "Private Quartz build produced index.html outside public output. Nginx configuration check passed; operations service and context timer active. Authenticated Quartz home/note HTTP verification passed previously; browser verification result recorded separately before commit.",
-    "Standalone tracker root and API paths return 410; private backend root/static paths 404, health 200, unauthenticated API 401 and authenticated API retains 44 records. Backoffice tracker remains behind its existing login.",
-    "Final staged review and known credential/runtime-file scan found no secrets, databases, uploads or customer correspondence staged. Next process monitor reports only supervised servers."
+    "corepack pnpm test: 48 root tests plus documents 14, operations 10, Vision 4 and tracker 8 passed.",
+    "corepack pnpm typecheck: all packages, services and Backoffice passed. Targeted Backoffice ESLint passed.",
+    "Four Playwright Drive checks passed: desktop/mobile nested folder selection, read-only upload controls, and 3000-file progress/resume after 125 acknowledged files. Initial bulk assertion incorrectly assumed filesystem order; corrected to actual first pending path and reran all four.",
+    "Vercel production dpl_DxkqTmyQXx6U2xZ1T1JEdecTdvrz READY and aliased backoffice.vulpine.llc. Documents live release four changed source files match canonical hashes. Nginx validation passed.",
+    "drive.vulpine.llc returns 410; Backoffice Drive redirects unauthenticated users to sign-in; documents health 200. Standalone PM2 frontend removed, documents retained. QA ports 3113 and 3115 stopped.",
+    "All seven configured MCP identities discover 27 tools including vulpine_drive, delete_bid and delete_project_quote. Earlier live Muse upload/preview/download/delete, nested folder upload and unsafe manifest rejection passed; disposable fixtures removed.",
+    "Pricing commit dfeab93 pushed on its main branch; 26 pricing tests, Postgres integration and browser deletion/reload checks passed. Removed one explicitly labeled demo job and two Workspace QA quotes through authenticated tools; retained other bids.",
+    "Live 257 MiB upload succeeded; full-file streamed download exceeded a four-minute verification-client timeout. Unique verification folder removed afterward.",
+    "Repeated live 257 MiB upload passed, streamed download headers matched full size, one-MiB range readback SHA256 matched, service RSS grew about 4 MiB; unique verification folder deleted and absence verified."
   ],
   "decisions": [
-    "Explicit owner approval: push all dirty work; preserve the tracker migration and deployment source changes after review, while moving private email audit inputs out of source control.",
-    "Explicit owner approval supersedes earlier limited scope: all configured agents receive pricing writes and the requested backoffice service/module access. Do not expose general CRM entity feeds or equate grants with an instruction to send communications.",
-    "Explicit owner clarification: Muse desktop uses its own direct identity; MetaMuse may remain inside OpenCode.",
-    "Explicit owner approval: remove standalone trackers outside gated backoffice; retain authenticated backend data/uploads needed by backoffice and agents.",
-    "Explicit owner selection: private full-vault viewer behind login. Restore existing Quartz with its existing authentication, isolated private builds and no attachments; ordinary public publishing remains restricted.",
-    "Expose only selected AEON continuity to agents through a protected root-exported snapshot, preserving existing vault filesystem restrictions and reviewed mutation protocol."
+    "Explicit owner final instruction: preserve Backoffice Drive and stored files; retire only the standalone drive.vulpine.llc website. This supersedes the brief request to repair standalone auth.",
+    "Explicit owner final Drive scope is read and write for configured agents. Use scoped expiring transfer URLs without sharing master service credentials.",
+    "Support large folder selections and files above the old 250 MiB rejection using private disk spooling and 100-file batches; progress/resume retains remaining browser File objects only while the tab stays open.",
+    "Explicit owner requested UI and MCP bid deletion, with revision checks, existing write access, owner/organization boundaries, active-run protection and audit retention."
   ],
   "open_work": [
     "Provision approved ZITADEL management authentication for actual directory, permission and settings administration; own agent grant inspection already works.",
     "Repair inbox provider authentication returning 401; do not claim inbox writes work before successful provider authorization.",
     "Enrol and verify hosted accounts/other-device clients separately; local transports do not configure hosted ChatGPT/Claude, other-device Cursor, standalone Grok/Grokbot or GitHub-hosted agents.",
     "Confirm actual model sessions invoke read_aeon_context; transport retrieval and startup hints alone are not model-session evidence.",
-    "Assess the owner-reported prior chat credential exposure and rotate the affected identity through secure enrollment if the credential is still active; no raw value was supplied in the pasted transcript."
+    "Assess the owner-reported prior chat credential exposure and rotate the affected identity through secure enrollment if the credential is still active; no raw value was supplied in the pasted transcript.",
+    "Resolve the private vault review queue against project evidence; preserve prior concurrent engineering open work."
   ],
   "blockers": [
     "ZITADEL management credential is absent. Inbox provider rejects the configured credential with HTTP 401. External hosted accounts/device sessions are not connected to this server tooling."
   ],
-  "next_action": "Commit and push reviewed changes, verify clean Git state, refresh the protected context snapshot and private Quartz build. Resolve provider credentials and remaining account-side enrollment before claiming universal end-to-end access.",
-  "recorded_at": "2026-10-18T13:27:00.475Z",
+  "next_action": "Refresh Backoffice Drive to load the deployed upload code, then upload the selected plan folder. Preserve unrelated continuity open work.",
+  "recorded_at": "2026-10-18T14:24:20.700Z",
   "snapshot": {
-    "head": "380ee9732870cc541462a2c90f8017657cb7a326",
+    "head": "90b65ebf5871e4bf5e4cd673a9e68c0d0de9ee55",
     "branch": "codex/cabinet-brain-integration-recovery",
-    "worktree": "M  .gitignore\nA  apps/backoffice/lib/agent-access.ts\nM  apps/backoffice/lib/mcp.ts\nM  docs/architecture/current-system-map.md\nM  docs/continuity/current.md\nM  docs/continuity/decisions.md\nMM docs/integrations/agent-mcp.md\nA  infra/agents/AEON_CONTEXT.md\nA  infra/deploy/README.md\nA  infra/deploy/aeon-agent-context.service\nA  infra/deploy/aeon-agent-context.timer\nA  infra/deploy/check-next-processes.py\nA  infra/deploy/engine-runtime.override.yml\nA  infra/deploy/next-process-monitor.service\nA  infra/deploy/next-process-monitor.timer\nA  infra/nginx/brain-private.conf\nA  infra/nginx/tracker-retired.conf\nM  infra/quartz/privacy.d.mts\nM  infra/quartz/privacy.mjs\nM  infra/quartz/quartz.ts\nD  legacy/bids-tracker/README.monorepo.md\nD  legacy/bids-tracker/public/app.js\nD  legacy/bids-tracker/public/index.html\nD  legacy/bids-tracker/public/style.css\nM  pnpm-lock.yaml\nA  scripts/build-private-quartz.mjs\nA  scripts/export-agent-context.mjs\nA  scripts/provision-erp-agent.mjs\nM  scripts/quartz-privacy.test.mjs\nR  legacy/bids-tracker/.npmrc -> services/bids-tracker/.npmrc\nAM services/bids-tracker/README.monorepo.md\nR  legacy/bids-tracker/db.js -> services/bids-tracker/db.js\nR  legacy/bids-tracker/ecosystem.config.js -> services/bids-tracker/ecosystem.config.js\nR  legacy/bids-tracker/extract.js -> services/bids-tracker/extract.js\nR  legacy/bids-tracker/integration-auth.js -> services/bids-tracker/integration-auth.js\nR  legacy/bids-tracker/package-lock.json -> services/bids-tracker/package-lock.json\nR  legacy/bids-tracker/package.json -> services/bids-tracker/package.json\nR  legacy/bids-tracker/profit.js -> services/bids-tracker/profit.js\nAM services/bids-tracker/scripts/import-email-audit.js\nR  legacy/bids-tracker/scripts/reimport_uploads.js -> services/bids-tracker/scripts/reimport_uploads.js\nR  legacy/bids-tracker/server.js -> services/bids-tracker/server.js\nR  legacy/bids-tracker/test/dependency-compatibility.test.js -> services/bids-tracker/test/dependency-compatibility.test.js\nR  legacy/bids-tracker/test/integration-auth.test.js -> services/bids-tracker/test/integration-auth.test.js\nR  legacy/bids-tracker/test/upload-policy.test.js -> services/bids-tracker/test/upload-policy.test.js\nR  legacy/bids-tracker/upload-policy.js -> services/bids-tracker/upload-policy.js\nR  legacy/bids-tracker/workbook.js -> services/bids-tracker/workbook.js\nM  services/engine/.env.example\nM  services/engine/shared/security.py\nM  services/engine/tests/test_security.py\nA  services/operations/src/agent-actions.mjs\nM  services/operations/src/server.mjs\nA  services/operations/test/agent-actions.test.mjs\nM  services/operations/test/core.test.mjs\nA  tests/agent-access.test.ts\nM  tests/mcp.test.ts",
+    "worktree": " M .gitignore\n M apps/backoffice/components/cards/drive-section.tsx\n M apps/backoffice/lib/agent-access.ts\n M apps/backoffice/lib/mcp.ts\n M docs/architecture/current-system-map.md\n M docs/continuity/current.md\n M docs/continuity/decisions.md\n M docs/continuity/handoff.json\n M docs/integrations/agent-mcp.md\n M infra/nginx/vulpine-documents.conf\n M packages/sdk/src/index.ts\n M services/documents/.env.example\n M services/documents/README.md\n M services/documents/src/path.ts\n M services/documents/src/server.ts\n M services/documents/src/sftp.ts\n M services/documents/src/upload-storage.ts\n M services/documents/tests/download-limits.test.ts\n M services/documents/tests/path.test.ts\n M services/documents/tests/transfer-limits.test.ts\n?? apps/backoffice/lib/agent-drive.ts\n?? infra/nginx/drive-retired.conf\n?? tests/agent-drive.test.ts\n?? tests/drive-client-upload.test.ts\n?? tests/e2e/drive-upload-folder.spec.ts",
     "sources": {
       "AGENTS.md": "c51e08a8021528ff818e5f62620aae587530eeec275750b2d38c2771ef732460",
       "README.md": "7951ca56e47884a6a9b802d018e69ff82845ffcacf1877024fbd5cf094d55ec1",
       "package.json": "fafa60aeae85182092017dfc87134dabfa1df3484315a510e118b4d879566a49",
-      "docs/continuity/current.md": "39eece59a3cd81b9d4bbb27f4ee14105d46d768ff1c7c54f1a77ec267032e2fc",
-      "docs/continuity/decisions.md": "53c0f258624d05d8a9d86271ddf9fc90ae9310e413d912195aec8911b13cd37e",
+      "docs/continuity/current.md": "95f1223cff7c23224246bf218f574f288b35019cf901ddd37381f38d6c49e908",
+      "docs/continuity/decisions.md": "374a2a6a57622a89bf46bbf59b20b0820ab6f1dd3cbd962e742e1d1e7af7afad",
       "docs/continuity/audit.md": "c849de622d00377d1fadd3ba41cda2933eb9370b6fa13c2baf53bf36c0c471b2",
       "docs/continuity/verification.md": "5daeea53454a06fcf3b928b1fd12c8f69448beb8fc31a75b441181cc57962f28",
       "docs/continuity/sources.json": "0380630765b71a413ac27edd875e120cf51f501232720ee130160cd1f885937b",
@@ -72,7 +69,7 @@
   },
   "vault": {
     "project": "vulpine-platform",
-    "session_id": "a4b5de58-cafb-44fe-bea9-22fcf4c96d77",
-    "record": "sources/aeon-sessions/vulpine-platform/a4b5de58-cafb-44fe-bea9-22fcf4c96d77.md"
+    "session_id": "e930461c-f109-484f-96b2-8abbe3478c35",
+    "record": "sources/aeon-sessions/vulpine-platform/e930461c-f109-484f-96b2-8abbe3478c35.md"
   }
 }

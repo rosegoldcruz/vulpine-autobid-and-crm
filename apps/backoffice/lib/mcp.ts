@@ -53,7 +53,11 @@ export async function handleMcp(request: Request): Promise<Response> {
       const text = JSON.stringify(data)
       if (Buffer.byteLength(text) > 500000) throw new Error("Result too large. Narrow the query or pagination.")
       console.info(JSON.stringify({ event: "mcp.action", client: client.id, tool: rpc.params!.name, status: "ok" }))
-      return Response.json({ jsonrpc: "2.0", id: rpc.id, result: { content: [{ type: "text", text }] } }, { headers })
+      const content: Record<string, unknown>[] = [{ type: "text", text }]
+      if (rpc.params!.name === "vulpine_drive" && data && typeof data === "object" && "action" in data && ["preview", "download"].includes(String(data.action)) && "url" in data && "path" in data) {
+        content.push({ type: "resource_link", uri: data.url, name: String(data.path).split("/").pop() || "Drive file" })
+      }
+      return Response.json({ jsonrpc: "2.0", id: rpc.id, result: { content } }, { headers })
     } catch (error) {
       return Response.json({ jsonrpc: "2.0", id: rpc.id, result: { isError: true, content: [{ type: "text", text: error instanceof Error ? error.message : "Backend operation failed." }] } }, { headers })
     }

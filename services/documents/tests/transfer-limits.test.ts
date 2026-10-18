@@ -3,7 +3,7 @@ import test from "node:test"
 import { Readable } from "node:stream"
 import express from "express"
 import multer from "multer"
-import { boundedMemoryStorage } from "../src/upload-storage.js"
+import { temporaryUploadStorage, cleanupUpload } from "../src/upload-storage.js"
 import { readBoundedStream } from "../src/bounded-stream.js"
 import { releaseTransfer, reserveTransfer } from "../src/transfer-capacity.js"
 import { EventEmitter } from "node:events"
@@ -34,11 +34,12 @@ test("stream reader rejects growth beyond its byte limit and preserves valid fil
   assert.equal(oversized.destroyed, true)
 })
 
-test("multipart memory storage caps aggregate bytes across individually valid files", async (t) => {
+test("private disk uploads enforce an optional aggregate limit without retaining file buffers", async (t) => {
   const app = express()
   let accepted = 0
-  app.post("/upload", multer({ storage: boundedMemoryStorage(10), limits: { fileSize: 10, files: 2 } }).array("files"), (_request, response) => { accepted += 1; response.json({ ok: true }) })
-  app.use((error: unknown, _request: express.Request, response: express.Response, _next: express.NextFunction) => {
+  app.post("/upload", multer({ storage: temporaryUploadStorage(10), limits: { fileSize: 10, files: 2 } }).array("files"), async (request, response) => { accepted += 1; const files = request.files as Express.Multer.File[]; for (const file of files) { assert.equal(file.buffer, undefined); assert.ok(file.path); } await cleanupUpload(request); response.json({ ok: true }) })
+  app.use(async (error: unknown, request: express.Request, response: express.Response, _next: express.NextFunction) => {
+    await cleanupUpload(request)
     response.status(error instanceof multer.MulterError && error.code === "LIMIT_FILE_SIZE" ? 413 : 500).end()
   })
   const server = await new Promise<ReturnType<typeof app.listen>>((resolve) => { const listener = app.listen(0, "127.0.0.1", () => resolve(listener)) })

@@ -107,7 +107,7 @@ export class VisionClient {
   }
 }
 export class DriveClientError extends Error {
-  constructor(message: string, public readonly code = "DRIVE_REQUEST_FAILED", public readonly correlationId?: string) {
+  constructor(message: string, public readonly code = "DRIVE_REQUEST_FAILED", public readonly correlationId?: string, public readonly uploaded = 0) {
     super(message)
     this.name = "DriveClientError"
   }
@@ -157,24 +157,41 @@ export class DriveClient {
     })
   }
 
-  async upload(path: string, files: readonly File[]) {
-    const transfer = await this.call<DriveUploadTicket>("/upload-ticket", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ path }),
-    })
-    const body = new FormData()
-    body.append("path", path)
-    files.forEach((file) => body.append("files", file))
-    const response = await this.request(transfer.uploadUrl, { method: "POST", body, cache: "no-store" })
-    const result = (await response.json().catch(() => null)) as DriveUploadResult | { error?: { message?: string } } | null
-    if (!response.ok || !result || !("uploaded" in result)) {
-      throw new DriveClientError(
-        result && "error" in result ? result.error?.message || "Drive upload failed." : "Drive upload failed.",
-        "DRIVE_UPLOAD_FAILED",
-      )
+  async upload(path: string, files: readonly File[], onProgress?: (uploaded: number, total: number) => void) {
+    const maxBytes = 250 * 1024 * 1024
+    let uploaded = 0
+    onProgress?.(0, files.length)
+    for (let index = 0; index < files.length;) {
+      const batch: File[] = []
+      let bytes = 0
+      while (index < files.length && batch.length < 100 && (batch.length === 0 || bytes + files[index].size <= maxBytes)) {
+        bytes += files[index].size
+        batch.push(files[index++])
+      }
+      try {
+        const transfer = await this.call<DriveUploadTicket>("/upload-ticket", {
+          method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ path }),
+        })
+        const body = new FormData()
+        body.append("path", path)
+        if (batch.some(file => file.webkitRelativePath)) body.append("paths", JSON.stringify(batch.map(file => file.webkitRelativePath || file.name)))
+        batch.forEach(file => body.append("files", file))
+        const response = await this.request(transfer.uploadUrl, { method: "POST", body, cache: "no-store" })
+        const result = (await response.json().catch(() => null)) as DriveUploadResult | { error?: { message?: string } } | null
+        if (!response.ok || !result || !("uploaded" in result)) {
+          if (result && "uploaded" in result && Number.isInteger(result.uploaded) && result.uploaded > 0 && result.uploaded <= batch.length) {
+            uploaded += result.uploaded
+            onProgress?.(uploaded, files.length)
+          }
+          throw new Error(result && "error" in result ? result.error?.message || "Drive upload failed." : "Drive upload failed.")
+        }
+        uploaded += result.uploaded
+        onProgress?.(uploaded, files.length)
+      } catch (error) {
+        throw new DriveClientError(`${uploaded ? `${uploaded} of ${files.length} files uploaded before the error. ` : ""}${error instanceof Error ? error.message : "Drive upload failed."}`, "DRIVE_UPLOAD_FAILED", undefined, uploaded)
+      }
     }
-    return result
+    return { uploaded }
   }
 
   previewUrl(path: string) {

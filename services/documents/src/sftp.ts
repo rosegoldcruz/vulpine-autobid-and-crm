@@ -1,3 +1,4 @@
+import { createReadStream } from "node:fs"
 import type { Readable } from "node:stream"
 import type { Archiver } from "archiver"
 import SftpClient from "ssh2-sftp-client"
@@ -106,23 +107,23 @@ export async function streamRemoteFile(
   })
 }
 
-export async function readFile(inputPath: string) {
-  const path = normalizeRemotePath(inputPath)
-  return withSftp(async (client) => {
-    const maxBytes = positiveIntegerEnv("DRIVE_DOWNLOAD_MAX_BYTES", 250 * 1024 * 1024)
-    const stat = await client.stat(path)
-    if (!stat.isFile) throw new Error("Only files can be downloaded.")
-    if (stat.size > maxBytes) throw Object.assign(new Error("Download exceeds the configured byte limit."), { code: "DOWNLOAD_TOO_LARGE", status: 413 })
-    return readBoundedStream(client.createReadStream(path), maxBytes)
-  })
-}
-
-export async function writeFile(inputPath: string, data: Buffer) {
-  const path = normalizeRemotePath(inputPath)
-  await withSftp(async (client) => {
-    await client.put(data, path)
-  })
-  await logAccess(path, "modify").catch(() => undefined)
+export async function writeUploadedFiles(files: { path: string; localPath: string }[]) {
+  let uploaded = 0
+  try {
+    await withSftp(async (client) => {
+      const parents = new Set<string>()
+      for (const file of files) {
+        const path = normalizeRemotePath(file.path)
+        const parent = parentPath(path)
+        if (parent !== "/" && !parents.has(parent)) { await client.mkdir(parent, true); parents.add(parent) }
+        await client.put(createReadStream(file.localPath), path)
+        uploaded += 1
+        await logAccess(path, "modify").catch(() => undefined)
+      }
+    })
+  } catch (error) {
+    throw Object.assign(new Error("File storage upload failed.", { cause: error }), { uploaded })
+  }
 }
 
 export async function deleteItem(inputPath: string, folder = false) {

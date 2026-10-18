@@ -3,9 +3,9 @@ import test from "node:test"
 import { createHash } from "node:crypto"
 import { Readable } from "node:stream"
 import SftpClient from "ssh2-sftp-client"
-import { readFile, zipDirectory } from "../src/sftp.js"
+import { streamRemoteFile, zipDirectory } from "../src/sftp.js"
 
-test("remote download and folder limits reject oversized metadata and growing streams", async (t) => {
+test("single-file downloads stream above the old limit while folder ZIP limits stay bounded", async (t) => {
   const original = { ...process.env }
   Object.assign(process.env, {
     SFTP_HOST: "qa.invalid", SFTP_USERNAME: "qa", SFTP_PASSWORD: "test-only-password",
@@ -25,12 +25,14 @@ test("remote download and folder limits reject oversized metadata and growing st
   let reads = 0
   t.mock.method(SftpClient.prototype, "stat", async () => ({ isFile: true, size }))
   t.mock.method(SftpClient.prototype, "createReadStream", () => { reads += 1; return Readable.from([Buffer.alloc(streamSize)]) })
-  await assert.rejects(readFile("/oversized.bin"), { code: "DOWNLOAD_TOO_LARGE" })
-  assert.equal(reads, 0)
-  size = 3
-  assert.equal((await readFile("/allowed.bin")).length, 3)
-  streamSize = 513
-  await assert.rejects(readFile("/changed.bin"), { code: "DOWNLOAD_TOO_LARGE" })
+  let received = 0
+  size = 1024 * 1024 * 1024
+  await streamRemoteFile("/large-plan.bin", async (reportedSize, open) => {
+    assert.equal(reportedSize, size)
+    for await (const chunk of open()) received += chunk.length
+  })
+  assert.equal(received, 3)
+  assert.equal(reads, 1)
   streamSize = 300
   const beforeFolder = reads
   t.mock.method(SftpClient.prototype, "list", async () => [{ name: "a.bin", type: "-", size: 300 }, { name: "b.bin", type: "-", size: 300 }])

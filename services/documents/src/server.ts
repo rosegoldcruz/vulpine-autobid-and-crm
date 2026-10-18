@@ -7,20 +7,21 @@ import { authorizeTransfer, requireIntegration } from "./auth.js"
 import { optionalEnv, positiveIntegerEnv } from "./config.js"
 import { contentDisposition, contentTypeForPath, filenameFromPath, zipFilenameFromPath } from "./file-meta.js"
 import { parseByteRange } from "./range.js"
-import { joinRemotePath, validateDeletePath } from "./path.js"
-import { deleteItem, listAllItems, listDirectory, readFile, streamRemoteFile, writeFile, zipDirectory } from "./sftp.js"
-import { boundedMemoryStorage } from "./upload-storage.js"
+import { resolveUploadPaths, validateDeletePath } from "./path.js"
+import { deleteItem, listAllItems, listDirectory, streamRemoteFile, writeUploadedFiles, zipDirectory } from "./sftp.js"
+import { temporaryUploadStorage, cleanupUpload } from "./upload-storage.js"
 import { releaseTransfer, reserveTransfer } from "./transfer-capacity.js"
 
 const app = express()
+const uploadLimit = optionalEnv("DRIVE_UPLOAD_MAX_BYTES") ? positiveIntegerEnv("DRIVE_UPLOAD_MAX_BYTES", 250 * 1024 * 1024) : undefined
 const upload = multer({
-  storage: boundedMemoryStorage(positiveIntegerEnv("DRIVE_UPLOAD_MAX_BYTES", 250 * 1024 * 1024)),
+  storage: temporaryUploadStorage(uploadLimit),
   limits: {
-    fileSize: positiveIntegerEnv("DRIVE_UPLOAD_MAX_BYTES", 250 * 1024 * 1024),
+    fileSize: uploadLimit,
     files: 100,
-    fields: 1,
-    fieldSize: 4096,
-    parts: 101,
+    fields: 2,
+    fieldSize: 256 * 1024,
+    parts: 102,
   },
 })
 
@@ -69,11 +70,18 @@ app.post("/upload", uploadCors, (request, response, next) => {
       response.status(400).json({ error: { code: "UPLOAD_FILES_REQUIRED", message: "No files provided." } })
       return
     }
-    for (const file of files) await writeFile(joinRemotePath(path, file.originalname), file.buffer)
+    let targets: string[]
+    try { targets = resolveUploadPaths(path, files.map(file => file.originalname), request.body?.paths) }
+    catch (error) {
+      response.status(400).json({ error: { code: "VALIDATION_ERROR", message: (error as Error).message } })
+      return
+    }
+    await writeUploadedFiles(files.map((file, index) => ({ path: targets[index], localPath: file.path })))
     response.json({ uploaded: files.length })
   } catch (error) {
     next(error)
   } finally {
+    await cleanupUpload(request)
     releaseTransfer(response)
   }
 })
@@ -150,15 +158,19 @@ app.get("/download", async (request, response, next) => {
   if (!reserveTransfer(response)) return
   try {
     const isFolder = request.query.type === "folder"
-    const data = isFolder ? await zipDirectory(path) : await readFile(path)
+    if (isFolder) {
+      const data = await zipDirectory(path)
+      response.set({ "content-type": "application/zip", "content-length": String(data.byteLength), "content-disposition": contentDisposition("attachment", zipFilenameFromPath(path)), "cache-control": "private, no-store" }).send(data)
+    } else {
+      await streamRemoteFile(path, async (size, open) => {
+        response.set({ "content-type": contentTypeForPath(path), "content-length": String(size), "content-disposition": contentDisposition("attachment", filenameFromPath(path)), "cache-control": "private, no-store", "x-content-type-options": "nosniff" })
+        if (size === 0) { response.end(); return }
+        await pipeline(open(), response)
+      })
+    }
     await logAccess(path, "view").catch(() => undefined)
-    response.set({
-      "content-type": isFolder ? "application/zip" : contentTypeForPath(path),
-      "content-length": String(data.byteLength),
-      "content-disposition": contentDisposition("attachment", isFolder ? zipFilenameFromPath(path) : filenameFromPath(path)),
-      "cache-control": "private, no-store",
-    }).send(data)
   } catch (error) {
+    if (response.headersSent) { response.destroy(); return }
     next(error)
   } finally {
     releaseTransfer(response)
@@ -222,7 +234,8 @@ app.post("/access", async (request, response, next) => {
   }
 })
 
-app.use((error: unknown, request: Request, response: Response, _next: NextFunction) => {
+app.use(async (error: unknown, request: Request, response: Response, _next: NextFunction) => {
+  await cleanupUpload(request)
   releaseTransfer(response)
   const correlationId = request.correlationId || normalizeCorrelationId(request.header("x-correlation-id"))
   console.error(JSON.stringify({
@@ -239,12 +252,16 @@ app.use((error: unknown, request: Request, response: Response, _next: NextFuncti
   response.status(status).json({
     error: { code: uploadError ? "UPLOAD_LIMIT_EXCEEDED" : boundedError ? "DOWNLOAD_TOO_LARGE" : "INTERNAL_ERROR", message: status === 500 ? "Document operation failed." : "Document transfer exceeds the configured limits." },
     correlationId,
+    ...(error && typeof error === "object" && "uploaded" in error && Number.isInteger(error.uploaded) ? { uploaded: error.uploaded } : {}),
   })
 })
 
 const host = optionalEnv("DOCUMENTS_HOST") ?? "127.0.0.1"
 const port = positiveIntegerEnv("DOCUMENTS_PORT", 3016)
 
-app.listen(port, host, () => {
+const server = app.listen(port, host, () => {
   console.info(JSON.stringify({ event: "documents.started", host, port }))
 })
+
+// Large plan uploads may take longer than Node's five-minute request default.
+server.requestTimeout = 0

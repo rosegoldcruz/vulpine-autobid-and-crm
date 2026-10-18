@@ -113,3 +113,40 @@ isolating private output from ordinary restricted publication. Keep attachments
 and non-note credential/database files excluded. This approval is for private
 viewing, not public publication or broadening agent context to the whole vault.
 Retain the supported reviewed continuity protocol for managed vault mutations.
+
+
+## 2026-10-18 — owner grants Drive writes and bid deletion
+
+The owner requested agent access to Vulpine Drive for plans, briefly selected
+read-only, then explicitly changed it to read/write. The final instruction governs:
+allow folder browsing, preview/download, upload and deletion through the existing
+Drive service. Use scoped expiring transfer tickets for large files instead of
+copying service credentials to agents or increasing MCP payload limits.
+
+The owner explicitly requested a delete button for stored pricing bids and MCP
+deletion, identifying unwanted fake test data. Add individual bid deletion rather
+than deleting whole customer projects. Keep write permissions, revision conflicts,
+organization/owner boundaries and audit metadata. Remove clearly labeled demo/QA
+records through the new authenticated tools, preserving unrelated business data.
+
+
+The owner also requested folder selection/upload rather than file-only upload.
+Preserve the selected top folder and nested directories through a validated
+relative-path manifest, retaining existing storage and signed transfer gates.
+Batch larger selections within current limits rather than increasing unbounded
+server memory. Empty folders are outside what the browser file-list picker reports.
+
+
+## 2026-10-18 — standalone retirement and large folder uploads
+
+The owner explicitly superseded the brief standalone repair request: retire
+drive.vulpine.llc, but DO NOT delete Backoffice Drive or shared storage. Return
+410 at the standalone hostname and remove only its frontend PM2 process. Retain
+the documents backend and all stored files. No standalone IAM callback work remains.
+
+The owner is uploading approximately 3,000 files and reported the old 250 MiB
+rejection. Stream uploads through private temporary disk rather than buffering
+whole files in Node memory. Allow individual files above the batching target,
+retain 100-file batches and scoped authentication, and show progress with resume
+for remaining files after acknowledged partial failures. Resume requires the
+current browser tab; cross-reload and byte-range resume are not implemented.
