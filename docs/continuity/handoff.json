@@ -1,22 +1,15 @@
 {
-  "last_change": "Completed first-party /opt consolidation into /opt/vulpine-platform: imported actual source/history and shared workspace, cut over PM2/systemd/Engine containers, preserved private runtime state and recovery, removed 18 old application/release/check directories and 2 obsolete root files. /home and Vulpine Supply excluded and untouched.",
+  "last_change": "Investigated owner-reported pricing PDF regression; no application source, template or runtime changes made.",
   "verification": [
-    "315 distinct tests passed: root 49 plus services 36, pricing 26, Cabinet Brain 197, Twilio 5 and Engine 2. Brain runs its actual route/lifecycle tests from an isolated build copy.",
-    "Backoffice, Brain, AI, Leads and Pricing production builds passed. Twilio Docker image built and real root/authenticated login smoke passed; its initial smoke used a nonexistent health path, then corrected to the actual root. AI preserved private build configuration and isolated wrapper build passed.",
-    "Vercel production dpl_4kec6QSLjdk1w2N3gUnE64z24DgA READY and aliased backoffice.vulpine.llc.",
-    "python3 scripts/verify-consolidation.py passed after removal: all four PM2 apps and systemd pricing/bidding/operations run canonical source; Engine containers use canonical Compose; no obsolete process/open-file/container-mount dependencies; all 8 live health checks 200.",
-    "Authenticated MCP read verification passed for Drive, saved pricing projects, Tracker with all 44 bids, Cabinet Brain, Engine read model and automations. Seven client identities discover 27 tools. Drive nested upload/download/delete and manifest traversal denial passed and verification folder was removed. Capacity checks initially returned expected 429 during active transfers; bounded verification retry passed without interrupting users.",
-    "Nineteen source archives passed compressed integrity and SHA256 validation; needed source bytes verified against archives. Original history bundles verified. SQLite recovery integrity checks and five PostgreSQL dump manifests passed; role/host configuration recovery retained privately.",
-    "Engine container image/environment/named-volume parity passed; Redis mutable tag initially selected another patch and was corrected by pinning the original image. Native Tracker SQLite binding was rebuilt before successful cutover; all 44 records remain.",
-    "Initial Brain history filter incorrectly omitted source API uploads route. Restored it, imported its complete filtered source history and passed all 197 tests. Earlier direct test build collision risk was corrected by isolated test runner.",
-    "Credential scan checked new imported history and staged blobs against known private runtime values, with no hits. Generic marker detection initially matched an unchanged secret-detection test fixture; narrowed review to new history/changed files. Copied historical CRLF/whitespace retained intentionally. No credentials, runtime databases or uploads intentionally tracked.",
-    "/home and Vulpine Supply were not modified; vendor software/catalog, vault and existing backups retained. infra/consolidation/result.json records every removed location and recovery destination."
+    "Compared src/quote-pdf.mjs, assets/proposal-template.pdf, dist/quote-pdf.mjs, dist/proposal-template.pdf, src/app.mjs and server.mjs against verified pre-migration recovery archive: all byte-identical.",
+    "corepack pnpm --filter @vulpine/pricing test: 26 passed, zero failures, including authenticated test-server PDF exports.",
+    "Authenticated read-only GETs against live pricing port 3021: PDF generator, template and PDF library match deployed dist files.",
+    "Read nine existing saved quotes and generated customer/internal/purchase PDFs locally for eight valid quotes: 24 outputs parsed successfully. One quote correctly rejected unavailable prices and empty active units. No database writes or fake saved bids.",
+    "Rendered and visually inspected one customer acceptance page using pdftoppm; readable summary and signatures. Initial optional PyMuPDF render failed because fitz is not installed; Poppler render succeeded.",
+    "Owner browser download path and specific reported defect remain unverified; clarification requested."
   ],
   "decisions": [
-    "Explicit owner authorization covers full migration, routine implementation decisions, Git work and post-verification deletion; do not stop at an audit. /home and Vulpine Supply are excluded.",
-    "First-party production processes execute canonical source. Data, secrets, backups and unrelated third-party apps stay outside tracked source. Preserve needed work/history and private verified recovery before removing old trees.",
-    "Use the existing branches, service identities, credentials, container images and persistent volume identities. Do not claim deployment of previously dormant apps or completion of the entire user upload selection.",
-    "Standalone Drive/Tracker remain retired; gated Backoffice modules and stored data stay active."
+    "Preserve existing proposal template and quote data until the reported defect is identified. Do not infer that passing generator tests proves browser download or user-intended layout."
   ],
   "open_work": [
     "Provision approved ZITADEL management authentication for actual directory, permission and settings administration; own agent grant inspection already works.",
@@ -24,17 +17,18 @@
     "Enrol and verify hosted accounts/other-device clients separately; local transports do not configure hosted ChatGPT/Claude, other-device Cursor, standalone Grok/Grokbot or GitHub-hosted agents.",
     "Confirm actual model sessions invoke read_aeon_context; transport retrieval and startup hints alone are not model-session evidence.",
     "Assess the owner-reported prior chat credential exposure and rotate the affected identity through secure enrollment if the credential is still active; no raw value was supplied in the pasted transcript.",
-    "Resolve the private vault review queue against project evidence; preserve prior concurrent engineering open work."
+    "Resolve the private vault review queue against project evidence; preserve prior concurrent engineering open work.",
+    "Identify and reproduce the owner-reported pricing PDF problem once the affected bid and symptom are available; generator checks do not establish browser flow."
   ],
   "blockers": [
     "ZITADEL management credential is absent. Inbox provider rejects the configured credential with HTTP 401. External hosted accounts/device sessions are not connected to this server tooling."
   ],
-  "next_action": "Use canonical source and deployment entry points. No consolidation work remains; pursue existing provider/hosted-client enrollment tasks separately when valid credentials are available.",
-  "recorded_at": "2026-10-18T15:39:54.736Z",
+  "next_action": "Obtain specific pricing PDF symptom or affected bid and investigate that path; no PDF fix claimed.",
+  "recorded_at": "2026-10-18T16:36:08.366Z",
   "snapshot": {
-    "head": "fc2907f84172405884a90e236960bbceb056f61b",
+    "head": "7d0d46277cc4ffc026e76c6893193df1856a061f",
     "branch": "codex/cabinet-brain-integration-recovery",
-    "worktree": " M README.md\n M apps/ai/package.json\n M apps/pricing/deploy/README.md\n M docs/architecture/consolidation-status.md\n M docs/architecture/current-system-map.md\n M docs/continuity/current.md\n M docs/continuity/decisions.md\n M legacy/drive/ecosystem.config.cjs\n M services/bids-tracker/README.monorepo.md\n M services/documents/README.md\n M services/engine/README.md\n?? apps/ai/.env.example\n?? apps/ai/README.md\n?? apps/ai/scripts/\n?? infra/consolidation/\n?? legacy/drive/README.md\n?? scripts/verify-consolidation.py",
+    "worktree": "",
     "sources": {
       "AGENTS.md": "c51e08a8021528ff818e5f62620aae587530eeec275750b2d38c2771ef732460",
       "README.md": "b6948f9084afb5f1bcceb4466e627c78f2288ba7f4876ceb64f3702b4fea5bd1",
@@ -70,7 +64,7 @@
   },
   "vault": {
     "project": "vulpine-platform",
-    "session_id": "b2ba4ca8-eb59-49db-84e5-cad5da8343a6",
-    "record": "sources/aeon-sessions/vulpine-platform/b2ba4ca8-eb59-49db-84e5-cad5da8343a6.md"
+    "session_id": "0a6be9a5-00cd-4f8a-b04d-c956bd2e70ec",
+    "record": "sources/aeon-sessions/vulpine-platform/0a6be9a5-00cd-4f8a-b04d-c956bd2e70ec.md"
   }
 }
