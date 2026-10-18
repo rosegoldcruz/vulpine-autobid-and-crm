@@ -55,7 +55,9 @@ Uploads stream into private temporary files and then SFTP, with cleanup on succe
 and failure. One SFTP connection handles each batch. No artificial upload size
 limit applies by default; operators can set DRIVE_UPLOAD_MAX_BYTES when needed.
 Single-file downloads stream; folder ZIP downloads retain their configured bounds.
-The UI shows completed-file progress and can resume the remaining selection after
+The UI shows browser byte-transfer progress, then a distinct saving-to-Drive
+state while the server writes the batch to SFTP. Completed-file counts advance
+after batch acknowledgement. The UI can resume the remaining selection after
 a failure, including a server-acknowledged partial batch. Keep the tab open; this
 is session resume, not cross-reload or byte-range resume. Browser directory selection supplies files and their
 ancestor folders; empty directories are not included by that picker.

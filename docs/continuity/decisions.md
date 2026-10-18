@@ -161,3 +161,13 @@ checkouts using runtime evidence. Do not call source copying full consolidation
 or remove still-mounted files/unique edits. Backoffice Drive remains preserved.
 Apply the documents access-history migration to the same database as its runtime;
 working SFTP listing and a shallow health response do not verify Recent/history.
+
+
+## 2026-10-18 — distinguish sending from saved files
+
+Owner reported an upload stuck at zero files with a pending request. Live metadata
+showed incoming temporary-file bytes and continuing permanent-storage write logs.
+The UI had reported only whole-batch acknowledgements. Add browser byte progress
+and a separate indeterminate saving state without claiming bytes sent are files
+saved. Keep the in-flight backend running; do not restart it or tell the owner
+to reload an active upload just to load new display code.

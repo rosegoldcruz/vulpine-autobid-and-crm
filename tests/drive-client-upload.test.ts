@@ -58,3 +58,32 @@ test("a file above 250 MiB is uploaded by itself and does not block 3000 other f
  assert.equal(batches.length,31)
  assert.equal(progress.at(-1),3001)
 })
+
+test("browser uploads report bytes before response and distinguish remote saving", async () => {
+  const previous = globalThis.XMLHttpRequest
+  const states: { sentBytes: number; phase: string }[] = []
+  class FakeXHR {
+    upload: { onprogress?: (event: { lengthComputable: boolean; loaded: number; total: number }) => void; onload?: () => void } = {}
+    status = 200
+    responseText = '{"uploaded":1}'
+    onload?: () => void
+    open(method: string, url: string) { assert.equal(method, "POST"); assert.equal(url, "https://drive.test/upload") }
+    send(body: FormData) {
+      assert.equal(body.getAll("files").length, 1)
+      this.upload.onprogress?.({ lengthComputable: true, loaded: 50, total: 100 })
+      assert.equal(states.at(-1)?.sentBytes, 5)
+      this.upload.onload?.()
+      assert.equal(states.at(-1)?.phase, "saving")
+      this.onload?.()
+    }
+  }
+  globalThis.XMLHttpRequest = FakeXHR as unknown as typeof XMLHttpRequest
+  try {
+    const drive = new DriveClient("/api/drive", async () => Response.json({ ok: true, data: { uploadUrl: "https://drive.test/upload" }, meta: {} }))
+    assert.deepEqual(await drive.upload("/", [new File(["0123456789"], "plan.txt")], undefined, state => states.push(state)), { uploaded: 1 })
+    assert.deepEqual(states.map(state => [state.sentBytes, state.phase]), [[0, "sending"], [5, "sending"], [10, "saving"]])
+  } finally {
+    if (previous === undefined) delete (globalThis as { XMLHttpRequest?: typeof XMLHttpRequest }).XMLHttpRequest
+    else globalThis.XMLHttpRequest = previous
+  }
+})

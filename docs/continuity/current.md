@@ -313,3 +313,32 @@ Drive/tracker/Vision, separately versioned pricing, and external vendor apps.
 Old engine directories still supply uploads, DB init and n8n workflow mounts;
 old MCP checkout has five tracked edits. No bulk deletion was performed. Source
 and runtime consolidation remains incomplete; current system map links this audit.
+
+
+## 2026-10-18 — pending upload progress
+
+Owner screenshot showed 0 of 1395 files with an active upload request. Live temp
+metadata showed 218 MiB across 14 received files with writes continuing. Database
+modify history confirmed continuing permanent saves, including 21 in a two-minute
+window with latest save four seconds before inspection. No customer contents or
+filenames were read or logged. This established batch acknowledgement lag, not
+completion of the owner's entire selection.
+
+Browser uploads now use XMLHttpRequest progress to report bytes sent, then a
+distinct saving-to-Drive state with an indeterminate bar until batch acknowledgement.
+Completed-file counts and partial-error Resume retain existing semantics. Fetch
+remains the non-browser fallback. Backend was not restarted and active transfers
+were preserved; the existing tab loads new UI only on a later reload.
+
+SDK upload tests: four passed, including byte progress before response and saving
+transition. Five browser checks passed, including a real local HTTP upload whose
+storage acknowledgement was deliberately delayed, plus desktop/mobile folder
+selection, read-only controls and 3000-file partial resume. The initial delayed
+test used a browser interception that also stalled upload events; replaced it
+with an actual local HTTP receiver to exercise the browser transport accurately.
+SDK and Backoffice typechecks and targeted UI lint passed. Production upload
+CORS preflight returned 204 for the Backoffice origin.
+
+Production deployment dpl_3PCCxEzMJKCHJF6UgnrkaPTSEEkP is READY on Backoffice.
+Deployment file hashes match verified UI and SDK source. The isolated browser QA
+server was stopped. No backend restart or in-flight upload cancellation occurred.

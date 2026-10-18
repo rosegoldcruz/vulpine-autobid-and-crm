@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { createServer } from 'node:http'
 import { mkdtemp, mkdir, writeFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, basename } from 'node:path'
@@ -83,4 +84,33 @@ test('3000-file folder shows progress and resumes after a partial batch failure'
     await expect(page.getByRole('status').filter({ hasText: 'Uploaded 3,000 of 3,000 files' })).toBeVisible({ timeout: 60000 })
     expect(received.size).toBe(3000)
   } finally { await rm(folder, { recursive: true, force: true }) }
+})
+
+test('upload shows saving state while a transferred batch awaits storage acknowledgement', async ({ page, context }) => {
+  await localAuth(context)
+  let acknowledge!: () => void
+  const saving = new Promise<void>(resolve => { acknowledge = resolve })
+  const server = createServer((request, response) => {
+    response.setHeader('access-control-allow-origin', process.env.PLAYWRIGHT_BASE_URL!)
+    response.setHeader('access-control-allow-methods', 'POST, OPTIONS')
+    response.setHeader('access-control-allow-headers', 'content-type')
+    if (request.method === 'OPTIONS') { response.writeHead(204).end(); return }
+    request.resume()
+    request.on('end', () => { void saving.then(() => { response.writeHead(200, { 'content-type': 'application/json' }); response.end('{"uploaded":1}') }) })
+  })
+  await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve))
+  const address = server.address() as { port: number }
+  try {
+    await page.route('**/api/drive/**', route => route.fulfill({ json: { ok: true, data: route.request().url().includes('upload-ticket') ? { uploadUrl: `http://127.0.0.1:${address.port}/upload` } : { path: '/', parent: '/', items: [], generatedAt: new Date().toISOString() }, meta: {} } }))
+    await page.goto('/drive')
+    await page.locator('input[type=file]').first().setInputFiles({ name: 'plan.txt', mimeType: 'text/plain', buffer: Buffer.alloc(1048576, 65) })
+    await expect(page.getByText('Saving this batch of 1 file to Drive…', { exact: true })).toBeVisible()
+    await expect(page.getByRole('progressbar', { name: 'Upload progress' })).not.toHaveAttribute('value')
+    acknowledge()
+    await expect(page.getByRole('status').filter({ hasText: 'Uploaded 1 of 1 files' })).toBeVisible()
+  } finally {
+    acknowledge()
+    server.closeAllConnections()
+    await new Promise<void>(resolve => server.close(() => resolve()))
+  }
 })

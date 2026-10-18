@@ -113,6 +113,8 @@ export class DriveClientError extends Error {
   }
 }
 
+export type DriveTransferProgress = { sentBytes: number; totalBytes: number; phase: "sending" | "saving"; batchFiles: number }
+
 export class DriveClient {
   private readonly request: typeof fetch
 
@@ -157,9 +159,11 @@ export class DriveClient {
     })
   }
 
-  async upload(path: string, files: readonly File[], onProgress?: (uploaded: number, total: number) => void) {
+  async upload(path: string, files: readonly File[], onProgress?: (uploaded: number, total: number) => void, onTransfer?: (progress: DriveTransferProgress) => void) {
     const maxBytes = 250 * 1024 * 1024
     let uploaded = 0
+    let sentBytes = 0
+    const totalBytes = files.reduce((total, file) => total + file.size, 0)
     onProgress?.(0, files.length)
     for (let index = 0; index < files.length;) {
       const batch: File[] = []
@@ -176,7 +180,22 @@ export class DriveClient {
         body.append("path", path)
         if (batch.some(file => file.webkitRelativePath)) body.append("paths", JSON.stringify(batch.map(file => file.webkitRelativePath || file.name)))
         batch.forEach(file => body.append("files", file))
-        const response = await this.request(transfer.uploadUrl, { method: "POST", body, cache: "no-store" })
+        const report = (loaded: number, phase: "sending" | "saving") => onTransfer?.({ sentBytes: sentBytes + loaded, totalBytes, phase, batchFiles: batch.length })
+        report(0, "sending")
+        const response = onTransfer && typeof XMLHttpRequest !== "undefined"
+          ? await new Promise<Response>((resolve, reject) => {
+            const xhr = new XMLHttpRequest()
+            xhr.open("POST", transfer.uploadUrl)
+            xhr.upload.onprogress = (event) => {
+              if (event.lengthComputable) report(Math.min(bytes, bytes * event.loaded / event.total), "sending")
+            }
+            xhr.upload.onload = () => report(bytes, "saving")
+            xhr.onload = () => resolve(new Response(xhr.responseText, { status: xhr.status }))
+            xhr.onerror = () => reject(new Error("Upload connection failed. Resume to retry the remaining files."))
+            xhr.onabort = () => reject(new Error("Upload interrupted. Resume to retry the remaining files."))
+            xhr.send(body)
+          })
+          : await this.request(transfer.uploadUrl, { method: "POST", body, cache: "no-store" })
         const result = (await response.json().catch(() => null)) as DriveUploadResult | { error?: { message?: string } } | null
         if (!response.ok || !result || !("uploaded" in result)) {
           if (result && "uploaded" in result && Number.isInteger(result.uploaded) && result.uploaded > 0 && result.uploaded <= batch.length) {
@@ -185,6 +204,7 @@ export class DriveClient {
           }
           throw new Error(result && "error" in result ? result.error?.message || "Drive upload failed." : "Drive upload failed.")
         }
+        sentBytes += bytes
         uploaded += result.uploaded
         onProgress?.(uploaded, files.length)
       } catch (error) {

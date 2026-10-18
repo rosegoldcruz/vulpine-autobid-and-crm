@@ -31,7 +31,7 @@ import {
 } from "lucide-react"
 import { toast, Toaster } from "sonner"
 import type { DriveItem, RecentDriveItem } from "@vulpine/contracts"
-import { DriveClient, DriveClientError } from "@vulpine/sdk"
+import { DriveClient, DriveClientError, type DriveTransferProgress } from "@vulpine/sdk"
 import {
   Drawer,
   DrawerClose,
@@ -194,6 +194,7 @@ export function DriveSection({ canWrite = false }: { canWrite?: boolean }) {
   const [previewItem, setPreviewItem] = useState<DriveRecord | null>(null)
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState<{ completed: number; total: number } | null>(null)
+  const [transferProgress, setTransferProgress] = useState<DriveTransferProgress | null>(null)
   const [uploadFailure, setUploadFailure] = useState<{ files: File[]; destination: string; completed: number; total: number; message: string } | null>(null)
   const [deleting, setDeleting] = useState(false)
   const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null)
@@ -347,6 +348,7 @@ export function DriveSection({ canWrite = false }: { canWrite?: boolean }) {
   async function uploadSelection(files: File[], destination: string, offset: number, total: number) {
     setUploading(true)
     setUploadFailure(null)
+    setTransferProgress(null)
     setUploadProgress({ completed: offset, total })
     const pending = toast.loading(`Uploading ${offset} of ${total} files…`)
     let completed = 0
@@ -355,7 +357,7 @@ export function DriveSection({ canWrite = false }: { canWrite?: boolean }) {
         completed = count
         setUploadProgress({ completed: offset + count, total })
         toast.loading(`Uploading ${offset + count} of ${total} files…`, { id: pending })
-      })
+      }, setTransferProgress)
       toast.success(`${offset + result.uploaded} file${total === 1 ? "" : "s"} uploaded`, { id: pending, description: destination === "/" ? "Saved to Drive root." : `Saved to ${destination}.` })
       await loadPath(destination)
       if (activeTab === "recent") await loadRecent()
@@ -366,6 +368,7 @@ export function DriveSection({ canWrite = false }: { canWrite?: boolean }) {
       toast.error("Upload paused", { id: pending, description: message })
     } finally {
       setUploading(false)
+      setTransferProgress(null)
       if (fileInputRef.current) fileInputRef.current.value = ""
       if (folderInputRef.current) folderInputRef.current.value = ""
       if (cameraInputRef.current) cameraInputRef.current.value = ""
@@ -424,7 +427,15 @@ export function DriveSection({ canWrite = false }: { canWrite?: boolean }) {
         </div>
       </section>
 
-      {uploadProgress ? <section aria-label="Upload progress" className="surface-card rounded-xl px-4 py-3"><p role="status" className="text-xs font-semibold text-foreground">{uploading ? "Uploading" : uploadFailure ? "Upload paused" : "Uploaded"} {uploadProgress.completed.toLocaleString()} of {uploadProgress.total.toLocaleString()} files</p><progress value={uploadProgress.completed} max={uploadProgress.total} className="mt-2 h-2 w-full accent-primary" />{uploading ? <p className="mt-1 text-xs text-muted-foreground">Keep this tab open until the upload finishes.</p> : null}{uploadFailure ? <div role="alert" className="mt-2 flex flex-wrap items-center gap-3"><p className="text-xs text-destructive">{uploadFailure.message}</p><button type="button" onClick={() => void uploadSelection(uploadFailure.files, uploadFailure.destination, uploadFailure.completed, uploadFailure.total)} className="rounded-lg bg-primary px-3 py-2 text-xs font-bold text-primary-foreground">Resume upload</button></div> : null}</section> : null}
+      {uploadProgress ? (
+        <section aria-label="Upload progress" className="surface-card rounded-xl px-4 py-3">
+          <p role="status" className="text-xs font-semibold text-foreground">{uploading ? "Uploading" : uploadFailure ? "Upload paused" : "Uploaded"} {uploadProgress.completed.toLocaleString()} of {uploadProgress.total.toLocaleString()} files</p>
+          {uploading && transferProgress ? <p className="mt-2 text-xs text-primary">{transferProgress.phase === "saving" ? `Saving this batch of ${transferProgress.batchFiles} file${transferProgress.batchFiles === 1 ? "" : "s"} to Drive…` : `Sending ${(transferProgress.sentBytes / 1048576).toFixed(1)} of ${(transferProgress.totalBytes / 1048576).toFixed(1)} MB (${transferProgress.totalBytes ? Math.floor(100 * transferProgress.sentBytes / transferProgress.totalBytes) : 0}%)`}</p> : null}
+          <progress aria-label="Upload progress" {...(uploading && transferProgress?.phase === "saving" ? {} : { value: uploading && transferProgress ? transferProgress.sentBytes : uploadProgress.completed, max: uploading && transferProgress ? Math.max(1, transferProgress.totalBytes) : uploadProgress.total })} className="mt-2 h-2 w-full accent-primary" />
+          {uploading ? <p className="mt-1 text-xs text-muted-foreground">Keep this tab open. The file count updates after each batch is saved.</p> : null}
+          {uploadFailure ? <div role="alert" className="mt-2 flex flex-wrap items-center gap-3"><p className="text-xs text-destructive">{uploadFailure.message}</p><button type="button" onClick={() => void uploadSelection(uploadFailure.files, uploadFailure.destination, uploadFailure.completed, uploadFailure.total)} className="rounded-lg bg-primary px-3 py-2 text-xs font-bold text-primary-foreground">Resume upload</button></div> : null}
+        </section>
+      ) : null}
 
       {error ? <div role="alert" className="rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-xs font-medium text-destructive-foreground">Vulpine Drive unavailable: {error}</div> : null}
 
