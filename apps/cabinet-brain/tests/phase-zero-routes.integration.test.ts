@@ -194,7 +194,7 @@ describe.sequential('Phase Zero route-level validation', () => {
   beforeAll(async () => {
     port = await reservePort();
     baseUrl = `http://127.0.0.1:${port}`;
-    execSync('npm run build', { cwd: REPO_ROOT, stdio: 'pipe' });
+    if (!process.env.VULPINE_TEST_BUILD_READY) execSync('corepack pnpm build', { cwd: REPO_ROOT, stdio: 'pipe' });
     await startServer();
   }, 240000);
 

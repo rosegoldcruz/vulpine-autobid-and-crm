@@ -1,19 +1,3 @@
-module.exports = {
-  apps: [
-    {
-      name: "vulpine-documents",
-      cwd: "/opt/vulpine-platform",
-      script: "./node_modules/.bin/tsx",
-      args: "services/documents/src/server.ts",
-      interpreter: "none",
-      autorestart: true,
-      max_restarts: 10,
-      min_uptime: "10s",
-      env: {
-        NODE_ENV: "production",
-        DOCUMENTS_HOST: "127.0.0.1",
-        DOCUMENTS_PORT: "3016",
-      },
-    },
-  ],
-}
+// Credentials and the existing dedicated UID stay in the private runtime config.
+// This file is the canonical PM2 deployment entry point.
+module.exports = require("/etc/vulpine-apps/vulpine-documents-platform.pm2.json");

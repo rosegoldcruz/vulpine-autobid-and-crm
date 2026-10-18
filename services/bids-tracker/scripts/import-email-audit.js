@@ -4,7 +4,7 @@ const db = require('../db');
 
 // Keep customer correspondence in ignored runtime data, outside source control.
 const { matches, unresolved, companyUpdates = [] } = JSON.parse(
-  fs.readFileSync(path.join(__dirname, '../data/email-audit.json'), 'utf8')
+  fs.readFileSync(path.join(process.env.TRACKER_DATA_DIR || path.join(__dirname, '../data'), 'email-audit.json'), 'utf8')
 );
 
 const update = db.prepare(`

@@ -28,7 +28,13 @@
       }
     ],
     "strict": false,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "types": [
+      "node",
+      "react",
+      "react-dom"
+    ],
+    "jsxImportSource": "react"
   },
   "include": [
     "next-env.d.ts",
@@ -37,7 +43,7 @@
     ".next/types/**/*.ts"
   ],
   "exclude": [
-     "node_modules",
-      "legacy/**"
+    "node_modules",
+    "legacy/**"
   ]
 }

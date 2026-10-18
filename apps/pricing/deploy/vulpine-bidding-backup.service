@@ -2,5 +2,5 @@
 Description=Back up Vulpine bidding Postgres database
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/python3 /opt/vulpine-cabinet-pricing/deploy/backup-bidding.py
+ExecStart=/usr/bin/python3 /opt/vulpine-platform/apps/pricing/deploy/backup-bidding.py
 UMask=0077

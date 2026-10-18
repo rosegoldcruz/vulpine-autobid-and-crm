@@ -5,7 +5,7 @@ const { extractFromPdf } = require('../extract');
 const { loadProfitIndex, enrichBidFromProfitIndex } = require('../profit');
 const { loadWorkbookIndex, enrichBidFromWorkbookIndex } = require('../workbook');
 
-const PDF_DIR = path.join(__dirname, '..', 'uploads', 'vulpine_pdfs');
+const PDF_DIR = path.join(process.env.TRACKER_UPLOAD_DIR || path.join(__dirname, '..', 'uploads'), 'vulpine_pdfs');
 
 function qualitySummary() {
   const rows = db.prepare(`

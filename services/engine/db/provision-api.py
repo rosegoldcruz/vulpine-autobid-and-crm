@@ -5,7 +5,7 @@ import re
 import subprocess
 
 env = {}
-for line in (pathlib.Path(__file__).resolve().parents[1] / '.env').read_text().splitlines():
+for line in pathlib.Path('/etc/vulpine-platform/engine/compose.env').read_text().splitlines():
     if line.strip() and not line.lstrip().startswith('#') and '=' in line:
         key, value = line.split('=', 1)
         env[key.strip()] = value.strip().strip('\"\'')
@@ -42,10 +42,10 @@ import os
 root = pathlib.Path(__file__).resolve().parents[1]
 settings = next(n for n in ast.parse((root / 'shared/config.py').read_text()).body if isinstance(n, ast.ClassDef) and n.name == 'Settings')
 allowed = {n.target.id.upper() for n in settings.body if isinstance(n, ast.AnnAssign)}
-raw = {line.split('=', 1)[0].strip(): line.split('=', 1)[1] for line in (root / '.env').read_text().splitlines() if '=' in line and not line.lstrip().startswith('#')}
+raw = {line.split('=', 1)[0].strip(): line.split('=', 1)[1] for line in pathlib.Path('/etc/vulpine-platform/engine/compose.env').read_text().splitlines() if '=' in line and not line.lstrip().startswith('#')}
 app = {key: value for key, value in raw.items() if key in allowed}
 app.update(DATABASE_URL='postgresql+asyncpg://' + role + ':' + env['ENGINE_DB_PASSWORD'] + '@postgres:5432/vulpine', REDIS_URL='redis://redis:6379/0', APP_ENV='production', DEBUG='false', PYTHONDONTWRITEBYTECODE='1', HOME='/tmp')
-path = root / '.env.api'
+path = pathlib.Path('/etc/vulpine-platform/engine/api.env')
 fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
 os.fchmod(fd, 0o600)
 os.fchown(fd, 0, 0)

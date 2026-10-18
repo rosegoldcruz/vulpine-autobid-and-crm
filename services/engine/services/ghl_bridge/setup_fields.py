@@ -6,7 +6,7 @@ Run once during initial setup: python -m services.ghl_bridge.setup_fields
 
 import asyncio
 import sys
-sys.path.insert(0, "/opt/vulpine-engine")
+sys.path.insert(0, "/opt/vulpine-platform/services/engine")
 
 from services.ghl_bridge.client import ghl
 from services.ghl_bridge.custom_fields import get_all_field_definitions

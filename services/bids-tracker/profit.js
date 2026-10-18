@@ -69,7 +69,7 @@ function scoreCandidate(left, right) {
   return Math.max(maxRatio, minRatio * 0.92);
 }
 
-function loadProfitIndex(csvPath = path.join(__dirname, 'uploads', 'project_profits.csv')) {
+function loadProfitIndex(csvPath = path.join(process.env.TRACKER_UPLOAD_DIR || path.join(__dirname, 'uploads'), 'project_profits.csv')) {
   if (!fs.existsSync(csvPath)) {
     return [];
   }

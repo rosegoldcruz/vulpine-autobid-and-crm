@@ -11,7 +11,7 @@ function cleanupWorkbookName(name) {
     .trim();
 }
 
-function loadWorkbookIndex(workbookDir = path.join(__dirname, 'uploads', 'vulpine_workbooks')) {
+function loadWorkbookIndex(workbookDir = path.join(process.env.TRACKER_UPLOAD_DIR || path.join(__dirname, 'uploads'), 'vulpine_workbooks')) {
   if (!fs.existsSync(workbookDir)) return [];
 
   return fs

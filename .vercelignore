@@ -1,0 +1,13 @@
+# VPS applications build and run from this monorepo, separately from Backoffice.
+apps/ai
+apps/cabinet-brain
+apps/leads
+apps/pricing
+legacy
+**/node_modules
+**/.next
+**/dist
+**/.data
+**/test-results
+**/.env
+**/.env.*

@@ -1,0 +1,8 @@
+{
+  "name": "Autonomous Lead-to-Client Pipeline",
+  "description": "An autonomous B2B growth engine that sources local leads, scores digital maturity, generates instant interactive website previews, and conducts automated personalized email outreach connected to GoHighLevel.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

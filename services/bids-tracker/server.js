@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 4400;
 const profitIndex = loadProfitIndex();
 const workbookIndex = loadWorkbookIndex();
 
-const pdfArchiveDir = path.join(__dirname, 'uploads', 'vulpine_pdfs');
+const pdfArchiveDir = path.join(process.env.TRACKER_UPLOAD_DIR || path.join(__dirname, 'uploads'), 'vulpine_pdfs');
 
 async function archivePdf(buffer, originalName) {
   await fs.promises.mkdir(pdfArchiveDir, { recursive: true });

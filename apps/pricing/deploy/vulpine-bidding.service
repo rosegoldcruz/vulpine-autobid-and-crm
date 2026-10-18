@@ -6,7 +6,7 @@ Wants=network-online.target
 [Service]
 Type=simple
 DynamicUser=yes
-WorkingDirectory=/opt/vulpine-cabinet-pricing
+WorkingDirectory=/opt/vulpine-platform/apps/pricing
 ExecStart=/usr/bin/node agent/server.mjs
 EnvironmentFile=/etc/vulpine-bidding/runtime.env
 Restart=on-failure

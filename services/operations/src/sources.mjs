@@ -28,7 +28,7 @@ export function createSources(env, diagnostic) {
       return db.prepare(`SELECT t.*,p.name AS project_name,j.id AS job_id FROM ${table} t JOIN bid_jobs j ON j.id=t.bid_job_id JOIN projects p ON p.id=j.project_id WHERE p.organization_id=? LIMIT 1000`).all(env.OPS_ORGANIZATION_ID).map(x=>row(x.id,x.description||x.project_name,x.status||'Calculated source record',`Cabinet Brain ${table}`,Object.fromEntries(Object.entries(x).filter(([k])=>!['storage_key','checkpoint_json'].includes(k))),`/bids/vision?job=${encodeURIComponent(x.job_id)}`));
     }finally{db.close();}
   }
-  const engine = p => json(`${base('OPS_ENGINE_URL')}/api/v1/auto-bid/${p}`);
+  const engine = p => json(`${base('OPS_ENGINE_URL')}/api/v1/auto-bid/${p}`, env.OPS_ENGINE_API_TOKEN ? { 'x-vulpine-integration-key': env.OPS_ENGINE_API_TOKEN } : {});
   async function paperclip(p) {
     const b = base('OPS_PAPERCLIP_URL');
     if (!b || !env.OPS_PAPERCLIP_COMPANY_ID) throw new Error('Paperclip company connection is not configured.');
@@ -58,7 +58,7 @@ export function createSources(env, diagnostic) {
       const start=Date.now();
       if (!base(key)) return row(name,name,'UNCONFIGURED','Runtime configuration',{role},href);
       try {
-        const res=await fetch(`${base(key)}${p}`,{signal:AbortSignal.timeout(5000),redirect:'manual'});
+        const res=await fetch(`${base(key)}${p}`,{headers: name==='Bid Engine' && env.OPS_ENGINE_API_TOKEN ? { 'x-vulpine-integration-key': env.OPS_ENGINE_API_TOKEN } : {},signal:AbortSignal.timeout(5000),redirect:'manual'});
         return row(name,name,res.ok?'UP':res.status===401||res.status===403?'DEGRADED':'DOWN',`HTTP probe ${p}`,{role,endpoint:base(key),httpStatus:res.status,latencyMs:Date.now()-start,checkedAt:new Date().toISOString(),coverage:'HTTP availability only; does not verify every dependency'},href);
       } catch { return row(name,name,'DOWN',`HTTP probe ${p}`,{role,endpoint:base(key),checkedAt:new Date().toISOString(),error:'Probe did not complete'},href); }
     }));

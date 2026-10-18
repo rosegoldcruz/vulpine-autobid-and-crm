@@ -5,7 +5,7 @@ import re
 import subprocess
 
 env = {}
-for line in (pathlib.Path(__file__).resolve().parents[1] / '.env').read_text().splitlines():
+for line in pathlib.Path('/etc/vulpine-platform/engine/compose.env').read_text().splitlines():
     if line.strip() and not line.lstrip().startswith('#') and '=' in line:
         key, value = line.split('=', 1)
         env[key.strip()] = value.strip().strip('\"\'')

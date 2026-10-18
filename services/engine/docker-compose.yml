@@ -20,7 +20,7 @@ services:
     restart: unless-stopped
 
   redis:
-    image: redis:7-alpine
+    image: ${ENGINE_REDIS_IMAGE:-redis:7-alpine}
     container_name: vulpine-redis
     ports:
       - "6379:6379"

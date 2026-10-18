@@ -8,7 +8,7 @@ Usage: python scripts/daily_briefing.py
 
 import asyncio
 import sys
-sys.path.insert(0, "/opt/vulpine-engine")
+sys.path.insert(0, "/opt/vulpine-platform/services/engine")
 
 from datetime import datetime, timezone, timedelta
 from loguru import logger

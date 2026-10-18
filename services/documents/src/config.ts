@@ -33,7 +33,7 @@ function parseEnvFile(path: string) {
   return values
 }
 
-const envFiles = [resolve(process.cwd(), ".env"), "/opt/.env", "/opt/.env.local", "/opt/vulpine-engine/.env"]
+const envFiles = [resolve(process.cwd(), ".env"), "/opt/.env", "/opt/.env.local", "/etc/vulpine-platform/engine/compose.env"]
 
 export function optionalEnv(...keys: string[]) {
   for (const key of keys) {

@@ -5,7 +5,7 @@ After=network.target
 [Service]
 Type=simple
 DynamicUser=yes
-WorkingDirectory=/opt/vulpine-cabinet-pricing
+WorkingDirectory=/opt/vulpine-platform/apps/pricing
 ExecStart=/usr/bin/node server.mjs
 EnvironmentFile=/etc/vulpine-operations/runtime.env
 Environment=CABINET_STORAGE_PATH=/var/lib/vulpine-cabinet-pricing

@@ -3,7 +3,7 @@ module.exports = {
     name: 'vulpine-bids-tracker',
     script: 'node',
     args: 'server.js',
-    cwd: '/opt/vulpine-bids-tracker',
+    cwd: '/opt/vulpine-platform/services/bids-tracker',
     instances: 1,
     autorestart: true,
     watch: false,

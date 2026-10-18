@@ -8,3 +8,8 @@ services:
       - ./services:/app/services:ro
       - ./shared:/app/shared:ro
       - ${ENGINE_UPLOAD_ROOT:?ENGINE_UPLOAD_ROOT is required}:/app/uploads
+
+  n8n:
+    volumes: !override
+      - n8ndata:/home/node/.n8n
+      - ${ENGINE_N8N_WORKFLOWS:?ENGINE_N8N_WORKFLOWS is required}:/home/node/.n8n/workflows
