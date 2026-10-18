@@ -137,7 +137,20 @@ Production deployment `dpl_BCBP9ksQLJGUPcfXeA2111qy6Lcu` passed live initializat
 tool listing and project reads through six client adapters (Codex, Claude Code,
 Qwen, OpenCode, GitHub Copilot CLI and Hermes); OpenCode's native MCP list also
 reported connected. This certifies transport/tool execution, not model behavior.
-Muse/MetaMuse are configured through OpenCode/Hermes. Desktop/web ChatGPT, Cursor,
+MetaMuse may remain configured through OpenCode; the owner requires the Muse desktop AEON app to have its own direct connection. Desktop/web ChatGPT, Cursor,
 separate Grok/Grokbot and GitHub-hosted agents remain unenrolled/unverified; their
 actual account/device/runtime access is needed. This route does not implement
 OAuth onboarding. The separate pricing/bidding MCP service remains independent.
+
+### Muse desktop clarification and independent identity
+
+The owner identified the Muse desktop app (AEON conversation) in a screenshot,
+explicitly allowing MetaMuse to remain in OpenCode. Provisioned a separate `muse`
+client identity and credential in private server configuration; updated the
+production digest registry and deployed `dpl_6cbTJ5TyoYvqq8du1Niyorw457bS`.
+Direct HTTP SDK initialization, tool discovery and a real project read passed
+with this dedicated identity, without OpenCode, Hermes or a stdio bridge. The
+desktop app itself has not been enrolled or verified: this session has no live
+control of its account/window or secure credential input. See the integration
+document for the exact endpoint and non-secret setup request. No Muse CLI was
+installed; the screenshot identifies the desktop product rather than Muse Code.

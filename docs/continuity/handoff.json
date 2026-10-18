@@ -1,41 +1,36 @@
 {
-  "last_change": "Implemented and deployed read-only backoffice MCP; configured six local clients with private per-client credential files and stdio adapter. Recorded all requested agent surfaces and remaining account/device/runtime onboarding.",
+  "last_change": "Provisioned dedicated Muse desktop MCP client identity in private server configuration and production digest registry; deployed and directly verified it. Corrected integration docs and continuity to distinguish Muse desktop AEON from MetaMuse in OpenCode.",
   "verification": [
-    "corepack pnpm exec tsx --test tests/*.test.ts: 41 passed, zero failed.",
-    "corepack pnpm --filter @vulpine/backoffice typecheck: passed.",
-    "Targeted eslint for lib/mcp.ts and app/api/mcp/route.ts: passed.",
-    "node --check scripts/agent-mcp.mjs: passed.",
-    "Vercel production build/deploy dpl_BCBP9ksQLJGUPcfXeA2111qy6Lcu: READY, aliased backoffice.vulpine.llc. Initial deployment returned fail-closed 503 before registry redeployment; final unauthenticated probe returned 401.",
-    "Official SDK stdio client probes for codex, claude, qwen, opencode, copilot and hermes: initialize, tools/list, list_workspaces and real read_workspace projects passed for every adapter; records were not printed.",
-    "opencode mcp list: vulpine-backoffice connected. Codex and Copilot native config inspection: enabled. No actual model-session calls tested."
+    "Vercel production registry update: succeeded; raw Muse credential stays in private configuration mode 600 outside Git.",
+    "vercel deploy --prod --yes from isolated release worktree: READY deployment dpl_6cbTJ5TyoYvqq8du1Niyorw457bS aliased to backoffice.vulpine.llc.",
+    "Official SDK StreamableHTTPClientTransport with dedicated Muse identity: initialize, tools/list and read_workspace projects limit 1 passed directly without OpenCode, Hermes or stdio adapter. No private records or credentials printed.",
+    "Registry identity uniqueness: dedicated muse entry present and every client digest unique. Unauthenticated live POST: HTTP 401.",
+    "git diff --check for task docs: passed. No runtime source code changed; production Next build passed. No desktop Muse enrollment or model-session test performed."
   ],
   "decisions": [
-    "Owner scope includes all named agent surfaces; avoid claiming account/device integrations from local config changes.",
-    "Use read-only explicit projects/CRM tools, organization-scoped short-lived upstream GET claims, per-client machine credential digests and private local credential files.",
-    "Deploy from isolated clean HEAD plus task files to exclude existing tracker migration; preserve staged and unstaged unrelated work."
+    "Explicit owner correction: MetaMuse may remain in OpenCode; the Muse desktop app with AEON chat must have an independent direct connection.",
+    "Reuse the authenticated backoffice endpoint with a separate individually revocable Muse credential and fixed organization/workspace scope. Do not install Muse Code or substitute another runtime for the pictured desktop app.",
+    "Provide a non-secret native connector setup request in docs; enter credentials through secure client enrollment, not chat prompts or source artifacts."
   ],
   "open_work": [
-    "Enroll hosted ChatGPT/Claude and actual Cursor device/account; OAuth discovery/onboarding is not implemented by the bearer-only first release.",
-    "Identify actual Grok/Grokbot host configurations; no standalone executables or root config directories found on this server.",
-    "GitHub-hosted coding agents need their own environment setup; GitHub Copilot CLI is configured locally.",
-    "Restart existing clients to discover new tools and verify model-session tool selection.",
-    "Preserve unrelated tracker migration and runtime files."
+    "Securely enroll the dedicated credential in the actual Muse desktop connector setup and run tools/list plus read_workspace from that app.",
+    "Other account/device integrations from the previous task remain unenrolled; do not imply this Muse identity completes those integrations."
   ],
   "blockers": [
-    "No account/device configuration access established for ChatGPT hosted connector, Cursor or separate Grok/Grokbot runtimes. Qwen/Claude user settings exist, but executables are not on PATH; their transports were verified through the configured adapter rather than native CLI sessions."
+    "No live control or authenticated connection to the Muse desktop account/window is available in this session. A screenshot does not allow secure credential enrollment there."
   ],
-  "next_action": "Enroll remaining account/device/runtime surfaces through supported authentication, then run live discovery/read probes there and model-session tests. Commit and push reviewed task files and continuity, preserving unrelated tracker changes.",
-  "recorded_at": "2026-10-18T12:36:30.716Z",
+  "next_action": "Enroll Muse desktop directly at the documented endpoint through its secure credential setup, then verify actual in-app discovery and project read. Commit and push these reviewed docs and handoff.",
+  "recorded_at": "2026-10-18T12:43:25.006Z",
   "snapshot": {
-    "head": "ed56d57df0fea452edbf70d00d40c76183459a77",
+    "head": "c7c8f0a5d5d99d49588858ead68bec50c5d7a377",
     "branch": "codex/cabinet-brain-integration-recovery",
-    "worktree": " M .gitignore\n M apps/backoffice/.env.example\n M apps/backoffice/package.json\n M docs/architecture/current-system-map.md\n M docs/continuity/current.md\n M docs/continuity/decisions.md\n M pnpm-lock.yaml\nR  legacy/bids-tracker/.npmrc -> services/bids-tracker/.npmrc\nR  legacy/bids-tracker/README.monorepo.md -> services/bids-tracker/README.monorepo.md\nRM legacy/bids-tracker/db.js -> services/bids-tracker/db.js\nR  legacy/bids-tracker/ecosystem.config.js -> services/bids-tracker/ecosystem.config.js\nRM legacy/bids-tracker/extract.js -> services/bids-tracker/extract.js\nR  legacy/bids-tracker/integration-auth.js -> services/bids-tracker/integration-auth.js\nR  legacy/bids-tracker/package-lock.json -> services/bids-tracker/package-lock.json\nR  legacy/bids-tracker/package.json -> services/bids-tracker/package.json\nRM legacy/bids-tracker/profit.js -> services/bids-tracker/profit.js\nRM legacy/bids-tracker/public/app.js -> services/bids-tracker/public/app.js\nRM legacy/bids-tracker/public/index.html -> services/bids-tracker/public/index.html\nRM legacy/bids-tracker/public/style.css -> services/bids-tracker/public/style.css\nR  legacy/bids-tracker/scripts/reimport_uploads.js -> services/bids-tracker/scripts/reimport_uploads.js\nRM legacy/bids-tracker/server.js -> services/bids-tracker/server.js\nR  legacy/bids-tracker/test/dependency-compatibility.test.js -> services/bids-tracker/test/dependency-compatibility.test.js\nR  legacy/bids-tracker/test/integration-auth.test.js -> services/bids-tracker/test/integration-auth.test.js\nR  legacy/bids-tracker/test/upload-policy.test.js -> services/bids-tracker/test/upload-policy.test.js\nR  legacy/bids-tracker/upload-policy.js -> services/bids-tracker/upload-policy.js\nRM legacy/bids-tracker/workbook.js -> services/bids-tracker/workbook.js\n?? apps/backoffice/app/api/mcp/\n?? apps/backoffice/lib/mcp.ts\n?? docs/integrations/\n?? infra/deploy/README.md\n?? infra/deploy/check-next-processes.py\n?? infra/deploy/engine-runtime.override.yml\n?? infra/deploy/next-process-monitor.service\n?? infra/deploy/next-process-monitor.timer\n?? scripts/agent-mcp.mjs\n?? services/bids-tracker/scripts/import-email-audit.js\n?? tests/mcp.test.ts",
+    "worktree": " M .gitignore\n M docs/architecture/current-system-map.md\n M docs/continuity/current.md\n M docs/continuity/decisions.md\n M docs/integrations/agent-mcp.md\n M pnpm-lock.yaml\nR  legacy/bids-tracker/.npmrc -> services/bids-tracker/.npmrc\nR  legacy/bids-tracker/README.monorepo.md -> services/bids-tracker/README.monorepo.md\nRM legacy/bids-tracker/db.js -> services/bids-tracker/db.js\nR  legacy/bids-tracker/ecosystem.config.js -> services/bids-tracker/ecosystem.config.js\nRM legacy/bids-tracker/extract.js -> services/bids-tracker/extract.js\nR  legacy/bids-tracker/integration-auth.js -> services/bids-tracker/integration-auth.js\nR  legacy/bids-tracker/package-lock.json -> services/bids-tracker/package-lock.json\nR  legacy/bids-tracker/package.json -> services/bids-tracker/package.json\nRM legacy/bids-tracker/profit.js -> services/bids-tracker/profit.js\nRM legacy/bids-tracker/public/app.js -> services/bids-tracker/public/app.js\nRM legacy/bids-tracker/public/index.html -> services/bids-tracker/public/index.html\nRM legacy/bids-tracker/public/style.css -> services/bids-tracker/public/style.css\nR  legacy/bids-tracker/scripts/reimport_uploads.js -> services/bids-tracker/scripts/reimport_uploads.js\nRM legacy/bids-tracker/server.js -> services/bids-tracker/server.js\nR  legacy/bids-tracker/test/dependency-compatibility.test.js -> services/bids-tracker/test/dependency-compatibility.test.js\nR  legacy/bids-tracker/test/integration-auth.test.js -> services/bids-tracker/test/integration-auth.test.js\nR  legacy/bids-tracker/test/upload-policy.test.js -> services/bids-tracker/test/upload-policy.test.js\nR  legacy/bids-tracker/upload-policy.js -> services/bids-tracker/upload-policy.js\nRM legacy/bids-tracker/workbook.js -> services/bids-tracker/workbook.js\n?? infra/deploy/README.md\n?? infra/deploy/check-next-processes.py\n?? infra/deploy/engine-runtime.override.yml\n?? infra/deploy/next-process-monitor.service\n?? infra/deploy/next-process-monitor.timer\n?? services/bids-tracker/scripts/import-email-audit.js",
     "sources": {
       "AGENTS.md": "c51e08a8021528ff818e5f62620aae587530eeec275750b2d38c2771ef732460",
       "README.md": "7951ca56e47884a6a9b802d018e69ff82845ffcacf1877024fbd5cf094d55ec1",
       "package.json": "fafa60aeae85182092017dfc87134dabfa1df3484315a510e118b4d879566a49",
-      "docs/continuity/current.md": "39961a2a08a5cafe827efd86f5fa1495b14756defaaefb751695ebe1d2d9a974",
-      "docs/continuity/decisions.md": "5c75dc2f108d21bb0081d62f5aec9e623f9d01b32011a5d8bb1941c0f42350d6",
+      "docs/continuity/current.md": "355d78891e5ae971baa442888b37f4e3c791bdc704f95313e4b1390b164598fd",
+      "docs/continuity/decisions.md": "0899ddc18d3e47e40c36d4c098bb463c61b2713b6e905e49229e9441296d5aa7",
       "docs/continuity/audit.md": "c849de622d00377d1fadd3ba41cda2933eb9370b6fa13c2baf53bf36c0c471b2",
       "docs/continuity/verification.md": "5daeea53454a06fcf3b928b1fd12c8f69448beb8fc31a75b441181cc57962f28",
       "docs/continuity/sources.json": "0380630765b71a413ac27edd875e120cf51f501232720ee130160cd1f885937b",
@@ -65,7 +60,7 @@
   },
   "vault": {
     "project": "vulpine-platform",
-    "session_id": "27da1621-8397-4e19-8b3c-39681b880097",
-    "record": "sources/aeon-sessions/vulpine-platform/27da1621-8397-4e19-8b3c-39681b880097.md"
+    "session_id": "4584ec6e-7c47-474d-b0b6-b1750df4430f",
+    "record": "sources/aeon-sessions/vulpine-platform/4584ec6e-7c47-474d-b0b6-b1750df4430f.md"
   }
 }

@@ -20,9 +20,40 @@ Configuration formats:
 - OpenCode: `mcp.vulpine-backoffice = {type: "local", command: ["node", absoluteAdapterPath, "opencode"], enabled: true}`.
 - Hermes: `mcp_servers.vulpine-backoffice` with `command: node` and `args: [absoluteAdapterPath, hermes]`.
 
-Muse/MetaMuse models configured in OpenCode and Hermes receive tools through their host's MCP connection. Provider endpoints themselves are not MCP client configurations. Actual model tool selection still needs a model session check.
+MetaMuse may continue using its OpenCode connection, per the owner's explicit clarification. The Muse desktop app with the AEON conversation is a separate client and must connect directly to the remote endpoint using its own `muse` identity and credential. It does not depend on OpenCode, Hermes, or the stdio adapter. Do not count OpenCode/Hermes provider configuration as a completed Muse desktop connection.
 
 Restart existing sessions to discover newly configured tools. A transport probe does not certify that a model called a tool correctly.
+
+## Muse desktop — independent direct connection
+
+Name: **Vulpine Backoffice**. Endpoint: `https://backoffice.vulpine.llc/api/mcp`.
+Transport: Streamable HTTP. Authentication: a dedicated `muse` bearer credential.
+Use `Authorization: Bearer <credential>`; never put the credential in a URL.
+The raw credential is held in the private server configuration at
+`/root/.config/vulpine-mcp/clients/muse.json` (mode 600). Production stores only its
+SHA-256 digest, separate from all six existing client identities. It can be
+revoked independently. It currently grants projects/CRM reads only.
+
+In the actual Muse AEON conversation, request a custom connection to the endpoint
+above. Supply the credential only through Muse's secure credential/connector
+setup, not chat text. If that client cannot accept an authorization header, its
+native authentication flow must be established; do not expose an unauthenticated
+proxy or silently substitute a different agent runtime.
+
+Suggested non-secret setup request:
+
+> Connect this Muse agent directly to Vulpine Backoffice at
+> https://backoffice.vulpine.llc/api/mcp using Streamable HTTP. Use the dedicated
+> Muse bearer credential through secure connector setup. Discover tools, call
+> list_workspaces, then call read_workspace with module projects and limit 1.
+> Report actual results. This is read-only access.
+
+Meta's [connector documentation](https://platform.muse.ai/docs) describes API-key
+and OAuth integration credentials. A successful direct SDK probe establishes
+that the endpoint accepts Muse's identity; it does not enroll or verify the
+owner's desktop app. No live control of that app/account has been established
+in this server session. Final secure credential enrollment and the app's own
+read probe remain required.
 
 ## Other surfaces requested by the owner
 

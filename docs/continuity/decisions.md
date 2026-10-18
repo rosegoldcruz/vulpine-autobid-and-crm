@@ -82,3 +82,12 @@ client credentials and existing operations read adapters. Initial tools cannot
 mutate records. Read-only was the assistant's proposed implementation choice;
 the owner expanded client scope and requested timing, without separately granting
 write access. Hosted/account/device integrations remain open until verified there.
+
+
+## 2026-10-18 — owner correction: Muse desktop is independent
+
+Explicit owner clarification: leave MetaMuse in OpenCode, but connect the actual
+Muse desktop app containing the AEON chat directly. Its own `muse` credential
+and production digest are separate from the six earlier clients. Do not claim
+that configuring a provider in OpenCode or Hermes enrolls that desktop app.
+Native app secure enrollment remains a required account-side step until verified.
