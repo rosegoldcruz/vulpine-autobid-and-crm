@@ -40,5 +40,18 @@ export class QuoteStore {
   else throw Error('Unknown project action.');
   return {name,key};
  }
+ async delete(actor,id,expectedRevision){
+  const db=await this.pool.connect();
+  try{
+   await db.query('BEGIN');
+   const row=(await db.query('SELECT revision FROM pricing_quotes WHERE id=$1 AND org=$2 FOR UPDATE',[id,actor.org])).rows[0];
+   if(!row)throw Object.assign(Error('Quote not found.'),{status:404});
+   if(row.revision!==expectedRevision)throw Object.assign(Error('Quote changed. Reload before deleting.'),{status:409});
+   await db.query('INSERT INTO pricing_quote_deletions(quote_id,org,actor,revision) VALUES($1,$2,$3,$4)',[id,actor.org,actor.sub,row.revision]);
+   for(const table of ['pricing_quote_exports','pricing_quote_revisions'])await db.query('DELETE FROM '+table+' WHERE quote_id=$1 AND org=$2',[id,actor.org]);
+   await db.query('DELETE FROM pricing_quotes WHERE id=$1 AND org=$2',[id,actor.org]);
+   await db.query('COMMIT');return{quote_id:id,deleted:true};
+  }catch(e){await db.query('ROLLBACK');throw e;}finally{db.release();}
+ }
  async close(){await this.pool.end();}
 }

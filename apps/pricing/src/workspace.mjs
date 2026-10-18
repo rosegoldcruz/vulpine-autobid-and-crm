@@ -1,4 +1,4 @@
-export function mountWorkspace({flush,startQuote,getReference,onArchive,onError}){
+export function mountWorkspace({flush,startQuote,getReference,onArchive,onDelete,onError}){
  const sidebar=document.createElement('aside');sidebar.className='projectSidebar';sidebar.setAttribute('aria-label','Project workspace');
  const toggle=document.createElement('button');toggle.className='workspaceToggle secondary';toggle.textContent='☰ Projects';toggle.setAttribute('aria-expanded','true');
  document.querySelector('.topRight').prepend(toggle);document.body.append(sidebar);document.body.classList.add('workspaceOpen');
@@ -23,7 +23,16 @@ export function mountWorkspace({flush,startQuote,getReference,onArchive,onError}
     const row=document.createElement('div');row.className='historyQuote';
     row.append(button((q.id===getReference()?.id?'● ':'')+(q.quote_number||'Draft')+' · '+(q.supplier||'hci').toUpperCase(),async()=>{await flush();location.assign('./index.html?quote='+q.id);}));
     const date=document.createElement('small');date.textContent=new Date(q.updated_at).toLocaleString();row.append(date);
-    row.append(button('Saved PDFs & Excel',async()=>{const r=await fetch('./quotes/'+q.id);if(!r.ok)throw Error('Documents could not load.');const saved=await r.json();const docs=document.createElement('div');docs.className='savedDocuments';for(const d of saved.exports){const a=document.createElement('a');a.href='./documents/'+d.id;a.target='_blank';a.rel='noopener';a.textContent=d.type+' '+d.format.toUpperCase()+' · '+new Date(d.created_at).toLocaleString();docs.append(a);}if(!saved.exports.length)docs.textContent='Generate a PDF or Excel file to save it here.';row.querySelector('.savedDocuments')?.remove();row.append(docs);}));group.append(row);
+    row.append(button('Saved PDFs & Excel',async()=>{const r=await fetch('./quotes/'+q.id);if(!r.ok)throw Error('Documents could not load.');const saved=await r.json();const docs=document.createElement('div');docs.className='savedDocuments';for(const d of saved.exports){const a=document.createElement('a');a.href='./documents/'+d.id;a.target='_blank';a.rel='noopener';a.textContent=d.type+' '+d.format.toUpperCase()+' · '+new Date(d.created_at).toLocaleString();docs.append(a);}if(!saved.exports.length)docs.textContent='Generate a PDF or Excel file to save it here.';row.querySelector('.savedDocuments')?.remove();row.append(docs);}));
+    row.append(button('Delete bid',async()=>{
+     if(!confirm('Permanently delete this saved bid and its PDFs/Excel? Other bids are kept.'))return;
+     await flush();
+     const read=await fetch('./quotes/'+q.id,{cache:'no-store'});if(!read.ok)throw Error('Bid could not load. Refresh history before deleting.');
+     const current=await read.json();
+     const r=await fetch('./export',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({format:'delete-quote',quote_id:q.id,expected_revision:current.state._history.revision})});
+     const result=await r.json();if(!r.ok)throw Error(result.error||'Bid could not be deleted.');
+     onDelete('quote',q.id);await refresh();
+    }));group.append(row);
    }
    group.append(button('Move project to Trash',async()=>{await flush();await action(p.name,'delete');if(data.quotes.some(q=>q.project_key===p.project_key&&q.id===getReference()?.id))onArchive(true);await refresh();}));list.append(group);
   }};search.oninput=draw;draw();

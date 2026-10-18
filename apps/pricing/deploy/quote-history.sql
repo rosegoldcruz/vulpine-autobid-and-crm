@@ -20,3 +20,8 @@ CREATE TABLE IF NOT EXISTS pricing_quote_exports (
  created_by text NOT NULL, created_at timestamptz NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS pricing_quote_exports_quote ON pricing_quote_exports(org,quote_id,created_at DESC);
+
+CREATE TABLE IF NOT EXISTS pricing_quote_deletions (
+ quote_id uuid PRIMARY KEY, org text NOT NULL, actor text NOT NULL,
+ revision integer NOT NULL, deleted_at timestamptz NOT NULL DEFAULT now()
+);

@@ -42,3 +42,21 @@ The hosted pricing app now stores organization-shared projects, quote snapshots,
 Existing back-office authorization protects all workspace routes. The sidebar uses authenticated GET routes and the existing export POST proxy for project actions. Include the new pricing tables in database backups; PDFs are stored in the database, not browser storage. `node tests/workspace.integration.mjs` exercises the configured database using an isolated temporary organization and cleans up its own records.
 
 The nationwide tax selector remains available, but free official-source nationwide rate lookup is not implemented by the workspace change. Tax retrieval still requires a configured provider; unverified rates block taxed exports.
+
+
+### Delete saved bids
+
+The hosted project sidebar has a **Delete bid** button on each saved quote.
+The Auto Bid saved-draft list has the same action for an owned draft. Both ask
+for confirmation, read the current revision and reject stale deletes. Deletion
+permanently removes that bid's revisions and stored exports; other bids remain.
+Deleting an active quote disables its old editor so autosave cannot recreate it.
+An old/deleted quote link opens a disabled fresh view with a New quote action.
+Project Trash remains a separate reversible project-level action.
+
+MCP exposes `delete_bid` for owned Auto Bid jobs and `delete_project_quote` for
+organization-shared saved pricing quotes. Both require `bids.write` and the
+current revision. A queued/running Auto Bid blocks deletion until it finishes.
+The bid audit or `pricing_quote_deletions` retains only deletion metadata. A
+previously issued download link stops working when its source bid is deleted.
+No pricing calculation, catalog or proposal approval rules change.

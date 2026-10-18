@@ -1,4 +1,4 @@
-export function mountBidAssistant({currentJob,flush}){
+export function mountBidAssistant({currentJob,flush,onDelete}){
  const panel=document.createElement('details');panel.className='bidAssistant';
  panel.innerHTML=`<summary>Auto Bid <small>Powered by AEON</small></summary><div class="assistantBody"><p>Enter units and exact SKUs. Prices come from your selected supplier catalog.</p><div class="assistantFields"><label>Project name<input id="agentProject" maxlength="120"></label><label>Supplier<select id="agentSupplier"><option value="hci">HCI Colorado</option><option value="rythern">Rythern · DDP</option><option value="uscd">U.S. Cabinet Depot</option></select></label></div><label>Instructions<textarea id="agentInstruction" rows="4" placeholder="Include unit names, counts, SKUs, quantities and finish. Missing information will be flagged for review."></textarea></label><label>Schedule or plans (PDF or text)<input id="agentFile" type="file" accept=".pdf,.txt,.csv"></label><div class="assistantActions"><button type="button" id="agentStart" class="primary">${currentJob?'Update this bid':'Create bid draft'}</button><button type="button" id="agentRefresh" class="secondary">Refresh saved bids</button></div><div id="agentProgress" role="status" aria-live="polite"></div><div id="agentDownloads"></div><div id="agentJobs"></div><p class="hint">Drafts require human review. This assistant cannot send proposals or place orders.</p></div>`;
  document.querySelector('.projectBar').before(panel);
@@ -6,7 +6,12 @@ export function mountBidAssistant({currentJob,flush}){
  const request=async(path,method='GET',body)=>{const r=await fetch('./agent/'+path,{method,headers:{'content-type':'application/json'},body:body?JSON.stringify(body):undefined,cache:'no-store'}),v=await r.json();if(!r.ok)throw Error(v.error?.message||v.error||'Request failed.');return v;};
  const tool=async(name,args)=>{const v=await request('tools','POST',{name,arguments:args});if(!v.ok)throw Error(v.error.message);return v.data;};
  const link=(job,text)=>{const a=document.createElement('a');a.href='./index.html?bid='+encodeURIComponent(job.id);a.textContent=text;return a;};
- async function refresh(){const value=await request('jobs');el('agentJobs').replaceChildren();for(const j of value.jobs){const row=document.createElement('p');row.append(link(j,j.project+' · '+j.supplier+' · '+(j.saved?'Saved':'In progress')));el('agentJobs').append(row);}}
+ async function refresh(){const value=await request('jobs');el('agentJobs').replaceChildren();for(const j of value.jobs){const row=document.createElement('p');row.append(link(j,j.project+' · '+j.supplier+' · '+(j.saved?'Saved':'In progress')));
+ const remove=document.createElement('button');remove.type='button';remove.className='secondary';remove.textContent='Delete bid';remove.onclick=async()=>{
+  if(!confirm('Permanently delete this Auto Bid draft and its exports? Saved project quotes are kept.'))return;
+  remove.disabled=true;
+  try{await flush();const current=await request('jobs/'+j.id);await tool('delete_bid',{job_id:j.id,expected_revision:current.revision});onDelete('job',j.id);await refresh();}catch(e){el('agentProgress').textContent=e.message;}finally{remove.disabled=false;}
+ };row.append(remove);el('agentJobs').append(row);}}
  el('agentRefresh').onclick=()=>refresh().catch(e=>el('agentProgress').textContent=e.message);
  el('agentStart').onclick=async()=>{
   el('agentStart').disabled=true;el('agentDownloads').replaceChildren();

@@ -49,7 +49,7 @@ test('persistent bids enforce ownership, scopes, revisions, real catalog costs a
   const {Client}=await import('@modelcontextprotocol/client');
   const [clientTransport,serverTransport]=InMemoryTransport.createLinkedPair();const mcp=app.bidding.server(actor),client=new Client({name:'vulpine-acceptance',version:'1'});
   await mcp.connect(serverTransport);await client.connect(clientTransport);
-  assert.equal((await client.listTools()).tools.length,17);
+  assert.equal((await client.listTools()).tools.length,19);
   assert.equal((await client.callTool({name:'price_bid',arguments:{job_id:j.id}})).structuredContent.data.purchase,293784);
   await client.close();await mcp.close();
   const {StreamableHTTPClientTransport}=await import('@modelcontextprotocol/client');
@@ -59,7 +59,7 @@ test('persistent bids enforce ownership, scopes, revisions, real catalog costs a
    headers.set('x-vulpine-operations',payload+'.'+createHmac('sha256',env.OPS_SIGNING_SECRET).update(payload).digest('base64url'));return fetch(url,{...init,headers});
   };
   await remote.connect(new StreamableHTTPClientTransport(new URL('http://127.0.0.1:3029/agent/mcp'),{fetch:signedFetch}));
-  assert.equal((await remote.listTools()).tools.length,17);
+  assert.equal((await remote.listTools()).tools.length,19);
   assert.equal((await remote.callTool({name:'price_bid',arguments:{job_id:j.id}})).structuredContent.data.sale,367224);
   const remoteQuote=await remote.callTool({name:'get_project_quote',arguments:{quote_id:published.data.quote_id}});assert.equal(remoteQuote.structuredContent.data.quote_id,published.data.quote_id);
   const remotePdf=await remote.callTool({name:'get_project_document',arguments:{quote_id:published.data.quote_id,document_id:published.data.document_id}});assert.equal(remotePdf.structuredContent.data.sha256,storedPdf.data.sha256);assert.ok(remotePdf.content.some(c=>c.type==='resource_link'));
@@ -112,6 +112,24 @@ test('persistent bids enforce ownership, scopes, revisions, real catalog costs a
   assert.equal(revised.data.documents[0].revision,1);
   const oldPdf=await call('get_project_document',{quote_id:quoteArgs.quote_id,document_id:published.data.document_id});assert.equal(oldPdf.data.sha256,storedPdf.data.sha256);
   const history=await app.store.pool.query('SELECT state FROM pricing_quote_revisions WHERE quote_id=$1 AND revision=1',[quoteArgs.quote_id]);assert.equal(history.rows[0].state.margin,20);
+  const deleteQuote={quote_id:quoteArgs.quote_id,expected_revision:2};
+  assert.equal((await call('delete_project_quote',deleteQuote,{...actor,scopes:['bids.read']})).error.code,'FORBIDDEN');
+  assert.equal((await call('delete_project_quote',deleteQuote,{...actor,org:'another-org'})).error.code,'NOT_FOUND');
+  assert.equal((await call('delete_project_quote',{...deleteQuote,expected_revision:1})).error.code,'REVISION_CONFLICT');
+  assert.equal((await call('delete_project_quote',deleteQuote)).data.deleted,true);
+  assert.equal((await call('get_project_quote',{quote_id:deleteQuote.quote_id})).error.code,'NOT_FOUND');
+  assert.equal((await fetch(oldPdf.data.url)).status,404);
+  assert.equal((await app.store.pool.query('SELECT quote_id FROM pricing_quote_deletions WHERE quote_id=$1 AND org=$2',[deleteQuote.quote_id,actor.org])).rowCount,1);
+  const deleteJob={job_id:custom.data.id,expected_revision:custom.data.revision};
+  assert.equal((await call('delete_bid',deleteJob,{...actor,scopes:['bids.read']})).error.code,'FORBIDDEN');
+  assert.equal((await call('delete_bid',deleteJob,{...actor,sub:'someone-else'})).error.code,'NOT_FOUND');
+  assert.equal((await call('delete_bid',{...deleteJob,expected_revision:99})).error.code,'REVISION_CONFLICT');
+  const activeRun=await app.store.saveRun(actor,deleteJob.job_id,'User requests 15% margin.',deleteJob.expected_revision);
+  assert.equal((await call('delete_bid',deleteJob)).error.code,'RUN_ACTIVE');
+  await app.store.updateRun(activeRun.id,'completed',{});
+  assert.equal((await call('delete_bid',deleteJob)).data.deleted,true);
+  assert.equal((await call('get_bid_job',{job_id:deleteJob.job_id})).error.code,'NOT_FOUND');
+  assert.ok((await call('list_bid_jobs',{})).data.jobs.some(x=>x.id===j.id));
   if(process.env.TEST_VERIFIED_BID_PATH){
    const state=JSON.parse(await fs.readFile(process.env.TEST_VERIFIED_BID_PATH,'utf8'));
    const created=await call('create_bid_job',{project:state.project,supplier:'hci',instruction:'Reconcile the previously verified, human-authored workbook snapshot.'});assert.equal(created.ok,true);
@@ -127,7 +145,7 @@ test('persistent bids enforce ownership, scopes, revisions, real catalog costs a
    const totals=await call('price_bid',{job_id:made.data.id});assert.equal(totals.data.purchase,293784);assert.equal(totals.data.sale,367224);
   }
  }finally{
-  for(const table of ['pricing_quote_exports','pricing_quote_revisions','pricing_quotes','pricing_projects','bid_exports','bid_runs','bid_audit','bid_job_revisions','bid_jobs'])await app.store.pool.query('DELETE FROM '+table+' WHERE org=$1',[actor.org]);
+  for(const table of ['pricing_quote_deletions','pricing_quote_exports','pricing_quote_revisions','pricing_quotes','pricing_projects','bid_exports','bid_runs','bid_audit','bid_job_revisions','bid_jobs'])await app.store.pool.query('DELETE FROM '+table+' WHERE org=$1',[actor.org]);
   await app.close();
  }
 });

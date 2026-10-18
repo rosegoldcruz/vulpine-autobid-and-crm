@@ -68,6 +68,7 @@ export async function createServer(env,root=path.dirname(fileURLToPath(import.me
       }
       if(route==='export'&&req.method==='POST'){
         const input=JSON.parse(body);
+        if(input.format==='delete-quote'){if(!history)return respond(res,503,{error:'Project storage is unavailable.'});if(!/^[a-f0-9-]{36}$/.test(input.quote_id)||!Number.isInteger(input.expected_revision)||input.expected_revision<1)return respond(res,400,{error:'Quote ID and current revision are required.'});return respond(res,200,await history.delete(claim,input.quote_id,input.expected_revision));}
         if(input.format==='project-action'){if(!history)return respond(res,503,{error:'Project storage is unavailable.'});return respond(res,200,await history.project(claim,input.name,input.action));}
         // Use the existing authenticated, same-origin POST proxy for the read-only rate calculation.
         if(input.format==='tax-rate'){

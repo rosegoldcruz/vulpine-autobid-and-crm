@@ -27,8 +27,15 @@ try{
  await store.project(actor,'longmont','restore');
  assert.equal((await store.list(actor)).length,1);
  assert.equal((await store.exports(actor,ref.id)).length,1);
+ await assert.rejects(store.delete(other,ref.id,updated.revision),{status:404});
+ await assert.rejects(store.delete(actor,ref.id,updated.revision-1),{status:409});
+ assert.equal((await store.delete(actor,ref.id,updated.revision)).deleted,true);
+ assert.equal((await store.list(actor)).length,0);
+ await assert.rejects(store.get(actor,ref.id),{status:404});
+ assert.equal(await store.download(actor,id),undefined);
+ await assert.rejects(store.save(actor,state,updated),{status:404});
  console.log('Workspace integration passed: normalization, shared history, org isolation, stale-save rejection, document retention, trash and restore.');
 }finally{
- for(const table of ['pricing_quote_exports','pricing_quote_revisions','pricing_quotes','pricing_projects'])await store.pool.query('DELETE FROM '+table+' WHERE org=$1',[actor.org]);
+ for(const table of ['pricing_quote_deletions','pricing_quote_exports','pricing_quote_revisions','pricing_quotes','pricing_projects'])await store.pool.query('DELETE FROM '+table+' WHERE org=$1',[actor.org]);
  await store.close();
 }

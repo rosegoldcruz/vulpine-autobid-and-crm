@@ -14,6 +14,8 @@ export const job=z.strictObject({id,revision:z.number().int().positive(),state,s
 const key={job_id:id};
 const mutation={...key,expected_revision:z.number().int().positive()};
 export const inputs={
+ delete_bid:z.strictObject(mutation),
+ delete_project_quote:z.strictObject({quote_id:id,expected_revision:z.number().int().positive()}),
  set_bid_margin:z.strictObject({...mutation,margin:z.number().int().min(1).max(50)}),
  set_project_quote_margin:z.strictObject({quote_id:id,expected_revision:z.number().int().positive(),margin:z.number().int().min(1).max(50)}),
  get_project_document:z.strictObject({quote_id:id,document_id:id}),
@@ -37,6 +39,8 @@ export const totals=z.strictObject({purchase:cents,sale:cents,profit:cents,count
 const error=z.strictObject({ok:z.literal(false),error:z.strictObject({code:z.string(),message:z.string(),retryable:z.boolean()})});
 const success=data=>z.strictObject({ok:z.boolean(),data:data.optional(),error:error.shape.error.optional()}).refine(v=>v.ok?!!v.data&&!v.error:!!v.error&&!v.data);
 export const outputs={
+ delete_bid:success(z.strictObject({job_id:id,deleted:z.literal(true)})),
+ delete_project_quote:success(z.strictObject({quote_id:id,deleted:z.literal(true)})),
  set_bid_margin:success(job),
  set_project_quote_margin:success(z.object({quote_id:id,revision:z.number().int(),state:z.record(z.string(),z.unknown()),totals,documents:z.array(z.record(z.string(),z.unknown()))})),
  get_project_document:success(z.strictObject({url:z.url(),filename:z.string(),mime_type:z.string(),expires_at:z.string(),sha256:z.string().length(64)})),

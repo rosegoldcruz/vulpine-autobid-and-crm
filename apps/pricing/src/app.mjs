@@ -28,7 +28,7 @@ const MAX=100000;
 const KEY='vulpine-project-v4';
 const hosted=location.pathname.startsWith('/api/cabinet-pricing/');
 let revision=null,saveTimer,saveQueue=Promise.resolve(),serverConflict=false;
-let agentJob=null,historyRef=null,projectArchived=false;
+let agentJob=null,historyRef=null,projectArchived=false,recordDeleted=false;
 const freshUnit=n=>({id:uid(),name:'Unit '+n,repeat:1,auto:true,defaultLi:0,items:[]});
 let state={version:2,finish:0,project:'',status:'Tentative',
   quoteId:'VP-'+new Date().toISOString().slice(0,10).replaceAll('-','')+'-'+Math.random().toString(36).slice(2,6).toUpperCase(),
@@ -48,16 +48,19 @@ if(hosted){
   const saved=await response.json();revision=saved.revision;
   if(saved.draft)state=saved.draft;
   const quoteId=new URLSearchParams(location.search).get('quote')||state._history?.id;
-  if(quoteId){if(!/^[a-f0-9-]{36}$/.test(quoteId))throw Error('Invalid quote link.');const r=await fetch('./quotes/'+quoteId);if(!r.ok)throw Error('Saved quote could not load.');const loaded=await r.json();state=loaded.state;projectArchived=loaded.archived===true;}
+  if(quoteId){if(!/^[a-f0-9-]{36}$/.test(quoteId))throw Error('Invalid quote link.');const r=await fetch('./quotes/'+quoteId);if(r.status===404){state=newQuote();projectArchived=recordDeleted=true;}else{if(!r.ok)throw Error('Saved quote could not load.');const loaded=await r.json();state=loaded.state;projectArchived=loaded.archived===true;}}
   historyRef=state._history||null;
-  $('saveState').textContent='Saved in back office';
+  $('saveState').textContent=projectArchived?'Archived or deleted — start a new quote':'Saved in back office';
   const bidId=new URLSearchParams(location.search).get('bid');
   if(bidId){
     if(!/^[a-f0-9-]{36}$/.test(bidId))throw Error('Invalid bid link.');
-    const r=await fetch('./agent/jobs/'+bidId,{cache:'no-store'});if(!r.ok)throw Error('This bid could not be loaded. Your existing draft is retained.');
-    agentJob=await r.json();state=structuredClone(agentJob.state);
-    if(!state.units.length)state.units=[freshUnit('01')];
-    $('saveState').textContent='Saved bid · revision '+agentJob.revision;
+    const r=await fetch('./agent/jobs/'+bidId,{cache:'no-store'});
+    if(r.status===404){state=newQuote();historyRef=null;projectArchived=recordDeleted=true;$('saveState').textContent='Bid deleted — start a new quote';}
+    else{if(!r.ok)throw Error('This bid could not be loaded. Your existing draft is retained.');
+     agentJob=await r.json();historyRef=null;projectArchived=recordDeleted=false;state=structuredClone(agentJob.state);
+     if(!state.units.length)state.units=[freshUnit('01')];
+     $('saveState').textContent='Saved bid · revision '+agentJob.revision;}
+
   }
 }
 if(!['Daniel Cruz','Mike Musonda'].includes(state.preparedBy))state.preparedBy='Daniel Cruz';
@@ -109,7 +112,7 @@ function toast(message,opts={}){
   $('toasts').append(el);setTimeout(()=>el.remove(),opts.action?7000:3800);
 }
 function save(){
-  if(projectArchived)return;
+  if(projectArchived||recordDeleted)return;
   if(hosted){
     $('saveState').textContent='Saving to back office…';clearTimeout(saveTimer);
     const snapshot=structuredClone({...state,supplierDrafts});
@@ -535,7 +538,14 @@ $('generate').onclick=()=>generateDocument(false);
 $('printGenerate').onclick=()=>generateDocument(true);
 
 /* ------------------------------------------------------------------ start */
-async function flushWorkspace(){if(projectArchived)return;save();await new Promise(r=>setTimeout(r,450));await saveQueue;if(serverConflict||$('saveState').textContent==='Not saved')throw Error('Changes could not be saved. Reload before continuing.');}
+function markDeleted(kind,id){
+ if(kind==='quote'?historyRef?.id!==id:agentJob?.id!==id)return;
+ clearTimeout(saveTimer);projectArchived=recordDeleted=true;historyRef=null;agentJob=null;
+ document.querySelectorAll('.app,.bar,.bidAssistant').forEach(el=>el.inert=true);
+ $('saveState').textContent='Bid deleted — start a new quote';
+ invalidatePdf();
+}
+async function flushWorkspace(){if(projectArchived||recordDeleted)return;save();await new Promise(r=>setTimeout(r,450));await saveQueue;if(serverConflict||$('saveState').textContent==='Not saved')throw Error('Changes could not be saved. Reload before continuing.');}
 async function startQuote(name=projectArchived?'Untitled project':state.project){
  await flushWorkspace();
  const fresh={...newQuote(),project:name||'Untitled project'};
@@ -548,7 +558,7 @@ async function startQuote(name=projectArchived?'Untitled project':state.project)
 }
 $('clearBoard').onclick=()=>startQuote().catch(e=>toast(e.message,{error:true}));
 document.querySelectorAll('.app,.bar').forEach(el=>el.inert=projectArchived);
-if(hosted)mountWorkspace({flush:flushWorkspace,startQuote,getReference:()=>historyRef,onArchive:archived=>{projectArchived=archived;document.querySelectorAll('.app,.bar').forEach(el=>el.inert=archived);},onError:e=>toast(e.message,{error:true})});
+if(hosted)mountWorkspace({flush:flushWorkspace,startQuote,getReference:()=>historyRef,onDelete:markDeleted,onArchive:archived=>{if(recordDeleted)return;projectArchived=archived;document.querySelectorAll('.app,.bar').forEach(el=>el.inert=archived);},onError:e=>toast(e.message,{error:true})});
 $('supplier').onchange=async()=>{
  if(agentJob){$('supplier').value=state.supplier;toast('Create a separate bid for another supplier.');return;}
  const next=$('supplier').value,previous=state.supplier||'hci';if(next===previous)return;
@@ -568,6 +578,6 @@ taxUI=mountTax({getState:()=>state,save,refresh:()=>{renderBar();if(step==='quot
 renderFinish();refreshDates();loadUnit();renderBar();
 if(hosted){
  if(agentJob){$('supplier').disabled=true;const notice=document.createElement('p');notice.className='hint';notice.textContent='Saved agent draft. Review quantities and source evidence before customer submission.';document.querySelector('.projectBar').after(notice);}
- mountBidAssistant({currentJob:agentJob,flush:async()=>{await new Promise(r=>setTimeout(r,450));await saveQueue;if(serverConflict||$('saveState').textContent==='Not saved')throw Error('Save your current changes before running the assistant.');}});
+ mountBidAssistant({currentJob:agentJob,onDelete:markDeleted,flush:async()=>{await new Promise(r=>setTimeout(r,450));await saveQueue;if(serverConflict||$('saveState').textContent==='Not saved')throw Error('Save your current changes before running the assistant.');}});
 }
 if(storageWarning)toast('Your saved draft couldn’t be loaded, so a fresh project is open.',{error:true});

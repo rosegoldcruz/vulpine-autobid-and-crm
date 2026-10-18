@@ -74,3 +74,15 @@ Plan-derived unit-mix and quantity review warnings no longer prevent export_bid 
 ## Approved customer appearance
 
 The user selected VP-20261015-9A5A1204_Workspace_QA_customer.pdf as the default visual reference. Customer exports retain the existing gold/black cover, branded introduction, unit-summary schedule and separate project summary/signatures. The Longmont II Lee 20-unit reference has an additional custom itemized schedule; it is not substituted for the selected default summary format. Both MCP export routes call the shared generateQuote renderer directly, with scope disclosures in notes rather than an added page-wide warning strip.
+
+
+## Deletion
+
+Use `get_bid_job` then `delete_bid` with `job_id` and `expected_revision` to
+permanently delete an owned Auto Bid. Use `get_project_quote` then
+`delete_project_quote` with `quote_id` and `expected_revision` for a shared saved
+quote in the same organization. These are destructive write tools, not read
+operations. Stale revisions, a different organization/owner, or an active bid
+run reject deletion. Deletion removes the selected record, its revisions and
+exports while preserving audit metadata; independent saved copies remain.
+The background bid-building worker does not receive either deletion tool.

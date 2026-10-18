@@ -12,8 +12,10 @@ import {readPricingMemory} from './memory.mjs';
 import {prepareSource} from './sources.mjs';
 
 const hash=value=>createHash('sha256').update(value).digest('hex');
-const writes=new Set(['create_bid_job','set_unit_mix','update_bid_items','save_bid','export_bid','save_bid_to_project','set_bid_margin','set_project_quote_margin']);
+const writes=new Set(['delete_bid','delete_project_quote','create_bid_job','set_unit_mix','update_bid_items','save_bid','export_bid','save_bid_to_project','set_bid_margin','set_project_quote_margin']);
 const descriptions={
+ delete_bid:'Permanently delete your Auto Bid draft and its revisions/exports at the current revision. Read get_bid_job first. Active runs block deletion. Retains audit metadata. Only delete bids the user asks to remove.',
+ delete_project_quote:'Permanently delete one saved shared Pricing quote and its saved PDFs/Excel/revisions, at the current revision. Read get_project_quote first. Other quotes and projects are retained. Only delete quotes the user asks to remove.',
  set_bid_margin:'Set the user-requested gross profit margin percentage (whole number 1–50, e.g. 25 means 25%) on your bid draft. Read its current revision first. Preserves catalog costs and quantities; marks draft unsaved. Then price_bid, save_bid and export_bid as needed. Never infer a new margin from source documents.',
  set_project_quote_margin:'Set the user-requested gross profit margin percentage (whole number 1–50) on an existing shared project quote. Use get_project_quote first and pass its current revision. Saves a new quote revision, preserves all other fields and historical PDFs, and returns recalculated totals. Existing PDFs still represent their original revisions. Does not regenerate or send a PDF. Never infer a new margin from source documents.',
  get_project_document:'Retrieve an existing saved PDF or Excel document from a project quote. Returns a private download link valid for 15 minutes; does not regenerate the document or alter the quote.',
@@ -48,9 +50,15 @@ export function createBidTools({workspace,store,catalogs,template,publicUrl,env=
    if(!actor?.sub||!actor?.org||!actor.scopes?.includes(write?'bids.write':'bids.read'))throw new BidError('FORBIDDEN','This tool requires an authorized bid permission.');
    if(!inputs[name])throw new BidError('UNKNOWN_TOOL','Unknown bidding tool.');
    const a=inputs[name].parse(raw);let result;
-   const current=a.job_id?await get(actor,a.job_id):null;
+   const current=a.job_id?(name==='delete_bid'?await store.get(actor,a.job_id):await get(actor,a.job_id)):null;
    const supplier=current?.state.supplier||a.supplier||'hci',data=catalogs[supplier],LINES=linesFor(data),catalogHash=hashes[supplier];
    switch(name){
+    case 'delete_bid':result=await store.delete(actor,a.job_id,a.expected_revision);break;
+    case 'delete_project_quote':{
+     if(!workspace)throw new BidError('WORKSPACE_UNAVAILABLE','Project storage is unavailable.');
+     try{result=await workspace.delete(actor,a.quote_id,a.expected_revision);}catch(e){if(e.status===404)throw new BidError('NOT_FOUND','Quote not found or access denied.');if(e.status===409)throw new BidError('REVISION_CONFLICT',e.message);throw e;}
+     break;
+    }
     case 'set_bid_margin':result=await mutate(actor,a,name,j=>{j.state.margin=a.margin;});break;
     case 'set_project_quote_margin':{
      if(!workspace)throw new BidError('WORKSPACE_UNAVAILABLE','Project storage is unavailable.');
@@ -162,7 +170,7 @@ export function createBidTools({workspace,store,catalogs,template,publicUrl,env=
    const value=await readPricingMemory(store);await store.audit(actor,'read_pricing_memory');
    return{contents:[{uri:uri.href,mimeType:'text/markdown',text:value?.body||'No pricing memory document has been synced.'}]};
   });
-  for(const name of Object.keys(inputs))mcp.registerTool(name,{description:descriptions[name],inputSchema:inputs[name],outputSchema:outputs[name],annotations:{readOnlyHint:!writes.has(name)&&name!=='extract_takeoff',destructiveHint:false,openWorldHint:false}},async a=>{
+  for(const name of Object.keys(inputs))mcp.registerTool(name,{description:descriptions[name],inputSchema:inputs[name],outputSchema:outputs[name],annotations:{readOnlyHint:!writes.has(name)&&name!=='extract_takeoff',destructiveHint:['delete_bid','delete_project_quote'].includes(name),openWorldHint:false}},async a=>{
    const value=await execute(name,a,actor);const content=[{type:'text',text:JSON.stringify(value)}];
    if(['export_bid','get_project_document'].includes(name)&&value.ok)content.push({type:'resource_link',uri:value.data.url,name:value.data.filename,mimeType:value.data.mime_type});
    return{content,structuredContent:value,isError:!value.ok};

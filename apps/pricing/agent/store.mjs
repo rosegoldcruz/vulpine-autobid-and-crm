@@ -37,8 +37,19 @@ export class BidStore{
    await this.audit(actor,action,id,parsed.revision,'ok',db);return parsed;
   });
  }
+ async delete(actor,id,revision){
+  return this.transaction(async db=>{
+   const j=await this.get(actor,id,db,true);
+   if(j.revision!==revision)throw new BidError('REVISION_CONFLICT','Bid changed. Reload before deleting.');
+   if((await db.query("SELECT id FROM bid_runs WHERE job_id=$1 AND org=$2 AND owner=$3 AND status IN ('queued','running')",[id,actor.org,actor.sub])).rowCount)throw new BidError('RUN_ACTIVE','Wait for the active bid run to finish before deleting.');
+   await this.audit(actor,'delete_bid',id,revision,'ok',db);
+   for(const table of ['bid_exports','bid_runs','bid_job_revisions'])await db.query('DELETE FROM '+table+' WHERE job_id=$1 AND org=$2 AND owner=$3',[id,actor.org,actor.sub]);
+   await db.query('DELETE FROM bid_jobs WHERE id=$1 AND org=$2 AND owner=$3',[id,actor.org,actor.sub]);
+   return{job_id:id,deleted:true};
+  });
+ }
  async putExport(actor,j,record){await this.pool.query('INSERT INTO bid_exports VALUES($1,$2,$3,$4,$5,$6,$7,$8)',[record.id,j.id,actor.org,actor.sub,record.expires,record.filename,record.mime,record.bytes]);}
- async getExport(id){return(await this.pool.query('SELECT filename,mime,bytes FROM bid_exports WHERE id=$1 AND expires>$2',[id,Date.now()])).rows[0];}
+ async getExport(id){return(await this.pool.query('SELECT filename,mime,bytes FROM bid_exports e WHERE id=$1 AND expires>$2 AND (EXISTS (SELECT 1 FROM bid_jobs j WHERE j.id=e.job_id AND j.org=e.org AND j.owner=e.owner) OR EXISTS (SELECT 1 FROM pricing_quotes q WHERE q.id=e.job_id AND q.org=e.org))',[id,Date.now()])).rows[0];}
  async saveRun(actor,jobId,instruction,revision){
   return this.transaction(async db=>{
    const j=await this.get(actor,jobId,db,true);
