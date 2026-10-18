@@ -1,0 +1,6341 @@
+{
+  "Shaker": {
+    "B09": {
+      "src": "/catalog-images/shaker-16-000.webp",
+      "page": 16,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "B09",
+        "B12",
+        "B15",
+        "B18",
+        "B21",
+        "B9"
+      ]
+    },
+    "B12": {
+      "src": "/catalog-images/shaker-16-000.webp",
+      "page": 16,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "B09",
+        "B12",
+        "B15",
+        "B18",
+        "B21",
+        "B9"
+      ]
+    },
+    "B15": {
+      "src": "/catalog-images/shaker-16-000.webp",
+      "page": 16,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "B09",
+        "B12",
+        "B15",
+        "B18",
+        "B21",
+        "B9"
+      ]
+    },
+    "B18": {
+      "src": "/catalog-images/shaker-16-000.webp",
+      "page": 16,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "B09",
+        "B12",
+        "B15",
+        "B18",
+        "B21",
+        "B9"
+      ]
+    },
+    "B21": {
+      "src": "/catalog-images/shaker-16-000.webp",
+      "page": 16,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "B09",
+        "B12",
+        "B15",
+        "B18",
+        "B21",
+        "B9"
+      ]
+    },
+    "B9": {
+      "src": "/catalog-images/shaker-16-000.webp",
+      "page": 16,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "B09",
+        "B12",
+        "B15",
+        "B18",
+        "B21",
+        "B9"
+      ]
+    },
+    "B24": {
+      "src": "/catalog-images/shaker-16-001.webp",
+      "page": 16,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "B24",
+        "B27",
+        "B30"
+      ]
+    },
+    "B27": {
+      "src": "/catalog-images/shaker-16-001.webp",
+      "page": 16,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "B24",
+        "B27",
+        "B30"
+      ]
+    },
+    "B30": {
+      "src": "/catalog-images/shaker-16-001.webp",
+      "page": 16,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "B24",
+        "B27",
+        "B30"
+      ]
+    },
+    "B33": {
+      "src": "/catalog-images/shaker-16-002.webp",
+      "page": 16,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "B33",
+        "B36",
+        "B42"
+      ]
+    },
+    "B36": {
+      "src": "/catalog-images/shaker-16-002.webp",
+      "page": 16,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "B33",
+        "B36",
+        "B42"
+      ]
+    },
+    "B42": {
+      "src": "/catalog-images/shaker-16-002.webp",
+      "page": 16,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "B33",
+        "B36",
+        "B42"
+      ]
+    },
+    "3DB12": {
+      "src": "/catalog-images/shaker-16-003.webp",
+      "page": 16,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "3DB12",
+        "3DB15",
+        "3DB18",
+        "3DB21",
+        "3DB24",
+        "3DB30",
+        "3DB36"
+      ]
+    },
+    "3DB15": {
+      "src": "/catalog-images/shaker-16-003.webp",
+      "page": 16,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "3DB12",
+        "3DB15",
+        "3DB18",
+        "3DB21",
+        "3DB24",
+        "3DB30",
+        "3DB36"
+      ]
+    },
+    "3DB18": {
+      "src": "/catalog-images/shaker-16-003.webp",
+      "page": 16,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "3DB12",
+        "3DB15",
+        "3DB18",
+        "3DB21",
+        "3DB24",
+        "3DB30",
+        "3DB36"
+      ]
+    },
+    "3DB21": {
+      "src": "/catalog-images/shaker-16-003.webp",
+      "page": 16,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "3DB12",
+        "3DB15",
+        "3DB18",
+        "3DB21",
+        "3DB24",
+        "3DB30",
+        "3DB36"
+      ]
+    },
+    "3DB24": {
+      "src": "/catalog-images/shaker-16-003.webp",
+      "page": 16,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "3DB12",
+        "3DB15",
+        "3DB18",
+        "3DB21",
+        "3DB24",
+        "3DB30",
+        "3DB36"
+      ]
+    },
+    "3DB30": {
+      "src": "/catalog-images/shaker-16-003.webp",
+      "page": 16,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "3DB12",
+        "3DB15",
+        "3DB18",
+        "3DB21",
+        "3DB24",
+        "3DB30",
+        "3DB36"
+      ]
+    },
+    "3DB36": {
+      "src": "/catalog-images/shaker-16-003.webp",
+      "page": 16,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "3DB12",
+        "3DB15",
+        "3DB18",
+        "3DB21",
+        "3DB24",
+        "3DB30",
+        "3DB36"
+      ]
+    },
+    "2DB24": {
+      "src": "/catalog-images/shaker-17-004.webp",
+      "page": 17,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "2DB24",
+        "2DB30",
+        "2DB36"
+      ]
+    },
+    "2DB30": {
+      "src": "/catalog-images/shaker-17-004.webp",
+      "page": 17,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "2DB24",
+        "2DB30",
+        "2DB36"
+      ]
+    },
+    "2DB36": {
+      "src": "/catalog-images/shaker-17-004.webp",
+      "page": 17,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "2DB24",
+        "2DB30",
+        "2DB36"
+      ]
+    },
+    "B09FHD": {
+      "src": "/catalog-images/shaker-17-005.webp",
+      "page": 17,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "B09FHD",
+        "B9FHD"
+      ]
+    },
+    "B9FHD": {
+      "src": "/catalog-images/shaker-17-005.webp",
+      "page": 17,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "B09FHD",
+        "B9FHD"
+      ]
+    },
+    "B24FHD": {
+      "src": "/catalog-images/shaker-17-006.webp",
+      "page": 17,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "B24FHD"
+      ]
+    },
+    "SB30": {
+      "src": "/catalog-images/shaker-17-007.webp",
+      "page": 17,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "SB30",
+        "SB33"
+      ]
+    },
+    "SB33": {
+      "src": "/catalog-images/shaker-17-007.webp",
+      "page": 17,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "SB30",
+        "SB33"
+      ]
+    },
+    "SB36": {
+      "src": "/catalog-images/shaker-17-008.webp",
+      "page": 17,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "SB36",
+        "SB42"
+      ]
+    },
+    "SB42": {
+      "src": "/catalog-images/shaker-17-008.webp",
+      "page": 17,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "SB36",
+        "SB42"
+      ]
+    },
+    "CSB42": {
+      "src": "/catalog-images/shaker-17-009.webp",
+      "page": 17,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "CSB42"
+      ]
+    },
+    "FSM36": {
+      "src": "/catalog-images/shaker-17-145.webp",
+      "page": 17,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "FSM36"
+      ]
+    },
+    "BLS36": {
+      "src": "/catalog-images/shaker-18-011.webp",
+      "page": 18,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "BLS36",
+        "BLS36-BLS36"
+      ]
+    },
+    "BLS36-BLS36": {
+      "src": "/catalog-images/shaker-18-011.webp",
+      "page": 18,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "BLS36",
+        "BLS36-BLS36"
+      ]
+    },
+    "BBC42": {
+      "src": "/catalog-images/shaker-18-012.webp",
+      "page": 18,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "BBC42"
+      ]
+    },
+    "BEC24": {
+      "src": "/catalog-images/shaker-18-013.webp",
+      "page": 18,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "BEC24"
+      ]
+    },
+    "SP09": {
+      "src": "/catalog-images/shaker-18-014.webp",
+      "page": 18,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "SP09"
+      ]
+    },
+    "BWRC6": {
+      "src": "/catalog-images/shaker-18-015.webp",
+      "page": 18,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "BWRC6"
+      ]
+    },
+    "W3012": {
+      "src": "/catalog-images/shaker-20-016.webp",
+      "page": 20,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W3012",
+        "W3312",
+        "W3612"
+      ]
+    },
+    "W3312": {
+      "src": "/catalog-images/shaker-20-016.webp",
+      "page": 20,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W3012",
+        "W3312",
+        "W3612"
+      ]
+    },
+    "W3612": {
+      "src": "/catalog-images/shaker-20-016.webp",
+      "page": 20,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W3012",
+        "W3312",
+        "W3612"
+      ]
+    },
+    "W1515": {
+      "src": "/catalog-images/shaker-20-017.webp",
+      "page": 20,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W1515",
+        "W1815",
+        "W2115"
+      ]
+    },
+    "W1815": {
+      "src": "/catalog-images/shaker-20-017.webp",
+      "page": 20,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W1515",
+        "W1815",
+        "W2115"
+      ]
+    },
+    "W2115": {
+      "src": "/catalog-images/shaker-20-017.webp",
+      "page": 20,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W1515",
+        "W1815",
+        "W2115"
+      ]
+    },
+    "W2415": {
+      "src": "/catalog-images/shaker-20-018.webp",
+      "page": 20,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2415",
+        "W2715",
+        "W3015",
+        "W3315",
+        "W3615"
+      ]
+    },
+    "W2715": {
+      "src": "/catalog-images/shaker-20-018.webp",
+      "page": 20,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2415",
+        "W2715",
+        "W3015",
+        "W3315",
+        "W3615"
+      ]
+    },
+    "W3015": {
+      "src": "/catalog-images/shaker-20-018.webp",
+      "page": 20,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2415",
+        "W2715",
+        "W3015",
+        "W3315",
+        "W3615"
+      ]
+    },
+    "W3315": {
+      "src": "/catalog-images/shaker-20-018.webp",
+      "page": 20,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2415",
+        "W2715",
+        "W3015",
+        "W3315",
+        "W3615"
+      ]
+    },
+    "W3615": {
+      "src": "/catalog-images/shaker-20-018.webp",
+      "page": 20,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2415",
+        "W2715",
+        "W3015",
+        "W3315",
+        "W3615"
+      ]
+    },
+    "W3018": {
+      "src": "/catalog-images/shaker-20-019.webp",
+      "page": 20,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W3018",
+        "W3318",
+        "W3618"
+      ]
+    },
+    "W3318": {
+      "src": "/catalog-images/shaker-20-019.webp",
+      "page": 20,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W3018",
+        "W3318",
+        "W3618"
+      ]
+    },
+    "W3618": {
+      "src": "/catalog-images/shaker-20-019.webp",
+      "page": 20,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W3018",
+        "W3318",
+        "W3618"
+      ]
+    },
+    "W3021": {
+      "src": "/catalog-images/shaker-21-020.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W3021",
+        "W3321",
+        "W3621"
+      ]
+    },
+    "W3321": {
+      "src": "/catalog-images/shaker-21-020.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W3021",
+        "W3321",
+        "W3621"
+      ]
+    },
+    "W3621": {
+      "src": "/catalog-images/shaker-21-020.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W3021",
+        "W3321",
+        "W3621"
+      ]
+    },
+    "W3024": {
+      "src": "/catalog-images/shaker-21-021.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W3024",
+        "W3324",
+        "W3624"
+      ]
+    },
+    "W3324": {
+      "src": "/catalog-images/shaker-21-021.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W3024",
+        "W3324",
+        "W3624"
+      ]
+    },
+    "W3624": {
+      "src": "/catalog-images/shaker-21-021.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W3024",
+        "W3324",
+        "W3624"
+      ]
+    },
+    "W0930": {
+      "src": "/catalog-images/shaker-21-022.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W0930",
+        "W1230",
+        "W1530",
+        "W1830",
+        "W2130",
+        "W930"
+      ]
+    },
+    "W1230": {
+      "src": "/catalog-images/shaker-21-022.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W0930",
+        "W1230",
+        "W1530",
+        "W1830",
+        "W2130",
+        "W930"
+      ]
+    },
+    "W1530": {
+      "src": "/catalog-images/shaker-21-022.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W0930",
+        "W1230",
+        "W1530",
+        "W1830",
+        "W2130",
+        "W930"
+      ]
+    },
+    "W1830": {
+      "src": "/catalog-images/shaker-21-022.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W0930",
+        "W1230",
+        "W1530",
+        "W1830",
+        "W2130",
+        "W930"
+      ]
+    },
+    "W2130": {
+      "src": "/catalog-images/shaker-21-022.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W0930",
+        "W1230",
+        "W1530",
+        "W1830",
+        "W2130",
+        "W930"
+      ]
+    },
+    "W930": {
+      "src": "/catalog-images/shaker-21-022.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W0930",
+        "W1230",
+        "W1530",
+        "W1830",
+        "W2130",
+        "W930"
+      ]
+    },
+    "W2430": {
+      "src": "/catalog-images/shaker-21-023.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2430",
+        "W2730",
+        "W3030",
+        "W3330",
+        "W3630",
+        "W4230"
+      ]
+    },
+    "W2730": {
+      "src": "/catalog-images/shaker-21-023.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2430",
+        "W2730",
+        "W3030",
+        "W3330",
+        "W3630",
+        "W4230"
+      ]
+    },
+    "W3030": {
+      "src": "/catalog-images/shaker-21-023.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2430",
+        "W2730",
+        "W3030",
+        "W3330",
+        "W3630",
+        "W4230"
+      ]
+    },
+    "W3330": {
+      "src": "/catalog-images/shaker-21-023.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2430",
+        "W2730",
+        "W3030",
+        "W3330",
+        "W3630",
+        "W4230"
+      ]
+    },
+    "W3630": {
+      "src": "/catalog-images/shaker-21-023.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2430",
+        "W2730",
+        "W3030",
+        "W3330",
+        "W3630",
+        "W4230"
+      ]
+    },
+    "W4230": {
+      "src": "/catalog-images/shaker-21-023.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2430",
+        "W2730",
+        "W3030",
+        "W3330",
+        "W3630",
+        "W4230"
+      ]
+    },
+    "W0936": {
+      "src": "/catalog-images/shaker-21-024.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W0936",
+        "W1236",
+        "W1536",
+        "W1836",
+        "W2136",
+        "W936"
+      ]
+    },
+    "W1236": {
+      "src": "/catalog-images/shaker-21-024.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W0936",
+        "W1236",
+        "W1536",
+        "W1836",
+        "W2136",
+        "W936"
+      ]
+    },
+    "W1536": {
+      "src": "/catalog-images/shaker-21-024.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W0936",
+        "W1236",
+        "W1536",
+        "W1836",
+        "W2136",
+        "W936"
+      ]
+    },
+    "W1836": {
+      "src": "/catalog-images/shaker-21-024.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W0936",
+        "W1236",
+        "W1536",
+        "W1836",
+        "W2136",
+        "W936"
+      ]
+    },
+    "W2136": {
+      "src": "/catalog-images/shaker-21-024.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W0936",
+        "W1236",
+        "W1536",
+        "W1836",
+        "W2136",
+        "W936"
+      ]
+    },
+    "W936": {
+      "src": "/catalog-images/shaker-21-024.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W0936",
+        "W1236",
+        "W1536",
+        "W1836",
+        "W2136",
+        "W936"
+      ]
+    },
+    "W2436": {
+      "src": "/catalog-images/shaker-21-025.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2436",
+        "W2736",
+        "W3036",
+        "W3336",
+        "W3636",
+        "W4236"
+      ]
+    },
+    "W2736": {
+      "src": "/catalog-images/shaker-21-025.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2436",
+        "W2736",
+        "W3036",
+        "W3336",
+        "W3636",
+        "W4236"
+      ]
+    },
+    "W3036": {
+      "src": "/catalog-images/shaker-21-025.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2436",
+        "W2736",
+        "W3036",
+        "W3336",
+        "W3636",
+        "W4236"
+      ]
+    },
+    "W3336": {
+      "src": "/catalog-images/shaker-21-025.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2436",
+        "W2736",
+        "W3036",
+        "W3336",
+        "W3636",
+        "W4236"
+      ]
+    },
+    "W3636": {
+      "src": "/catalog-images/shaker-21-025.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2436",
+        "W2736",
+        "W3036",
+        "W3336",
+        "W3636",
+        "W4236"
+      ]
+    },
+    "W4236": {
+      "src": "/catalog-images/shaker-21-025.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2436",
+        "W2736",
+        "W3036",
+        "W3336",
+        "W3636",
+        "W4236"
+      ]
+    },
+    "W0942": {
+      "src": "/catalog-images/shaker-21-026.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W0942",
+        "W1242",
+        "W1542",
+        "W1842",
+        "W2142",
+        "W942"
+      ]
+    },
+    "W1242": {
+      "src": "/catalog-images/shaker-21-026.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W0942",
+        "W1242",
+        "W1542",
+        "W1842",
+        "W2142",
+        "W942"
+      ]
+    },
+    "W1542": {
+      "src": "/catalog-images/shaker-21-026.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W0942",
+        "W1242",
+        "W1542",
+        "W1842",
+        "W2142",
+        "W942"
+      ]
+    },
+    "W1842": {
+      "src": "/catalog-images/shaker-21-026.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W0942",
+        "W1242",
+        "W1542",
+        "W1842",
+        "W2142",
+        "W942"
+      ]
+    },
+    "W2142": {
+      "src": "/catalog-images/shaker-21-026.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W0942",
+        "W1242",
+        "W1542",
+        "W1842",
+        "W2142",
+        "W942"
+      ]
+    },
+    "W942": {
+      "src": "/catalog-images/shaker-21-026.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W0942",
+        "W1242",
+        "W1542",
+        "W1842",
+        "W2142",
+        "W942"
+      ]
+    },
+    "W2442": {
+      "src": "/catalog-images/shaker-21-027.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2442",
+        "W2742",
+        "W3042",
+        "W3342",
+        "W3642",
+        "W4242"
+      ]
+    },
+    "W2742": {
+      "src": "/catalog-images/shaker-21-027.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2442",
+        "W2742",
+        "W3042",
+        "W3342",
+        "W3642",
+        "W4242"
+      ]
+    },
+    "W3042": {
+      "src": "/catalog-images/shaker-21-027.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2442",
+        "W2742",
+        "W3042",
+        "W3342",
+        "W3642",
+        "W4242"
+      ]
+    },
+    "W3342": {
+      "src": "/catalog-images/shaker-21-027.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2442",
+        "W2742",
+        "W3042",
+        "W3342",
+        "W3642",
+        "W4242"
+      ]
+    },
+    "W3642": {
+      "src": "/catalog-images/shaker-21-027.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2442",
+        "W2742",
+        "W3042",
+        "W3342",
+        "W3642",
+        "W4242"
+      ]
+    },
+    "W4242": {
+      "src": "/catalog-images/shaker-21-027.webp",
+      "page": 21,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2442",
+        "W2742",
+        "W3042",
+        "W3342",
+        "W3642",
+        "W4242"
+      ]
+    },
+    "W361224": {
+      "src": "/catalog-images/shaker-22-028.webp",
+      "page": 22,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W361224",
+        "W361524",
+        "W361824",
+        "W362124",
+        "W362424"
+      ]
+    },
+    "W361524": {
+      "src": "/catalog-images/shaker-22-028.webp",
+      "page": 22,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W361224",
+        "W361524",
+        "W361824",
+        "W362124",
+        "W362424"
+      ]
+    },
+    "W361824": {
+      "src": "/catalog-images/shaker-22-028.webp",
+      "page": 22,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W361224",
+        "W361524",
+        "W361824",
+        "W362124",
+        "W362424"
+      ]
+    },
+    "W362124": {
+      "src": "/catalog-images/shaker-22-028.webp",
+      "page": 22,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W361224",
+        "W361524",
+        "W361824",
+        "W362124",
+        "W362424"
+      ]
+    },
+    "W362424": {
+      "src": "/catalog-images/shaker-22-028.webp",
+      "page": 22,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W361224",
+        "W361524",
+        "W361824",
+        "W362124",
+        "W362424"
+      ]
+    },
+    "WBC3030": {
+      "src": "/catalog-images/shaker-22-029.webp",
+      "page": 22,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "WBC3030",
+        "WBC3036",
+        "WBC3042"
+      ]
+    },
+    "WBC3036": {
+      "src": "/catalog-images/shaker-22-029.webp",
+      "page": 22,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "WBC3030",
+        "WBC3036",
+        "WBC3042"
+      ]
+    },
+    "WBC3042": {
+      "src": "/catalog-images/shaker-22-029.webp",
+      "page": 22,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "WBC3030",
+        "WBC3036",
+        "WBC3042"
+      ]
+    },
+    "WDC2415": {
+      "src": "/catalog-images/shaker-22-030.webp",
+      "page": 22,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "WDC2415",
+        "WDC2430",
+        "WDC2436",
+        "WDC2442"
+      ]
+    },
+    "WDC2430": {
+      "src": "/catalog-images/shaker-22-030.webp",
+      "page": 22,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "WDC2415",
+        "WDC2430",
+        "WDC2436",
+        "WDC2442"
+      ]
+    },
+    "WDC2436": {
+      "src": "/catalog-images/shaker-22-030.webp",
+      "page": 22,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "WDC2415",
+        "WDC2430",
+        "WDC2436",
+        "WDC2442"
+      ]
+    },
+    "WDC2442": {
+      "src": "/catalog-images/shaker-22-030.webp",
+      "page": 22,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "WDC2415",
+        "WDC2430",
+        "WDC2436",
+        "WDC2442"
+      ]
+    },
+    "WDC273615": {
+      "src": "/catalog-images/shaker-22-031.webp",
+      "page": 22,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "WDC273615",
+        "WDC274215"
+      ]
+    },
+    "WDC274215": {
+      "src": "/catalog-images/shaker-22-031.webp",
+      "page": 22,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "WDC273615",
+        "WDC274215"
+      ]
+    },
+    "WLS2430": {
+      "src": "/catalog-images/shaker-22-032.webp",
+      "page": 22,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "WLS2430",
+        "WLS2436",
+        "WLS2442"
+      ]
+    },
+    "WLS2436": {
+      "src": "/catalog-images/shaker-22-032.webp",
+      "page": 22,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "WLS2430",
+        "WLS2436",
+        "WLS2442"
+      ]
+    },
+    "WLS2442": {
+      "src": "/catalog-images/shaker-22-032.webp",
+      "page": 22,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "WLS2430",
+        "WLS2436",
+        "WLS2442"
+      ]
+    },
+    "WMC2730": {
+      "src": "/catalog-images/shaker-22-033.webp",
+      "page": 22,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "WMC2730",
+        "WMC2736",
+        "WMC2742",
+        "WMC3030",
+        "WMC3036",
+        "WMC3042"
+      ]
+    },
+    "WMC2736": {
+      "src": "/catalog-images/shaker-22-033.webp",
+      "page": 22,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "WMC2730",
+        "WMC2736",
+        "WMC2742",
+        "WMC3030",
+        "WMC3036",
+        "WMC3042"
+      ]
+    },
+    "WMC2742": {
+      "src": "/catalog-images/shaker-22-033.webp",
+      "page": 22,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "WMC2730",
+        "WMC2736",
+        "WMC2742",
+        "WMC3030",
+        "WMC3036",
+        "WMC3042"
+      ]
+    },
+    "WMC3030": {
+      "src": "/catalog-images/shaker-22-033.webp",
+      "page": 22,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "WMC2730",
+        "WMC2736",
+        "WMC2742",
+        "WMC3030",
+        "WMC3036",
+        "WMC3042"
+      ]
+    },
+    "WMC3036": {
+      "src": "/catalog-images/shaker-22-033.webp",
+      "page": 22,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "WMC2730",
+        "WMC2736",
+        "WMC2742",
+        "WMC3030",
+        "WMC3036",
+        "WMC3042"
+      ]
+    },
+    "WMC3042": {
+      "src": "/catalog-images/shaker-22-033.webp",
+      "page": 22,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "WMC2730",
+        "WMC2736",
+        "WMC2742",
+        "WMC3030",
+        "WMC3036",
+        "WMC3042"
+      ]
+    },
+    "WES930": {
+      "src": "/catalog-images/shaker-22-034.webp",
+      "page": 22,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "WES930",
+        "WES936",
+        "WES942"
+      ]
+    },
+    "WES936": {
+      "src": "/catalog-images/shaker-22-034.webp",
+      "page": 22,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "WES930",
+        "WES936",
+        "WES942"
+      ]
+    },
+    "WES942": {
+      "src": "/catalog-images/shaker-22-034.webp",
+      "page": 22,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "WES930",
+        "WES936",
+        "WES942"
+      ]
+    },
+    "WEC1230": {
+      "src": "/catalog-images/shaker-22-035.webp",
+      "page": 22,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "WEC1230",
+        "WEC1236",
+        "WEC1242"
+      ]
+    },
+    "WEC1236": {
+      "src": "/catalog-images/shaker-22-035.webp",
+      "page": 22,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "WEC1230",
+        "WEC1236",
+        "WEC1242"
+      ]
+    },
+    "WEC1242": {
+      "src": "/catalog-images/shaker-22-035.webp",
+      "page": 22,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "WEC1230",
+        "WEC1236",
+        "WEC1242"
+      ]
+    },
+    "WRC3015": {
+      "src": "/catalog-images/shaker-23-036.webp",
+      "page": 23,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "WRC3015",
+        "WRC3615"
+      ]
+    },
+    "WRC3615": {
+      "src": "/catalog-images/shaker-23-036.webp",
+      "page": 23,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "WRC3015",
+        "WRC3615"
+      ]
+    },
+    "30GR": {
+      "src": "/catalog-images/shaker-23-037.webp",
+      "page": 23,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "30GR",
+        "30GR-30GR",
+        "36GR",
+        "36GR-36GR"
+      ]
+    },
+    "30GR-30GR": {
+      "src": "/catalog-images/shaker-23-037.webp",
+      "page": 23,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "30GR",
+        "30GR-30GR",
+        "36GR",
+        "36GR-36GR"
+      ]
+    },
+    "36GR": {
+      "src": "/catalog-images/shaker-23-037.webp",
+      "page": 23,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "30GR",
+        "30GR-30GR",
+        "36GR",
+        "36GR-36GR"
+      ]
+    },
+    "36GR-36GR": {
+      "src": "/catalog-images/shaker-23-037.webp",
+      "page": 23,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "30GR",
+        "30GR-30GR",
+        "36GR",
+        "36GR-36GR"
+      ]
+    },
+    "W1515GD": {
+      "src": "/catalog-images/shaker-23-038.webp",
+      "page": 23,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W1515GD",
+        "W1815GD",
+        "W2115GD"
+      ]
+    },
+    "W1815GD": {
+      "src": "/catalog-images/shaker-23-038.webp",
+      "page": 23,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W1515GD",
+        "W1815GD",
+        "W2115GD"
+      ]
+    },
+    "W2115GD": {
+      "src": "/catalog-images/shaker-23-038.webp",
+      "page": 23,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W1515GD",
+        "W1815GD",
+        "W2115GD"
+      ]
+    },
+    "W2415GD": {
+      "src": "/catalog-images/shaker-23-039.webp",
+      "page": 23,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2415GD",
+        "W2715GD",
+        "W3015GD",
+        "W3315GD",
+        "W3615GD"
+      ]
+    },
+    "W2715GD": {
+      "src": "/catalog-images/shaker-23-039.webp",
+      "page": 23,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2415GD",
+        "W2715GD",
+        "W3015GD",
+        "W3315GD",
+        "W3615GD"
+      ]
+    },
+    "W3015GD": {
+      "src": "/catalog-images/shaker-23-039.webp",
+      "page": 23,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2415GD",
+        "W2715GD",
+        "W3015GD",
+        "W3315GD",
+        "W3615GD"
+      ]
+    },
+    "W3315GD": {
+      "src": "/catalog-images/shaker-23-039.webp",
+      "page": 23,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2415GD",
+        "W2715GD",
+        "W3015GD",
+        "W3315GD",
+        "W3615GD"
+      ]
+    },
+    "W3615GD": {
+      "src": "/catalog-images/shaker-23-039.webp",
+      "page": 23,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2415GD",
+        "W2715GD",
+        "W3015GD",
+        "W3315GD",
+        "W3615GD"
+      ]
+    },
+    "W1530GD": {
+      "src": "/catalog-images/shaker-23-040.webp",
+      "page": 23,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W1530GD",
+        "W1830GD"
+      ]
+    },
+    "W1830GD": {
+      "src": "/catalog-images/shaker-23-040.webp",
+      "page": 23,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W1530GD",
+        "W1830GD"
+      ]
+    },
+    "W2430GD": {
+      "src": "/catalog-images/shaker-23-041.webp",
+      "page": 23,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2430GD",
+        "W3030GD",
+        "W3630GD"
+      ]
+    },
+    "W3030GD": {
+      "src": "/catalog-images/shaker-23-041.webp",
+      "page": 23,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2430GD",
+        "W3030GD",
+        "W3630GD"
+      ]
+    },
+    "W3630GD": {
+      "src": "/catalog-images/shaker-23-041.webp",
+      "page": 23,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2430GD",
+        "W3030GD",
+        "W3630GD"
+      ]
+    },
+    "W1536GD": {
+      "src": "/catalog-images/shaker-23-042.webp",
+      "page": 23,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W1536GD",
+        "W1836GD"
+      ]
+    },
+    "W1836GD": {
+      "src": "/catalog-images/shaker-23-042.webp",
+      "page": 23,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W1536GD",
+        "W1836GD"
+      ]
+    },
+    "W2436GD": {
+      "src": "/catalog-images/shaker-23-043.webp",
+      "page": 23,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2436GD",
+        "W3036GD",
+        "W3636GD"
+      ]
+    },
+    "W3036GD": {
+      "src": "/catalog-images/shaker-23-043.webp",
+      "page": 23,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2436GD",
+        "W3036GD",
+        "W3636GD"
+      ]
+    },
+    "W3636GD": {
+      "src": "/catalog-images/shaker-23-043.webp",
+      "page": 23,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2436GD",
+        "W3036GD",
+        "W3636GD"
+      ]
+    },
+    "W1542GD": {
+      "src": "/catalog-images/shaker-24-044.webp",
+      "page": 24,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W1542GD",
+        "W1842GD"
+      ]
+    },
+    "W1842GD": {
+      "src": "/catalog-images/shaker-24-044.webp",
+      "page": 24,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W1542GD",
+        "W1842GD"
+      ]
+    },
+    "W2442GD": {
+      "src": "/catalog-images/shaker-24-045.webp",
+      "page": 24,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2442GD",
+        "W3042GD",
+        "W3642GD"
+      ]
+    },
+    "W3042GD": {
+      "src": "/catalog-images/shaker-24-045.webp",
+      "page": 24,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2442GD",
+        "W3042GD",
+        "W3642GD"
+      ]
+    },
+    "W3642GD": {
+      "src": "/catalog-images/shaker-24-045.webp",
+      "page": 24,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "W2442GD",
+        "W3042GD",
+        "W3642GD"
+      ]
+    },
+    "WDC2415GD": {
+      "src": "/catalog-images/shaker-24-046.webp",
+      "page": 24,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "WDC2415GD",
+        "WDC2430GD",
+        "WDC2436GD",
+        "WDC2442GD"
+      ]
+    },
+    "WDC2430GD": {
+      "src": "/catalog-images/shaker-24-046.webp",
+      "page": 24,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "WDC2415GD",
+        "WDC2430GD",
+        "WDC2436GD",
+        "WDC2442GD"
+      ]
+    },
+    "WDC2436GD": {
+      "src": "/catalog-images/shaker-24-046.webp",
+      "page": 24,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "WDC2415GD",
+        "WDC2430GD",
+        "WDC2436GD",
+        "WDC2442GD"
+      ]
+    },
+    "WDC2442GD": {
+      "src": "/catalog-images/shaker-24-046.webp",
+      "page": 24,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "WDC2415GD",
+        "WDC2430GD",
+        "WDC2436GD",
+        "WDC2442GD"
+      ]
+    },
+    "VDB12": {
+      "src": "/catalog-images/shaker-25-047.webp",
+      "page": 25,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "VDB12",
+        "VDB15",
+        "VDB18",
+        "VDB21",
+        "VDB24"
+      ]
+    },
+    "VDB15": {
+      "src": "/catalog-images/shaker-25-047.webp",
+      "page": 25,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "VDB12",
+        "VDB15",
+        "VDB18",
+        "VDB21",
+        "VDB24"
+      ]
+    },
+    "VDB18": {
+      "src": "/catalog-images/shaker-25-047.webp",
+      "page": 25,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "VDB12",
+        "VDB15",
+        "VDB18",
+        "VDB21",
+        "VDB24"
+      ]
+    },
+    "VDB21": {
+      "src": "/catalog-images/shaker-25-047.webp",
+      "page": 25,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "VDB12",
+        "VDB15",
+        "VDB18",
+        "VDB21",
+        "VDB24"
+      ]
+    },
+    "VDB24": {
+      "src": "/catalog-images/shaker-25-047.webp",
+      "page": 25,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "VDB12",
+        "VDB15",
+        "VDB18",
+        "VDB21",
+        "VDB24"
+      ]
+    },
+    "VB09": {
+      "src": "/catalog-images/shaker-25-048.webp",
+      "page": 25,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "VB09",
+        "VB12",
+        "VB15",
+        "VB18"
+      ]
+    },
+    "VB12": {
+      "src": "/catalog-images/shaker-25-048.webp",
+      "page": 25,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "VB09",
+        "VB12",
+        "VB15",
+        "VB18"
+      ]
+    },
+    "VB15": {
+      "src": "/catalog-images/shaker-25-048.webp",
+      "page": 25,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "VB09",
+        "VB12",
+        "VB15",
+        "VB18"
+      ]
+    },
+    "VB18": {
+      "src": "/catalog-images/shaker-25-048.webp",
+      "page": 25,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "VB09",
+        "VB12",
+        "VB15",
+        "VB18"
+      ]
+    },
+    "KD24": {
+      "src": "/catalog-images/shaker-25-049.webp",
+      "page": 25,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "KD24",
+        "KD30",
+        "KD36"
+      ]
+    },
+    "KD30": {
+      "src": "/catalog-images/shaker-25-049.webp",
+      "page": 25,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "KD24",
+        "KD30",
+        "KD36"
+      ]
+    },
+    "KD36": {
+      "src": "/catalog-images/shaker-25-049.webp",
+      "page": 25,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "KD24",
+        "KD30",
+        "KD36"
+      ]
+    },
+    "VSD4221": {
+      "src": "/catalog-images/shaker-26-050.webp",
+      "page": 26,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "VSD4221"
+      ]
+    },
+    "VSD4821D": {
+      "src": "/catalog-images/shaker-26-051.webp",
+      "page": 26,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "VSD4821D",
+        "VSD6021D"
+      ]
+    },
+    "VSD6021D": {
+      "src": "/catalog-images/shaker-26-051.webp",
+      "page": 26,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "VSD4821D",
+        "VSD6021D"
+      ]
+    },
+    "VSD6021DD": {
+      "src": "/catalog-images/shaker-26-052.webp",
+      "page": 26,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "VSD6021DD"
+      ]
+    },
+    "VSD3021DL": {
+      "src": "/catalog-images/shaker-26-053.webp",
+      "page": 26,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "VSD3021DL",
+        "VSD3021DR"
+      ]
+    },
+    "VSD3021DR": {
+      "src": "/catalog-images/shaker-26-053.webp",
+      "page": 26,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "VSD3021DL",
+        "VSD3021DR"
+      ]
+    },
+    "VSD3621DL": {
+      "src": "/catalog-images/shaker-26-054.webp",
+      "page": 26,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "VSD3621DL",
+        "VSD3621DR"
+      ]
+    },
+    "VSD3621DR": {
+      "src": "/catalog-images/shaker-26-054.webp",
+      "page": 26,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "VSD3621DL",
+        "VSD3621DR"
+      ]
+    },
+    "DV1245": {
+      "src": "/catalog-images/shaker-26-055.webp",
+      "page": 26,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "DV1245"
+      ]
+    },
+    "SVA188421": {
+      "src": "/catalog-images/shaker-26-056.webp",
+      "page": 26,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "SVA188421"
+      ]
+    },
+    "TF1.5x96": {
+      "src": "/catalog-images/shaker-29-057.webp",
+      "page": 29,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "TF1.5x96",
+        "TF3x96",
+        "TF6x96",
+        "WF330",
+        "WF336",
+        "WF342",
+        "WF630",
+        "WF636",
+        "WF642"
+      ]
+    },
+    "TF3x96": {
+      "src": "/catalog-images/shaker-29-057.webp",
+      "page": 29,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "TF1.5x96",
+        "TF3x96",
+        "TF6x96",
+        "WF330",
+        "WF336",
+        "WF342",
+        "WF630",
+        "WF636",
+        "WF642"
+      ]
+    },
+    "TF6x96": {
+      "src": "/catalog-images/shaker-29-057.webp",
+      "page": 29,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "TF1.5x96",
+        "TF3x96",
+        "TF6x96",
+        "WF330",
+        "WF336",
+        "WF342",
+        "WF630",
+        "WF636",
+        "WF642"
+      ]
+    },
+    "WF330": {
+      "src": "/catalog-images/shaker-29-057.webp",
+      "page": 29,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "TF1.5x96",
+        "TF3x96",
+        "TF6x96",
+        "WF330",
+        "WF336",
+        "WF342",
+        "WF630",
+        "WF636",
+        "WF642"
+      ]
+    },
+    "WF336": {
+      "src": "/catalog-images/shaker-29-057.webp",
+      "page": 29,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "TF1.5x96",
+        "TF3x96",
+        "TF6x96",
+        "WF330",
+        "WF336",
+        "WF342",
+        "WF630",
+        "WF636",
+        "WF642"
+      ]
+    },
+    "WF342": {
+      "src": "/catalog-images/shaker-29-057.webp",
+      "page": 29,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "TF1.5x96",
+        "TF3x96",
+        "TF6x96",
+        "WF330",
+        "WF336",
+        "WF342",
+        "WF630",
+        "WF636",
+        "WF642"
+      ]
+    },
+    "WF630": {
+      "src": "/catalog-images/shaker-29-057.webp",
+      "page": 29,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "TF1.5x96",
+        "TF3x96",
+        "TF6x96",
+        "WF330",
+        "WF336",
+        "WF342",
+        "WF630",
+        "WF636",
+        "WF642"
+      ]
+    },
+    "WF636": {
+      "src": "/catalog-images/shaker-29-057.webp",
+      "page": 29,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "TF1.5x96",
+        "TF3x96",
+        "TF6x96",
+        "WF330",
+        "WF336",
+        "WF342",
+        "WF630",
+        "WF636",
+        "WF642"
+      ]
+    },
+    "WF642": {
+      "src": "/catalog-images/shaker-29-057.webp",
+      "page": 29,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "TF1.5x96",
+        "TF3x96",
+        "TF6x96",
+        "WF330",
+        "WF336",
+        "WF342",
+        "WF630",
+        "WF636",
+        "WF642"
+      ]
+    },
+    "BFD21": {
+      "src": "/catalog-images/shaker-30-058.webp",
+      "page": 30,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "BFD21",
+        "BFD24"
+      ]
+    },
+    "BFD24": {
+      "src": "/catalog-images/shaker-30-058.webp",
+      "page": 30,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "BFD21",
+        "BFD24"
+      ]
+    },
+    "FD1230": {
+      "src": "/catalog-images/shaker-30-059.webp",
+      "page": 30,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "FD1230",
+        "FD1236",
+        "FD1242"
+      ]
+    },
+    "FD1236": {
+      "src": "/catalog-images/shaker-30-059.webp",
+      "page": 30,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "FD1230",
+        "FD1236",
+        "FD1242"
+      ]
+    },
+    "FD1242": {
+      "src": "/catalog-images/shaker-30-059.webp",
+      "page": 30,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "FD1230",
+        "FD1236",
+        "FD1242"
+      ]
+    },
+    "SDM8": {
+      "src": "/catalog-images/shaker-30-060.webp",
+      "page": 30,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "SDM8"
+      ]
+    },
+    "QRM8": {
+      "src": "/catalog-images/shaker-30-061.webp",
+      "page": 30,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "QRM8"
+      ]
+    },
+    "OCM8": {
+      "src": "/catalog-images/shaker-30-062.webp",
+      "page": 30,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "OCM8"
+      ]
+    },
+    "Cove Molding": {
+      "src": "/catalog-images/shaker-30-063.webp",
+      "page": 30,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "Cove Molding"
+      ]
+    },
+    "BM8": {
+      "src": "/catalog-images/shaker-31-064.webp",
+      "page": 31,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "BM8"
+      ]
+    },
+    "TK8": {
+      "src": "/catalog-images/shaker-31-065.webp",
+      "page": 31,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "TK8"
+      ]
+    },
+    "SM8": {
+      "src": "/catalog-images/shaker-31-066.webp",
+      "page": 31,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "SM8"
+      ]
+    },
+    "MIRROR2430": {
+      "src": "/catalog-images/shaker-32-067.webp",
+      "page": 32,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "MIRROR2430",
+        "MIRROR3030"
+      ]
+    },
+    "MIRROR3030": {
+      "src": "/catalog-images/shaker-32-067.webp",
+      "page": 32,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "MIRROR2430",
+        "MIRROR3030"
+      ]
+    },
+    "POST": {
+      "src": "/catalog-images/shaker-32-068.webp",
+      "page": 32,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "POST"
+      ]
+    },
+    "ROT15": {
+      "src": "/catalog-images/shaker-32-069.webp",
+      "page": 32,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "ROT15",
+        "ROT18",
+        "ROT21",
+        "ROT24",
+        "ROT27",
+        "ROT30",
+        "ROT33",
+        "ROT36"
+      ]
+    },
+    "ROT18": {
+      "src": "/catalog-images/shaker-32-069.webp",
+      "page": 32,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "ROT15",
+        "ROT18",
+        "ROT21",
+        "ROT24",
+        "ROT27",
+        "ROT30",
+        "ROT33",
+        "ROT36"
+      ]
+    },
+    "ROT21": {
+      "src": "/catalog-images/shaker-32-069.webp",
+      "page": 32,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "ROT15",
+        "ROT18",
+        "ROT21",
+        "ROT24",
+        "ROT27",
+        "ROT30",
+        "ROT33",
+        "ROT36"
+      ]
+    },
+    "ROT24": {
+      "src": "/catalog-images/shaker-32-069.webp",
+      "page": 32,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "ROT15",
+        "ROT18",
+        "ROT21",
+        "ROT24",
+        "ROT27",
+        "ROT30",
+        "ROT33",
+        "ROT36"
+      ]
+    },
+    "ROT27": {
+      "src": "/catalog-images/shaker-32-069.webp",
+      "page": 32,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "ROT15",
+        "ROT18",
+        "ROT21",
+        "ROT24",
+        "ROT27",
+        "ROT30",
+        "ROT33",
+        "ROT36"
+      ]
+    },
+    "ROT30": {
+      "src": "/catalog-images/shaker-32-069.webp",
+      "page": 32,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "ROT15",
+        "ROT18",
+        "ROT21",
+        "ROT24",
+        "ROT27",
+        "ROT30",
+        "ROT33",
+        "ROT36"
+      ]
+    },
+    "ROT33": {
+      "src": "/catalog-images/shaker-32-069.webp",
+      "page": 32,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "ROT15",
+        "ROT18",
+        "ROT21",
+        "ROT24",
+        "ROT27",
+        "ROT30",
+        "ROT33",
+        "ROT36"
+      ]
+    },
+    "ROT36": {
+      "src": "/catalog-images/shaker-32-069.webp",
+      "page": 32,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "ROT15",
+        "ROT18",
+        "ROT21",
+        "ROT24",
+        "ROT27",
+        "ROT30",
+        "ROT33",
+        "ROT36"
+      ]
+    },
+    "Touch Up Kit": {
+      "src": "/catalog-images/shaker-32-129.webp",
+      "page": 32,
+      "label": "Catalog touch-up kit photo",
+      "skus": [
+        "Touch Up Kit"
+      ]
+    },
+    "PC188424": {
+      "src": "/catalog-images/shaker-19-071.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "PC188424",
+        "PC188424BOX",
+        "PC188424FFD",
+        "PC189024",
+        "PC189024BOX",
+        "PC189024FFD",
+        "PC189624",
+        "PC189624BOX",
+        "PC189624FFD"
+      ]
+    },
+    "PC188424BOX": {
+      "src": "/catalog-images/shaker-19-071.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "PC188424",
+        "PC188424BOX",
+        "PC188424FFD",
+        "PC189024",
+        "PC189024BOX",
+        "PC189024FFD",
+        "PC189624",
+        "PC189624BOX",
+        "PC189624FFD"
+      ]
+    },
+    "PC188424FFD": {
+      "src": "/catalog-images/shaker-19-071.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "PC188424",
+        "PC188424BOX",
+        "PC188424FFD",
+        "PC189024",
+        "PC189024BOX",
+        "PC189024FFD",
+        "PC189624",
+        "PC189624BOX",
+        "PC189624FFD"
+      ]
+    },
+    "PC189024": {
+      "src": "/catalog-images/shaker-19-071.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "PC188424",
+        "PC188424BOX",
+        "PC188424FFD",
+        "PC189024",
+        "PC189024BOX",
+        "PC189024FFD",
+        "PC189624",
+        "PC189624BOX",
+        "PC189624FFD"
+      ]
+    },
+    "PC189024BOX": {
+      "src": "/catalog-images/shaker-19-071.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "PC188424",
+        "PC188424BOX",
+        "PC188424FFD",
+        "PC189024",
+        "PC189024BOX",
+        "PC189024FFD",
+        "PC189624",
+        "PC189624BOX",
+        "PC189624FFD"
+      ]
+    },
+    "PC189024FFD": {
+      "src": "/catalog-images/shaker-19-071.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "PC188424",
+        "PC188424BOX",
+        "PC188424FFD",
+        "PC189024",
+        "PC189024BOX",
+        "PC189024FFD",
+        "PC189624",
+        "PC189624BOX",
+        "PC189624FFD"
+      ]
+    },
+    "PC189624": {
+      "src": "/catalog-images/shaker-19-071.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "PC188424",
+        "PC188424BOX",
+        "PC188424FFD",
+        "PC189024",
+        "PC189024BOX",
+        "PC189024FFD",
+        "PC189624",
+        "PC189624BOX",
+        "PC189624FFD"
+      ]
+    },
+    "PC189624BOX": {
+      "src": "/catalog-images/shaker-19-071.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "PC188424",
+        "PC188424BOX",
+        "PC188424FFD",
+        "PC189024",
+        "PC189024BOX",
+        "PC189024FFD",
+        "PC189624",
+        "PC189624BOX",
+        "PC189624FFD"
+      ]
+    },
+    "PC189624FFD": {
+      "src": "/catalog-images/shaker-19-071.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "PC188424",
+        "PC188424BOX",
+        "PC188424FFD",
+        "PC189024",
+        "PC189024BOX",
+        "PC189024FFD",
+        "PC189624",
+        "PC189624BOX",
+        "PC189624FFD"
+      ]
+    },
+    "PC248424": {
+      "src": "/catalog-images/shaker-19-072.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "PC248424",
+        "PC248424BOX",
+        "PC248424FFD",
+        "PC249024",
+        "PC249024BOX",
+        "PC249024FFD",
+        "PC249624",
+        "PC249624BOX",
+        "PC249624FFD"
+      ]
+    },
+    "PC248424BOX": {
+      "src": "/catalog-images/shaker-19-072.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "PC248424",
+        "PC248424BOX",
+        "PC248424FFD",
+        "PC249024",
+        "PC249024BOX",
+        "PC249024FFD",
+        "PC249624",
+        "PC249624BOX",
+        "PC249624FFD"
+      ]
+    },
+    "PC248424FFD": {
+      "src": "/catalog-images/shaker-19-072.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "PC248424",
+        "PC248424BOX",
+        "PC248424FFD",
+        "PC249024",
+        "PC249024BOX",
+        "PC249024FFD",
+        "PC249624",
+        "PC249624BOX",
+        "PC249624FFD"
+      ]
+    },
+    "PC249024": {
+      "src": "/catalog-images/shaker-19-072.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "PC248424",
+        "PC248424BOX",
+        "PC248424FFD",
+        "PC249024",
+        "PC249024BOX",
+        "PC249024FFD",
+        "PC249624",
+        "PC249624BOX",
+        "PC249624FFD"
+      ]
+    },
+    "PC249024BOX": {
+      "src": "/catalog-images/shaker-19-072.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "PC248424",
+        "PC248424BOX",
+        "PC248424FFD",
+        "PC249024",
+        "PC249024BOX",
+        "PC249024FFD",
+        "PC249624",
+        "PC249624BOX",
+        "PC249624FFD"
+      ]
+    },
+    "PC249024FFD": {
+      "src": "/catalog-images/shaker-19-072.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "PC248424",
+        "PC248424BOX",
+        "PC248424FFD",
+        "PC249024",
+        "PC249024BOX",
+        "PC249024FFD",
+        "PC249624",
+        "PC249624BOX",
+        "PC249624FFD"
+      ]
+    },
+    "PC249624": {
+      "src": "/catalog-images/shaker-19-072.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "PC248424",
+        "PC248424BOX",
+        "PC248424FFD",
+        "PC249024",
+        "PC249024BOX",
+        "PC249024FFD",
+        "PC249624",
+        "PC249624BOX",
+        "PC249624FFD"
+      ]
+    },
+    "PC249624BOX": {
+      "src": "/catalog-images/shaker-19-072.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "PC248424",
+        "PC248424BOX",
+        "PC248424FFD",
+        "PC249024",
+        "PC249024BOX",
+        "PC249024FFD",
+        "PC249624",
+        "PC249624BOX",
+        "PC249624FFD"
+      ]
+    },
+    "PC249624FFD": {
+      "src": "/catalog-images/shaker-19-072.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "PC248424",
+        "PC248424BOX",
+        "PC248424FFD",
+        "PC249024",
+        "PC249024BOX",
+        "PC249024FFD",
+        "PC249624",
+        "PC249624BOX",
+        "PC249624FFD"
+      ]
+    },
+    "PC308424": {
+      "src": "/catalog-images/shaker-19-073.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "PC308424",
+        "PC308424BOX",
+        "PC308424FFD",
+        "PC309024",
+        "PC309024BOX",
+        "PC309024FFD",
+        "PC309624",
+        "PC309624BOX",
+        "PC309624FFD"
+      ]
+    },
+    "PC308424BOX": {
+      "src": "/catalog-images/shaker-19-073.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "PC308424",
+        "PC308424BOX",
+        "PC308424FFD",
+        "PC309024",
+        "PC309024BOX",
+        "PC309024FFD",
+        "PC309624",
+        "PC309624BOX",
+        "PC309624FFD"
+      ]
+    },
+    "PC308424FFD": {
+      "src": "/catalog-images/shaker-19-073.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "PC308424",
+        "PC308424BOX",
+        "PC308424FFD",
+        "PC309024",
+        "PC309024BOX",
+        "PC309024FFD",
+        "PC309624",
+        "PC309624BOX",
+        "PC309624FFD"
+      ]
+    },
+    "PC309024": {
+      "src": "/catalog-images/shaker-19-073.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "PC308424",
+        "PC308424BOX",
+        "PC308424FFD",
+        "PC309024",
+        "PC309024BOX",
+        "PC309024FFD",
+        "PC309624",
+        "PC309624BOX",
+        "PC309624FFD"
+      ]
+    },
+    "PC309024BOX": {
+      "src": "/catalog-images/shaker-19-073.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "PC308424",
+        "PC308424BOX",
+        "PC308424FFD",
+        "PC309024",
+        "PC309024BOX",
+        "PC309024FFD",
+        "PC309624",
+        "PC309624BOX",
+        "PC309624FFD"
+      ]
+    },
+    "PC309024FFD": {
+      "src": "/catalog-images/shaker-19-073.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "PC308424",
+        "PC308424BOX",
+        "PC308424FFD",
+        "PC309024",
+        "PC309024BOX",
+        "PC309024FFD",
+        "PC309624",
+        "PC309624BOX",
+        "PC309624FFD"
+      ]
+    },
+    "PC309624": {
+      "src": "/catalog-images/shaker-19-073.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "PC308424",
+        "PC308424BOX",
+        "PC308424FFD",
+        "PC309024",
+        "PC309024BOX",
+        "PC309024FFD",
+        "PC309624",
+        "PC309624BOX",
+        "PC309624FFD"
+      ]
+    },
+    "PC309624BOX": {
+      "src": "/catalog-images/shaker-19-073.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "PC308424",
+        "PC308424BOX",
+        "PC308424FFD",
+        "PC309024",
+        "PC309024BOX",
+        "PC309024FFD",
+        "PC309624",
+        "PC309624BOX",
+        "PC309624FFD"
+      ]
+    },
+    "PC309624FFD": {
+      "src": "/catalog-images/shaker-19-073.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "PC308424",
+        "PC308424BOX",
+        "PC308424FFD",
+        "PC309024",
+        "PC309024BOX",
+        "PC309024FFD",
+        "PC309624",
+        "PC309624BOX",
+        "PC309624FFD"
+      ]
+    },
+    "OC338424": {
+      "src": "/catalog-images/shaker-19-074.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "OC338424",
+        "OC338424BOX",
+        "OC338424FFD",
+        "OC339024",
+        "OC339024BOX",
+        "OC339024FFD",
+        "OC339624",
+        "OC339624BOX",
+        "OC339624FFD"
+      ]
+    },
+    "OC338424BOX": {
+      "src": "/catalog-images/shaker-19-074.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "OC338424",
+        "OC338424BOX",
+        "OC338424FFD",
+        "OC339024",
+        "OC339024BOX",
+        "OC339024FFD",
+        "OC339624",
+        "OC339624BOX",
+        "OC339624FFD"
+      ]
+    },
+    "OC338424FFD": {
+      "src": "/catalog-images/shaker-19-074.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "OC338424",
+        "OC338424BOX",
+        "OC338424FFD",
+        "OC339024",
+        "OC339024BOX",
+        "OC339024FFD",
+        "OC339624",
+        "OC339624BOX",
+        "OC339624FFD"
+      ]
+    },
+    "OC339024": {
+      "src": "/catalog-images/shaker-19-074.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "OC338424",
+        "OC338424BOX",
+        "OC338424FFD",
+        "OC339024",
+        "OC339024BOX",
+        "OC339024FFD",
+        "OC339624",
+        "OC339624BOX",
+        "OC339624FFD"
+      ]
+    },
+    "OC339024BOX": {
+      "src": "/catalog-images/shaker-19-074.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "OC338424",
+        "OC338424BOX",
+        "OC338424FFD",
+        "OC339024",
+        "OC339024BOX",
+        "OC339024FFD",
+        "OC339624",
+        "OC339624BOX",
+        "OC339624FFD"
+      ]
+    },
+    "OC339024FFD": {
+      "src": "/catalog-images/shaker-19-074.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "OC338424",
+        "OC338424BOX",
+        "OC338424FFD",
+        "OC339024",
+        "OC339024BOX",
+        "OC339024FFD",
+        "OC339624",
+        "OC339624BOX",
+        "OC339624FFD"
+      ]
+    },
+    "OC339624": {
+      "src": "/catalog-images/shaker-19-074.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "OC338424",
+        "OC338424BOX",
+        "OC338424FFD",
+        "OC339024",
+        "OC339024BOX",
+        "OC339024FFD",
+        "OC339624",
+        "OC339624BOX",
+        "OC339624FFD"
+      ]
+    },
+    "OC339624BOX": {
+      "src": "/catalog-images/shaker-19-074.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "OC338424",
+        "OC338424BOX",
+        "OC338424FFD",
+        "OC339024",
+        "OC339024BOX",
+        "OC339024FFD",
+        "OC339624",
+        "OC339624BOX",
+        "OC339624FFD"
+      ]
+    },
+    "OC339624FFD": {
+      "src": "/catalog-images/shaker-19-074.webp",
+      "page": 19,
+      "label": "Catalog assembly diagram; box and door components share this reference",
+      "skus": [
+        "OC338424",
+        "OC338424BOX",
+        "OC338424FFD",
+        "OC339024",
+        "OC339024BOX",
+        "OC339024FFD",
+        "OC339624",
+        "OC339624BOX",
+        "OC339624FFD"
+      ]
+    },
+    "BES09 L/R": {
+      "src": "/catalog-images/shaker-18-117.webp",
+      "page": 18,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "BES09 L/R"
+      ]
+    },
+    "VSB24": {
+      "src": "/catalog-images/shaker-25-118.webp",
+      "page": 25,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "VSB24",
+        "VSB27",
+        "VSB30",
+        "VSB36"
+      ]
+    },
+    "VSB27": {
+      "src": "/catalog-images/shaker-25-118.webp",
+      "page": 25,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "VSB24",
+        "VSB27",
+        "VSB30",
+        "VSB36"
+      ]
+    },
+    "VSB30": {
+      "src": "/catalog-images/shaker-25-118.webp",
+      "page": 25,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "VSB24",
+        "VSB27",
+        "VSB30",
+        "VSB36"
+      ]
+    },
+    "VSB36": {
+      "src": "/catalog-images/shaker-25-118.webp",
+      "page": 25,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "VSB24",
+        "VSB27",
+        "VSB30",
+        "VSB36"
+      ]
+    },
+    "PNL 34.5x96x1/4": {
+      "src": "/catalog-images/shaker-29-119.webp",
+      "page": 29,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "PNL 34.5x96x1/4"
+      ]
+    },
+    "PNL 34.5x96x1/2-VERTICAL": {
+      "src": "/catalog-images/shaker-29-120.webp",
+      "page": 29,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "PNL 34.5x96x1/2-VERTICAL"
+      ]
+    },
+    "PNL 24x96x3/4": {
+      "src": "/catalog-images/shaker-29-121.webp",
+      "page": 29,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "PNL 24x96x3/4"
+      ]
+    },
+    "DWR3": {
+      "src": "/catalog-images/shaker-30-122.webp",
+      "page": 30,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "DWR3"
+      ]
+    },
+    "REP3x96": {
+      "src": "/catalog-images/shaker-30-123.webp",
+      "page": 30,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "REP3x96"
+      ]
+    },
+    "LM8": {
+      "src": "/catalog-images/shaker-31-124.webp",
+      "page": 31,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "LM8"
+      ]
+    },
+    "SCM2 1/4": {
+      "src": "/catalog-images/shaker-31-125.webp",
+      "page": 31,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "SCM2 1/4"
+      ]
+    },
+    "SCM2 1/4 - HEEL": {
+      "src": "/catalog-images/shaker-31-126.webp",
+      "page": 31,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "SCM2 1/4 - HEEL"
+      ]
+    },
+    "SCM3 5/8": {
+      "src": "/catalog-images/shaker-31-127.webp",
+      "page": 31,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "SCM3 5/8"
+      ]
+    },
+    "SCM3 5/8 - HEEL": {
+      "src": "/catalog-images/shaker-31-128.webp",
+      "page": 31,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "SCM3 5/8 - HEEL"
+      ]
+    },
+    "BWBK18": {
+      "src": "/catalog-images/shaker-18-146.webp",
+      "page": 18,
+      "label": "Catalog trash-cabinet assembly reference; includes the trash-can kit",
+      "skus": [
+        "BWBK18",
+        "TRASH KIT"
+      ]
+    },
+    "TRASH KIT": {
+      "src": "/catalog-images/shaker-18-146.webp",
+      "page": 18,
+      "label": "Catalog trash-cabinet assembly reference; includes the trash-can kit",
+      "skus": [
+        "BWBK18",
+        "TRASH KIT"
+      ]
+    },
+    "BES09": {
+      "src": "/catalog-images/shaker-18-147.webp",
+      "page": 18,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "BES09"
+      ]
+    },
+    "WES0930": {
+      "src": "/catalog-images/shaker-22-148.webp",
+      "page": 22,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "WES0930",
+        "WES0936",
+        "WES0942"
+      ]
+    },
+    "WES0936": {
+      "src": "/catalog-images/shaker-22-148.webp",
+      "page": 22,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "WES0930",
+        "WES0936",
+        "WES0942"
+      ]
+    },
+    "WES0942": {
+      "src": "/catalog-images/shaker-22-148.webp",
+      "page": 22,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "WES0930",
+        "WES0936",
+        "WES0942"
+      ]
+    },
+    "WDC273615GD": {
+      "src": "/catalog-images/shaker-24-149.webp",
+      "page": 24,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "WDC273615GD",
+        "WDC274215GD"
+      ]
+    },
+    "WDC274215GD": {
+      "src": "/catalog-images/shaker-24-149.webp",
+      "page": 24,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "WDC273615GD",
+        "WDC274215GD"
+      ]
+    },
+    "VSB2421": {
+      "src": "/catalog-images/shaker-25-150.webp",
+      "page": 25,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "VSB2421",
+        "VSB2721",
+        "VSB3021",
+        "VSB3621"
+      ]
+    },
+    "VSB2721": {
+      "src": "/catalog-images/shaker-25-150.webp",
+      "page": 25,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "VSB2421",
+        "VSB2721",
+        "VSB3021",
+        "VSB3621"
+      ]
+    },
+    "VSB3021": {
+      "src": "/catalog-images/shaker-25-150.webp",
+      "page": 25,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "VSB2421",
+        "VSB2721",
+        "VSB3021",
+        "VSB3621"
+      ]
+    },
+    "VSB3621": {
+      "src": "/catalog-images/shaker-25-150.webp",
+      "page": 25,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "VSB2421",
+        "VSB2721",
+        "VSB3021",
+        "VSB3621"
+      ]
+    },
+    "LM8 - S": {
+      "src": "/catalog-images/shaker-31-151.webp",
+      "page": 31,
+      "label": "Catalog diagram and specifications",
+      "skus": [
+        "LM8 - S"
+      ]
+    }
+  },
+  "Euro": {
+    "B12": {
+      "src": "/catalog-images/euro-15-075.webp",
+      "page": 15,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "B12",
+        "B15",
+        "B18",
+        "B21"
+      ]
+    },
+    "B15": {
+      "src": "/catalog-images/euro-15-075.webp",
+      "page": 15,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "B12",
+        "B15",
+        "B18",
+        "B21"
+      ]
+    },
+    "B18": {
+      "src": "/catalog-images/euro-15-075.webp",
+      "page": 15,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "B12",
+        "B15",
+        "B18",
+        "B21"
+      ]
+    },
+    "B21": {
+      "src": "/catalog-images/euro-15-075.webp",
+      "page": 15,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "B12",
+        "B15",
+        "B18",
+        "B21"
+      ]
+    },
+    "B24": {
+      "src": "/catalog-images/euro-15-076.webp",
+      "page": 15,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "B24",
+        "B27",
+        "B30",
+        "B33",
+        "B36"
+      ]
+    },
+    "B27": {
+      "src": "/catalog-images/euro-15-076.webp",
+      "page": 15,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "B24",
+        "B27",
+        "B30",
+        "B33",
+        "B36"
+      ]
+    },
+    "B30": {
+      "src": "/catalog-images/euro-15-076.webp",
+      "page": 15,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "B24",
+        "B27",
+        "B30",
+        "B33",
+        "B36"
+      ]
+    },
+    "B33": {
+      "src": "/catalog-images/euro-15-076.webp",
+      "page": 15,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "B24",
+        "B27",
+        "B30",
+        "B33",
+        "B36"
+      ]
+    },
+    "B36": {
+      "src": "/catalog-images/euro-15-076.webp",
+      "page": 15,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "B24",
+        "B27",
+        "B30",
+        "B33",
+        "B36"
+      ]
+    },
+    "2DB12": {
+      "src": "/catalog-images/euro-15-077.webp",
+      "page": 15,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "2DB12",
+        "2DB15",
+        "2DB18",
+        "2DB21",
+        "2DB24",
+        "2DB27",
+        "2DB30",
+        "2DB33",
+        "2DB36"
+      ]
+    },
+    "2DB15": {
+      "src": "/catalog-images/euro-15-077.webp",
+      "page": 15,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "2DB12",
+        "2DB15",
+        "2DB18",
+        "2DB21",
+        "2DB24",
+        "2DB27",
+        "2DB30",
+        "2DB33",
+        "2DB36"
+      ]
+    },
+    "2DB18": {
+      "src": "/catalog-images/euro-15-077.webp",
+      "page": 15,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "2DB12",
+        "2DB15",
+        "2DB18",
+        "2DB21",
+        "2DB24",
+        "2DB27",
+        "2DB30",
+        "2DB33",
+        "2DB36"
+      ]
+    },
+    "2DB21": {
+      "src": "/catalog-images/euro-15-077.webp",
+      "page": 15,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "2DB12",
+        "2DB15",
+        "2DB18",
+        "2DB21",
+        "2DB24",
+        "2DB27",
+        "2DB30",
+        "2DB33",
+        "2DB36"
+      ]
+    },
+    "2DB24": {
+      "src": "/catalog-images/euro-15-077.webp",
+      "page": 15,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "2DB12",
+        "2DB15",
+        "2DB18",
+        "2DB21",
+        "2DB24",
+        "2DB27",
+        "2DB30",
+        "2DB33",
+        "2DB36"
+      ]
+    },
+    "2DB27": {
+      "src": "/catalog-images/euro-15-077.webp",
+      "page": 15,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "2DB12",
+        "2DB15",
+        "2DB18",
+        "2DB21",
+        "2DB24",
+        "2DB27",
+        "2DB30",
+        "2DB33",
+        "2DB36"
+      ]
+    },
+    "2DB30": {
+      "src": "/catalog-images/euro-15-077.webp",
+      "page": 15,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "2DB12",
+        "2DB15",
+        "2DB18",
+        "2DB21",
+        "2DB24",
+        "2DB27",
+        "2DB30",
+        "2DB33",
+        "2DB36"
+      ]
+    },
+    "2DB33": {
+      "src": "/catalog-images/euro-15-077.webp",
+      "page": 15,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "2DB12",
+        "2DB15",
+        "2DB18",
+        "2DB21",
+        "2DB24",
+        "2DB27",
+        "2DB30",
+        "2DB33",
+        "2DB36"
+      ]
+    },
+    "2DB36": {
+      "src": "/catalog-images/euro-15-077.webp",
+      "page": 15,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "2DB12",
+        "2DB15",
+        "2DB18",
+        "2DB21",
+        "2DB24",
+        "2DB27",
+        "2DB30",
+        "2DB33",
+        "2DB36"
+      ]
+    },
+    "3DB12": {
+      "src": "/catalog-images/euro-15-078.webp",
+      "page": 15,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "3DB12",
+        "3DB15",
+        "3DB18",
+        "3DB21",
+        "3DB24",
+        "3DB27",
+        "3DB30",
+        "3DB33",
+        "3DB36"
+      ]
+    },
+    "3DB15": {
+      "src": "/catalog-images/euro-15-078.webp",
+      "page": 15,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "3DB12",
+        "3DB15",
+        "3DB18",
+        "3DB21",
+        "3DB24",
+        "3DB27",
+        "3DB30",
+        "3DB33",
+        "3DB36"
+      ]
+    },
+    "3DB18": {
+      "src": "/catalog-images/euro-15-078.webp",
+      "page": 15,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "3DB12",
+        "3DB15",
+        "3DB18",
+        "3DB21",
+        "3DB24",
+        "3DB27",
+        "3DB30",
+        "3DB33",
+        "3DB36"
+      ]
+    },
+    "3DB21": {
+      "src": "/catalog-images/euro-15-078.webp",
+      "page": 15,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "3DB12",
+        "3DB15",
+        "3DB18",
+        "3DB21",
+        "3DB24",
+        "3DB27",
+        "3DB30",
+        "3DB33",
+        "3DB36"
+      ]
+    },
+    "3DB24": {
+      "src": "/catalog-images/euro-15-078.webp",
+      "page": 15,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "3DB12",
+        "3DB15",
+        "3DB18",
+        "3DB21",
+        "3DB24",
+        "3DB27",
+        "3DB30",
+        "3DB33",
+        "3DB36"
+      ]
+    },
+    "3DB27": {
+      "src": "/catalog-images/euro-15-078.webp",
+      "page": 15,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "3DB12",
+        "3DB15",
+        "3DB18",
+        "3DB21",
+        "3DB24",
+        "3DB27",
+        "3DB30",
+        "3DB33",
+        "3DB36"
+      ]
+    },
+    "3DB30": {
+      "src": "/catalog-images/euro-15-078.webp",
+      "page": 15,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "3DB12",
+        "3DB15",
+        "3DB18",
+        "3DB21",
+        "3DB24",
+        "3DB27",
+        "3DB30",
+        "3DB33",
+        "3DB36"
+      ]
+    },
+    "3DB33": {
+      "src": "/catalog-images/euro-15-078.webp",
+      "page": 15,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "3DB12",
+        "3DB15",
+        "3DB18",
+        "3DB21",
+        "3DB24",
+        "3DB27",
+        "3DB30",
+        "3DB33",
+        "3DB36"
+      ]
+    },
+    "3DB36": {
+      "src": "/catalog-images/euro-15-078.webp",
+      "page": 15,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "3DB12",
+        "3DB15",
+        "3DB18",
+        "3DB21",
+        "3DB24",
+        "3DB27",
+        "3DB30",
+        "3DB33",
+        "3DB36"
+      ]
+    },
+    "B09FHD": {
+      "src": "/catalog-images/euro-16-079.webp",
+      "page": 16,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "B09FHD",
+        "B12FHD",
+        "B15FHD",
+        "B18FHD",
+        "B21FHD",
+        "B24FHD"
+      ]
+    },
+    "B12FHD": {
+      "src": "/catalog-images/euro-16-079.webp",
+      "page": 16,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "B09FHD",
+        "B12FHD",
+        "B15FHD",
+        "B18FHD",
+        "B21FHD",
+        "B24FHD"
+      ]
+    },
+    "B15FHD": {
+      "src": "/catalog-images/euro-16-079.webp",
+      "page": 16,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "B09FHD",
+        "B12FHD",
+        "B15FHD",
+        "B18FHD",
+        "B21FHD",
+        "B24FHD"
+      ]
+    },
+    "B18FHD": {
+      "src": "/catalog-images/euro-16-079.webp",
+      "page": 16,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "B09FHD",
+        "B12FHD",
+        "B15FHD",
+        "B18FHD",
+        "B21FHD",
+        "B24FHD"
+      ]
+    },
+    "B21FHD": {
+      "src": "/catalog-images/euro-16-079.webp",
+      "page": 16,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "B09FHD",
+        "B12FHD",
+        "B15FHD",
+        "B18FHD",
+        "B21FHD",
+        "B24FHD"
+      ]
+    },
+    "B24FHD": {
+      "src": "/catalog-images/euro-16-079.webp",
+      "page": 16,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "B09FHD",
+        "B12FHD",
+        "B15FHD",
+        "B18FHD",
+        "B21FHD",
+        "B24FHD"
+      ]
+    },
+    "BWBK18": {
+      "src": "/catalog-images/euro-16-080.webp",
+      "page": 16,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "BWBK18",
+        "Trash Kit"
+      ]
+    },
+    "Trash Kit": {
+      "src": "/catalog-images/euro-16-080.webp",
+      "page": 16,
+      "label": "Parent cabinet / accessory assembly reference; not a standalone component drawing",
+      "skus": [
+        "BWBK18",
+        "Trash Kit"
+      ]
+    },
+    "B27FHD": {
+      "src": "/catalog-images/euro-16-081.webp",
+      "page": 16,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "B27FHD",
+        "B30FHD",
+        "B33FHD",
+        "B36FHD"
+      ]
+    },
+    "B30FHD": {
+      "src": "/catalog-images/euro-16-081.webp",
+      "page": 16,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "B27FHD",
+        "B30FHD",
+        "B33FHD",
+        "B36FHD"
+      ]
+    },
+    "B33FHD": {
+      "src": "/catalog-images/euro-16-081.webp",
+      "page": 16,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "B27FHD",
+        "B30FHD",
+        "B33FHD",
+        "B36FHD"
+      ]
+    },
+    "B36FHD": {
+      "src": "/catalog-images/euro-16-081.webp",
+      "page": 16,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "B27FHD",
+        "B30FHD",
+        "B33FHD",
+        "B36FHD"
+      ]
+    },
+    "SB30": {
+      "src": "/catalog-images/euro-16-082.webp",
+      "page": 16,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "SB30",
+        "SB33",
+        "SB36",
+        "SB39"
+      ]
+    },
+    "SB33": {
+      "src": "/catalog-images/euro-16-082.webp",
+      "page": 16,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "SB30",
+        "SB33",
+        "SB36",
+        "SB39"
+      ]
+    },
+    "SB36": {
+      "src": "/catalog-images/euro-16-082.webp",
+      "page": 16,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "SB30",
+        "SB33",
+        "SB36",
+        "SB39"
+      ]
+    },
+    "SB39": {
+      "src": "/catalog-images/euro-16-082.webp",
+      "page": 16,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "SB30",
+        "SB33",
+        "SB36",
+        "SB39"
+      ]
+    },
+    "FSM33": {
+      "src": "/catalog-images/euro-17-083.webp",
+      "page": 17,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "FSM33",
+        "FSM36"
+      ]
+    },
+    "FSM36": {
+      "src": "/catalog-images/euro-17-083.webp",
+      "page": 17,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "FSM33",
+        "FSM36"
+      ]
+    },
+    "CSB36": {
+      "src": "/catalog-images/euro-17-084.webp",
+      "page": 17,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "CSB36"
+      ]
+    },
+    "BMC24": {
+      "src": "/catalog-images/euro-17-085.webp",
+      "page": 17,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "BMC24",
+        "BMC27",
+        "BMC30"
+      ]
+    },
+    "BMC27": {
+      "src": "/catalog-images/euro-17-085.webp",
+      "page": 17,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "BMC24",
+        "BMC27",
+        "BMC30"
+      ]
+    },
+    "BMC30": {
+      "src": "/catalog-images/euro-17-085.webp",
+      "page": 17,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "BMC24",
+        "BMC27",
+        "BMC30"
+      ]
+    },
+    "SP09L": {
+      "src": "/catalog-images/euro-17-086.webp",
+      "page": 17,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "SP09L",
+        "SP09R",
+        "SP12L",
+        "SP12R"
+      ]
+    },
+    "SP09R": {
+      "src": "/catalog-images/euro-17-086.webp",
+      "page": 17,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "SP09L",
+        "SP09R",
+        "SP12L",
+        "SP12R"
+      ]
+    },
+    "SP12L": {
+      "src": "/catalog-images/euro-17-086.webp",
+      "page": 17,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "SP09L",
+        "SP09R",
+        "SP12L",
+        "SP12R"
+      ]
+    },
+    "SP12R": {
+      "src": "/catalog-images/euro-17-086.webp",
+      "page": 17,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "SP09L",
+        "SP09R",
+        "SP12L",
+        "SP12R"
+      ]
+    },
+    "BLS33": {
+      "src": "/catalog-images/euro-18-087.webp",
+      "page": 18,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "BLS33",
+        "BLS36",
+        "BLS36-Tray"
+      ]
+    },
+    "BLS36": {
+      "src": "/catalog-images/euro-18-087.webp",
+      "page": 18,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "BLS33",
+        "BLS36",
+        "BLS36-Tray"
+      ]
+    },
+    "BLS36-Tray": {
+      "src": "/catalog-images/euro-18-087.webp",
+      "page": 18,
+      "label": "Parent cabinet / accessory assembly reference; not a standalone component drawing",
+      "skus": [
+        "BLS33",
+        "BLS36",
+        "BLS36-Tray"
+      ]
+    },
+    "BBC42": {
+      "src": "/catalog-images/euro-18-088.webp",
+      "page": 18,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "BBC42",
+        "BBC42 Filler",
+        "BBCSwing out-L",
+        "BBCSwing out-R"
+      ]
+    },
+    "BBC42 Filler": {
+      "src": "/catalog-images/euro-18-088.webp",
+      "page": 18,
+      "label": "Parent cabinet / accessory assembly reference; not a standalone component drawing",
+      "skus": [
+        "BBC42",
+        "BBC42 Filler",
+        "BBCSwing out-L",
+        "BBCSwing out-R"
+      ]
+    },
+    "BBCSwing out-L": {
+      "src": "/catalog-images/euro-18-088.webp",
+      "page": 18,
+      "label": "Parent cabinet / accessory assembly reference; not a standalone component drawing",
+      "skus": [
+        "BBC42",
+        "BBC42 Filler",
+        "BBCSwing out-L",
+        "BBCSwing out-R"
+      ]
+    },
+    "BBCSwing out-R": {
+      "src": "/catalog-images/euro-18-088.webp",
+      "page": 18,
+      "label": "Parent cabinet / accessory assembly reference; not a standalone component drawing",
+      "skus": [
+        "BBC42",
+        "BBC42 Filler",
+        "BBCSwing out-L",
+        "BBCSwing out-R"
+      ]
+    },
+    "W1230": {
+      "src": "/catalog-images/euro-18-089.webp",
+      "page": 18,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W1230",
+        "W1236",
+        "W1530",
+        "W1536",
+        "W1830",
+        "W1836",
+        "W2130",
+        "W2136"
+      ]
+    },
+    "W1236": {
+      "src": "/catalog-images/euro-18-089.webp",
+      "page": 18,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W1230",
+        "W1236",
+        "W1530",
+        "W1536",
+        "W1830",
+        "W1836",
+        "W2130",
+        "W2136"
+      ]
+    },
+    "W1530": {
+      "src": "/catalog-images/euro-18-089.webp",
+      "page": 18,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W1230",
+        "W1236",
+        "W1530",
+        "W1536",
+        "W1830",
+        "W1836",
+        "W2130",
+        "W2136"
+      ]
+    },
+    "W1536": {
+      "src": "/catalog-images/euro-18-089.webp",
+      "page": 18,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W1230",
+        "W1236",
+        "W1530",
+        "W1536",
+        "W1830",
+        "W1836",
+        "W2130",
+        "W2136"
+      ]
+    },
+    "W1830": {
+      "src": "/catalog-images/euro-18-089.webp",
+      "page": 18,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W1230",
+        "W1236",
+        "W1530",
+        "W1536",
+        "W1830",
+        "W1836",
+        "W2130",
+        "W2136"
+      ]
+    },
+    "W1836": {
+      "src": "/catalog-images/euro-18-089.webp",
+      "page": 18,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W1230",
+        "W1236",
+        "W1530",
+        "W1536",
+        "W1830",
+        "W1836",
+        "W2130",
+        "W2136"
+      ]
+    },
+    "W2130": {
+      "src": "/catalog-images/euro-18-089.webp",
+      "page": 18,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W1230",
+        "W1236",
+        "W1530",
+        "W1536",
+        "W1830",
+        "W1836",
+        "W2130",
+        "W2136"
+      ]
+    },
+    "W2136": {
+      "src": "/catalog-images/euro-18-089.webp",
+      "page": 18,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W1230",
+        "W1236",
+        "W1530",
+        "W1536",
+        "W1830",
+        "W1836",
+        "W2130",
+        "W2136"
+      ]
+    },
+    "W1242": {
+      "src": "/catalog-images/euro-18-090.webp",
+      "page": 18,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W1242",
+        "W1542",
+        "W1842",
+        "W2142"
+      ]
+    },
+    "W1542": {
+      "src": "/catalog-images/euro-18-090.webp",
+      "page": 18,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W1242",
+        "W1542",
+        "W1842",
+        "W2142"
+      ]
+    },
+    "W1842": {
+      "src": "/catalog-images/euro-18-090.webp",
+      "page": 18,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W1242",
+        "W1542",
+        "W1842",
+        "W2142"
+      ]
+    },
+    "W2142": {
+      "src": "/catalog-images/euro-18-090.webp",
+      "page": 18,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W1242",
+        "W1542",
+        "W1842",
+        "W2142"
+      ]
+    },
+    "W2430": {
+      "src": "/catalog-images/euro-19-130.webp",
+      "page": 19,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W2430",
+        "W2436",
+        "W2730",
+        "W2736",
+        "W3030",
+        "W3036",
+        "W3330",
+        "W3336",
+        "W3630",
+        "W3636"
+      ]
+    },
+    "W2436": {
+      "src": "/catalog-images/euro-19-130.webp",
+      "page": 19,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W2430",
+        "W2436",
+        "W2730",
+        "W2736",
+        "W3030",
+        "W3036",
+        "W3330",
+        "W3336",
+        "W3630",
+        "W3636"
+      ]
+    },
+    "W2730": {
+      "src": "/catalog-images/euro-19-130.webp",
+      "page": 19,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W2430",
+        "W2436",
+        "W2730",
+        "W2736",
+        "W3030",
+        "W3036",
+        "W3330",
+        "W3336",
+        "W3630",
+        "W3636"
+      ]
+    },
+    "W2736": {
+      "src": "/catalog-images/euro-19-130.webp",
+      "page": 19,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W2430",
+        "W2436",
+        "W2730",
+        "W2736",
+        "W3030",
+        "W3036",
+        "W3330",
+        "W3336",
+        "W3630",
+        "W3636"
+      ]
+    },
+    "W3030": {
+      "src": "/catalog-images/euro-19-130.webp",
+      "page": 19,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W2430",
+        "W2436",
+        "W2730",
+        "W2736",
+        "W3030",
+        "W3036",
+        "W3330",
+        "W3336",
+        "W3630",
+        "W3636"
+      ]
+    },
+    "W3036": {
+      "src": "/catalog-images/euro-19-130.webp",
+      "page": 19,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W2430",
+        "W2436",
+        "W2730",
+        "W2736",
+        "W3030",
+        "W3036",
+        "W3330",
+        "W3336",
+        "W3630",
+        "W3636"
+      ]
+    },
+    "W3330": {
+      "src": "/catalog-images/euro-19-130.webp",
+      "page": 19,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W2430",
+        "W2436",
+        "W2730",
+        "W2736",
+        "W3030",
+        "W3036",
+        "W3330",
+        "W3336",
+        "W3630",
+        "W3636"
+      ]
+    },
+    "W3336": {
+      "src": "/catalog-images/euro-19-130.webp",
+      "page": 19,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W2430",
+        "W2436",
+        "W2730",
+        "W2736",
+        "W3030",
+        "W3036",
+        "W3330",
+        "W3336",
+        "W3630",
+        "W3636"
+      ]
+    },
+    "W3630": {
+      "src": "/catalog-images/euro-19-130.webp",
+      "page": 19,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W2430",
+        "W2436",
+        "W2730",
+        "W2736",
+        "W3030",
+        "W3036",
+        "W3330",
+        "W3336",
+        "W3630",
+        "W3636"
+      ]
+    },
+    "W3636": {
+      "src": "/catalog-images/euro-19-130.webp",
+      "page": 19,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W2430",
+        "W2436",
+        "W2730",
+        "W2736",
+        "W3030",
+        "W3036",
+        "W3330",
+        "W3336",
+        "W3630",
+        "W3636"
+      ]
+    },
+    "W2442": {
+      "src": "/catalog-images/euro-19-131.webp",
+      "page": 19,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W2442",
+        "W2742",
+        "W3042",
+        "W3342",
+        "W3642"
+      ]
+    },
+    "W2742": {
+      "src": "/catalog-images/euro-19-131.webp",
+      "page": 19,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W2442",
+        "W2742",
+        "W3042",
+        "W3342",
+        "W3642"
+      ]
+    },
+    "W3042": {
+      "src": "/catalog-images/euro-19-131.webp",
+      "page": 19,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W2442",
+        "W2742",
+        "W3042",
+        "W3342",
+        "W3642"
+      ]
+    },
+    "W3342": {
+      "src": "/catalog-images/euro-19-131.webp",
+      "page": 19,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W2442",
+        "W2742",
+        "W3042",
+        "W3342",
+        "W3642"
+      ]
+    },
+    "W3642": {
+      "src": "/catalog-images/euro-19-131.webp",
+      "page": 19,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W2442",
+        "W2742",
+        "W3042",
+        "W3342",
+        "W3642"
+      ]
+    },
+    "W3012": {
+      "src": "/catalog-images/euro-19-133.webp",
+      "page": 19,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W3012",
+        "W3015",
+        "W3018",
+        "W3021",
+        "W3024",
+        "W3612",
+        "W3615",
+        "W3618",
+        "W3621",
+        "W3624"
+      ]
+    },
+    "W3015": {
+      "src": "/catalog-images/euro-19-133.webp",
+      "page": 19,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W3012",
+        "W3015",
+        "W3018",
+        "W3021",
+        "W3024",
+        "W3612",
+        "W3615",
+        "W3618",
+        "W3621",
+        "W3624"
+      ]
+    },
+    "W3018": {
+      "src": "/catalog-images/euro-19-133.webp",
+      "page": 19,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W3012",
+        "W3015",
+        "W3018",
+        "W3021",
+        "W3024",
+        "W3612",
+        "W3615",
+        "W3618",
+        "W3621",
+        "W3624"
+      ]
+    },
+    "W3021": {
+      "src": "/catalog-images/euro-19-133.webp",
+      "page": 19,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W3012",
+        "W3015",
+        "W3018",
+        "W3021",
+        "W3024",
+        "W3612",
+        "W3615",
+        "W3618",
+        "W3621",
+        "W3624"
+      ]
+    },
+    "W3024": {
+      "src": "/catalog-images/euro-19-133.webp",
+      "page": 19,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W3012",
+        "W3015",
+        "W3018",
+        "W3021",
+        "W3024",
+        "W3612",
+        "W3615",
+        "W3618",
+        "W3621",
+        "W3624"
+      ]
+    },
+    "W3612": {
+      "src": "/catalog-images/euro-19-133.webp",
+      "page": 19,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W3012",
+        "W3015",
+        "W3018",
+        "W3021",
+        "W3024",
+        "W3612",
+        "W3615",
+        "W3618",
+        "W3621",
+        "W3624"
+      ]
+    },
+    "W3615": {
+      "src": "/catalog-images/euro-19-133.webp",
+      "page": 19,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W3012",
+        "W3015",
+        "W3018",
+        "W3021",
+        "W3024",
+        "W3612",
+        "W3615",
+        "W3618",
+        "W3621",
+        "W3624"
+      ]
+    },
+    "W3618": {
+      "src": "/catalog-images/euro-19-133.webp",
+      "page": 19,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W3012",
+        "W3015",
+        "W3018",
+        "W3021",
+        "W3024",
+        "W3612",
+        "W3615",
+        "W3618",
+        "W3621",
+        "W3624"
+      ]
+    },
+    "W3621": {
+      "src": "/catalog-images/euro-19-133.webp",
+      "page": 19,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W3012",
+        "W3015",
+        "W3018",
+        "W3021",
+        "W3024",
+        "W3612",
+        "W3615",
+        "W3618",
+        "W3621",
+        "W3624"
+      ]
+    },
+    "W3624": {
+      "src": "/catalog-images/euro-19-133.webp",
+      "page": 19,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W3012",
+        "W3015",
+        "W3018",
+        "W3021",
+        "W3024",
+        "W3612",
+        "W3615",
+        "W3618",
+        "W3621",
+        "W3624"
+      ]
+    },
+    "W301224": {
+      "src": "/catalog-images/euro-19-132.webp",
+      "page": 19,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W301224",
+        "W301524",
+        "W301824",
+        "W302424",
+        "W361524",
+        "W361824",
+        "W362124",
+        "W362424"
+      ]
+    },
+    "W301524": {
+      "src": "/catalog-images/euro-19-132.webp",
+      "page": 19,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W301224",
+        "W301524",
+        "W301824",
+        "W302424",
+        "W361524",
+        "W361824",
+        "W362124",
+        "W362424"
+      ]
+    },
+    "W301824": {
+      "src": "/catalog-images/euro-19-132.webp",
+      "page": 19,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W301224",
+        "W301524",
+        "W301824",
+        "W302424",
+        "W361524",
+        "W361824",
+        "W362124",
+        "W362424"
+      ]
+    },
+    "W302424": {
+      "src": "/catalog-images/euro-19-132.webp",
+      "page": 19,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W301224",
+        "W301524",
+        "W301824",
+        "W302424",
+        "W361524",
+        "W361824",
+        "W362124",
+        "W362424"
+      ]
+    },
+    "W361524": {
+      "src": "/catalog-images/euro-19-132.webp",
+      "page": 19,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W301224",
+        "W301524",
+        "W301824",
+        "W302424",
+        "W361524",
+        "W361824",
+        "W362124",
+        "W362424"
+      ]
+    },
+    "W361824": {
+      "src": "/catalog-images/euro-19-132.webp",
+      "page": 19,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W301224",
+        "W301524",
+        "W301824",
+        "W302424",
+        "W361524",
+        "W361824",
+        "W362124",
+        "W362424"
+      ]
+    },
+    "W362124": {
+      "src": "/catalog-images/euro-19-132.webp",
+      "page": 19,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W301224",
+        "W301524",
+        "W301824",
+        "W302424",
+        "W361524",
+        "W361824",
+        "W362124",
+        "W362424"
+      ]
+    },
+    "W362424": {
+      "src": "/catalog-images/euro-19-132.webp",
+      "page": 19,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "W301224",
+        "W301524",
+        "W301824",
+        "W302424",
+        "W361524",
+        "W361824",
+        "W362124",
+        "W362424"
+      ]
+    },
+    "GD-WDC2430": {
+      "src": "/catalog-images/euro-20-134.webp",
+      "page": 20,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "GD-WDC2430",
+        "GD-WDC2436",
+        "GD-WDC2442",
+        "GD1230",
+        "GD1236",
+        "GD1242",
+        "GD1530",
+        "GD1536",
+        "GD1542",
+        "GD1830",
+        "GD1836",
+        "GD1842"
+      ]
+    },
+    "GD-WDC2436": {
+      "src": "/catalog-images/euro-20-134.webp",
+      "page": 20,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "GD-WDC2430",
+        "GD-WDC2436",
+        "GD-WDC2442",
+        "GD1230",
+        "GD1236",
+        "GD1242",
+        "GD1530",
+        "GD1536",
+        "GD1542",
+        "GD1830",
+        "GD1836",
+        "GD1842"
+      ]
+    },
+    "GD-WDC2442": {
+      "src": "/catalog-images/euro-20-134.webp",
+      "page": 20,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "GD-WDC2430",
+        "GD-WDC2436",
+        "GD-WDC2442",
+        "GD1230",
+        "GD1236",
+        "GD1242",
+        "GD1530",
+        "GD1536",
+        "GD1542",
+        "GD1830",
+        "GD1836",
+        "GD1842"
+      ]
+    },
+    "GD1230": {
+      "src": "/catalog-images/euro-20-134.webp",
+      "page": 20,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "GD-WDC2430",
+        "GD-WDC2436",
+        "GD-WDC2442",
+        "GD1230",
+        "GD1236",
+        "GD1242",
+        "GD1530",
+        "GD1536",
+        "GD1542",
+        "GD1830",
+        "GD1836",
+        "GD1842"
+      ]
+    },
+    "GD1236": {
+      "src": "/catalog-images/euro-20-134.webp",
+      "page": 20,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "GD-WDC2430",
+        "GD-WDC2436",
+        "GD-WDC2442",
+        "GD1230",
+        "GD1236",
+        "GD1242",
+        "GD1530",
+        "GD1536",
+        "GD1542",
+        "GD1830",
+        "GD1836",
+        "GD1842"
+      ]
+    },
+    "GD1242": {
+      "src": "/catalog-images/euro-20-134.webp",
+      "page": 20,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "GD-WDC2430",
+        "GD-WDC2436",
+        "GD-WDC2442",
+        "GD1230",
+        "GD1236",
+        "GD1242",
+        "GD1530",
+        "GD1536",
+        "GD1542",
+        "GD1830",
+        "GD1836",
+        "GD1842"
+      ]
+    },
+    "GD1530": {
+      "src": "/catalog-images/euro-20-134.webp",
+      "page": 20,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "GD-WDC2430",
+        "GD-WDC2436",
+        "GD-WDC2442",
+        "GD1230",
+        "GD1236",
+        "GD1242",
+        "GD1530",
+        "GD1536",
+        "GD1542",
+        "GD1830",
+        "GD1836",
+        "GD1842"
+      ]
+    },
+    "GD1536": {
+      "src": "/catalog-images/euro-20-134.webp",
+      "page": 20,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "GD-WDC2430",
+        "GD-WDC2436",
+        "GD-WDC2442",
+        "GD1230",
+        "GD1236",
+        "GD1242",
+        "GD1530",
+        "GD1536",
+        "GD1542",
+        "GD1830",
+        "GD1836",
+        "GD1842"
+      ]
+    },
+    "GD1542": {
+      "src": "/catalog-images/euro-20-134.webp",
+      "page": 20,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "GD-WDC2430",
+        "GD-WDC2436",
+        "GD-WDC2442",
+        "GD1230",
+        "GD1236",
+        "GD1242",
+        "GD1530",
+        "GD1536",
+        "GD1542",
+        "GD1830",
+        "GD1836",
+        "GD1842"
+      ]
+    },
+    "GD1830": {
+      "src": "/catalog-images/euro-20-134.webp",
+      "page": 20,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "GD-WDC2430",
+        "GD-WDC2436",
+        "GD-WDC2442",
+        "GD1230",
+        "GD1236",
+        "GD1242",
+        "GD1530",
+        "GD1536",
+        "GD1542",
+        "GD1830",
+        "GD1836",
+        "GD1842"
+      ]
+    },
+    "GD1836": {
+      "src": "/catalog-images/euro-20-134.webp",
+      "page": 20,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "GD-WDC2430",
+        "GD-WDC2436",
+        "GD-WDC2442",
+        "GD1230",
+        "GD1236",
+        "GD1242",
+        "GD1530",
+        "GD1536",
+        "GD1542",
+        "GD1830",
+        "GD1836",
+        "GD1842"
+      ]
+    },
+    "GD1842": {
+      "src": "/catalog-images/euro-20-134.webp",
+      "page": 20,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "GD-WDC2430",
+        "GD-WDC2436",
+        "GD-WDC2442",
+        "GD1230",
+        "GD1236",
+        "GD1242",
+        "GD1530",
+        "GD1536",
+        "GD1542",
+        "GD1830",
+        "GD1836",
+        "GD1842"
+      ]
+    },
+    "WL2412": {
+      "src": "/catalog-images/euro-20-136.webp",
+      "page": 20,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "WL2412",
+        "WL2415",
+        "WL2418",
+        "WL3012",
+        "WL3015",
+        "WL3018",
+        "WL3612",
+        "WL3615",
+        "WL3618"
+      ]
+    },
+    "WL2415": {
+      "src": "/catalog-images/euro-20-136.webp",
+      "page": 20,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "WL2412",
+        "WL2415",
+        "WL2418",
+        "WL3012",
+        "WL3015",
+        "WL3018",
+        "WL3612",
+        "WL3615",
+        "WL3618"
+      ]
+    },
+    "WL2418": {
+      "src": "/catalog-images/euro-20-136.webp",
+      "page": 20,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "WL2412",
+        "WL2415",
+        "WL2418",
+        "WL3012",
+        "WL3015",
+        "WL3018",
+        "WL3612",
+        "WL3615",
+        "WL3618"
+      ]
+    },
+    "WL3012": {
+      "src": "/catalog-images/euro-20-136.webp",
+      "page": 20,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "WL2412",
+        "WL2415",
+        "WL2418",
+        "WL3012",
+        "WL3015",
+        "WL3018",
+        "WL3612",
+        "WL3615",
+        "WL3618"
+      ]
+    },
+    "WL3015": {
+      "src": "/catalog-images/euro-20-136.webp",
+      "page": 20,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "WL2412",
+        "WL2415",
+        "WL2418",
+        "WL3012",
+        "WL3015",
+        "WL3018",
+        "WL3612",
+        "WL3615",
+        "WL3618"
+      ]
+    },
+    "WL3018": {
+      "src": "/catalog-images/euro-20-136.webp",
+      "page": 20,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "WL2412",
+        "WL2415",
+        "WL2418",
+        "WL3012",
+        "WL3015",
+        "WL3018",
+        "WL3612",
+        "WL3615",
+        "WL3618"
+      ]
+    },
+    "WL3612": {
+      "src": "/catalog-images/euro-20-136.webp",
+      "page": 20,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "WL2412",
+        "WL2415",
+        "WL2418",
+        "WL3012",
+        "WL3015",
+        "WL3018",
+        "WL3612",
+        "WL3615",
+        "WL3618"
+      ]
+    },
+    "WL3615": {
+      "src": "/catalog-images/euro-20-136.webp",
+      "page": 20,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "WL2412",
+        "WL2415",
+        "WL2418",
+        "WL3012",
+        "WL3015",
+        "WL3018",
+        "WL3612",
+        "WL3615",
+        "WL3618"
+      ]
+    },
+    "WL3618": {
+      "src": "/catalog-images/euro-20-136.webp",
+      "page": 20,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "WL2412",
+        "WL2415",
+        "WL2418",
+        "WL3012",
+        "WL3015",
+        "WL3018",
+        "WL3612",
+        "WL3615",
+        "WL3618"
+      ]
+    },
+    "WBC3030": {
+      "src": "/catalog-images/euro-20-135.webp",
+      "page": 20,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "WBC3030",
+        "WBC3036",
+        "WBC3042",
+        "WBCF630",
+        "WBCF636",
+        "WBCF642"
+      ]
+    },
+    "WBC3036": {
+      "src": "/catalog-images/euro-20-135.webp",
+      "page": 20,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "WBC3030",
+        "WBC3036",
+        "WBC3042",
+        "WBCF630",
+        "WBCF636",
+        "WBCF642"
+      ]
+    },
+    "WBC3042": {
+      "src": "/catalog-images/euro-20-135.webp",
+      "page": 20,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "WBC3030",
+        "WBC3036",
+        "WBC3042",
+        "WBCF630",
+        "WBCF636",
+        "WBCF642"
+      ]
+    },
+    "WBCF630": {
+      "src": "/catalog-images/euro-20-135.webp",
+      "page": 20,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "WBC3030",
+        "WBC3036",
+        "WBC3042",
+        "WBCF630",
+        "WBCF636",
+        "WBCF642"
+      ]
+    },
+    "WBCF636": {
+      "src": "/catalog-images/euro-20-135.webp",
+      "page": 20,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "WBC3030",
+        "WBC3036",
+        "WBC3042",
+        "WBCF630",
+        "WBCF636",
+        "WBCF642"
+      ]
+    },
+    "WBCF642": {
+      "src": "/catalog-images/euro-20-135.webp",
+      "page": 20,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "WBC3030",
+        "WBC3036",
+        "WBC3042",
+        "WBCF630",
+        "WBCF636",
+        "WBCF642"
+      ]
+    },
+    "WLS2430": {
+      "src": "/catalog-images/euro-20-137.webp",
+      "page": 20,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "WLS2430",
+        "WLS2436",
+        "WLS2442"
+      ]
+    },
+    "WLS2436": {
+      "src": "/catalog-images/euro-20-137.webp",
+      "page": 20,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "WLS2430",
+        "WLS2436",
+        "WLS2442"
+      ]
+    },
+    "WLS2442": {
+      "src": "/catalog-images/euro-20-137.webp",
+      "page": 20,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "WLS2430",
+        "WLS2436",
+        "WLS2442"
+      ]
+    },
+    "WDC2430": {
+      "src": "/catalog-images/euro-21-099.webp",
+      "page": 21,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "WDC2430",
+        "WDC2436",
+        "WDC2442"
+      ]
+    },
+    "WDC2436": {
+      "src": "/catalog-images/euro-21-099.webp",
+      "page": 21,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "WDC2430",
+        "WDC2436",
+        "WDC2442"
+      ]
+    },
+    "WDC2442": {
+      "src": "/catalog-images/euro-21-099.webp",
+      "page": 21,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "WDC2430",
+        "WDC2436",
+        "WDC2442"
+      ]
+    },
+    "PC1884": {
+      "src": "/catalog-images/euro-21-100.webp",
+      "page": 21,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "PC1884",
+        "PC1890",
+        "PC1896"
+      ]
+    },
+    "PC1890": {
+      "src": "/catalog-images/euro-21-100.webp",
+      "page": 21,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "PC1884",
+        "PC1890",
+        "PC1896"
+      ]
+    },
+    "PC1896": {
+      "src": "/catalog-images/euro-21-100.webp",
+      "page": 21,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "PC1884",
+        "PC1890",
+        "PC1896"
+      ]
+    },
+    "PC2484": {
+      "src": "/catalog-images/euro-21-101.webp",
+      "page": 21,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "PC2484",
+        "PC2490",
+        "PC2496",
+        "PC3084",
+        "PC3090",
+        "PC3096"
+      ]
+    },
+    "PC2490": {
+      "src": "/catalog-images/euro-21-101.webp",
+      "page": 21,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "PC2484",
+        "PC2490",
+        "PC2496",
+        "PC3084",
+        "PC3090",
+        "PC3096"
+      ]
+    },
+    "PC2496": {
+      "src": "/catalog-images/euro-21-101.webp",
+      "page": 21,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "PC2484",
+        "PC2490",
+        "PC2496",
+        "PC3084",
+        "PC3090",
+        "PC3096"
+      ]
+    },
+    "PC3084": {
+      "src": "/catalog-images/euro-21-101.webp",
+      "page": 21,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "PC2484",
+        "PC2490",
+        "PC2496",
+        "PC3084",
+        "PC3090",
+        "PC3096"
+      ]
+    },
+    "PC3090": {
+      "src": "/catalog-images/euro-21-101.webp",
+      "page": 21,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "PC2484",
+        "PC2490",
+        "PC2496",
+        "PC3084",
+        "PC3090",
+        "PC3096"
+      ]
+    },
+    "PC3096": {
+      "src": "/catalog-images/euro-21-101.webp",
+      "page": 21,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "PC2484",
+        "PC2490",
+        "PC2496",
+        "PC3084",
+        "PC3090",
+        "PC3096"
+      ]
+    },
+    "MOC3084": {
+      "src": "/catalog-images/euro-21-102.webp",
+      "page": 21,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "MOC3084",
+        "MOC3090",
+        "MOC3096"
+      ]
+    },
+    "MOC3090": {
+      "src": "/catalog-images/euro-21-102.webp",
+      "page": 21,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "MOC3084",
+        "MOC3090",
+        "MOC3096"
+      ]
+    },
+    "MOC3096": {
+      "src": "/catalog-images/euro-21-102.webp",
+      "page": 21,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "MOC3084",
+        "MOC3090",
+        "MOC3096"
+      ]
+    },
+    "DOC3084": {
+      "src": "/catalog-images/euro-22-103.webp",
+      "page": 22,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "DOC3084",
+        "DOC3090",
+        "DOC3096"
+      ]
+    },
+    "DOC3090": {
+      "src": "/catalog-images/euro-22-103.webp",
+      "page": 22,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "DOC3084",
+        "DOC3090",
+        "DOC3096"
+      ]
+    },
+    "DOC3096": {
+      "src": "/catalog-images/euro-22-103.webp",
+      "page": 22,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "DOC3084",
+        "DOC3090",
+        "DOC3096"
+      ]
+    },
+    "VB12": {
+      "src": "/catalog-images/euro-22-104.webp",
+      "page": 22,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "VB12",
+        "VB15",
+        "VB18",
+        "VB21"
+      ]
+    },
+    "VB15": {
+      "src": "/catalog-images/euro-22-104.webp",
+      "page": 22,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "VB12",
+        "VB15",
+        "VB18",
+        "VB21"
+      ]
+    },
+    "VB18": {
+      "src": "/catalog-images/euro-22-104.webp",
+      "page": 22,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "VB12",
+        "VB15",
+        "VB18",
+        "VB21"
+      ]
+    },
+    "VB21": {
+      "src": "/catalog-images/euro-22-104.webp",
+      "page": 22,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "VB12",
+        "VB15",
+        "VB18",
+        "VB21"
+      ]
+    },
+    "VSB24FHD": {
+      "src": "/catalog-images/euro-22-105.webp",
+      "page": 22,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "VSB24FHD",
+        "VSB27FHD",
+        "VSB30FHD",
+        "VSB33FHD",
+        "VSB36FHD"
+      ]
+    },
+    "VSB27FHD": {
+      "src": "/catalog-images/euro-22-105.webp",
+      "page": 22,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "VSB24FHD",
+        "VSB27FHD",
+        "VSB30FHD",
+        "VSB33FHD",
+        "VSB36FHD"
+      ]
+    },
+    "VSB30FHD": {
+      "src": "/catalog-images/euro-22-105.webp",
+      "page": 22,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "VSB24FHD",
+        "VSB27FHD",
+        "VSB30FHD",
+        "VSB33FHD",
+        "VSB36FHD"
+      ]
+    },
+    "VSB33FHD": {
+      "src": "/catalog-images/euro-22-105.webp",
+      "page": 22,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "VSB24FHD",
+        "VSB27FHD",
+        "VSB30FHD",
+        "VSB33FHD",
+        "VSB36FHD"
+      ]
+    },
+    "VSB36FHD": {
+      "src": "/catalog-images/euro-22-105.webp",
+      "page": 22,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "VSB24FHD",
+        "VSB27FHD",
+        "VSB30FHD",
+        "VSB33FHD",
+        "VSB36FHD"
+      ]
+    },
+    "V2DB12": {
+      "src": "/catalog-images/euro-22-106.webp",
+      "page": 22,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "V2DB12",
+        "V2DB15",
+        "V2DB18",
+        "V2DB21",
+        "V2DB24"
+      ]
+    },
+    "V2DB15": {
+      "src": "/catalog-images/euro-22-106.webp",
+      "page": 22,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "V2DB12",
+        "V2DB15",
+        "V2DB18",
+        "V2DB21",
+        "V2DB24"
+      ]
+    },
+    "V2DB18": {
+      "src": "/catalog-images/euro-22-106.webp",
+      "page": 22,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "V2DB12",
+        "V2DB15",
+        "V2DB18",
+        "V2DB21",
+        "V2DB24"
+      ]
+    },
+    "V2DB21": {
+      "src": "/catalog-images/euro-22-106.webp",
+      "page": 22,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "V2DB12",
+        "V2DB15",
+        "V2DB18",
+        "V2DB21",
+        "V2DB24"
+      ]
+    },
+    "V2DB24": {
+      "src": "/catalog-images/euro-22-106.webp",
+      "page": 22,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "V2DB12",
+        "V2DB15",
+        "V2DB18",
+        "V2DB21",
+        "V2DB24"
+      ]
+    },
+    "V3DB12": {
+      "src": "/catalog-images/euro-22-107.webp",
+      "page": 22,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "V3DB12",
+        "V3DB15",
+        "V3DB18",
+        "V3DB21",
+        "V3DB24"
+      ]
+    },
+    "V3DB15": {
+      "src": "/catalog-images/euro-22-107.webp",
+      "page": 22,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "V3DB12",
+        "V3DB15",
+        "V3DB18",
+        "V3DB21",
+        "V3DB24"
+      ]
+    },
+    "V3DB18": {
+      "src": "/catalog-images/euro-22-107.webp",
+      "page": 22,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "V3DB12",
+        "V3DB15",
+        "V3DB18",
+        "V3DB21",
+        "V3DB24"
+      ]
+    },
+    "V3DB21": {
+      "src": "/catalog-images/euro-22-107.webp",
+      "page": 22,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "V3DB12",
+        "V3DB15",
+        "V3DB18",
+        "V3DB21",
+        "V3DB24"
+      ]
+    },
+    "V3DB24": {
+      "src": "/catalog-images/euro-22-107.webp",
+      "page": 22,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "V3DB12",
+        "V3DB15",
+        "V3DB18",
+        "V3DB21",
+        "V3DB24"
+      ]
+    },
+    "FVB12": {
+      "src": "/catalog-images/euro-23-139.webp",
+      "page": 23,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "FVB12",
+        "FVB15",
+        "FVB18",
+        "FVB21",
+        "FVB24",
+        "FVB27",
+        "FVB30",
+        "FVB33",
+        "FVB36"
+      ]
+    },
+    "FVB15": {
+      "src": "/catalog-images/euro-23-139.webp",
+      "page": 23,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "FVB12",
+        "FVB15",
+        "FVB18",
+        "FVB21",
+        "FVB24",
+        "FVB27",
+        "FVB30",
+        "FVB33",
+        "FVB36"
+      ]
+    },
+    "FVB18": {
+      "src": "/catalog-images/euro-23-139.webp",
+      "page": 23,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "FVB12",
+        "FVB15",
+        "FVB18",
+        "FVB21",
+        "FVB24",
+        "FVB27",
+        "FVB30",
+        "FVB33",
+        "FVB36"
+      ]
+    },
+    "FVB21": {
+      "src": "/catalog-images/euro-23-139.webp",
+      "page": 23,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "FVB12",
+        "FVB15",
+        "FVB18",
+        "FVB21",
+        "FVB24",
+        "FVB27",
+        "FVB30",
+        "FVB33",
+        "FVB36"
+      ]
+    },
+    "FVB24": {
+      "src": "/catalog-images/euro-23-139.webp",
+      "page": 23,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "FVB12",
+        "FVB15",
+        "FVB18",
+        "FVB21",
+        "FVB24",
+        "FVB27",
+        "FVB30",
+        "FVB33",
+        "FVB36"
+      ]
+    },
+    "FVB27": {
+      "src": "/catalog-images/euro-23-139.webp",
+      "page": 23,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "FVB12",
+        "FVB15",
+        "FVB18",
+        "FVB21",
+        "FVB24",
+        "FVB27",
+        "FVB30",
+        "FVB33",
+        "FVB36"
+      ]
+    },
+    "FVB30": {
+      "src": "/catalog-images/euro-23-139.webp",
+      "page": 23,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "FVB12",
+        "FVB15",
+        "FVB18",
+        "FVB21",
+        "FVB24",
+        "FVB27",
+        "FVB30",
+        "FVB33",
+        "FVB36"
+      ]
+    },
+    "FVB33": {
+      "src": "/catalog-images/euro-23-139.webp",
+      "page": 23,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "FVB12",
+        "FVB15",
+        "FVB18",
+        "FVB21",
+        "FVB24",
+        "FVB27",
+        "FVB30",
+        "FVB33",
+        "FVB36"
+      ]
+    },
+    "FVB36": {
+      "src": "/catalog-images/euro-23-139.webp",
+      "page": 23,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "FVB12",
+        "FVB15",
+        "FVB18",
+        "FVB21",
+        "FVB24",
+        "FVB27",
+        "FVB30",
+        "FVB33",
+        "FVB36"
+      ]
+    },
+    "FVDB12": {
+      "src": "/catalog-images/euro-23-140.webp",
+      "page": 23,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "FVDB12",
+        "FVDB15",
+        "FVDB18",
+        "FVDB21",
+        "FVDB24",
+        "FVDB27",
+        "FVDB30",
+        "FVDB33",
+        "FVDB36"
+      ]
+    },
+    "FVDB15": {
+      "src": "/catalog-images/euro-23-140.webp",
+      "page": 23,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "FVDB12",
+        "FVDB15",
+        "FVDB18",
+        "FVDB21",
+        "FVDB24",
+        "FVDB27",
+        "FVDB30",
+        "FVDB33",
+        "FVDB36"
+      ]
+    },
+    "FVDB18": {
+      "src": "/catalog-images/euro-23-140.webp",
+      "page": 23,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "FVDB12",
+        "FVDB15",
+        "FVDB18",
+        "FVDB21",
+        "FVDB24",
+        "FVDB27",
+        "FVDB30",
+        "FVDB33",
+        "FVDB36"
+      ]
+    },
+    "FVDB21": {
+      "src": "/catalog-images/euro-23-140.webp",
+      "page": 23,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "FVDB12",
+        "FVDB15",
+        "FVDB18",
+        "FVDB21",
+        "FVDB24",
+        "FVDB27",
+        "FVDB30",
+        "FVDB33",
+        "FVDB36"
+      ]
+    },
+    "FVDB24": {
+      "src": "/catalog-images/euro-23-140.webp",
+      "page": 23,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "FVDB12",
+        "FVDB15",
+        "FVDB18",
+        "FVDB21",
+        "FVDB24",
+        "FVDB27",
+        "FVDB30",
+        "FVDB33",
+        "FVDB36"
+      ]
+    },
+    "FVDB27": {
+      "src": "/catalog-images/euro-23-140.webp",
+      "page": 23,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "FVDB12",
+        "FVDB15",
+        "FVDB18",
+        "FVDB21",
+        "FVDB24",
+        "FVDB27",
+        "FVDB30",
+        "FVDB33",
+        "FVDB36"
+      ]
+    },
+    "FVDB30": {
+      "src": "/catalog-images/euro-23-140.webp",
+      "page": 23,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "FVDB12",
+        "FVDB15",
+        "FVDB18",
+        "FVDB21",
+        "FVDB24",
+        "FVDB27",
+        "FVDB30",
+        "FVDB33",
+        "FVDB36"
+      ]
+    },
+    "FVDB33": {
+      "src": "/catalog-images/euro-23-140.webp",
+      "page": 23,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "FVDB12",
+        "FVDB15",
+        "FVDB18",
+        "FVDB21",
+        "FVDB24",
+        "FVDB27",
+        "FVDB30",
+        "FVDB33",
+        "FVDB36"
+      ]
+    },
+    "FVDB36": {
+      "src": "/catalog-images/euro-23-140.webp",
+      "page": 23,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "FVDB12",
+        "FVDB15",
+        "FVDB18",
+        "FVDB21",
+        "FVDB24",
+        "FVDB27",
+        "FVDB30",
+        "FVDB33",
+        "FVDB36"
+      ]
+    },
+    "VSB24": {
+      "src": "/catalog-images/euro-23-138.webp",
+      "page": 23,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "VSB24",
+        "VSB27",
+        "VSB30",
+        "VSB33",
+        "VSB36"
+      ]
+    },
+    "VSB27": {
+      "src": "/catalog-images/euro-23-138.webp",
+      "page": 23,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "VSB24",
+        "VSB27",
+        "VSB30",
+        "VSB33",
+        "VSB36"
+      ]
+    },
+    "VSB30": {
+      "src": "/catalog-images/euro-23-138.webp",
+      "page": 23,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "VSB24",
+        "VSB27",
+        "VSB30",
+        "VSB33",
+        "VSB36"
+      ]
+    },
+    "VSB33": {
+      "src": "/catalog-images/euro-23-138.webp",
+      "page": 23,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "VSB24",
+        "VSB27",
+        "VSB30",
+        "VSB33",
+        "VSB36"
+      ]
+    },
+    "VSB36": {
+      "src": "/catalog-images/euro-23-138.webp",
+      "page": 23,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "VSB24",
+        "VSB27",
+        "VSB30",
+        "VSB33",
+        "VSB36"
+      ]
+    },
+    "IBEP24": {
+      "src": "/catalog-images/euro-24-141.webp",
+      "page": 24,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "IBEP24",
+        "IBEP36",
+        "IBEP48"
+      ]
+    },
+    "IBEP36": {
+      "src": "/catalog-images/euro-24-141.webp",
+      "page": 24,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "IBEP24",
+        "IBEP36",
+        "IBEP48"
+      ]
+    },
+    "IBEP48": {
+      "src": "/catalog-images/euro-24-141.webp",
+      "page": 24,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "IBEP24",
+        "IBEP36",
+        "IBEP48"
+      ]
+    },
+    "BFD22": {
+      "src": "/catalog-images/euro-24-142.webp",
+      "page": 24,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "BFD22",
+        "BFD25",
+        "FD1330",
+        "FD1336",
+        "FD1342",
+        "PNL34.5x96x3/4",
+        "REP8425",
+        "REP9025",
+        "REP9625"
+      ]
+    },
+    "BFD25": {
+      "src": "/catalog-images/euro-24-142.webp",
+      "page": 24,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "BFD22",
+        "BFD25",
+        "FD1330",
+        "FD1336",
+        "FD1342",
+        "PNL34.5x96x3/4",
+        "REP8425",
+        "REP9025",
+        "REP9625"
+      ]
+    },
+    "FD1330": {
+      "src": "/catalog-images/euro-24-142.webp",
+      "page": 24,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "BFD22",
+        "BFD25",
+        "FD1330",
+        "FD1336",
+        "FD1342",
+        "PNL34.5x96x3/4",
+        "REP8425",
+        "REP9025",
+        "REP9625"
+      ]
+    },
+    "FD1336": {
+      "src": "/catalog-images/euro-24-142.webp",
+      "page": 24,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "BFD22",
+        "BFD25",
+        "FD1330",
+        "FD1336",
+        "FD1342",
+        "PNL34.5x96x3/4",
+        "REP8425",
+        "REP9025",
+        "REP9625"
+      ]
+    },
+    "FD1342": {
+      "src": "/catalog-images/euro-24-142.webp",
+      "page": 24,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "BFD22",
+        "BFD25",
+        "FD1330",
+        "FD1336",
+        "FD1342",
+        "PNL34.5x96x3/4",
+        "REP8425",
+        "REP9025",
+        "REP9625"
+      ]
+    },
+    "PNL34.5x96x3/4": {
+      "src": "/catalog-images/euro-24-142.webp",
+      "page": 24,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "BFD22",
+        "BFD25",
+        "FD1330",
+        "FD1336",
+        "FD1342",
+        "PNL34.5x96x3/4",
+        "REP8425",
+        "REP9025",
+        "REP9625"
+      ]
+    },
+    "REP8425": {
+      "src": "/catalog-images/euro-24-142.webp",
+      "page": 24,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "BFD22",
+        "BFD25",
+        "FD1330",
+        "FD1336",
+        "FD1342",
+        "PNL34.5x96x3/4",
+        "REP8425",
+        "REP9025",
+        "REP9625"
+      ]
+    },
+    "REP9025": {
+      "src": "/catalog-images/euro-24-142.webp",
+      "page": 24,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "BFD22",
+        "BFD25",
+        "FD1330",
+        "FD1336",
+        "FD1342",
+        "PNL34.5x96x3/4",
+        "REP8425",
+        "REP9025",
+        "REP9625"
+      ]
+    },
+    "REP9625": {
+      "src": "/catalog-images/euro-24-142.webp",
+      "page": 24,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "BFD22",
+        "BFD25",
+        "FD1330",
+        "FD1336",
+        "FD1342",
+        "PNL34.5x96x3/4",
+        "REP8425",
+        "REP9025",
+        "REP9625"
+      ]
+    },
+    "TF396": {
+      "src": "/catalog-images/euro-24-143.webp",
+      "page": 24,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "TF396",
+        "TF696",
+        "WF330",
+        "WF336",
+        "WF342",
+        "WF630",
+        "WF636",
+        "WF642"
+      ]
+    },
+    "TF696": {
+      "src": "/catalog-images/euro-24-143.webp",
+      "page": 24,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "TF396",
+        "TF696",
+        "WF330",
+        "WF336",
+        "WF342",
+        "WF630",
+        "WF636",
+        "WF642"
+      ]
+    },
+    "WF330": {
+      "src": "/catalog-images/euro-24-143.webp",
+      "page": 24,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "TF396",
+        "TF696",
+        "WF330",
+        "WF336",
+        "WF342",
+        "WF630",
+        "WF636",
+        "WF642"
+      ]
+    },
+    "WF336": {
+      "src": "/catalog-images/euro-24-143.webp",
+      "page": 24,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "TF396",
+        "TF696",
+        "WF330",
+        "WF336",
+        "WF342",
+        "WF630",
+        "WF636",
+        "WF642"
+      ]
+    },
+    "WF342": {
+      "src": "/catalog-images/euro-24-143.webp",
+      "page": 24,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "TF396",
+        "TF696",
+        "WF330",
+        "WF336",
+        "WF342",
+        "WF630",
+        "WF636",
+        "WF642"
+      ]
+    },
+    "WF630": {
+      "src": "/catalog-images/euro-24-143.webp",
+      "page": 24,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "TF396",
+        "TF696",
+        "WF330",
+        "WF336",
+        "WF342",
+        "WF630",
+        "WF636",
+        "WF642"
+      ]
+    },
+    "WF636": {
+      "src": "/catalog-images/euro-24-143.webp",
+      "page": 24,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "TF396",
+        "TF696",
+        "WF330",
+        "WF336",
+        "WF342",
+        "WF630",
+        "WF636",
+        "WF642"
+      ]
+    },
+    "WF642": {
+      "src": "/catalog-images/euro-24-143.webp",
+      "page": 24,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "TF396",
+        "TF696",
+        "WF330",
+        "WF336",
+        "WF342",
+        "WF630",
+        "WF636",
+        "WF642"
+      ]
+    },
+    "ROT18": {
+      "src": "/catalog-images/euro-24-144.webp",
+      "page": 24,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "ROT18",
+        "ROT24",
+        "ROT30",
+        "ROT36"
+      ]
+    },
+    "ROT24": {
+      "src": "/catalog-images/euro-24-144.webp",
+      "page": 24,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "ROT18",
+        "ROT24",
+        "ROT30",
+        "ROT36"
+      ]
+    },
+    "ROT30": {
+      "src": "/catalog-images/euro-24-144.webp",
+      "page": 24,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "ROT18",
+        "ROT24",
+        "ROT30",
+        "ROT36"
+      ]
+    },
+    "ROT36": {
+      "src": "/catalog-images/euro-24-144.webp",
+      "page": 24,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "ROT18",
+        "ROT24",
+        "ROT30",
+        "ROT36"
+      ]
+    },
+    "TK8": {
+      "src": "/catalog-images/euro-25-115.webp",
+      "page": 25,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "TK8"
+      ]
+    },
+    "FS30": {
+      "src": "/catalog-images/euro-25-116.webp",
+      "page": 25,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "FS30",
+        "FS36"
+      ]
+    },
+    "FS36": {
+      "src": "/catalog-images/euro-25-116.webp",
+      "page": 25,
+      "label": "Catalog product-family illustration",
+      "skus": [
+        "FS30",
+        "FS36"
+      ]
+    }
+  },
+  "finishes": {
+    "White Shaker": {
+      "src": "/catalog-images/door-white-shaker.webp",
+      "page": 7,
+      "label": "White Shaker door style and finish sample"
+    },
+    "Grey Shaker": {
+      "src": "/catalog-images/door-grey-shaker.webp",
+      "page": 7,
+      "label": "Grey Shaker door style and finish sample"
+    },
+    "Mountain Timber Shaker": {
+      "src": "/catalog-images/door-mountain-timber-shaker.webp",
+      "page": 7,
+      "label": "Mountain Timber Shaker door style and finish sample"
+    },
+    "Modern Slate Shaker": {
+      "src": "/catalog-images/door-modern-slate-shaker.webp",
+      "page": 7,
+      "label": "Modern Slate Shaker door style and finish sample"
+    },
+    "Signature Blue Shaker": {
+      "src": "/catalog-images/door-signature-blue-shaker.webp",
+      "page": 7,
+      "label": "Signature Blue Shaker door style and finish sample"
+    },
+    "Onyx Shaker": {
+      "src": "/catalog-images/door-onyx-shaker.webp",
+      "page": 7,
+      "label": "Onyx Shaker door style and finish sample"
+    },
+    "Saige Green Slim Shaker": {
+      "src": "/catalog-images/door-saige-green-slim-shaker.webp",
+      "page": 7,
+      "label": "Saige Green Slim Shaker door style and finish sample"
+    },
+    "Dove White Slim Shaker": {
+      "src": "/catalog-images/door-dove-white-slim-shaker.webp",
+      "page": 7,
+      "label": "Dove White Slim Shaker door style and finish sample"
+    },
+    "Euro Classic": {
+      "src": "/catalog-images/euro-classic.webp",
+      "page": 9,
+      "label": "Euro Classic finish options (tier, not a selected color)"
+    },
+    "Euro Deluxe": {
+      "src": "/catalog-images/euro-deluxe.webp",
+      "page": 9,
+      "label": "Euro Deluxe finish options (tier, not a selected color)"
+    },
+    "Euro Custom Deluxe": {
+      "src": "/catalog-images/euro-custom-deluxe.webp",
+      "page": 10,
+      "label": "Euro Custom Deluxe finish options (tier, not a selected color)"
+    }
+  },
+  "rooms": {
+    "White Shaker": {
+      "src": "/catalog-images/finish-shaker-8.webp",
+      "page": 8,
+      "label": "White Shaker finish reference"
+    },
+    "Grey Shaker": {
+      "src": "/catalog-images/finish-shaker-9.webp",
+      "page": 9,
+      "label": "Grey Shaker finish reference"
+    },
+    "Mountain Timber Shaker": {
+      "src": "/catalog-images/finish-shaker-10.webp",
+      "page": 10,
+      "label": "Mountain Timber Shaker finish reference"
+    },
+    "Modern Slate Shaker": {
+      "src": "/catalog-images/finish-shaker-11.webp",
+      "page": 11,
+      "label": "Modern Slate Shaker finish reference"
+    },
+    "Signature Blue Shaker": {
+      "src": "/catalog-images/finish-shaker-12.webp",
+      "page": 12,
+      "label": "Signature Blue Shaker finish reference"
+    },
+    "Onyx Shaker": {
+      "src": "/catalog-images/finish-shaker-13.webp",
+      "page": 13,
+      "label": "Onyx Shaker finish reference"
+    },
+    "Saige Green Slim Shaker": {
+      "src": "/catalog-images/finish-shaker-14.webp",
+      "page": 14,
+      "label": "Saige Green Slim Shaker finish reference"
+    },
+    "Dove White Slim Shaker": {
+      "src": "/catalog-images/finish-shaker-15.webp",
+      "page": 15,
+      "label": "Dove White Slim Shaker finish reference"
+    }
+  }
+}

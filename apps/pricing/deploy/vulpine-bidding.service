@@ -1,0 +1,23 @@
+[Unit]
+Description=Vulpine bidding MCP and persistent agent worker
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+DynamicUser=yes
+WorkingDirectory=/opt/vulpine-cabinet-pricing
+ExecStart=/usr/bin/node agent/server.mjs
+EnvironmentFile=/etc/vulpine-bidding/runtime.env
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+UMask=0077
+MemoryMax=1G
+TasksMax=64
+
+[Install]
+WantedBy=multi-user.target
