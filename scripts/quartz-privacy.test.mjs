@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { restrictVaultPublishing } from '../infra/quartz/privacy.mjs'
+import { restrictVaultPublishing, privateVaultView } from '../infra/quartz/privacy.mjs'
 
 test('Quartz preserves existing filters, denies private/draft/unapproved notes and disables attachment copying', () => {
   const previous = { name: 'ExistingRestriction' }
@@ -18,4 +18,18 @@ test('Quartz preserves existing filters, denies private/draft/unapproved notes a
   assert.equal(allow({ publish: true, private: 'true' }), false)
   assert.equal(allow({ publish: true, draft: true }), false)
   assert.equal(allow({ publish: true }), true)
+})
+
+
+test('private full-vault view requires isolated output and preserves attachment exclusion', () => {
+  const config = () => ({configuration: {ignorePatterns: []}, plugins: {filters: [], emitters: [{name: 'Assets'}, {name: 'Static'}]}})
+  for (const output of ['/opt/quartz/public', '/var/lib/aeon-quartz-private/releases/../../public', undefined]) {
+    assert.throws(() => privateVaultView(config(), output))
+  }
+  const output = '/var/lib/aeon-quartz-private/releases/test'
+  const result = privateVaultView(config(), output)
+  assert.equal(result.configuration.analytics, undefined)
+  assert.deepEqual(result.plugins.emitters.map(e => e.name), ['Static'])
+  assert.equal(result.plugins.filters[0].shouldPublish({argv: {output}}), true)
+  assert.throws(() => result.plugins.filters[0].shouldPublish({argv: {output: '/opt/quartz/public'}}))
 })

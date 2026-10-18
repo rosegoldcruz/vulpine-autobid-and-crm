@@ -45,8 +45,8 @@ __pycache__/
 .venv/
 
 # Transitional runtime data is never committed
-/legacy/bids-tracker/data/
-/legacy/bids-tracker/uploads/
+/services/bids-tracker/data/
+/services/bids-tracker/uploads/
 /services/engine/uploads/*
 !/services/engine/uploads/.gitkeep
 

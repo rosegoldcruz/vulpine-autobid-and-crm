@@ -114,9 +114,15 @@ function guessBidAmount(text) {
 
 function guessUnits(text) {
   const patterns = [
-    /(?:total\s*)?units?\s*[:\-]?\s*(\d{1,4})\b/i,
-    /(\d{1,4})\s*(?:total\s*)?units?\b/i,
-    /units?\s+qty\s*[:\-]?\s*(\d{1,4})\b/i,
+    /(?<![\d.])(\d{1,4})\s+total\s+units?(?:\s*(?:\/|and|&)\s*(?:amenity\s*)?areas?)?/i,
+    /(?:units?\s*\/\s*areas?|total\s+units?\s*\/\s*areas?)\s*:?\s*(\d{1,4})\b/i,
+    /(\d{1,4})\s+units?\s*\/\s*(?:amenity\s*)?areas?/i,
+    /(\d{1,4})\s+units?\s+and\s+amenity\s+areas?/i,
+    /(\d{1,4})-unit\s+takeoff/i,
+    /(\d{1,4})\s+residences\b/i,
+    /(?:total\s+units?|units?\s+qty)\s*[:\-]?\s*(\d{1,4})\b/i,
+    /\btotal\s+(\d{1,4})\s+(?:-|\$)/i,
+    /(\d{1,4})\s+units?\b/i,
   ];
   for (const pattern of patterns) {
     const match = text.match(pattern);
@@ -207,4 +213,4 @@ async function extractFromPdf(buffer, filename) {
   };
 }
 
-module.exports = { extractFromPdf };
+module.exports = { extractFromPdf, guessUnits };

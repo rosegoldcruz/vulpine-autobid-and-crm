@@ -1,0 +1,12 @@
+[Unit]
+Description=Detect unmanaged Vulpine Next application servers
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/vulpine-platform/infra/deploy/check-next-processes.py
+User=root
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=read-only
+UMask=0077

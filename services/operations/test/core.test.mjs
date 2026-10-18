@@ -67,3 +67,19 @@ test('tracker source uses the existing integration credential and fails closed w
  assert.equal(denied.sources.find(s=>s.name==='Bids Tracker').status,'ERROR');
  assert.equal(requests.length,0);
 });
+
+
+test('action signatures cannot be replayed against module records or vice versa', async () => {
+ const root=await mkdtemp(path.join(os.tmpdir(),'vulpine-action-test-'));
+ const server=createOperationsServer({OPS_SIGNING_SECRET:secret,OPS_ORGANIZATION_ID:'test-org',OPS_STORAGE_PATH:root});
+ await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
+ const base=`http://127.0.0.1:${server.address().port}`;
+ const body=JSON.stringify({title:'Replay fixture'});
+ const claim={sub:'test-user',org:'test-org',module:'sops',method:'POST',bodyHash:hashBody(body),exp:Date.now()/1000+30};
+ try {
+  for(const [target,route] of [['actions','modules'],['modules','actions']]) {
+   const response=await fetch(`${base}/${target}/sops`,{method:'POST',headers:{'content-type':'application/json','x-vulpine-operations':signClaim({...claim,route},secret)},body});
+   assert.equal(response.status,401);
+  }
+ } finally {await new Promise(resolve=>server.close(resolve));await rm(root,{recursive:true,force:true});}
+});

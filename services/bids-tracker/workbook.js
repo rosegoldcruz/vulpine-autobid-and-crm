@@ -46,6 +46,27 @@ function extractWorkbookMetrics(workbookPath) {
 
     for (const sheetName of wb.SheetNames) {
       const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { header: 1, raw: true });
+
+      for (let rowIndex = 0; rowIndex < rows.length; rowIndex += 1) {
+        const header = rows[rowIndex];
+        if (!Array.isArray(header)) continue;
+        const unitTypeIndex = header.findIndex((cell) => String(cell || '').trim().toLowerCase() === 'unit type');
+        const qtyIndex = header.findIndex((cell) => String(cell || '').trim().toLowerCase() === 'qty');
+        if (unitTypeIndex === -1 || qtyIndex === -1) continue;
+
+        let quantityTotal = 0;
+        for (let next = rowIndex + 1; next < Math.min(rows.length, rowIndex + 60); next += 1) {
+          const candidateRow = rows[next];
+          if (!Array.isArray(candidateRow)) continue;
+          const unitType = String(candidateRow[unitTypeIndex] || '').trim();
+          const quantity = toNumber(candidateRow[qtyIndex]);
+          if (unitType && quantity !== null && Number.isInteger(quantity) && quantity > 0 && quantity <= 5000) {
+            quantityTotal += quantity;
+          }
+        }
+        if (quantityTotal > 0 && quantityTotal <= 5000) unitCandidates.push(quantityTotal);
+      }
+
       for (const row of rows) {
         if (!Array.isArray(row)) continue;
 
@@ -61,20 +82,6 @@ function extractWorkbookMetrics(workbookPath) {
             }
           }
 
-          if (/units?/.test(lower)) {
-            for (let j = i + 1; j < Math.min(row.length, i + 6); j += 1) {
-              const n = toNumber(row[j]);
-              if (n !== null && Number.isInteger(n) && n >= 1 && n <= 5000) {
-                unitCandidates.push(n);
-              }
-            }
-
-            const inline = cell.match(/(\d{1,4})\s*units?/i);
-            if (inline) {
-              const n = Number.parseInt(inline[1], 10);
-              if (n >= 1 && n <= 5000) unitCandidates.push(n);
-            }
-          }
         }
       }
     }

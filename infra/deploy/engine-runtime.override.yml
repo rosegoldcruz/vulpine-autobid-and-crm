@@ -1,0 +1,10 @@
+# Use with services/engine/docker-compose.yml and the existing Compose project.
+# Runtime credentials and persistent uploads stay outside canonical source.
+services:
+  api:
+    env_file: !override
+      - ${ENGINE_API_ENV_FILE:?ENGINE_API_ENV_FILE is required}
+    volumes: !override
+      - ./services:/app/services:ro
+      - ./shared:/app/shared:ro
+      - ${ENGINE_UPLOAD_ROOT:?ENGINE_UPLOAD_ROOT is required}:/app/uploads

@@ -171,3 +171,49 @@ credential in an authentication header. The URL redirects from agent.meta.ai to
 muse.ai, then returns HTTP 401 to this execution session. No key was submitted.
 Enrollment requires the owner's signed-in Muse browser; keep the one-time URL,
 its session identifier, and all private credentials out of repository memory.
+
+
+## 2026-10-18 — expanded agent access and private Quartz restoration
+
+This section supersedes the earlier read-only/pricing-only scope. The owner
+explicitly granted all seven configured agent identities pricing/bid writes and
+27 backoffice modules listed in docs/integrations/agent-mcp.md. General CRM entity
+feeds remain excluded. Production deployment dpl_57vXYfbKSM1renppyuf93u4i7nKV is
+READY. All seven identities initialize, list 24 tools and retrieve the same four
+selected AEON records. Native pricing, tracker (44 bids), Cabinet Brain, Paperclip,
+automations, Bid Engine stats and ERPNext quotation reads passed live probes.
+Source availability is reported rather than filled with invented business data.
+
+Operations now exposes signed provider actions. Engine auto-bid routes require a
+dedicated integration credential; other legacy APIs stay contained. ERPNext uses
+a dedicated technical user. ZITADEL administration still lacks its management
+credential. External hosted accounts/devices remain separately unenrolled.
+OpenCode/Hermes startup reminders request the shared context tool; actual model
+session loading is not certified. The root context export timer preserves vault
+permissions and refreshes the project-selected snapshot every minute.
+
+Standalone tracker.vulpine.llc returns 410 for all paths. Static tracker UI files
+were removed from canonical and active runtime sources. Authenticated API data
+remains available to the ZITADEL-gated backoffice and agent integration; direct
+backend unauthenticated reads return 401. Runtime data/uploads were preserved.
+The owner authorized committing previously dirty tracker/deployment work. Private
+email-audit input was extracted to ignored runtime data before source staging;
+the importer was not run against production.
+
+The owner selected a private full-vault viewer behind login. Existing Quartz was
+restored at https://brain.vulpine.llc using its existing Basic Auth gate, with
+isolated private build output, no analytics, no attachment copying and private
+cache headers. Authenticated home and AEON note return 200; unauthenticated access
+returns 401. The ordinary explicit-publish policy remains restrictive. Rebuild
+with node scripts/build-private-quartz.mjs after vault changes; private content
+and generated HTML remain outside Git. No ZITADEL migration for this existing
+Quartz login was requested or claimed.
+
+
+Final write verification: Muse created/priced/saved a disposable bid and downloaded
+valid PDF and Excel exports. The verification job/revisions/exports were removed
+using its exact UUID, organization and mcp:muse owner; audit history was retained.
+A tracker same-value status update passed, preserving all 44 records. Twilio
+SMS/number/call/recording and Valerie reads passed. No communication was sent.
+Inbox provider requests return 401 and need credential repair; ZITADEL management
+authentication is absent. These failures remain explicit and are not bypassed.

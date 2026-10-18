@@ -3,6 +3,8 @@ const path = require('path');
 
 const STOP_WORDS = new Set([
   'VULPINE',
+  'THE',
+  'AT',
   'CABINET',
   'CABINETS',
   'SUPPLY',

@@ -24,4 +24,18 @@ if (!columns.includes('projected_profit')) {
   db.exec('ALTER TABLE bids ADD COLUMN projected_profit REAL');
 }
 
+const emailColumns = {
+  sent_time: 'TEXT',
+  sent_timezone: 'TEXT',
+  recipient_name: 'TEXT',
+  recipient_email: 'TEXT',
+  email_subject: 'TEXT',
+  gmail_message_id: 'TEXT',
+  email_match_status: 'TEXT'
+};
+
+for (const [name, type] of Object.entries(emailColumns)) {
+  if (!columns.includes(name)) db.exec(`ALTER TABLE bids ADD COLUMN ${name} ${type}`);
+}
+
 module.exports = db;

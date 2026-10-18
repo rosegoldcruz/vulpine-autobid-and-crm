@@ -1,12 +1,68 @@
 # Backoffice agent access
 
-Endpoint: `https://backoffice.vulpine.llc/api/mcp` (Streamable HTTP, stateless JSON responses).
+Endpoint: `https://backoffice.vulpine.llc/api/mcp` (Streamable HTTP).
 
-The first release exposes `list_workspaces` and `read_workspace` only. Authorized workspaces are projects, leads, contacts, companies and opportunities. Each client has a separate revocable bearer credential, SHA-256 digest, fixed organization and explicit workspace list. Browser sessions do not grant machine access. No write, arbitrary proxy, shell, file, approval, export, or send tools are exposed.
+The owner's latest explicit grant includes pricing and bid creation/editing,
+bids tracker, Cabinet Brain, Bid Engine, takeoffs, Paperclip, automations, Fox,
+agents, SKU catalog, proposals, inbox, SMS, dialer, calls, recordings, Valerie,
+SOPs, ERPNext, revenue, integrations, services, health, logs, users, permissions
+and settings. This supersedes the earlier read-only and pricing-only releases.
+General leads, contacts, companies, opportunities and project-feed tools remain
+excluded. Pricing's `list_projects` means its own saved pricing folders/quotes.
+Access does not by itself instruct an agent to send messages, place calls, submit
+proposals or order materials.
 
-`MCP_CLIENTS_JSON` is a server-only array of `{id, tokenHash, organizationId, modules}`. An absent, empty or malformed registry fails closed with 503; an unknown credential receives 401. Add digests through the Vercel production environment and redeploy; removing a digest revokes that client after deployment. `MCP_ALLOWED_ORIGINS` optionally permits explicit browser origins; no origins are allowed by default. Browser CORS/OAuth onboarding is a separate integration requirement.
+## Tools and authentication
 
-The route calls the existing operations service using short-lived organization-bound HMAC claims and GET requests only. It preserves source warnings and paginates records (maximum 50 per call). Audit messages include client, module, outcome and record count, excluding credentials, queries and business records. Returned records are untrusted data.
+The gateway forwards the pricing application's 17 native tools to its existing
+MCP at `/bidding/agent/mcp`. Agents can create bids, attach source evidence,
+set unit mixes and catalog items, calculate, validate, save and export PDF/Excel.
+Catalog costs, revisions, source provenance and existing approval gates remain
+owned by the pricing engine; the gateway contains no copied pricing math.
+
+Seven additional tools use existing authenticated backends:
+
+- `read_aeon_context`: project-selected vault records and engineering continuity,
+  with hashes and retrieval time. It does not load an execution skill or begin a
+  continuity session. Full private vault browsing is a separate owner web view.
+- `backoffice_access`: current identity, grants and supported actions.
+- `read_backoffice_module`: operations data with source availability and errors.
+- `write_backoffice_record`: existing Fox/SOP record CRUD with stale-write checks.
+- `bids_tracker`: list/KPIs, PDF upload, field updates and deletion.
+- `cabinet_brain`: JSON operations through the existing route/principal allowlist.
+- `backoffice_service`: configured Paperclip, Bid Engine, inbox, Twilio, Valerie,
+  ERPNext and ZITADEL provider operations. Provider paths are constrained and
+  credential-management endpoints are excluded. Missing authentication fails.
+
+`MCP_CLIENTS_JSON` is a server-only array of `{id, tokenHash, organizationId,
+modules, roles}`. Seven independent identities currently have the 27 requested
+module grants and the owner-approved admin role. Production stores SHA-256
+credential digests. Raw values stay outside Git. Missing/invalid credentials
+return 401; absent/malformed registry fails closed. Browser origins require
+`MCP_ALLOWED_ORIGINS`. Requests are bounded to 3 MiB; additional backoffice tool results to 500 KB.
+Operations signatures bind organization, module, route, method, body and expiry.
+Cabinet Brain receives an organization-bound signed principal. Returned credential
+fields are redacted; arbitrary outbound hosts and redirects are rejected.
+
+The Bid Engine accepts its private `ENGINE_AGENT_API_KEY` only for its existing
+auto-bid API. Operations holds the matching `OPS_ENGINE_API_TOKEN`. Other legacy
+Engine APIs remain contained. ERPNext uses a dedicated technical user, provisioned
+by `scripts/provision-erp-agent.mjs`, with credentials written directly to its
+private operations environment. No credentials are printed or committed.
+ZITADEL directory/permission/settings administration remains unavailable until
+`OPS_ZITADEL_URL` and `OPS_ZITADEL_MANAGEMENT_TOKEN` are provisioned. Reporting an
+agent's own grants is not proof that directory administration works.
+
+## Shared AEON context
+
+`scripts/export-agent-context.mjs` exports only the project-selected notes and
+engineering brief into the operations service's protected state directory. The
+root-owned `aeon-agent-context` timer refreshes it every minute. This preserves
+vault filesystem permissions while allowing the DynamicUser service to return
+the approved selection with source hashes and export time. OpenCode and Hermes
+have startup reminders pointing to `infra/agents/AEON_CONTEXT.md`. Each runtime
+must actually call `read_aeon_context`; transport success does not prove that a
+particular model session did so. Muse can discover that same tool directly.
 
 ## Local clients
 
@@ -26,46 +82,38 @@ Restart existing sessions to discover newly configured tools. A transport probe 
 
 ## Muse desktop — independent direct connection
 
-Name: **Vulpine Backoffice**. Endpoint: `https://backoffice.vulpine.llc/api/mcp`.
-Transport: Streamable HTTP. Authentication: a dedicated `muse` bearer credential.
-Use `Authorization: Bearer <credential>`; never put the credential in a URL.
-The raw credential is held in the private server configuration at
-`/root/.config/vulpine-mcp/clients/muse.json` (mode 600). Production stores only its
-SHA-256 digest, separate from all six existing client identities. It can be
-revoked independently. It currently grants projects/CRM reads only.
+Muse desktop uses its own `muse` identity, independent of OpenCode and Hermes.
+Endpoint and transport are the same as above. Enroll the private Muse credential
+only through its native secure API-key connector page, never in chat, source,
+command arguments or URLs. The owner supplied a transcript reporting enrollment;
+server-side verification independently confirms this identity's live tools and
+context access. The desktop account/window itself is outside this server session.
+Refresh the connector to discover changed tools.
 
-In the actual Muse AEON conversation, request a custom connection to the endpoint
-above. Supply the credential only through Muse's secure credential/connector
-setup, not chat text. If that client cannot accept an authorization header, its
-native authentication flow must be established; do not expose an unauthenticated
-proxy or silently substitute a different agent runtime.
+If a credential was pasted in a separate chat, assess and rotate that credential
+through the private enrollment flow; deleting a message does not revoke a key.
+No raw value from that reported incident was available in this task's attachment.
 
-Suggested non-secret setup request:
+## Client boundaries and verification
 
-> Connect this Muse agent directly to Vulpine Backoffice at
-> https://backoffice.vulpine.llc/api/mcp using Streamable HTTP. Use the dedicated
-> Muse bearer credential through secure connector setup. Discover tools, call
-> list_workspaces, then call read_workspace with module projects and limit 1.
-> Report actual results. This is read-only access.
+Codex, Claude Code, Qwen Code, OpenCode, GitHub Copilot CLI and Hermes have local
+configs with separate credentials. MetaMuse may continue through OpenCode. Muse
+desktop has a separate direct identity. Hosted ChatGPT/Claude, other-device
+Cursor, GitHub-hosted agents and standalone Grok/Grokbot accounts are not thereby
+enrolled; their actual account/runtime setup remains separately unverified.
 
-Meta's [connector documentation](https://platform.muse.ai/docs) describes API-key
-and OAuth integration credentials. A successful direct SDK probe establishes
-that the endpoint accepts Muse's identity; it does not enroll or verify the
-owner's desktop app. No live control of that app/account has been established
-in this server session. Final secure credential enrollment and the app's own
-read probe remain required.
+Live production verification on 2026-10-18 initialized all seven identities,
+discovered 24 tools and 27 grants each, and retrieved the same four selected
+vault records. Pricing catalog/saved quotes, the tracker (44 bids), Cabinet Brain,
+Paperclip, automations, Bid Engine stats and ERPNext quotations responded. Muse also created, priced and saved a disposable draft, downloaded
+verified PDF and Excel exports, then removed only that draft while retaining its
+audit trail. A tracker update preserving the existing status passed with 44 bids
+retained. Twilio SMS/number/call/recording and Valerie assistant reads passed.
+Inbox provider authentication currently returns 401 and needs credential repair. Keep
+credential values and customer record content out of connectivity logs.
 
-## Other surfaces requested by the owner
-
-Scope includes GitHub, Qwen, Muse, Claude, Codex, ChatGPT, MetaMuse, Copilot, Grok, Grokbot, OpenCode, Cursor and Hermes. This list is a requirement, not a claim of completed onboarding.
-
-- GitHub Copilot CLI is the GitHub surface configured on this host. GitHub-hosted coding agents require their own repository/environment configuration.
-- Desktop/web ChatGPT, Claude connectors and Cursor require configuration in the actual client/account/device. A server-local config does not update another device.
-- Grok/Grokbot require identification of the actual host runtime and its supported tool configuration. A provider API key alone does not prove a client is connected.
-- The bearer-authenticated first release does not implement OAuth discovery or account connector enrollment. Do not claim hosted connectors have been enabled or tested.
-
-## Verification
-
-`corepack pnpm exec tsx --test tests/mcp.test.ts` checks fail-closed credentials, MCP initialization/discovery, read-only tool registration, permission enforcement, write rejection, request size, origins, organization-bound read claims, pagination and source warnings. Backoffice TypeScript and targeted ESLint checks also apply. Verify deployment with an unauthenticated rejection, authenticated `initialize`, `tools/list`, and a real `read_workspace` request. Never print returned private records during a connectivity test.
-
-Protocol implementation uses the [official MCP TypeScript SDK](https://ts.sdk.modelcontextprotocol.io/server).
+Relevant regression checks: `tests/mcp.test.ts`, `tests/agent-access.test.ts`,
+`services/operations/test/agent-actions.test.mjs`, and Engine authentication tests.
+A read probe does not prove provider mutations; verification should exercise a
+clearly labeled disposable pricing draft and download its PDF/Excel, while leaving
+real customer records and communications untouched.

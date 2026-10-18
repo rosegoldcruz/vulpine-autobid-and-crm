@@ -1,0 +1,10 @@
+[Unit]
+Description=Refresh selected AEON agent continuity every minute
+
+[Timer]
+OnBootSec=30s
+OnUnitActiveSec=60s
+Unit=aeon-agent-context.service
+
+[Install]
+WantedBy=timers.target

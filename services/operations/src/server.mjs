@@ -7,6 +7,7 @@ import { randomUUID, createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { verifyClaim, hashBody, draftModules, validateDraft, redact, leadAssessment } from './core.mjs';
 import { createSources, row } from './sources.mjs';
+import {executeServiceAction,readAeonContext} from './agent-actions.mjs';
 
 export function createOperationsServer(env) {
   const logs=[];
@@ -26,13 +27,23 @@ export function createOperationsServer(env) {
   return http.createServer(async(req,res)=>{
     const url=new URL(req.url,'http://operations.internal');
     if(req.method==='GET'&&url.pathname==='/health')return respond(res,200,{status:'ok',service:'vulpine-operations',version:1});
-    const match=/^\/modules\/([a-z]+)$/.exec(url.pathname);
+    const action=/^\/actions\/([a-z]+)$/.exec(url.pathname);
+    const match=action||/^\/modules\/([a-z]+)$/.exec(url.pathname);
     if(!match)return respond(res,404,{error:'Unknown operation.'});
     const module=match[1]; let body='';
     try {
       for await(const chunk of req){body+=chunk;if(Buffer.byteLength(body)>1024*1024)return respond(res,413,{error:'Request too large.'});}
       const claim=verifyClaim(req.headers['x-vulpine-operations'],env.OPS_SIGNING_SECRET,{module,method:req.method,org:env.OPS_ORGANIZATION_ID,bodyHash:hashBody(body)});
-      if(!claim)return respond(res,401,{error:'A valid organization-scoped integration request is required.'});
+      if(!claim||(action?claim.route!=='actions':claim.route==='actions'))return respond(res,401,{error:'A valid organization-scoped integration request is required.'});
+      if(action){
+        if(req.method!=='POST')return respond(res,405,{error:'Action requests require POST.'});
+        let input;try{input=JSON.parse(body);}catch{return respond(res,400,{error:'Invalid JSON.'});}
+        try{
+          const value=module==='sops'&&input.operation==='aeon_context'?await readAeonContext():await executeServiceAction(env,module,input);
+          diagnostic({module,status:'ok',message:'Agent provider action',actor:claim.sub,method:input.method});
+          return respond(res,200,value);
+        }catch(error){diagnostic({module,status:'error',message:redact(error.message),actor:claim.sub});return respond(res,502,{error:redact(error.message)});}
+      }
       if(req.method==='GET') {
         const data=await sources.read(module,(url.searchParams.get('q')||'').slice(0,200));
         const store=await readStore(claim.org);

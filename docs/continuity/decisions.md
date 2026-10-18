@@ -91,3 +91,25 @@ Muse desktop app containing the AEON chat directly. Its own `muse` credential
 and production digest are separate from the six earlier clients. Do not claim
 that configuring a provider in OpenCode or Hermes enrolls that desktop app.
 Native app secure enrollment remains a required account-side step until verified.
+
+
+## 2026-10-18 — explicit owner expansion, tracker retirement and private vault
+
+Owner approvals supersede earlier assistant-chosen read-only/pricing-only scope:
+grant pricing writes and the requested backoffice module/service operations to
+all configured agent identities; preserve independent Muse desktop identity and
+allow MetaMuse to remain in OpenCode. Use existing services and their authorization
+contracts rather than inventing routes, prices or successful provider results.
+Do not interpret access grants as instructions to send communications or orders.
+
+The owner authorized pushing all dirty work and removing trackers outside the
+ZITADEL-gated backoffice. Retire the standalone tracker website while preserving
+the authenticated backend, records and uploads required by backoffice. Keep
+private email-audit content in ignored runtime storage; do not commit it.
+
+The owner explicitly chose a private full-vault viewer behind login and stated
+that Quartz previously worked. Restore existing Quartz under its existing login,
+isolating private output from ordinary restricted publication. Keep attachments
+and non-note credential/database files excluded. This approval is for private
+viewing, not public publication or broadening agent context to the whole vault.
+Retain the supported reviewed continuity protocol for managed vault mutations.
