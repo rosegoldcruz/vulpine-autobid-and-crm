@@ -39,6 +39,7 @@ export async function generateProposal(PDFLib,data,state,type,templateBytes,opti
  next(type==='draft'?'INTERNAL PROPOSAL DRAFT':type==='customer'?'CABINET PROPOSAL':'INTERNAL COSTING / PURCHASE');
  heading('PROJECT INFORMATION');
  pair('Project',state.project||'MISSING - project name');pair('General contractor / customer',state.customer||'MISSING - GC/company');
+ if(state.projectInfo?.contact)pair('Project contact',[state.projectInfo.contact,state.email].filter(Boolean).join(' | '));
  pair('Delivery address',(state.tax?.address?Object.values(state.tax.address).filter(Boolean).join(', '):'')||'MISSING - verified delivery address');
  pair('Cabinet line',state.projectInfo?.cabinetLine||'MISSING - cabinet line');
  text('Finish basis: '+(state.projectInfo?.finishBasis||[...new Set(active.flatMap(u=>u.entries.map(r=>r.line)))].join(', ')));

@@ -15,12 +15,14 @@ Private recovery: /opt/vulpine-backups/pricing-proposals-20261018T170419Z.
 Final PDFs and evidence: /opt/output/pricing-revised-20261018 (private).
 
 These are INTERNAL drafts, not final compliant customer bids: Bonner Springs
-lacks GC/delivery evidence and priced Brighton Pearl/White two-tone mapping;
+now has owner-supplied Ronco Construction / Rod Ritenour contact information;
+delivery evidence and priced Brighton Pearl/White two-tone mapping remain missing;
 Dawson specifies KITH frameless Maple Forestwood/White Oak Sand but the saved
 HCI framed baseline is ineligible. Source-supported GC and partial Dawson
 address are retained. Neither has completed transaction tax; credentials are
 unconfigured. Preserve missing inputs explicitly rather than inventing them.
-No customer communication was sent. /home and Vulpine Supply remain untouched.
+Bonner R1 is now revision 2 with the GC/contact visible in a new stored PDF; the
+prior PDF was hash-verified unchanged. No customer communication was sent. /home and Vulpine Supply remain untouched.
 
 ---
 

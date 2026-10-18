@@ -212,3 +212,14 @@ fields, invent acceptance dates, create a replacement signature, or send anythin
 Customer scope is separated into Included Scope, Pricing Basis, Substitutions
 and Exclusions; internal notes remain internal. The shared pipeline preserves
 approved artwork, Letter sizing and closing-page-last ordering.
+
+
+## 2026-10-18 — Bonner Springs GC/contact supplied by owner
+
+The owner supplied a chat screenshot identifying Ronco Construction as the
+Bonner Springs GC / prepared-for company, Rod Ritenour as project contact, and
+rritenour@ronco-construction.com as email. Record provenance as owner-provided
+screenshot rather than independently verified correspondence. The phone is
+clipped; do not infer it. Update the existing internal R1 draft and append its
+new PDF while preserving earlier revisions and original bids. Delivery address,
+tax and specified finish pricing remain unresolved. Send nothing.
