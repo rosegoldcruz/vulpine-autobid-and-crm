@@ -1,10 +1,11 @@
 {
-  "last_change": "Located existing private OpenCode credential for owner Windows setup; verified authentication without printing or transferring its value.",
+  "last_change": "Checked server-to-Windows credential transfer reachability; owner then reported obtaining the credential, so stopped without transferring files or changing configuration.",
   "verification": [
-    "Existing /root/.config/vulpine-mcp/clients/opencode.json is mode 0600. Authenticated initialize/tools-list completed using the credential internally, without displaying it. No credential rotation, configuration edits or database writes."
+    "Windows LAN IP 192.168.0.174 port 22 timed out from server. Matching online Windows Tailscale peer was found, but its SSH port also timed out. No credentials printed and no files sent.",
+    "Owner reported i got it; Windows environment installation and MCP runtime remain owner-side and unverified. No /home, Vulpine Supply or application changes."
   ],
   "decisions": [
-    "Owner asks how to obtain the Windows OpenCode credential. Direct the owner to open the private OpenCode JSON in their server-connected editor and copy only the token value into their separate masked PowerShell prompt. Never post the token in chat. Server home and Windows account paths differ."
+    "Owner authorized copying the OpenCode credential to their Windows PC, then reported having it before transfer. Stop the transfer attempt; direct masked entry, OpenCode restart and Windows initialize/tools-list verification."
   ],
   "open_work": [
     "Provision approved ZITADEL management authentication for actual directory, permission and settings administration; own agent grant inspection already works.",
@@ -20,10 +21,10 @@
     "Bonner complete delivery address unavailable in attached job sources, queried tracker records or accessible Drive search. Dawson complete delivery point/ZIP and compliant specified frameless finish pricing unavailable; Bonner specified two-tone pricing unresolved. TaxJar transaction credential or applicable verified exemption evidence is unavailable. Narrow source questions were submitted to the owner.",
     "Exact original temporary Muse PDF download files are absent from the live table; available backups predate the relevant exports. Collection labels regenerated saved-state drafts separately from actual copied revisions."
   ],
-  "next_action": "Owner copies the private OpenCode token into the masked Windows PowerShell prompt, restarts OpenCode, and verifies tools there. Windows ipconfig is unrelated to credential retrieval.",
-  "recorded_at": "2026-10-18T19:54:53.940Z",
+  "next_action": "Owner finishes secure Windows environment entry, restarts OpenCode and asks the Windows agent to verify initialize/tools-list.",
+  "recorded_at": "2026-10-18T19:57:04.630Z",
   "snapshot": {
-    "head": "94daae34b9a602b341cc85e764e21c7e4613cdca",
+    "head": "77fc00fdf8d335d0a8fe52bb37b0603a63000b47",
     "branch": "codex/cabinet-brain-integration-recovery",
     "worktree": "",
     "sources": {
@@ -61,7 +62,7 @@
   },
   "vault": {
     "project": "vulpine-platform",
-    "session_id": "95850289-c7bc-4d25-a6dc-6fdaca52c252",
-    "record": "sources/aeon-sessions/vulpine-platform/95850289-c7bc-4d25-a6dc-6fdaca52c252.md"
+    "session_id": "661e80d4-0442-46f2-88e7-94d4b5b7996e",
+    "record": "sources/aeon-sessions/vulpine-platform/661e80d4-0442-46f2-88e7-94d4b5b7996e.md"
   }
 }
