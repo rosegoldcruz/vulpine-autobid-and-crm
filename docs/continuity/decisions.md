@@ -171,3 +171,25 @@ The UI had reported only whole-batch acknowledgements. Add browser byte progress
 and a separate indeterminate saving state without claiming bytes sent are files
 saved. Keep the in-flight backend running; do not restart it or tell the owner
 to reload an active upload just to load new display code.
+
+
+## 2026-10-18 — owner authorizes complete consolidation and cleanup
+
+Owner explicitly authorized migrating all scattered first-party applications into
+/opt/vulpine-platform, actual source/shared dependencies/deployment configurations,
+service/container cutovers, preservation of needed dirty/untracked/ignored work
+and relevant Git history, and deletion of superseded locations after recovery and
+consumer verification. Owner explicitly excluded all /home modifications and then
+excluded Vulpine Supply and related trees. No extra approval was required.
+
+Completed those cutovers and removed 18 application/release/check directories plus
+two obsolete root files. Preserve private recovery under /opt/vulpine-backups,
+runtime state under /var/lib and named volumes, and credentials under /etc. Retain
+vendor applications and the vault outside first-party source. No source symlink
+back to a scattered old application tree is the new runtime.
+
+Preserve deliberate retirement of standalone Drive/Tracker and gated Backoffice
+access. Previously dormant Leads/Twilio are migrated/build-tested without creating
+unrequested public deployments. Use canonical deployment entry points and isolated
+Brain tests so verification cannot replace the production Next build. The completed
+consolidation supersedes prior partial-migration/audit open work.

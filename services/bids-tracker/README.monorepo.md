@@ -1,6 +1,6 @@
-# Transitional Bids Tracker snapshot
+# Bids Tracker API
 
-This is a source snapshot from `/opt/vulpine-bids-tracker`. Runtime data (`data/bids.db` and uploaded documents) is intentionally excluded. The standalone repository remains the rollback source and authoritative runtime during the first milestone.
+This is the authoritative production source. PM2 runs this directory with TRACKER_DATA_DIR=/var/lib/vulpine-tracker/data and TRACKER_UPLOAD_DIR=/var/lib/vulpine-tracker/uploads. The old source and release trees were removed after verified recovery. Data and private recovery archives remain outside Git.
 
 ## Access boundary
 

@@ -2,24 +2,34 @@
 
 Canonical monorepo for Vulpine's product frontends, authoritative server services, shared contracts, infrastructure definitions, and migration records.
 
-## Product surfaces
+## Applications and services
 
-- `vulpine.llc` — public website (`apps/web`)
-- `backoffice.vulpine.llc` — one internal Backoffice (`apps/backoffice`)
-- `portal.vulpine.llc` — external partner and customer portal (`apps/portal`)
+- `apps/backoffice`: ZITADEL-gated Backoffice, MCP, Drive and service integration UI
+- `apps/pricing`: cabinet pricing, proposals, saved bids and bidding agent
+- `apps/cabinet-brain`: plan ingestion, Cabinet Brain and its authoritative workflow
+- `apps/ai`: existing Engine frontend
+- `apps/leads`: preserved Leads application (not deployed before consolidation)
+- `services/documents`, `services/bids-tracker`, `services/operations`, `services/engine`
+- `services/twilio`: preserved SMS/voice console with its container deployment
+- `packages/*`: shared authentication, permissions, configuration, contracts and SDK
 
-Vercel hosts frontend applications only. PostgreSQL, ZITADEL, APIs, Vulpine Engine, Vision, AEON, automation, storage, integrations, and workers remain server-owned.
+Vulpine Supply and /home are outside this consolidation and remain untouched.
+Runtime data and credentials stay outside tracked source. Vendor applications
+retain their own lifecycles.
 
 ## Commands
 
-```bash
-pnpm install
-pnpm build
-pnpm lint
-pnpm test
-pnpm dev
+```sh
+corepack pnpm install --frozen-lockfile
+corepack pnpm build                         # Backoffice
+corepack pnpm test                          # platform and service checks
+corepack pnpm --filter @vulpine/pricing build
+corepack pnpm --filter @vulpine/pricing test
+corepack pnpm --filter @vulpine/cabinet-brain build
+corepack pnpm --filter @vulpine/cabinet-brain test # isolated build and tests
+python3 scripts/verify-consolidation.py
+scripts/engine-compose.sh config --quiet
 ```
 
-The first integrated module is Bids Tracker at `/bids/tracker`. It uses a server-side Backoffice proxy to the existing tracker API; the standalone SQLite service remains authoritative during this milestone.
-
-See `docs/architecture/current-system-map.md` and `docs/migration/first-milestone.md` for boundaries and rollout status.
+[Consolidation evidence, runtime/state locations and removed copies](docs/architecture/consolidation-status.md)
+are recorded with machine-readable recovery references in infra/consolidation/result.json.

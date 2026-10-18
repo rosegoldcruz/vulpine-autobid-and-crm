@@ -1,0 +1,170 @@
+{
+  "canonicalRepository": "/opt/vulpine-platform",
+  "recoveryRoot": "/opt/vulpine-backups/consolidation-20261018T145741Z",
+  "exclusions": [
+    "/home (untouched)",
+    "/opt/vulpine-supply* (untouched)",
+    "third-party software, knowledge vault and existing backups"
+  ],
+  "deleted": [
+    {
+      "removed": "/opt/vulpine-cabinet-pricing",
+      "replacement": "apps/pricing",
+      "recoveryArchive": "/opt/vulpine-backups/consolidation-20261018T145741Z/vulpine-cabinet-pricing.tar.zst",
+      "archiveSha256": "546d5be955fcd78c168406fc62623874bb02038e2b83785a4214f3ca6f4dc595",
+      "sourceFilesVerified": 303,
+      "noActiveConsumersVerified": true
+    },
+    {
+      "removed": "/opt/vulpine-vision",
+      "replacement": "apps/cabinet-brain",
+      "recoveryArchive": "/opt/vulpine-backups/consolidation-20261018T145741Z/vulpine-vision.tar.zst",
+      "archiveSha256": "8f47279aa0be84af9406ac576c80cb85c6eb066ada6b1077b4246e4515342741",
+      "sourceFilesVerified": 269,
+      "noActiveConsumersVerified": true
+    },
+    {
+      "removed": "/opt/vulpine-bids-tracker",
+      "replacement": "services/bids-tracker",
+      "recoveryArchive": "/opt/vulpine-backups/consolidation-20261018T145741Z/vulpine-bids-tracker.tar.zst",
+      "archiveSha256": "a4b6dab79e6554816fecb5526a77213b634d65a5b1dc621cb99a670745e41fd5",
+      "sourceFilesVerified": 22,
+      "noActiveConsumersVerified": true
+    },
+    {
+      "removed": "/opt/vulpine-drive",
+      "replacement": "legacy/drive (retired frontend); services/documents and apps/backoffice (live)",
+      "recoveryArchive": "/opt/vulpine-backups/consolidation-20261018T145741Z/vulpine-drive.tar.zst",
+      "archiveSha256": "e76178df713e979b9d981b26e5179d44bed0305a33330e5882e39a392b4bcf73",
+      "sourceFilesVerified": 40,
+      "noActiveConsumersVerified": true
+    },
+    {
+      "removed": "/opt/vulpine-engine",
+      "replacement": "services/engine",
+      "recoveryArchive": "/opt/vulpine-backups/consolidation-20261018T145741Z/vulpine-engine.tar.zst",
+      "archiveSha256": "53d45065831bc99071e9ae2c86dd18ef06087121129800e98e5f99c77b613283",
+      "sourceFilesVerified": 67,
+      "noActiveConsumersVerified": true
+    },
+    {
+      "removed": "/opt/vulpine-ai",
+      "replacement": "apps/ai",
+      "recoveryArchive": "/opt/vulpine-backups/consolidation-20261018T145741Z/vulpine-ai.tar.zst",
+      "archiveSha256": "8c76d6fac9fcdbcb8e77c1a2e762325cb870b512d64fd2b885c6f29fd1bd30fa",
+      "sourceFilesVerified": 31,
+      "noActiveConsumersVerified": true
+    },
+    {
+      "removed": "/opt/vulpine-leads",
+      "replacement": "apps/leads",
+      "recoveryArchive": "/opt/vulpine-backups/consolidation-20261018T145741Z/vulpine-leads.tar.zst",
+      "archiveSha256": "4a23163dfd7b7968ce56dd5d1260fd341bf1dd10b30698ecd4290f3720ffaea3",
+      "sourceFilesVerified": 26,
+      "noActiveConsumersVerified": true
+    },
+    {
+      "removed": "/opt/twilio-app",
+      "replacement": "services/twilio",
+      "recoveryArchive": "/opt/vulpine-backups/consolidation-20261018T145741Z/twilio-app.tar.zst",
+      "archiveSha256": "802a5443e8cc99bbe33778bd1fb86aa5afd0e6bb6919bbc0519e192d510daba4",
+      "sourceFilesVerified": 32,
+      "noActiveConsumersVerified": true
+    },
+    {
+      "removed": "/opt/cabinet-backoffice-check",
+      "replacement": "apps/backoffice (newer work retained)",
+      "recoveryArchive": "/opt/vulpine-backups/consolidation-20261018T145741Z/cabinet-backoffice-check.tar.zst",
+      "archiveSha256": "451fbdf1d2d6c6f512c3cdde6c5ec41942f2914c83df98bfa032965672c2743a",
+      "sourceFilesVerified": 705,
+      "noActiveConsumersVerified": true
+    },
+    {
+      "removed": "/opt/vulpine-mcp-workspace-check",
+      "replacement": "apps/pricing (newer work retained)",
+      "recoveryArchive": "/opt/vulpine-backups/consolidation-20261018T145741Z/vulpine-mcp-workspace-check.tar.zst",
+      "archiveSha256": "7f7984cf9b8b788e1fb2561ff4312a61974a140cf83e7e733d53b5921841c264",
+      "sourceFilesVerified": 276,
+      "noActiveConsumersVerified": true
+    },
+    {
+      "removed": "/opt/vulpine-bidding-check",
+      "replacement": "apps/pricing (newer work retained)",
+      "recoveryArchive": "/opt/vulpine-backups/consolidation-20261018T145741Z/vulpine-bidding-check.tar.zst",
+      "archiveSha256": "53e9ae0372766a68e03cb9ecd0904cc84ebc9f8ade9dbefdc0eb93972a058428",
+      "sourceFilesVerified": 25,
+      "noActiveConsumersVerified": true
+    },
+    {
+      "removed": "/opt/vulpine-releases",
+      "replacement": "apps/cabinet-brain and services/bids-tracker",
+      "recoveryArchive": "/opt/vulpine-backups/consolidation-20261018T145741Z/vulpine-releases.tar.zst",
+      "archiveSha256": "769644fb7b4cf3ea64425d08025acdfc93361b92801843e73c54563b0a35ad48",
+      "sourceFilesVerified": 724,
+      "noActiveConsumersVerified": true
+    },
+    {
+      "removed": "/opt/security-stage/platform",
+      "replacement": "canonical monorepo (newer work retained)",
+      "recoveryArchive": "/opt/vulpine-backups/consolidation-20261018T145741Z/security-stage--platform.tar.zst",
+      "archiveSha256": "d192e182d68dd68e722d9f59c483c25c08ae00da54dd59df2af0262ba213ee44",
+      "sourceFilesVerified": 619,
+      "noActiveConsumersVerified": true
+    },
+    {
+      "removed": "/opt/security-releases/2026-10-07/vulpine-documents-2",
+      "replacement": "legacy/drive (retired); services/documents (live)",
+      "recoveryArchive": "/opt/vulpine-backups/consolidation-20261018T145741Z/security-releases--2026-10-07--vulpine-documents-2.tar.zst",
+      "archiveSha256": "822c8c652ca275a8799f6b98d98c8d39434084cbe60592804f0b0bd15e702695",
+      "sourceFilesVerified": 617,
+      "noActiveConsumersVerified": true
+    },
+    {
+      "removed": "/opt/security-releases/2026-10-07/vulpine-drive-3",
+      "replacement": "legacy/drive (retired); services/documents (live)",
+      "recoveryArchive": "/opt/vulpine-backups/consolidation-20261018T145741Z/security-releases--2026-10-07--vulpine-drive-3.tar.zst",
+      "archiveSha256": "8eefb61bc0c7b579b48169db123acccc92790c4c491bad304a510093d6afb808",
+      "sourceFilesVerified": 40,
+      "noActiveConsumersVerified": true
+    },
+    {
+      "removed": "/opt/security-releases/2026-10-07/vulpine-drive-2",
+      "replacement": "legacy/drive (retired); services/documents (live)",
+      "recoveryArchive": "/opt/vulpine-backups/consolidation-20261018T145741Z/security-releases--2026-10-07--vulpine-drive-2.tar.zst",
+      "archiveSha256": "8349125f56ee68065af37de5d299e63d0b75cdbce642ffc67ae0bce0c1f6a9ea",
+      "sourceFilesVerified": 38,
+      "noActiveConsumersVerified": true
+    },
+    {
+      "removed": "/opt/security-releases/2026-10-07/vulpine-ai",
+      "replacement": "apps/ai",
+      "recoveryArchive": "/opt/vulpine-backups/consolidation-20261018T145741Z/security-releases--2026-10-07--vulpine-ai.tar.zst",
+      "archiveSha256": "51123796c6a8792e3ed999ea2a009386582a827eca8d92cd612c67e0ba2250ef",
+      "sourceFilesVerified": 31,
+      "noActiveConsumersVerified": true
+    },
+    {
+      "removed": "/opt/security-releases/2026-10-07/vulpine-drive",
+      "replacement": "legacy/drive (retired); services/documents (live)",
+      "recoveryArchive": "/opt/vulpine-backups/consolidation-20261018T145741Z/security-releases--2026-10-07--vulpine-drive.tar.zst",
+      "archiveSha256": "502a1ec652fccec1670871e9338575dd3b32ab718ddca10b467406e070043a0b",
+      "sourceFilesVerified": 38,
+      "noActiveConsumersVerified": true
+    },
+    {
+      "removed": "/opt/autonomous-lead-to-client-pipeline.zip",
+      "replacement": "apps/leads (newer application source)",
+      "recoveryArchive": "/opt/vulpine-backups/consolidation-20261018T145741Z/extra-files/autonomous-lead-to-client-pipeline.zip",
+      "archiveSha256": "7c619310e234d419c01a1df43259865ed7800c52adc2fa8e23cda052582cf50e",
+      "noActiveConsumersVerified": true
+    },
+    {
+      "removed": "/opt/package-lock.json",
+      "replacement": "pnpm-lock.yaml (empty orphan root npm lock retired)",
+      "recoveryArchive": "/opt/vulpine-backups/consolidation-20261018T145741Z/extra-files/package-lock.json",
+      "archiveSha256": "9312def6d789c838130bccc05892c4d32d7416ac2e27874e1e79f8eb67fb1748",
+      "noActiveConsumersVerified": true
+    }
+  ],
+  "timestamp": "2026-10-18T15:28:59.589256+00:00"
+}

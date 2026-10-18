@@ -13,8 +13,10 @@ short-lived HMAC claims created by the backoffice proxy, bound to subject,
 organization, method, path and request body. Existing Operations signing
 configuration is reused; secrets are never sent to the browser.
 
-Install `vulpine-cabinet-pricing.service` after cloning this repository into
-`/opt/vulpine-cabinet-pricing` and running `npm ci`, `npm test`, `npm run build`.
+Install the versioned systemd units using source at `/opt/vulpine-platform/apps/pricing`.
+From the monorepo root run `corepack pnpm install --frozen-lockfile`,
+`corepack pnpm --filter @vulpine/pricing test` and
+`corepack pnpm --filter @vulpine/pricing build`. The old standalone source tree is retired.
 Drafts are private per organization and user, stored in the systemd StateDirectory,
 and use revision checks to reject stale browser saves. Existing source workbooks
 are not overwritten. Standalone local browser drafts migrate from v2/v3 into v4;

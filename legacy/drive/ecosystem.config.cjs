@@ -1,14 +1,1 @@
-module.exports = {
-  apps: [
-    {
-      name: "vulpine-drive",
-      cwd: "/opt/vulpine-drive",
-      script: "npm",
-      args: "start",
-      env: {
-        NODE_ENV: "production",
-        PORT: "3014",
-      },
-    },
-  ],
-};
+throw new Error("Standalone Drive is retired. Deploy services/documents and apps/backoffice instead.");

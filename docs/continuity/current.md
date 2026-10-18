@@ -1,3 +1,49 @@
+## 2026-10-18 — completed first-party consolidation
+
+The owner's complete consolidation request has been executed at
+/opt/vulpine-platform. /home and all Vulpine Supply-related paths were explicitly
+excluded and untouched. Production PM2/systemd applications and Engine Compose
+now execute canonical source; old application/release paths are removed.
+
+Migrated pricing/bidding with source history, Cabinet Brain with complete route
+history, AI frontend, Leads, Tracker source/history, Drive backend, Engine/automation
+deployment configuration and Twilio console. Shared JS dependencies use one pnpm
+workspace/lock. Existing vendor apps, the knowledge vault and backups stay separate.
+
+Eighteen superseded application/check/release directories and two root artifacts
+were removed after verified recovery and consumer checks. The deletion/replacement
+manifest is infra/consolidation/result.json; the verified recovery root is
+/opt/vulpine-backups/consolidation-20261018T145741Z. Private original Git bundles,
+19 source archives, file verification, SQLite snapshots, PostgreSQL dumps/roles
+and host configuration support recovery. Secrets/data remain outside tracked source.
+
+Final verification: 49 root tests and 36 platform service tests, pricing 26, Brain
+197 isolated tests, Twilio 5 and Engine 2 passed (315 distinct checks). Production
+builds for Backoffice/Brain/AI/Leads/Pricing passed; Twilio Docker build, root and
+authenticated login passed. All 8 live health checks pass. Authenticated MCP reads
+retain 44 tracker bids and real pricing/Brain records; Drive nested write/read/delete
+and unsafe-path denial pass with fixture cleanup. Seven clients discover 27 tools.
+Backoffice deployment dpl_4kec6QSLjdk1w2N3gUnE64z24DgA READY. Final process/container
+inspection shows no dependency on deleted paths. No whole-user-upload completion
+claim is made.
+
+Cutover verification caught/fixed a missing native SQLite binding, a Brain API route
+misclassified as runtime uploads by the first history filter, and test/build
+collision risk. The route and complete history are restored; Brain tests now build
+in an isolated copy and pass. Engine container images, environments and named
+volumes match pre-migration evidence; Redis was pinned to its original image after
+a mutable local tag selected a different patch. AI build settings were restored
+privately and the build wrapper tested in isolation. Imported historical formatting
+was preserved; credential scanning of new history/staged blobs found no known
+production values.
+
+Consolidation is complete. Leads/Twilio were not live before migration; their source,
+builds and deployment definitions are verified without inventing public deployments.
+Existing provider/hosted-client enrollment work remains separate. See
+docs/architecture/consolidation-status.md for operational paths and evidence.
+
+---
+
 # Vulpine Platform: engineering entry point
 
 Reviewed 2026-10-15. These are bounded observations and explicit user requirements;

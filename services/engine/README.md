@@ -1,6 +1,6 @@
 # Vulpine Engine
 
-Source-only import from `/opt/vulpine-engine` at the start of the platform consolidation. The standalone repository and its running services remain untouched and authoritative until a separately verified server cutover.
+Authoritative Engine source and Compose configuration. The production containers now use this monorepo; the old /opt/vulpine-engine tree has been removed after verified recovery and cutover. Deploy with ../../scripts/engine-compose.sh; credentials are in /etc/vulpine-platform/engine, uploads in /var/lib/vulpine-engine-api/uploads and n8n workflow runtime files in /var/lib/vulpine-n8n/workflows.
 
 The service remains Python/FastAPI. It is intentionally not rewritten for workspace consistency.
 

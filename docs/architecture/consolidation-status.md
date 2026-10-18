@@ -1,46 +1,83 @@
-# Consolidation status — verified 2026-10-18
+# Completed runtime consolidation — 2026-10-18
 
-The canonical platform repository is `/opt/vulpine-platform`, but repository and
-runtime consolidation are incomplete. The Backoffice shell does not establish
-that every integrated service lives in this repository. Release directories are
-running deployments, not automatically disposable duplicate source.
+Canonical source and deployment project: `/opt/vulpine-platform`. First-party
+production services now execute this project's code, rather than copies in old
+application/release directories. `/home` and every Vulpine Supply-related tree
+were excluded and untouched. Third-party applications and the organizational
+vault remain in their existing locations.
 
-| Component | Canonical/current source | Observed live runtime | Remaining boundary |
+| Application | Monorepo source | Runtime and preserved state | Verification |
 | --- | --- | --- | --- |
-| Backoffice, MCP and Drive UI | platform/apps/backoffice | Vercel production | Production deployment sourced from platform; current Drive folder-upload code is deployed. |
-| Documents storage API | platform/services/documents | PM2: /opt/security-releases/2026-10-07/vulpine-documents-2 | Live source copied from platform; deployment still uses a separate release. |
-| Tracker API | platform/services/bids-tracker | PM2: /opt/vulpine-releases/platform-2026-10-07/tracker/server.js, working directory security-2026-10-07/tracker | Release and persistent SQLite/uploads must be mapped before removal. |
-| Cabinet Brain / Vision | Separate versioned integration | PM2: /opt/vulpine-releases/security-2026-10-07/vision-2 | Not fully migrated into platform. |
-| Pricing and bidding worker | /opt/vulpine-cabinet-pricing | Two systemd services in that repository | Active independent GitHub repository; not yet consolidated into platform. |
-| Operations integration | platform/services/operations | systemd in canonical source directory | Already runs from platform. |
-| Engine API | platform/services/engine | Docker Compose uses canonical source mounts | Persistent uploads still mount /opt/vulpine-engine/uploads. |
-| PostgreSQL and n8n | Existing engine Compose lifecycle | Docker labels reference /opt/vulpine-engine | DB mounts init.sql; n8n mounts n8n_workflows from old tree; named data volumes retained. |
-| ERPNext | platform/infra/erpnext | Canonical Compose configuration, persistent Docker volumes | Data remains outside Git by design. |
-| AI frontend | /opt/vulpine-ai and its historical release | PM2: /opt/security-releases/2026-10-07/vulpine-ai | Active old frontend; not a confirmed deletion candidate. |
-| Quartz / Obsidian | Separate vendor viewer and organizational vault | Separate lifecycle | Shared knowledge and vendor code, not duplicate Drive storage. |
-| Paperclip | /opt/paperclip | Separate systemd service | Vendor application, not a platform copy. |
+| Backoffice, MCP, pricing/Drive integration UI | apps/backoffice | Vercel production | Deployment dpl_4kec6QSLjdk1w2N3gUnE64z24DgA READY; seven existing agent identities discover 27 tools. |
+| Pricing and bidding worker | apps/pricing | Existing systemd services; existing PostgreSQL and /var/lib/vulpine-cabinet-pricing retained | Build and 26 tests; live saved projects and both health endpoints pass. |
+| Cabinet Brain | apps/cabinet-brain | PM2 from this directory; /var/lib/vulpine-vision/autobidder | Build and 197 isolated tests; authenticated real project read passes. |
+| AI frontend | apps/ai | PM2 from this directory | Build and live HTTP 200. |
+| Leads application | apps/leads | Buildable source; was not a live service before migration | Production build passes; no new public deployment or agent CRM feed added. |
+| Documents/Drive API | services/documents | PM2 vulpine-documents-platform, loopback 3017; existing SFTP and PostgreSQL retained | Live nested upload/download/delete and unsafe-manifest rejection pass; fixture removed. |
+| Bids Tracker API | services/bids-tracker | PM2 from this directory; /var/lib/vulpine-tracker/data and uploads | Eight tests; authenticated API retains all 44 bids. |
+| Engine, PostgreSQL, Redis and n8n | services/engine with infra/deploy override | Same Compose project, original images/environment/named volumes; uploads and workflows moved intact to /var/lib | Container parity verified; Engine/automation health and two auth tests pass. |
+| Operations read models | services/operations | systemd from this directory | Ten tests; canonical Brain read model and Engine authentication work. |
+| Twilio console | services/twilio | Previously dormant; container image and external-state Compose configuration now in monorepo | Five tests, Docker build, real image root and authenticated login pass. No calls/messages sent. |
+| ERPNext | infra/erpnext | Already used canonical Compose; vendor image/data retained | No migration of vendor code or volumes required. |
 
-`/opt/vulpine-drive` has no active standalone frontend: hostname returns 410.
-Retiring that frontend did not remove Backoffice Drive or its SFTP files.
-`vulpine-mcp-workspace-check` is an old pricing checkout with five tracked modified
-files; it cannot be discarded based only on its name. Other backup/recovery/check
-folders have not yet been proven redundant. No folders were deleted in this audit.
+Shared JavaScript dependencies use the root pnpm workspace/store and lockfile.
+Application-specific framework versions remain where needed. Production credentials
+stay in `/etc/vulpine-apps`, `/etc/vulpine-operations`, `/etc/vulpine-bidding` and
+`/etc/vulpine-platform/engine` (plus preserved AI build settings under
+/etc/vulpine-platform/ai); no raw values were added to Git. SQLite, uploads,
+workflow runtime files and existing database volumes remain outside tracked source.
 
-Remaining consolidation requires source/history reconciliation, reproducible
-release deployment from the canonical repository, consumer-reference checks,
-persistent-data separation and verified service cutovers. Only then can redundant
-source/checkouts be removed. Moving data or shutting down active services merely
-to reduce the number of folders would not complete consolidation.
+Pricing, Cabinet Brain and Tracker source history was imported after removing
+runtime databases/secrets from imported paths. Exact original history is also
+preserved in private, verified Git bundles. The initial Brain history filter
+wrongly excluded an API route named uploads; the route and its complete source
+history were restored, and the full isolated suite passes. Old checkout changes
+were reconciled against the newer source; their exact originals remain in recovery.
 
-## Drive failure corrected during this audit
+## Verified recovery and removal
 
-The service DATABASE_URL connected successfully but had no vault_ui.access_log.
-Root storage listing worked while Recent and access-history writes failed with
-PostgreSQL 42P01. Added an idempotent SQL migration and documented migrate command;
-applied to the running service database without changing stored files. Repeated
-migration and transactional write/read/rollback passed. Live listing, access
-logging, Recent (2500 bounded entries) and a literal-backslash folder listing
-returned HTTP 200. The screenshot's missing folder button is consistent with older browser code.
-The deployed Drive component SHA1 exactly matches canonical source containing
-Upload folder and progress/resume; the current production deployment remains dpl_DxkqTmyQXx6U2xZ1T1JEdecTdvrz.
-The user's existing browser tab must reload to obtain deployed UI changes.
+Recovery root: `/opt/vulpine-backups/consolidation-20261018T145741Z`. Nineteen source archives passed compressed
+stream integrity and SHA256 checks. Needed original source files were verified
+against the archives; SQLite recovery passed integrity_check and PostgreSQL
+custom dumps passed pg_restore manifest verification. Private runtime configuration
+and PostgreSQL role recovery are included. No off-host backup claim is made.
+
+Each application tree was checked for active process, PM2, systemd and container
+references before removal. `infra/consolidation/result.json` identifies every
+removed location, its replacement and its verified recovery archive/hash. Eighteen
+application/release directories and two obsolete root files were removed:
+
+- `/opt/vulpine-cabinet-pricing`
+- `/opt/vulpine-vision`
+- `/opt/vulpine-bids-tracker`
+- `/opt/vulpine-drive`
+- `/opt/vulpine-engine`
+- `/opt/vulpine-ai`
+- `/opt/vulpine-leads`
+- `/opt/twilio-app`
+- `/opt/cabinet-backoffice-check`
+- `/opt/vulpine-mcp-workspace-check`
+- `/opt/vulpine-bidding-check`
+- `/opt/vulpine-releases`
+- `/opt/security-stage/platform`
+- `/opt/security-releases/2026-10-07/vulpine-documents-2`
+- `/opt/security-releases/2026-10-07/vulpine-drive-3`
+- `/opt/security-releases/2026-10-07/vulpine-drive-2`
+- `/opt/security-releases/2026-10-07/vulpine-ai`
+- `/opt/security-releases/2026-10-07/vulpine-drive`
+- `/opt/autonomous-lead-to-client-pipeline.zip`
+- `/opt/package-lock.json`
+
+The standalone Drive and Tracker hostnames remain retired (410); their gated
+Backoffice modules and stored data remain active. Historical Drive frontend source
+is retained only under legacy/drive; it is not a deployed standalone application.
+The obsolete duplicate legacy/vulpine-ai source copy was replaced by apps/ai.
+
+Run `python3 scripts/verify-consolidation.py` for current runtime/path checks.
+Use `scripts/engine-compose.sh` for Engine deployments; private PM2 settings are
+loaded through infra/deploy/ecosystem.platform.config.cjs. Tests/builds must not
+replace an active Next build: Cabinet Brain's test command uses an isolated copy.
+
+Existing provider limits are separate from consolidation: inbox authorization and
+ZITADEL management enrollment still require valid provider credentials. Hosted
+AI accounts on other devices are not configured by this server migration.

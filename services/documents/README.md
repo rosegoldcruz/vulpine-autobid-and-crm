@@ -9,7 +9,8 @@ the browser never receives the master integration credential.
 
 ## Runtime
 
-- Default bind: `127.0.0.1:3016`
+- Production bind: `127.0.0.1:3017` (DOCUMENTS_PORT overrides the code default 3016)
+- Managed process: vulpine-documents-platform, cwd /opt/vulpine-platform
 - Public ingress: `https://api.vulpinehomes.com/documents/*`
 - Authoritative storage: the existing SFTP Storage Box
 - Access history: `vault_ui.access_log` in the documents service PostgreSQL database
