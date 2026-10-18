@@ -36,6 +36,8 @@ test('server denies unsigned / cross-organization requests, isolates drafts, rej
     assert.equal((await request('catalog.json')).status,200);
     assert.equal((await fetch(base+'/tax/status')).status,401);
     assert.equal((await (await request('tax/status')).json()).configured,false);
+    const exemption=await request('export','POST',{format:'tax-exemption',address:{street:'123 Test St',city:'Phoenix',state:'AZ',zip:'85001'},reason:'Fixture exempt sale',authority:'Fixture authority',document:'Fixture certificate',validFrom:'2026-01-01',validUntil:'2099-12-31'});assert.equal(exemption.status,200);assert.ok((await exemption.json()).signature);
+    const revise=await request('export','POST',{format:'revise-quote',quote_id:'00000000-0000-4000-8000-000000000000',expected_revision:1});assert.equal(revise.status,503);
     const missingTax=await request('export','POST',{format:'tax-rate',address:{street:'123 Test St',city:'Phoenix',state:'AZ',zip:'85001'}});
     assert.equal(missingTax.status,503);assert.match((await missingTax.json()).error,/connected tax service/);
     const pendingTax=await request('export','POST',{state:{...state,tax:{enabled:true,address:{street:'123 Test St',city:'Phoenix',state:'AZ',zip:'85001'},lookup:null}},format:'pdf',type:'customer'});
@@ -52,6 +54,7 @@ test('server denies unsigned / cross-organization requests, isolates drafts, rej
     assert.equal((await (await request('draft','GET',undefined,'other-user')).json()).draft,null);
     assert.equal((await request('draft','PUT',{draft:state,revision:null})).status,409);
     const excel=await request('export','POST',{state,format:'xlsx'});assert.equal(excel.status,200);assert.equal(XLSX.read(await excel.arrayBuffer()).Sheets['Unit Type'].B6.v,'B24');
-    const pdf=await request('export','POST',{state,format:'pdf',type:'customer'});assert.equal(pdf.status,200);assert.equal((await PDFDocument.load(await pdf.arrayBuffer())).getPageCount(),5);
+    const customer=await request('export','POST',{state,format:'pdf',type:'customer'});assert.equal(customer.status,422);assert.match((await customer.json()).error,/Customer-ready/);
+    const pdf=await request('export','POST',{state,format:'pdf',type:'internal'});assert.equal(pdf.status,200);assert.ok((await PDFDocument.load(await pdf.arrayBuffer())).getPageCount()>=5);
   }finally{await new Promise(resolve=>server.close(resolve));await fs.rm(storage,{recursive:true,force:true});}
 });

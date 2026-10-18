@@ -25,7 +25,7 @@ export async function createBiddingServer(env,{worker=true}={}){
  for(const supplier of ['hci','rythern','uscd'])catalogs[supplier]=JSON.parse(await fs.readFile(new URL(supplier==='hci'?'src/catalog.json':'src/suppliers/'+supplier+'.json',root)));
  const store=new BidStore(env.BIDDING_DATABASE_URL);await store.init();
  const workspace=new QuoteStore(env.QUOTES_DATABASE_URL||env.BIDDING_DATABASE_URL);await workspace.init();
- const bidding=createBidTools({workspace,store,catalogs,env,template:await fs.readFile(new URL('assets/proposal-template.pdf',root)),publicUrl:env.BIDDING_PUBLIC_URL});
+ const bidding=createBidTools({workspace,store,catalogs,env,signatureBytes:env.VULPINE_SIGNATURE_PATH?await fs.readFile(env.VULPINE_SIGNATURE_PATH):null,template:await fs.readFile(new URL('assets/proposal-template.pdf',root)),publicUrl:env.BIDDING_PUBLIC_URL});
  for(const [supplier,catalog]of Object.entries(catalogs))await store.pool.query('INSERT INTO catalog_snapshots(hash,supplier,source,catalog) VALUES($1,$2,$3,$4) ON CONFLICT DO NOTHING',[bidding.hashes[supplier],supplier,catalog.source||{},catalog]);
  const issuer=env.ZITADEL_ISSUER?.replace(/\/$/,''),resource=new URL('mcp',env.BIDDING_PUBLIC_URL).href;
  const jwks=issuer?createRemoteJWKSet(new URL(issuer+'/oauth/v2/keys')):null;

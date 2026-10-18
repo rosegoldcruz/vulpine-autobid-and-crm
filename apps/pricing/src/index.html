@@ -18,8 +18,8 @@
     <div class="field"><label for="status">Quantities are</label><select id="status"><option>Tentative</option><option>Final</option></select></div>
   </section>
   <section class="taxPanel" aria-label="Project location and sales tax">
-    <div class="taxHeading"><h2>Project location &amp; tax</h2><label class="check"><input id="taxEnabled" type="checkbox"> Include sales tax</label></div>
-    <div id="taxFields" hidden>
+    <div class="taxHeading"><h2>Project location &amp; tax</h2><label class="check"><input id="taxEnabled" type="checkbox"> Calculate required sales tax</label></div>
+    <div id="taxFields">
       <div class="taxAddress">
         <div class="field"><label for="taxState">Project state</label><select id="taxState" autocomplete="address-level1"></select></div>
         <div class="field"><label for="taxCity">Project city</label><input id="taxCity" maxlength="100" autocomplete="address-level2" placeholder="City"></div>
@@ -30,6 +30,8 @@
       <p class="hint">All 50 states + D.C. Rates follow the delivery address, including county and special districts. Standard taxable cabinet-supply estimate; exemptions, installation contracts and collection obligations require separate review.</p>
       <div id="taxBreakdown" class="taxBreakdown" tabindex="0" role="region" aria-label="Scrollable tax rate breakdown"></div>
     </div>
+    <details><summary>Document an applicable tax exemption</summary>
+<label>Reason <input id="exemptionReason"></label><label>Authority <input id="exemptionAuthority"></label><label>Evidence document/reference <input id="exemptionDocument"></label><label>Valid from <input id="exemptionFrom" type="date"></label><label>Valid until <input id="exemptionUntil" type="date"></label><button type="button" id="verifyExemption">Verify exemption evidence</button></details>
     <p id="taxMessage" class="hint" role="status" aria-live="polite"></p>
     <div class="taxTotals"><span>Sales tax <strong id="taxAmount">Off</strong></span><span>Customer total <strong id="taxTotal">$0.00</strong></span></div>
   </section>
@@ -88,17 +90,32 @@
     <div class="docGrid">
       <div class="docForm">
         <div class="formGrid">
-          <div class="field"><label for="customer">Customer / company</label><input id="customer" maxlength="120"></div>
+          <div class="field"><label for="customer">General contractor / customer company (required)</label><input id="customer" maxlength="120"></div>
           <div class="field"><label for="email">Customer email <em>(optional)</em></label><input id="email" type="email" maxlength="160"></div>
           <div class="field"><label for="preparedBy">Prepared by</label><select id="preparedBy"><option>Daniel Cruz</option><option>Mike Musonda</option></select></div>
           <div class="field"><label for="quoteId">Quote number</label><input id="quoteId" maxlength="50"></div>
           <div class="field"><label for="date">Date <em>(automatic)</em></label><input id="date" type="date" readonly></div>
           <div class="field"><label for="validUntil">Good until <em>(45 days)</em></label><input id="validUntil" type="date" readonly></div>
         </div>
-        <div class="field"><label for="notes">Notes / delivery instructions</label><textarea id="notes" rows="4" maxlength="2500"></textarea></div>
+        <div class="formGrid">
+          <div class="field"><label for="actualApartments">Actual apartments</label><input id="actualApartments" type="number" min="0" step="1"></div>
+          <div class="field"><label for="cabinetLine">Cabinet line</label><input id="cabinetLine" maxlength="200"></div>
+          <div class="field"><label for="construction">Required construction</label><select id="construction"><option value="">Verify construction</option><option value="framed">Framed</option><option value="frameless">Frameless</option></select></div>
+        </div>
+        <div class="field"><label for="mixEvidence">Project mix source / reconciliation</label><textarea id="mixEvidence" rows="2"></textarea></div>
+        <div class="field"><label for="finishBasis">Specified finishes and locations / disclosed preliminary basis</label><textarea id="finishBasis" rows="2"></textarea></div>
+        <div class="field"><label for="addressEvidence">Verified delivery address source</label><input id="addressEvidence" maxlength="500"></div>
+        <div class="field"><label for="includedScope">Included Scope</label><textarea id="includedScope" rows="2"></textarea></div>
+        <div class="field"><label for="pricingBasis">Pricing Basis</label><textarea id="pricingBasis" rows="2"></textarea></div>
+        <div class="field"><label for="substitutions">Substitutions</label><textarea id="substitutions" rows="2"></textarea></div>
+        <div class="field"><label for="exclusions">Exclusions</label><textarea id="exclusions" rows="2"></textarea></div>
+        <button id="reviseQuote" type="button" class="secondary">Create revised draft (preserve original)</button>
+        <p class="hint">Current drafts price handles at $3.33 each and shipping at $133 per actual apartment / named amenity area. Historical issued documents stay unchanged. Signature placement requires specific approval for this proposal.</p>
+        <div class="field"><label for="notes">Internal notes (excluded from customer PDF)</label><textarea id="notes" rows="4" maxlength="2500"></textarea></div>
 
         <fieldset class="documentTypes"><legend>Which PDF?</legend>
           <label><input type="radio" name="documentType" value="customer" checked><span><b>Customer quote</b><small>Selling prices only. Hides your cost and profit.</small></span></label>
+          <label><input type="radio" name="documentType" value="draft"><span><b>Internal proposal draft</b><small>Customer design with explicit missing fields. Not ready to send.</small></span></label>
           <label><input type="radio" name="documentType" value="internal"><span><b>Internal costing</b><small>Your cost, selling price, margin and profit.</small></span></label>
           <label><input type="radio" name="documentType" value="purchase"><span><b>Supplier purchase order</b><small>Your costs including full-rate shipping. Hides selling prices and profit.</small></span></label>
         </fieldset>
@@ -107,7 +124,7 @@
 
       <aside class="docSide">
         <h3>Ready to download</h3>
-        <div id="documentSummary"></div>
+        <div id="documentSummary"></div><div id="chargeSummary" class="taxBreakdown"></div>
         <div id="documentIssues" class="issues" role="status"></div>
         <button id="generate" class="primary full">Generate &amp; download PDF</button>
         <button id="printGenerate" class="secondary full">Generate PDF to print</button>

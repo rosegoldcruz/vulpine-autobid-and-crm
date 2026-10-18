@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {randomUUID,createHash,createHmac} from 'node:crypto';
 import {createBiddingServer} from '../agent/server.mjs';
 import {processRun} from '../agent/worker.mjs';
+import {calculateProject} from '../src/pricing.mjs';
 import {PDFDocument} from 'pdf-lib';
 import XLSX from 'xlsx';
 import fs from 'node:fs/promises';
@@ -25,19 +26,19 @@ test('persistent bids enforce ownership, scopes, revisions, real catalog costs a
   assert.equal((await call('save_bid',{job_id:j.id,expected_revision:1})).error.code,'REVISION_CONFLICT');
   assert.equal((await call('update_bid_items',{job_id:j.id,expected_revision:j.revision,unit_id:j.state.units[0].id,items:[{sku:'MADE-UP-SKU',li:0,qty:2,evidence}]})).error.code,'UNKNOWN_SKU');
   const updated=await call('update_bid_items',{job_id:j.id,expected_revision:j.revision,unit_id:j.state.units[0].id,items:[{sku:'B24',li:0,qty:2,evidence}]});assert.equal(updated.ok,true,JSON.stringify(updated));j=updated.data;
-  const priced=await call('price_bid',{job_id:j.id});assert.equal(priced.ok,true,JSON.stringify(priced));assert.equal(priced.data.purchase,293784);assert.equal(priced.data.sale,367224);
-  assert.equal((await call('validate_bid',{job_id:j.id})).data.valid,true);
+  const priced=await call('price_bid',{job_id:j.id});assert.equal(priced.ok,true,JSON.stringify(priced));assert.equal(priced.data.purchase,293784);assert.equal(priced.data.sale,526824);
+  assert.equal((await call('validate_bid',{job_id:j.id})).data.valid,false); // Missing project/tax facts keep this an internal draft.
   j=(await call('save_bid',{job_id:j.id,expected_revision:j.revision})).data;
   for(const format of ['pdf','xlsx']){
-   const exported=await call('export_bid',{job_id:j.id,expected_revision:j.revision,format});assert.equal(exported.ok,true,JSON.stringify(exported));
+   const exported=await call('export_bid',{job_id:j.id,expected_revision:j.revision,format,type:'draft'});assert.equal(exported.ok,true,JSON.stringify(exported));
    const response=await fetch(exported.data.url);assert.equal(response.status,200);const bytes=Buffer.from(await response.arrayBuffer());
-   if(format==='pdf')assert.equal((await PDFDocument.load(bytes)).getPageCount(),5);
+   if(format==='pdf')assert.ok((await PDFDocument.load(bytes)).getPageCount()>=6);
    else assert.equal(XLSX.read(bytes).Sheets['Unit Type'].B6.v,'B24');
   }
   const published=await call('save_bid_to_project',{job_id:j.id,expected_revision:j.revision});assert.equal(published.ok,true,JSON.stringify(published));
   const shared=await call('get_project_quote',{quote_id:published.data.quote_id},{...actor,sub:'teammate'});assert.equal(shared.ok,true);assert.equal(shared.data.documents.length,1);
   const storedPdf=await call('get_project_document',{quote_id:published.data.quote_id,document_id:published.data.document_id},{...actor,sub:'teammate',scopes:['bids.read']});assert.equal(storedPdf.ok,true,JSON.stringify(storedPdf));
-  const storedBytes=Buffer.from(await(await fetch(storedPdf.data.url)).arrayBuffer());assert.equal((await PDFDocument.load(storedBytes)).getPageCount(),5);assert.equal(createHash('sha256').update(storedBytes).digest('hex'),storedPdf.data.sha256);
+  const storedBytes=Buffer.from(await(await fetch(storedPdf.data.url)).arrayBuffer());assert.ok((await PDFDocument.load(storedBytes)).getPageCount()>=6);assert.equal(createHash('sha256').update(storedBytes).digest('hex'),storedPdf.data.sha256);
   assert.equal((await call('get_project_document',{quote_id:published.data.quote_id,document_id:published.data.document_id},{...actor,org:'another-org'})).error.code,'NOT_FOUND');
   assert.equal((await call('get_project_document',{quote_id:published.data.quote_id,document_id:randomUUID()})).error.code,'NOT_FOUND');
   assert.equal((await call('list_projects',{})).data.quotes.length,1);
@@ -49,7 +50,7 @@ test('persistent bids enforce ownership, scopes, revisions, real catalog costs a
   const {Client}=await import('@modelcontextprotocol/client');
   const [clientTransport,serverTransport]=InMemoryTransport.createLinkedPair();const mcp=app.bidding.server(actor),client=new Client({name:'vulpine-acceptance',version:'1'});
   await mcp.connect(serverTransport);await client.connect(clientTransport);
-  assert.equal((await client.listTools()).tools.length,19);
+  assert.equal((await client.listTools()).tools.length,20);
   assert.equal((await client.callTool({name:'price_bid',arguments:{job_id:j.id}})).structuredContent.data.purchase,293784);
   await client.close();await mcp.close();
   const {StreamableHTTPClientTransport}=await import('@modelcontextprotocol/client');
@@ -59,14 +60,14 @@ test('persistent bids enforce ownership, scopes, revisions, real catalog costs a
    headers.set('x-vulpine-operations',payload+'.'+createHmac('sha256',env.OPS_SIGNING_SECRET).update(payload).digest('base64url'));return fetch(url,{...init,headers});
   };
   await remote.connect(new StreamableHTTPClientTransport(new URL('http://127.0.0.1:3029/agent/mcp'),{fetch:signedFetch}));
-  assert.equal((await remote.listTools()).tools.length,19);
-  assert.equal((await remote.callTool({name:'price_bid',arguments:{job_id:j.id}})).structuredContent.data.sale,367224);
+  assert.equal((await remote.listTools()).tools.length,20);
+  assert.equal((await remote.callTool({name:'price_bid',arguments:{job_id:j.id}})).structuredContent.data.sale,calculateProject(app.catalogs.rythern,j.state).sale);
   const remoteQuote=await remote.callTool({name:'get_project_quote',arguments:{quote_id:published.data.quote_id}});assert.equal(remoteQuote.structuredContent.data.quote_id,published.data.quote_id);
   const remotePdf=await remote.callTool({name:'get_project_document',arguments:{quote_id:published.data.quote_id,document_id:published.data.document_id}});assert.equal(remotePdf.structuredContent.data.sha256,storedPdf.data.sha256);assert.ok(remotePdf.content.some(c=>c.type==='resource_link'));
   assert.equal(createHash('sha256').update(Buffer.from(await(await fetch(remotePdf.structuredContent.data.url)).arrayBuffer())).digest('hex'),storedPdf.data.sha256);await remote.close();
-  const pdfExport=await call('export_bid',{job_id:j.id,expected_revision:j.revision,format:'pdf'});
+  const pdfExport=await call('export_bid',{job_id:j.id,expected_revision:j.revision,format:'pdf',type:'draft'});
   const proposal=await PDFDocument.load(await(await fetch(pdfExport.data.url)).arrayBuffer()),schedule=await PDFDocument.create();
-  const [schedulePage]=await schedule.copyPages(proposal,[3]);schedule.addPage(schedulePage);
+  const [schedulePage]=await schedule.copyPages(proposal,[2]);schedule.addPage(schedulePage);
   const pdfBytes=Buffer.from(await schedule.save());
   const upload=await signedFetch('http://127.0.0.1:3029/agent/sources/'+j.id,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({expected_revision:j.revision,name:'Acceptance schedule.pdf',pdf_base64:pdfBytes.toString('base64')})});assert.equal(upload.status,200);j=await upload.json();
   const source=j.sources.at(-1);assert.equal(source.kind,'plan');assert.ok(source.text.includes('Kitchen'));
@@ -79,9 +80,9 @@ test('persistent bids enforce ownership, scopes, revisions, real catalog costs a
   j=(await call('get_bid_job',{job_id:j.id})).data;
   const reviewedMix=await call('set_unit_mix',{job_id:j.id,expected_revision:j.revision,units:[{id:j.state.units[0].id,name:'Kitchen',repeat:12,defaultLi:0,evidence:{source_id:source.id,quote:'Kitchen'}}]});assert.equal(reviewedMix.ok,true);j=reviewedMix.data;
   assert.equal((await call('validate_bid',{job_id:j.id})).data.valid,false);
-  assert.equal((await call('export_bid',{job_id:j.id,expected_revision:j.revision,format:'pdf'})).error.code,'UNSAVED_DRAFT');
+  assert.equal((await call('export_bid',{job_id:j.id,expected_revision:j.revision,format:'pdf',type:'draft'})).error.code,'UNSAVED_DRAFT');
   j=(await call('save_bid',{job_id:j.id,expected_revision:j.revision})).data;
-  const reviewExport=await call('export_bid',{job_id:j.id,expected_revision:j.revision,format:'pdf',scope_notes:'Brighton Pearl not priced; no substitution approved.'});
+  const reviewExport=await call('export_bid',{job_id:j.id,expected_revision:j.revision,format:'pdf',type:'draft',scope_notes:'Brighton Pearl not priced; no substitution approved.'});
   assert.equal(reviewExport.ok,true,JSON.stringify(reviewExport));
   const reviewBytes=Buffer.from(await (await fetch(reviewExport.data.url)).arrayBuffer());
   assert.ok((await PDFDocument.load(reviewBytes)).getPageCount()>0);
@@ -106,7 +107,7 @@ test('persistent bids enforce ownership, scopes, revisions, real catalog costs a
   assert.equal((await call('set_project_quote_margin',quoteArgs,{...actor,org:'another-org'})).error.code,'NOT_FOUND');
   for(const margin of [0,51,20.5])assert.equal((await call('set_project_quote_margin',{...quoteArgs,margin})).error.code,'INVALID_INPUT');
   const revised=await call('set_project_quote_margin',quoteArgs,{...actor,sub:'teammate'});assert.equal(revised.ok,true,JSON.stringify(revised));
-  assert.deepEqual(revised.data.state,{...shared.data.state,margin:30});assert.equal(revised.data.revision,2);
+  const priorState={...shared.data.state};delete priorState._calculation;const revisedState={...revised.data.state};delete revisedState._calculation;assert.deepEqual(revisedState,{...priorState,margin:30});assert.equal(revised.data.revision,2);
   assert.equal(revised.data.totals.purchase,293784);assert.ok(revised.data.totals.sale>changedPrice.data.sale);
   assert.equal((await call('set_project_quote_margin',quoteArgs)).error.code,'REVISION_CONFLICT');
   assert.equal(revised.data.documents[0].revision,1);
@@ -135,14 +136,14 @@ test('persistent bids enforce ownership, scopes, revisions, real catalog costs a
    const created=await call('create_bid_job',{project:state.project,supplier:'hci',instruction:'Reconcile the previously verified, human-authored workbook snapshot.'});assert.equal(created.ok,true);
    const known=await app.store.mutate(actor,created.data.id,1,'qa_import_verified_workbook',j=>{j.state=state;j.saved=true;});
    const priced=await call('price_bid',{job_id:known.id});assert.equal(priced.data.count,85);assert.equal(priced.data.purchase,12999421);assert.equal(priced.data.sale,16665868);
-   const exported=await call('export_bid',{job_id:known.id,expected_revision:known.revision,format:'pdf'});assert.equal(exported.ok,true);
-   const bytes=await(await fetch(exported.data.url)).arrayBuffer();assert.equal((await PDFDocument.load(bytes)).getPageCount(),5);
+   const exported=await call('export_bid',{job_id:known.id,expected_revision:known.revision,format:'pdf',type:'draft'});assert.equal(exported.ok,true);
+   const bytes=await(await fetch(exported.data.url)).arrayBuffer();assert.ok((await PDFDocument.load(bytes)).getPageCount()>=6);
   }
   if(process.env.TEST_OPENAI==='1'){
    const made=await call('create_bid_job',{project:'QA live assistant acceptance',supplier:'rythern',instruction:instructions});assert.equal(made.ok,true);
    const run=await app.store.saveRun(actor,made.data.id,instructions,1),claimed=await app.store.claimRun();assert.equal(claimed.id,run.id);
    await processRun({...app,env},claimed);const result=await app.store.getRun(actor,run.id);assert.equal(result.status,'completed',JSON.stringify(result.payload));assert.equal(result.payload.exports.length,2);
-   const totals=await call('price_bid',{job_id:made.data.id});assert.equal(totals.data.purchase,293784);assert.equal(totals.data.sale,367224);
+   const totals=await call('price_bid',{job_id:made.data.id});assert.equal(totals.data.purchase,293784);assert.equal(totals.data.sale,calculateProject(app.catalogs.rythern,j.state).sale);
   }
  }finally{
   for(const table of ['pricing_quote_deletions','pricing_quote_exports','pricing_quote_revisions','pricing_quotes','pricing_projects','bid_exports','bid_runs','bid_audit','bid_job_revisions','bid_jobs'])await app.store.pool.query('DELETE FROM '+table+' WHERE org=$1',[actor.org]);

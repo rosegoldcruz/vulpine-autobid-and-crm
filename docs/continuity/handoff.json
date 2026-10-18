@@ -1,15 +1,20 @@
 {
-  "last_change": "Investigated owner-reported pricing PDF regression; no application source, template or runtime changes made.",
+  "last_change": "Implemented and deployed pricing policy 2 shared UI/MCP/stored calculation/PDF corrections: $3.33 handles, $133 per actual apartment/named amenity, customer-ready gates, signed transaction tax/exemption support, private opt-in signature, wrapped scope sections and closing-last Letter PDFs. Added two requested R1 internal drafts while preserving original records/documents.",
   "verification": [
-    "Compared src/quote-pdf.mjs, assets/proposal-template.pdf, dist/quote-pdf.mjs, dist/proposal-template.pdf, src/app.mjs and server.mjs against verified pre-migration recovery archive: all byte-identical.",
-    "corepack pnpm --filter @vulpine/pricing test: 26 passed, zero failures, including authenticated test-server PDF exports.",
-    "Authenticated read-only GETs against live pricing port 3021: PDF generator, template and PDF library match deployed dist files.",
-    "Read nine existing saved quotes and generated customer/internal/purchase PDFs locally for eight valid quotes: 24 outputs parsed successfully. One quote correctly rejected unavailable prices and empty active units. No database writes or fake saved bids.",
-    "Rendered and visually inspected one customer acceptance page using pdftoppm; readable summary and signatures. Initial optional PyMuPDF render failed because fitz is not installed; Poppler render succeeded.",
-    "Owner browser download path and specific reported defect remain unverified; clarification requested."
+    "corepack pnpm --filter @vulpine/pricing test: 38 passed, zero failures. Includes quantities, charge rates, cost separation, two-tone duplicate guards, actual/sample counts, frameless guard, tax/exemptions and JSONB signature ordering, opt-in signature and short/long Letter PDF closing order.",
+    "corepack pnpm --filter @vulpine/pricing build: passed. node /tmp/vulpine-run-pricing-integration.mjs tests/bidding.integration.mjs tests/proposal-flow.integration.mjs tests/workspace.integration.mjs: 3 passed in isolated organizations with fixture cleanup and no provider/model calls.",
+    "Chromium browser verification against authenticated local test service: project fields, charge display, completed customer PDF download after database persistence, blocked incomplete customer export, internal draft download and create-revision flow passed with no page errors. Browser initially needed explicit installed Chrome path; fixed harness, no app workaround.",
+    "Rendered and visually inspected all 19 pages of the two R1 PDFs using Poppler and contact sheets. Corrected a blank-address fallback, orphaned validation continuation and subtotal labeling. Approved signature transparency/aspect retained; customer signing fields blank; closing artwork final.",
+    "Live pricing/bidding health HTTP 200 after service restarts, with no queued/running bid runs beforehand. First immediate MCP probe after a restart encountered transient HTTP 502 during startup; after health checks all seven clients passed.",
+    "Authenticated production MCP checks for Codex, Claude, Qwen, OpenCode, Copilot, Hermes and Muse: 28 tools including set_bid_details, both revised quotes, stored/live amounts match, final total remains pending and missing fields reported. Downloaded revised stored PDFs via authenticated MCP and verified SHA256.",
+    "Verified unchanged: 2 original Auto Bid jobs, 9 prior shared quotes, 11 prior stored exports. Recovery and digest evidence in /opt/vulpine-backups/pricing-proposals-20261018T170419Z and private /opt/output/pricing-revised-20261018/saved-revisions.json.",
+    "Known-credential scan: 934 blobs checked against 38 private values, zero hits. git diff --cached --check passed. Signature asset, PDFs, source-record captures and test-run credentials remain outside tracked source. /home and Vulpine Supply were not modified."
   ],
   "decisions": [
-    "Preserve existing proposal template and quote data until the reported defect is identified. Do not infer that passing generator tests proves browser download or user-intended layout."
+    "Owner explicitly authorized all eleven pricing/PDF corrections, revised drafts for VP-D9C7A18D and VP-FF0FE5BA, complete-flow tests and no customer sending. Owner supplied the approved Daniel Cruz PNG under /opt; copied privately with service group access and used only on these two explicitly approved quote IDs.",
+    "Use current pricing policy only on new/revised drafts. Preserve historical source records and exports; issued records reject mutation. Do not turn incomplete or noncompliant baseline prices into a customer-ready proposal.",
+    "Bonner source reconciliation uses 184 apartments from sheet 10 and Attachment A, disclosing RFP-body 154 conflict. Dawson CAB-1 scope uses 324 apartments plus four named amenity areas, including its island within kitchenette; CAB-2 scope is explicitly excluded and unresolved.",
+    "Dawson sources specify KITH Cottage Frameless Maple Forestwood / White Oak Sand, but its stored HCI framed baseline is ineligible. Bonner specified Brighton Pearl / White two-tone mapping is unresolved. Do not invent compliant SKU/pricing mappings, GC information, ZIP, tax or exemptions."
   ],
   "open_work": [
     "Provision approved ZITADEL management authentication for actual directory, permission and settings administration; own agent grant inspection already works.",
@@ -18,23 +23,24 @@
     "Confirm actual model sessions invoke read_aeon_context; transport retrieval and startup hints alone are not model-session evidence.",
     "Assess the owner-reported prior chat credential exposure and rotate the affected identity through secure enrollment if the credential is still active; no raw value was supplied in the pasted transcript.",
     "Resolve the private vault review queue against project evidence; preserve prior concurrent engineering open work.",
-    "Identify and reproduce the owner-reported pricing PDF problem once the affected bid and symptom are available; generator checks do not establish browser flow."
+    "Complete customer-ready Bonner Springs and Dawson Trails revised proposals after missing GC/delivery evidence, specified finish/construction supplier pricing and verified transaction tax are provided. Existing baseline amounts are internal drafts, not compliant final bids."
   ],
   "blockers": [
-    "ZITADEL management credential is absent. Inbox provider rejects the configured credential with HTTP 401. External hosted accounts/device sessions are not connected to this server tooling."
+    "ZITADEL management credential is absent. Inbox provider rejects the configured credential with HTTP 401. External hosted accounts/device sessions are not connected to this server tooling.",
+    "Bonner GC/company and complete delivery address unavailable in attached job sources, queried tracker records or accessible Drive search. Dawson complete delivery point/ZIP and compliant specified frameless finish pricing unavailable; Bonner specified two-tone pricing unresolved. TaxJar transaction credential or applicable verified exemption evidence is unavailable. Narrow source questions were submitted to the owner."
   ],
-  "next_action": "Obtain specific pricing PDF symptom or affected bid and investigate that path; no PDF fix claimed.",
-  "recorded_at": "2026-10-18T16:36:08.366Z",
+  "next_action": "Provide the specific project/supplier/tax evidence above, reconcile the actual specified scope, and create another reviewed draft; send nothing to customers.",
+  "recorded_at": "2026-10-18T17:13:10.299Z",
   "snapshot": {
-    "head": "7d0d46277cc4ffc026e76c6893193df1856a061f",
+    "head": "459d0530b4494dcaee86baea9876e9d277c7ed28",
     "branch": "codex/cabinet-brain-integration-recovery",
-    "worktree": "",
+    "worktree": "M  apps/pricing/agent/schemas.mjs\nM  apps/pricing/agent/server.mjs\nM  apps/pricing/agent/tools.mjs\nM  apps/pricing/agent/worker.mjs\nM  apps/pricing/deploy/README.md\nA  apps/pricing/deploy/proposal-assets.conf\nM  apps/pricing/docs/tax.md\nM  apps/pricing/quote-store.mjs\nM  apps/pricing/scripts/build.mjs\nM  apps/pricing/server.mjs\nM  apps/pricing/src/app.mjs\nM  apps/pricing/src/index.html\nM  apps/pricing/src/new-quote.mjs\nM  apps/pricing/src/pricing.mjs\nA  apps/pricing/src/proposal-pdf.mjs\nA  apps/pricing/src/proposal-policy.mjs\nM  apps/pricing/src/quote-pdf.mjs\nM  apps/pricing/src/quote-xlsx.mjs\nM  apps/pricing/src/tax-ui.mjs\nM  apps/pricing/src/tax.mjs\nM  apps/pricing/tax-provider.mjs\nM  apps/pricing/tests/bidding.integration.mjs\nM  apps/pricing/tests/customer-proposal.test.mjs\nM  apps/pricing/tests/export-server.test.mjs\nA  apps/pricing/tests/proposal-fixture.mjs\nA  apps/pricing/tests/proposal-flow.integration.mjs\nA  apps/pricing/tests/proposal-policy.test.mjs\nM  apps/pricing/tests/suppliers.test.mjs\nM  apps/pricing/tests/tax.test.mjs\nM  docs/continuity/current.md\nM  docs/continuity/decisions.md",
     "sources": {
       "AGENTS.md": "c51e08a8021528ff818e5f62620aae587530eeec275750b2d38c2771ef732460",
       "README.md": "b6948f9084afb5f1bcceb4466e627c78f2288ba7f4876ceb64f3702b4fea5bd1",
       "package.json": "fafa60aeae85182092017dfc87134dabfa1df3484315a510e118b4d879566a49",
-      "docs/continuity/current.md": "182faa8d74fcea4c0bbae6b2f16379947d6325f8f5c08f14c6785d597b73c96e",
-      "docs/continuity/decisions.md": "88edcb00865d5bc3e7380f68b4d9af6d25e7c6513e8c2f3b7ed998a39f541e54",
+      "docs/continuity/current.md": "02d10ec52417a2945200724a2a3e682f8ec33b8359b097f15b392dfcfb7beab9",
+      "docs/continuity/decisions.md": "1352cd377517d48b81c23a68f97acaa6d8607b65176b1d5b5e30f7baa1a206b0",
       "docs/continuity/audit.md": "c849de622d00377d1fadd3ba41cda2933eb9370b6fa13c2baf53bf36c0c471b2",
       "docs/continuity/verification.md": "5daeea53454a06fcf3b928b1fd12c8f69448beb8fc31a75b441181cc57962f28",
       "docs/continuity/sources.json": "0380630765b71a413ac27edd875e120cf51f501232720ee130160cd1f885937b",
@@ -64,7 +70,7 @@
   },
   "vault": {
     "project": "vulpine-platform",
-    "session_id": "0a6be9a5-00cd-4f8a-b04d-c956bd2e70ec",
-    "record": "sources/aeon-sessions/vulpine-platform/0a6be9a5-00cd-4f8a-b04d-c956bd2e70ec.md"
+    "session_id": "402ab8bb-7270-4b59-8fc8-970a759365d5",
+    "record": "sources/aeon-sessions/vulpine-platform/402ab8bb-7270-4b59-8fc8-970a759365d5.md"
   }
 }

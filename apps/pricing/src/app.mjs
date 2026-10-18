@@ -1,3 +1,4 @@
+import {customerIssues} from './proposal-policy.mjs';
 import {mountWorkspace} from './workspace.mjs';
 import {LINES as HCI_LINES,linesFor,money,whole,lookup,cost,calculateUnit,calculateProject,quoteDates} from './pricing.mjs';
 import {generateQuote} from './quote-pdf.mjs';
@@ -30,9 +31,7 @@ const hosted=location.pathname.startsWith('/api/cabinet-pricing/');
 let revision=null,saveTimer,saveQueue=Promise.resolve(),serverConflict=false;
 let agentJob=null,historyRef=null,projectArchived=false,recordDeleted=false;
 const freshUnit=n=>({id:uid(),name:'Unit '+n,repeat:1,auto:true,defaultLi:0,items:[]});
-let state={version:2,finish:0,project:'',status:'Tentative',
-  quoteId:'VP-'+new Date().toISOString().slice(0,10).replaceAll('-','')+'-'+Math.random().toString(36).slice(2,6).toUpperCase(),
-  date:new Date().toLocaleDateString('en-CA'),customer:'',email:'',preparedBy:'Daniel Cruz',notes:'',margin:20,comparison:false,units:[freshUnit('01')]};
+let state=newQuote();
 let storageWarning=false;
 try{
   const saved=hosted?null:JSON.parse(localStorage.getItem(KEY)||localStorage.getItem('vulpine-project-v2')||localStorage.getItem('vulpine-project-v3'));
@@ -128,7 +127,7 @@ function save(){
   invalidatePdf();
 }
 function invalidatePdf(){if(pdfUrl){URL.revokeObjectURL(pdfUrl);pdfUrl=null}$('downloadResult').hidden=true}
-function cleanJobState(s){return Object.fromEntries(['version','supplier','project','status','quoteId','date','validUntil','customer','email','preparedBy','notes','margin','comparison','tax','units'].map(k=>[k,k==='status'?'Tentative':k==='units'?s.units.map(u=>({id:u.id,name:u.name,repeat:u.repeat,defaultLi:u.defaultLi,auto:u.auto,items:u.items.map(i=>({sku:i.sku,li:i.li,qty:i.qty}))})):s[k]]));}
+function cleanJobState(s){return Object.fromEntries(['version','supplier','project','status','quoteId','date','validUntil','customer','email','preparedBy','notes','margin','comparison','pricingPolicy','projectInfo','charges','customerSections','signature','revisionOf','tax','units'].map(k=>[k,k==='status'?'Tentative':k==='units'?s.units.map(u=>({id:u.id,name:u.name,repeat:u.repeat,defaultLi:u.defaultLi,auto:u.auto,kind:u.kind,areaId:u.areaId,areas:u.areas,items:u.items.map(i=>({sku:i.sku,li:i.li,qty:i.qty,handleCount:i.handleCount,handlesIncluded:i.handlesIncluded,handleInclusion:i.handleInclusion,assemblyId:i.assemblyId}))})):s[k]]));}
 document.addEventListener('vulpine-open-studio',async()=>{
   // Let the existing debounced save finish before leaving the pricing document.
   await new Promise(resolve=>setTimeout(resolve,450));await saveQueue;
@@ -286,8 +285,8 @@ function renderItems(){
 function renderBar(){
   const r=project(),ok=Number.isSafeInteger(r.purchase)&&Number.isSafeInteger(r.sale);
   taxUI?.draw(r.sale);
-  $('tCost').textContent=ok?money(r.purchase):'—';$('tSell').textContent=ok?money(r.sale):'—';$('tProfit').textContent=ok?money(r.profit):'—';
-  $('tReal').textContent=ok&&r.sale?r.actualMargin.toFixed(2)+'% realized':'';
+  $('tCost').textContent=ok?money(r.purchase):'—';$('tSell').textContent=ok?money(r.sale):'—';$('tProfit').textContent=ok?(r.costsComplete?money(r.profit):'Costs pending'):'—';
+  $('tReal').textContent=ok&&r.sale?(r.costsComplete?r.actualMargin.toFixed(2)+'% realized':'Handle/freight costs unverified'):'';
   $('mVal').textContent=state.margin+'%';$('mTog').textContent=state.margin+'%';$('mRange').value=state.margin;
   $('mChips').innerHTML=[20,25,30,33,35,40].map(m=>'<button type="button" data-m="'+m+'" aria-pressed="'+(m===state.margin)+'">'+m+'</button>').join('');
   const warn=$('barWarn'),bad=r.units.filter(u=>u.repeat!==0&&u.entries.length&&u.issues.length).length;
@@ -304,9 +303,9 @@ function renderAll(){renderUnits();renderItems();renderBar();updateDrawer();if(s
 /* ------------------------------------------------------------ quote step */
 function renderQuote(){
   const r=project(),ok=!r.issues.length;
-  $('unitSummary').innerHTML=r.units.map(u=>'<tr><td><button type="button" class="link" data-edit-unit="'+u.id+'">'+esc(u.name)+'</button>'+(u.repeat===0?' <span class="pill">left out</span>':'')+'</td><td class="num"><input class="inl" type="number" min="0" max="'+MAX+'" step="1" inputmode="numeric" value="'+(whole(u.repeat)?u.repeat:'')+'" data-srep="'+u.id+'" aria-label="How many of '+esc(u.name)+'"></td><td class="num">'+money(u.purchase)+'</td><td class="num">'+money(u.purchase*u.repeat)+'</td><td class="num">'+money(u.sale*u.repeat)+'</td><td class="num">'+money(u.profit*u.repeat)+'</td></tr>').join('')
+  $('unitSummary').innerHTML=r.units.map(u=>'<tr><td><button type="button" class="link" data-edit-unit="'+u.id+'">'+esc(u.name)+'</button><br><select data-unit-kind="'+u.id+'" aria-label="Area type"><option value="apartment" '+(u.kind!=='amenity'?'selected':'')+'>Apartments</option><option value="amenity" '+(u.kind==='amenity'?'selected':'')+'>Named amenity area</option></select>'+(u.repeat===0?' <span class="pill">left out</span>':'')+'</td><td class="num"><input class="inl" type="number" min="0" max="'+MAX+'" step="1" inputmode="numeric" value="'+(whole(u.repeat)?u.repeat:'')+'" data-srep="'+u.id+'" aria-label="How many of '+esc(u.name)+'"></td><td class="num">'+money(u.purchase)+'</td><td class="num">'+money(u.purchase*u.repeat)+'</td><td class="num">'+money(u.sale*u.repeat)+'</td><td class="num">'+money(u.profit*u.repeat)+'</td></tr>').join('')
     +'<tr class="totalRow"><td>Total</td><td class="num">'+r.count+'</td><td></td><td class="num">'+(ok?money(r.purchase):'—')+'</td><td class="num">'+(ok?money(r.sale):'—')+'</td><td class="num">'+(ok?money(r.profit):'—')+'</td></tr>';
-  const problems=[...r.issues];
+  const problems=documentType==='customer'?customerIssues(DATA,state,r):[...r.issues];
   if(!state.quoteId.trim())problems.push('Enter a quote number.');
   if(!state.date)problems.push('Enter a quote date.');
   if(state.email&&!$('email').validity.valid)problems.push('That customer email doesn’t look right. Fix it or leave it blank.');
@@ -314,6 +313,7 @@ function renderQuote(){
   $('generate').disabled=$('printGenerate').disabled=problems.length>0;
   const amount=documentType==='purchase'?r.purchase:r.total;
   $('documentSummary').innerHTML='<p class="sumName">'+esc(state.project||'Unnamed project')+'<br><small>'+esc([...new Set(r.units.filter(u=>u.repeat>0).flatMap(u=>u.entries.map(x=>x.line)))].join(', '))+' · '+r.count+' unit'+(r.count===1?'':'s')+' · '+esc(state.status)+'</small></p><strong class="sumAmt">'+(ok?money(amount):'Check units')+'</strong><p class="hint">'+(documentType==='customer'?'Customer selling total. Your cost and profit are hidden.':documentType==='purchase'?'Supplier purchase total. Shipping and delivery use full catalog rates.':'Internal document: shows cost, selling price, margin and profit.')+'</p>';
+  $('chargeSummary').innerHTML=r.charges?'<p>'+r.charges.counts.apartments+' apartments + '+r.charges.counts.amenities+' named amenity areas; '+r.charges.boxes+' cabinet boxes; '+r.charges.accessories+' accessories.</p><div><span>Handles: '+r.charges.handles.chargedQuantity+' × $3.33</span><strong>'+money(r.charges.handles.amount)+'</strong></div><div><span>Shipping: '+r.charges.freight.quantity+' × '+money(r.charges.freight.rate)+'</span><strong>'+money(r.charges.freight.amount)+'</strong></div><div><span>Tax</span><strong>'+(r.tax.amount===null||(!state.tax?.enabled&&!state.tax?.exemption)?'Verification required':money(r.tax.amount))+'</strong></div>':'';
   $('comparisonPdf').disabled=documentType!=='internal';
 }
 function go(next){
@@ -570,14 +570,21 @@ $('supplier').onchange=async()=>{
   DATA=catalog;LINES=nextLines;IMAGES=next==='hci'?HCI_IMAGES:{};
   for(const key of Object.keys(rowCache))delete rowCache[key];
   for(const key of ['project','status','quoteId','customer','email','preparedBy','notes'])$(key).value=state[key];
-  active=state.units[0].id;save();renderFinish();loadUnit();renderBar();renderQuote();
+  active=state.units[0].id;fillProposalFields();save();renderFinish();loadUnit();renderBar();renderQuote();
   toast('Units and SKUs carried over. Prices use this supplier only. Review finishes and flagged items.');
  }catch(error){$('supplier').value=previous;toast(error.message,{error:true});}finally{$('supplier').disabled=false;}
 };
-taxUI=mountTax({getState:()=>state,save,refresh:()=>{renderBar();if(step==='quote')renderQuote()},hosted,money});
+taxUI=mountTax({getState:()=>state,getCalculation:()=>project(),save,refresh:()=>{renderBar();if(step==='quote')renderQuote()},hosted,money});
 renderFinish();refreshDates();loadUnit();renderBar();
 if(hosted){
  if(agentJob){$('supplier').disabled=true;const notice=document.createElement('p');notice.className='hint';notice.textContent='Saved agent draft. Review quantities and source evidence before customer submission.';document.querySelector('.projectBar').after(notice);}
  mountBidAssistant({currentJob:agentJob,onDelete:markDeleted,flush:async()=>{await new Promise(r=>setTimeout(r,450));await saveQueue;if(serverConflict||$('saveState').textContent==='Not saved')throw Error('Save your current changes before running the assistant.');}});
 }
 if(storageWarning)toast('Your saved draft couldn’t be loaded, so a fresh project is open.',{error:true});
+
+$('unitSummary').addEventListener('change',event=>{const id=event.target.dataset.unitKind;if(!id)return;const u=state.units.find(u=>u.id===id);u.kind=event.target.value;u.areaId=u.areaId||u.id;save();renderQuote();});
+function fillProposalFields(){const p=state.projectInfo||{},n=state.customerSections||{};for(const [id,key]of [['actualApartments','apartments'],['cabinetLine','cabinetLine'],['construction','construction'],['mixEvidence','mixEvidence'],['finishBasis','finishBasis'],['addressEvidence','addressEvidence']])$(id).value=p[key]??'';for(const [id,key]of [['includedScope','included'],['pricingBasis','basis'],['substitutions','substitutions'],['exclusions','exclusions']])$(id).value=n[key]||'';}
+for(const [id,key]of [['actualApartments','apartments'],['cabinetLine','cabinetLine'],['construction','construction'],['mixEvidence','mixEvidence'],['finishBasis','finishBasis'],['addressEvidence','addressEvidence']])$(id).addEventListener('input',()=>{state.projectInfo??={};state.projectInfo[key]=id==='actualApartments'?Number($(id).value):$(id).value;save();renderQuote();});
+for(const [id,key]of [['includedScope','included'],['pricingBasis','basis'],['substitutions','substitutions'],['exclusions','exclusions']])$(id).addEventListener('input',()=>{state.customerSections??={};state.customerSections[key]=$(id).value;save();renderQuote();});
+$('reviseQuote').onclick=async()=>{try{await flushWorkspace();if(!historyRef)throw Error('Save this quote in Back Office before revising.');const r=await fetch('./export',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({format:'revise-quote',quote_id:historyRef.id,expected_revision:historyRef.revision})});const value=await r.json();if(!r.ok)throw Error(value.error);location.assign('./index.html?quote='+value.state._history.id);}catch(e){toast(e.message,{error:true});}};
+fillProposalFields();

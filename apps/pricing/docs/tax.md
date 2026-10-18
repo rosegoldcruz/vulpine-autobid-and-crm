@@ -22,3 +22,21 @@ Provider documentation:
 - https://developer.avalara.com/api-reference/avatax/rest/v2/methods/TaxContent/TaxRatesByAddress/
 
 The automated provider tests use synthetic rates and do not establish live provider availability. After configuring a provider, validate known delivery addresses in several states, multi-district locations and a zero-sales-tax location against the provider before using customer totals.
+
+## Customer-ready proposals (pricing policy 2)
+
+A rate lookup alone cannot establish transaction taxability. The TaxJar
+`POST /v2/taxes` adapter submits cabinet/materials, decorative handles,
+installation/assembly when priced, and freight separately. Its signed response
+binds delivery address, applicable date, exact line amounts, taxable amounts,
+freight taxability and collected tax. Changing any amount/date requires refresh.
+See the provider's [API reference](https://developers.taxjar.com/api/reference/)
+and [calculation guide](https://developers.taxjar.com/integrations/sales-tax-calculations/).
+Avalara address-rate lookup remains available for historical rate snapshots;
+it does not satisfy the current transaction gate.
+
+Missing credentials, address data, stale results or an incomplete breakdown
+leave the draft with tax/total pending. No unknown rate becomes zero. An
+applicable exemption requires its reason, authority, evidence reference,
+effective dates, matching delivery address, and a server signature obtained
+through the authenticated app. Exemption evidence is not invented automatically.

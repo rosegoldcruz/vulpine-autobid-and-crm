@@ -1,5 +1,5 @@
 import {QuoteStore} from './quote-store.mjs';
-import {lookupTax,taxProvider,verifyTax} from './tax-provider.mjs';
+import {lookupTax,lookupTransactionTax,verifyExemption,taxProvider,verifyTax} from './tax-provider.mjs';
 import http from 'node:http';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -18,6 +18,7 @@ export function verify(token,secret,expected){
   if(actual.length!==wanted.length||!timingSafeEqual(actual,wanted))return null;
   try{const c=JSON.parse(Buffer.from(payload,'base64url'));return c.sub&&c.org===expected.org&&c.module==='pricing'&&c.path===expected.path&&c.method===expected.method&&c.bodyHash===expected.bodyHash&&c.exp>Date.now()/1000&&c.exp<Date.now()/1000+90?c:null;}catch{return null;}
 }
+const canonical=value=>JSON.stringify(value,(_,v)=>v&&typeof v==='object'&&!Array.isArray(v)?Object.fromEntries(Object.keys(v).filter(k=>!['_history','_calculation','supplierDrafts'].includes(k)).sort().map(k=>[k,v[k]])):v);
 const hash=s=>createHash('sha256').update(s).digest('hex');
 const studioTypes={'.svg':'image/svg+xml','.ico':'image/x-icon','.planmeasure':'application/octet-stream','.txt':'text/plain; charset=utf-8'};
 const types={'.html':'text/html; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.js':'text/javascript; charset=utf-8','.json':'application/json','.css':'text/css','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp','.pdf':'application/pdf','.xlsx':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'};
@@ -26,6 +27,7 @@ export async function createServer(env,root=path.dirname(fileURLToPath(import.me
   const catalogs={hci:data};
   for(const supplier of ['rythern','uscd'])catalogs[supplier]=JSON.parse(await fs.readFile(path.join(root,'src/suppliers',supplier+'.json')));
   const template=await fs.readFile(path.join(root,'assets/proposal-template.pdf'));
+  const signatureBytes=env.VULPINE_SIGNATURE_PATH?await fs.readFile(env.VULPINE_SIGNATURE_PATH):null;
   const respond=(res,status,value)=>{res.writeHead(status,{'content-type':'application/json','cache-control':'no-store'});res.end(JSON.stringify(value));};
   const history=env.QUOTES_DATABASE_URL?new QuoteStore(env.QUOTES_DATABASE_URL):null;
   if(history)await history.init();
@@ -54,7 +56,8 @@ export async function createServer(env,root=path.dirname(fileURLToPath(import.me
         const dir=path.join(env.CABINET_STORAGE_PATH,hash(claim.org)),filename=path.join(dir,hash(claim.sub)+'.json');
         if(req.method==='GET'){try{return respond(res,200,JSON.parse(await fs.readFile(filename,'utf8')));}catch(e){if(e.code==='ENOENT')return respond(res,200,{draft:null,revision:null});throw e;}}
         if(req.method==='PUT'){
-          const input=JSON.parse(body);validate(input.draft);
+          const input=JSON.parse(body);
+          validate(input.draft);
           // Serialize read/check/write to reject stale tabs without losing a newer draft.
           const task=queue.then(async()=>{
             let previous=null;try{previous=JSON.parse(await fs.readFile(filename,'utf8'));}catch(e){if(e.code!=='ENOENT')throw e;}
@@ -68,19 +71,23 @@ export async function createServer(env,root=path.dirname(fileURLToPath(import.me
       }
       if(route==='export'&&req.method==='POST'){
         const input=JSON.parse(body);
+        if(input.format==='revise-quote'){if(!history)return respond(res,503,{error:'Project storage unavailable.'});const q=await history.get(claim,input.quote_id);if(q.revision!==input.expected_revision)return respond(res,409,{error:'Quote changed. Reopen before revising.'});const revised={...q.state,pricingPolicy:2,revisionOf:q.quote_number,quoteId:q.quote_number+'-R'+randomUUID().slice(0,6).toUpperCase(),signature:undefined,issuedAt:undefined,status:'Tentative'};delete revised._history;const ref=await history.save(claim,revised,null);return respond(res,200,{state:{...revised,_history:ref}});}
+        if(input.format==='tax-exemption')return respond(res,200,verifyExemption(input,env));
         if(input.format==='delete-quote'){if(!history)return respond(res,503,{error:'Project storage is unavailable.'});if(!/^[a-f0-9-]{36}$/.test(input.quote_id)||!Number.isInteger(input.expected_revision)||input.expected_revision<1)return respond(res,400,{error:'Quote ID and current revision are required.'});return respond(res,200,await history.delete(claim,input.quote_id,input.expected_revision));}
         if(input.format==='project-action'){if(!history)return respond(res,503,{error:'Project storage is unavailable.'});return respond(res,200,await history.project(claim,input.name,input.action));}
         // Use the existing authenticated, same-origin POST proxy for the read-only rate calculation.
         if(input.format==='tax-rate'){
-          try{return respond(res,200,await lookupTax(input.address,env));}
+          try{return respond(res,200,input.state?.pricingPolicy===2?await lookupTransactionTax(input.address,calculateProject(catalogs[input.state.supplier||'hci'],input.state).taxableItems,input.state.date,env):await lookupTax(input.address,env));}
           catch(e){return respond(res,e.status||422,{error:e.message});}
         }
-        const {state,type,format}=input;validate(state);verifyTax(state.tax,env);
+        let {state,type,format}=input;
+        if(history&&state?._history){const ref=state._history,saved=await history.get(claim,ref.id);if(saved.revision!==ref.revision||canonical(state)!==canonical(saved.state))return respond(res,409,{error:'Quote changed or contains unsaved edits. Save and reopen it before exporting.'});state={...saved.state,_history:ref};}
+        validate(state);if(type==='customer')verifyTax(state.tax,env);
         const data=catalogs[state.supplier||'hci'];if(!data)return respond(res,400,{error:'Unknown supplier.'});
         const result=calculateProject(data,state);if(result.issues.length)return respond(res,422,{error:result.issues.join(' ')});
         let bytes,mime;
         if(format==='xlsx'){bytes=XLSX.write(createWorkbook(XLSX,data,state),{type:'buffer',bookType:'xlsx',compression:true});mime=types['.xlsx'];}
-        else if(format==='pdf'&&['customer','internal','purchase'].includes(type)){bytes=await generateQuote(PDFLib,data,state,type,template);mime=types['.pdf'];}
+        else if(format==='pdf'&&['customer','internal','purchase','draft'].includes(type)){bytes=await generateQuote(PDFLib,data,state,type,template,new Date(),{signatureBytes});mime=types['.pdf'];}
         else return respond(res,400,{error:'Unknown export format.'});
         if(history){const ref=state._history||await history.save(claim,state,null);const saved=await history.get(claim,ref.id);if(saved.revision!==ref.revision)throw Object.assign(Error('Quote changed. Reopen before exporting.'),{status:409});await history.addExport(claim,ref,type,format,Buffer.from(bytes));}
         res.writeHead(200,{'content-type':mime,'cache-control':'no-store'});res.end(bytes);return;

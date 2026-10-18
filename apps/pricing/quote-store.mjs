@@ -1,3 +1,4 @@
+import {calculateProject} from './src/pricing.mjs';
 import pg from 'pg';
 import {randomUUID} from 'node:crypto';
 import fs from 'node:fs/promises';
@@ -12,6 +13,8 @@ export class QuoteStore {
   try{
    await db.query('BEGIN');
    const clean=structuredClone(state);delete clean._history;
+   if(clean.pricingPolicy===2){const catalog=JSON.parse(await fs.readFile(new URL(clean.supplier&&clean.supplier!=='hci'?'./src/suppliers/'+clean.supplier+'.json':'./src/catalog.json',import.meta.url),'utf8'));const result=calculateProject(catalog,clean);clean._calculation={purchase:result.purchase,sale:result.sale,total:result.total,tax:result.tax,charges:result.charges};}
+   if(reference?.id){const original=await this.get(actor,reference.id,db);if(original.state.issuedAt||original.state.status==='Issued')throw Object.assign(Error('Issued quotes are immutable. Create a revised draft.'),{status:409});}
    const id=reference?.id||randomUUID(),name=String(clean.project||'').trim().replace(/\s+/g,' ')||'Untitled project';
    await db.query('INSERT INTO pricing_projects(org,project_key,name) VALUES($1,$2,$3) ON CONFLICT DO NOTHING',[actor.org,projectKey(name),name]);
    const project=(await db.query('SELECT deleted_at FROM pricing_projects WHERE org=$1 AND project_key=$2 FOR SHARE',[actor.org,projectKey(name)])).rows[0];

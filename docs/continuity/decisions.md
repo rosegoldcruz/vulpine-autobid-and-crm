@@ -193,3 +193,22 @@ access. Previously dormant Leads/Twilio are migrated/build-tested without creati
 unrequested public deployments. Use canonical deployment entry points and isolated
 Brain tests so verification cannot replace the production Next build. The completed
 consolidation supersedes prior partial-migration/audit open work.
+
+
+## 2026-10-18 — owner pricing/PDF requirements and signature authorization
+
+Owner explicitly required project/GC/address/actual-count/line/finish data and
+verified tax (or documented applicable exemption) before customer-ready export.
+New/revised pricing uses $3.33 per decorative handle without cabinet margin,
+$133 per actual apartment/named amenity area, independent supplier cost tracking,
+and preservation of approved overrides/historical issued documents. Avoid color
+segment/island double-counting, sample schedules represented as project prices,
+and framed substitutions for specified frameless construction.
+
+Owner supplied the approved Daniel Cruz PNG under /opt for the two prepared
+regression proposals. Retain it privately outside Git; explicit approval is tied
+to the quote number, and new/revised drafts do not inherit it. Do not sign customer
+fields, invent acceptance dates, create a replacement signature, or send anything.
+Customer scope is separated into Included Scope, Pricing Basis, Substitutions
+and Exclusions; internal notes remain internal. The shared pipeline preserves
+approved artwork, Letter sizing and closing-page-last ordering.

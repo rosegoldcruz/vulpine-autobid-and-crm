@@ -1,6 +1,10 @@
+import {generateProposal} from './proposal-pdf.mjs';
+import {customerIssues} from './proposal-policy.mjs';
 import {money,calculateProject,lookup,quoteDates} from './pricing.mjs';
 const safe=s=>String(s??'').replace(/[“”″]/g,'"').replace(/[‘’]/g,"'").replace(/[–—]/g,'-').replace(/×/g,'x').replace(/[^\x20-\x7e\n]/g,'?');
-export async function generateQuote(PDFLib,data,input,type='customer',templateBytes=null,now=new Date()){
+export async function generateQuote(PDFLib,data,input,type='customer',templateBytes=null,now=new Date(),options={}){
+ if(input.pricingPolicy===2||type==='draft')return generateProposal(PDFLib,data,{...input,pricingPolicy:2},type,templateBytes,options);
+ if(type==='customer'){const issues=customerIssues(data,input,calculateProject(data,input));if(issues.length)throw Object.assign(Error('Customer-ready export blocked: '+issues.join(' ')),{status:422});}
  const state={...input,...quoteDates(now)},result=calculateProject(data,state);if(result.issues.length)throw Error('Resolve unit issues before generating the PDF.');if(!state.project.trim())throw Error('Enter a project name.');
  const {PDFDocument,StandardFonts,rgb}=PDFLib,doc=await PDFDocument.create(),template=await PDFDocument.load(templateBytes||await (await fetch('./proposal-template.pdf')).arrayBuffer()),font=await doc.embedFont(StandardFonts.Helvetica),bold=await doc.embedFont(StandardFonts.HelveticaBold),serif=await doc.embedFont(StandardFonts.TimesRoman),gold=rgb(.67,.49,.23),ink=rgb(.13,.14,.13);
  // Original PDF media box has a 7.83pt origin offset; align to its true top.
@@ -31,19 +35,19 @@ export async function generateQuote(PDFLib,data,input,type='customer',templateBy
    }else{const price=type==='purchase'?r.purchase:r.sale,meta=lookup(data,r.li,r.sku);text(p,r.sku,30,top,93,7.5,true);text(p,r.unit.name+' / '+abbreviations[r.li],134,top-3,107,7);text(p,r.qty+' each x '+r.unit.repeat+' units',134,top+5,107,6);text(p,r.extendedQty,254,top,31,8);text(p,money(price),292,top,66,8);text(p,money(price*r.extendedQty),368,top,68,8);text(p,(meta?.[5]||0)*r.extendedQty,449,top,49,8);text(p,(meta?.[7]||0)*r.extendedQty+' est.',510,top,54,7)}
   });
   text(p,money(amount),368,506,70,9,true,rgb(1,1,1));text(p,data.countsVerified===false?'Not supplied':totalCabinets,449,506,49,8,true,rgb(1,1,1));text(p,data.countsVerified===false?'Not supplied':totalHardware+' est.',510,506,54,7,true,rgb(1,1,1));
-  const values=[money(amount),'Not separately priced',type==='purchase'?'Not added':state.tax?.enabled?money(result.tax.amount):'Not added','Only if listed','Only if listed',money(type==='purchase'?amount:result.total)];values.forEach((v,i)=>text(p,v,201,562+i*18.5,83,8,i===5));
-  const snapshot=[result.count,result.units.filter(u=>u.repeat>0).length,data.countsVerified===false?'Not supplied':totalCabinets,data.countsVerified===false?'Not supplied':totalHardware+' (estimate)','Not included unless listed',state.status+' quantities'];snapshot.forEach((v,i)=>text(p,v,438,562+i*18.5,126,8,i===5));
+  const values=[money(amount),'Excluded from material cost',type==='purchase'?'Pending verification':state.tax?.enabled?money(result.tax.amount):'Pending verification','Excluded','Excluded',money(type==='purchase'?amount:result.total)];values.forEach((v,i)=>text(p,v,201,562+i*18.5,83,8,i===5));
+  const snapshot=[result.count,result.units.filter(u=>u.repeat>0).length,data.countsVerified===false?'Not supplied':totalCabinets,data.countsVerified===false?'Not supplied':totalHardware+' (estimate)','Excluded',state.status+' quantities'];snapshot.forEach((v,i)=>text(p,v,438,562+i*18.5,126,8,i===5));
   // Approved specification wording from the supplied Garden Villas, Sunset Ridge,
   // and Gracious Manor proposals. Finish names still come from the selected items.
   const specifications=[...(data.specifications||['HDF','Plywood with maple finish','Plywood','DTC soft-close','Solid wood dovetailed','Undermount soft-close']),finishes.join(', ')];specifications.forEach((v,i)=>text(p,v,215,701+i*14,348,7));
   text(p,state.quoteId+' | '+state.status+' | Valid until '+shortDate(state.validUntil)+' | Schedule '+(index+1)+'/'+pages,29,804,536,8);
-  text(p,data.label?data.label+' | '+data.basis:'Cabinets row includes all listed materials. Hardware counts are estimates, not added handle charges.',29,817,536,7);
+  text(p,data.label?data.label+' | '+data.basis:'Historical material-cost snapshot. Create a revised draft for current handle and delivery selling charges.',29,817,536,7);
  }
  // Details retain full descriptions and notes when narrow template cells must abbreviate.
  const needsDetails=state.notes.trim()||state.customer.length>35||state.project.length>40||rows.some(r=>r.unit.name.length>20||r.sku.length>18);
  if(type!=='customer'&&(type==='internal'||needsDetails)){const detail=await PDFDocument.load(await generateInternalReport(PDFLib,data,state,type));const copied=await doc.copyPages(detail,detail.getPageIndices());copied.forEach(p=>doc.addPage(p))}
  if(type==='customer')addAcceptancePage(doc,PDFLib,state,result,{totalCabinets:data.countsVerified===false?null:totalCabinets,totalHardware:data.countsVerified===false?null:totalHardware,finishes,font,bold,gold,ink});
- if(type!=='customer'){const [closing]=await doc.copyPages(template,[3]);doc.addPage(closing);stamp(closing,false,true);}
+
  if(type!=='purchase'&&state.tax?.enabled){
   const p=doc.addPage([595.5,842.25]);let y=790;
   const line=(s,b=false)=>{p.drawText(safe(s),{x:34,y,size:10,font:b?bold:font,color:ink});y-=22;};
@@ -55,8 +59,9 @@ export async function generateQuote(PDFLib,data,input,type='customer',templateBy
   line('Taxable supply subtotal: '+money(result.sale));line('Sales tax: '+money(result.tax.amount));line('Customer total: '+money(result.total),true);
   line('Standard taxable goods estimate. Exemptions and installation are not evaluated.');
  }
+ if(type!=='customer'){const [closing]=await doc.copyPages(template,[3]);doc.addPage(closing);stamp(closing,false,true);}
  doc.setTitle((type==='customer'?'Cabinet proposal':type==='internal'?'Internal costing':'Purchase schedule')+' - '+state.project);doc.setAuthor(state.preparedBy||'Vulpine');doc.setSubject(state.quoteId+' | Generated '+state.date+' | Valid until '+state.validUntil);
- return doc.save();
+ const letter=await PDFDocument.create();for(const p of doc.getPages()){const box=p.getMediaBox(),embedded=await letter.embedPage(p),scale=Math.min(612/box.width,792/box.height),page=letter.addPage([612,792]);page.drawPage(embedded,{x:(612-box.width*scale)/2,y:(792-box.height*scale)/2,width:box.width*scale,height:box.height*scale});}return letter.save();
 }
 function addAcceptancePage(doc,PDFLib,state,result,{totalCabinets,totalHardware,finishes,font,bold,gold,ink}){
  const {rgb}=PDFLib,width=595.5,height=842.25,page=doc.addPage([width,height]);
@@ -125,7 +130,7 @@ export async function generateInternalReport(PDFLib,data,state,type='customer'){
  newPage();text(state.project,19,true);text([state.customer&&'Prepared for: '+state.customer,state.email&&'Recipient: '+state.email,state.preparedBy&&'Prepared by: '+state.preparedBy].filter(Boolean).join('\n'));text('Status: '+state.status+' | Unit instances: '+result.count,10,true);y-=8;
  if(type==='internal'){pair('Purchase cost',money(result.purchase));pair('Selling total',money(result.sale));pair('Gross profit',money(result.profit),true);pair('Target / realized margin',state.margin+'% / '+result.actualMargin.toFixed(2)+'%')}
  else pair(type==='purchase'?'Purchase total':'Quote total',money(type==='purchase'?result.purchase:result.total),true);
- text('Quantities are '+state.status.toLowerCase()+'. Freight, assembly and installation are excluded unless listed. Sales tax is included only when enabled. Prices in USD.',9);y-=12;
+ text('Quantities are '+state.status.toLowerCase()+'. Assembly and installation excluded. Freight supplier costs appear only as explicit material lines. This is an internal historical cost worksheet. Prices in USD.',9);y-=12;
  for(const unit of result.units.filter(u=>u.repeat>0)){
   room(100);text(unit.name+' | '+unit.repeat+' unit'+(unit.repeat===1?'':'s'),14,true);
   const cols=[42,312,370,452,528];

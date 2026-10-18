@@ -1,3 +1,4 @@
+import {customerIssues} from '../src/proposal-policy.mjs';
 import {planReviewWarnings,draftExportState} from './draft-export.mjs';
 import {verifyTax} from '../tax-provider.mjs';
 import {randomUUID,createHash} from 'node:crypto';
@@ -12,8 +13,9 @@ import {readPricingMemory} from './memory.mjs';
 import {prepareSource} from './sources.mjs';
 
 const hash=value=>createHash('sha256').update(value).digest('hex');
-const writes=new Set(['delete_bid','delete_project_quote','create_bid_job','set_unit_mix','update_bid_items','save_bid','export_bid','save_bid_to_project','set_bid_margin','set_project_quote_margin']);
+const writes=new Set(['set_bid_details','delete_bid','delete_project_quote','create_bid_job','set_unit_mix','update_bid_items','save_bid','export_bid','save_bid_to_project','set_bid_margin','set_project_quote_margin']);
 const descriptions={
+ set_bid_details:'Set verified GC, project counts, delivery/finish evidence, construction, customer scope sections and approved charge overrides on the current bid. Source data must support every field. Missing facts remain draft errors; never invent an exemption or tax lookup.',
  delete_bid:'Permanently delete your Auto Bid draft and its revisions/exports at the current revision. Read get_bid_job first. Active runs block deletion. Retains audit metadata. Only delete bids the user asks to remove.',
  delete_project_quote:'Permanently delete one saved shared Pricing quote and its saved PDFs/Excel/revisions, at the current revision. Read get_project_quote first. Other quotes and projects are retained. Only delete quotes the user asks to remove.',
  set_bid_margin:'Set the user-requested gross profit margin percentage (whole number 1–50, e.g. 25 means 25%) on your bid draft. Read its current revision first. Preserves catalog costs and quantities; marks draft unsaved. Then price_bid, save_bid and export_bid as needed. Never infer a new margin from source documents.',
@@ -32,9 +34,9 @@ const descriptions={
  price_bid:'Calculate cents using the existing immutable cabinet pricing engine and human-selected margin.',
  validate_bid:'Check the existing engine rules plus source and review exceptions. Plan-derived human-review warnings can remain while exporting a saved priced-scope-only draft; they do not block export_bid. Final customer submission always requires human approval.',
  save_bid:'Persist the draft at the expected revision. Saving does not approve final pricing or authorize sending.',
- export_bid:'Generate a priced-scope-only draft PDF or Excel workbook. Plan quantity review warnings do not block draft export and remain in the document. First save_bid at the current revision. Pass scope_notes to document unresolved quantities, finishes, supplier pricing and exclusions; never silently substitute products. Returns an expiring download link. Does not send the proposal.'
+ export_bid:'Generate a priced-scope-only draft PDF or Excel workbook. Plan quantity review warnings do not block draft export and remain in the document. First save_bid at the current revision. Pass type draft to preserve incomplete work, with specific missing-field errors; customer export requires verified project and tax information. Use scope_notes to document unresolved quantities, finishes, supplier pricing and exclusions; never silently substitute products. Returns an expiring download link. Does not send the proposal.'
 };
-export function createBidTools({workspace,store,catalogs,template,publicUrl,env=process.env}){
+export function createBidTools({workspace,store,catalogs,template,signatureBytes=null,publicUrl,env=process.env}){
  const hashes=Object.fromEntries(Object.entries(catalogs).map(([id,data])=>[id,hash(JSON.stringify(data))]));
  const get=async(actor,id)=>{const value=await store.get(actor,id);if(value.catalog_hash!==hashes[value.state.supplier||'hci'])throw new BidError('CATALOG_CHANGED','Catalog changed since this bid was created. Human repricing review required.');return value;};
  const checkEvidence=(job,e)=>{
@@ -59,6 +61,7 @@ export function createBidTools({workspace,store,catalogs,template,publicUrl,env=
      try{result=await workspace.delete(actor,a.quote_id,a.expected_revision);}catch(e){if(e.status===404)throw new BidError('NOT_FOUND','Quote not found or access denied.');if(e.status===409)throw new BidError('REVISION_CONFLICT',e.message);throw e;}
      break;
     }
+    case 'set_bid_details':result=await mutate(actor,a,name,j=>{for(const key of ['customer','projectInfo','charges','customerSections','tax'])if(a[key]!==undefined)j.state[key]=a[key];j.state.pricingPolicy=2;});break;
     case 'set_bid_margin':result=await mutate(actor,a,name,j=>{j.state.margin=a.margin;});break;
     case 'set_project_quote_margin':{
      if(!workspace)throw new BidError('WORKSPACE_UNAVAILABLE','Project storage is unavailable.');
@@ -88,22 +91,22 @@ export function createBidTools({workspace,store,catalogs,template,publicUrl,env=
     case 'get_project_quote':{
      if(!workspace)throw new BidError('WORKSPACE_UNAVAILABLE','Project storage is unavailable.');
      let q;try{q=await workspace.get(actor,a.quote_id);}catch(e){if(e.status===404)throw new BidError('NOT_FOUND','Quote not found or access denied.');throw e;}
-     result={quote_id:q.id,revision:q.revision,archived:!!q.deleted_at,state:q.state,documents:await workspace.exports(actor,q.id)};break;
+     result={quote_id:q.id,revision:q.revision,archived:!!q.deleted_at,state:q.state,calculation:calculateProject(catalogs[q.state.supplier||'hci'],q.state),missingFields:customerIssues(catalogs[q.state.supplier||'hci'],q.state,calculateProject(catalogs[q.state.supplier||'hci'],q.state)),documents:await workspace.exports(actor,q.id)};break;
     }
     case 'save_bid_to_project':{
      if(!workspace)throw new BidError('WORKSPACE_UNAVAILABLE','Project storage is unavailable.');
      const j=current;if(j.revision!==a.expected_revision)throw new BidError('REVISION_CONFLICT','Bid changed. Reload before saving to a project.');
      if(!j.saved)throw new BidError('UNSAVED_DRAFT','Save the bid first.');
-     const all=issues(j).filter(value=>!planReviewWarnings.has(value));if(all.length)throw new BidError('VALIDATION_FAILED',all.join(' '));verifyTax(j.state.tax,env);
+     const all=issues(j).filter(value=>!planReviewWarnings.has(value));if(all.length)throw new BidError('VALIDATION_FAILED',all.join(' '));if(a.type==='customer'){const missing=customerIssues(data,j.state,calculateProject(data,j.state));if(missing.length)throw new BidError('VALIDATION_FAILED',missing.join(' '));verifyTax(j.state.tax,env);}
      const exportState=draftExportState(j,a.scope_notes);
-     const bytes=Buffer.from(await generateQuote(PDFLib,data,exportState,'customer',template));
+     const bytes=Buffer.from(await generateQuote(PDFLib,data,exportState,'draft',template,new Date(),{signatureBytes}));
      const ref=await workspace.save(actor,{...exportState,_agent:{job_id:j.id,revision:j.revision,provenance:j.provenance,exceptions:j.exceptions}},null);
-     const documentId=await workspace.addExport(actor,ref,'customer','pdf',bytes);
+     const documentId=await workspace.addExport(actor,ref,'draft','pdf',bytes);
      result={quote_id:ref.id,revision:ref.revision,url:'https://backoffice.vulpine.llc/api/cabinet-pricing/index.html?quote='+ref.id,document_id:documentId};break;
     }
     case 'create_bid_job':{
      const now=new Date().toISOString(),jobId=randomUUID();
-     result=await store.create(actor,{id:jobId,revision:1,state:{version:2,supplier,project:a.project,status:'Tentative',quoteId:'VP-'+jobId.slice(0,8).toUpperCase(),...quoteDates(),customer:'',email:'',preparedBy:'Daniel Cruz',notes:'Agent-prepared draft. Human approval required before customer submission.',margin:a.margin,comparison:false,units:[]},sources:[{id:randomUUID(),kind:'instruction',name:'User instructions',sha256:hash(a.instruction),text:a.instruction}],provenance:[],exceptions:[],catalog_hash:catalogHash,saved:false,created_at:now,updated_at:now});break;
+     result=await store.create(actor,{id:jobId,revision:1,state:{version:2,pricingPolicy:2,supplier,project:a.project,status:'Tentative',quoteId:'VP-'+jobId.slice(0,8).toUpperCase(),...quoteDates(),customer:'',email:'',preparedBy:'Daniel Cruz',notes:'Agent-prepared draft. Human approval required before customer submission.',margin:a.margin,comparison:false,units:[]},sources:[{id:randomUUID(),kind:'instruction',name:'User instructions',sha256:hash(a.instruction),text:a.instruction}],provenance:[],exceptions:[],catalog_hash:catalogHash,saved:false,created_at:now,updated_at:now});break;
     }
     case 'get_bid_job':result=current;break;
     case 'extract_takeoff':{
@@ -126,7 +129,7 @@ export function createBidTools({workspace,store,catalogs,template,publicUrl,env=
       const source=checkEvidence(j,u.evidence),unitId=existing?.id||randomUUID();
       j.provenance=j.provenance.filter(p=>p.unit_id!==unitId||p.sku!==null);j.provenance.push({unit_id:unitId,sku:null,evidence:u.evidence});
       if(source.kind==='plan')j.exceptions.push('Plan-derived unit mix requires human review.');
-      return{id:unitId,name:u.name,repeat:u.repeat,defaultLi:u.defaultLi,auto:existing?.auto??(data.autoToe!==false),items:existing?.items??[]};
+      return{id:unitId,name:u.name,repeat:u.repeat,kind:u.kind||existing?.kind,areaId:u.areaId||existing?.areaId,areas:u.areas||existing?.areas,defaultLi:u.defaultLi,auto:existing?.auto??(data.autoToe!==false),items:existing?.items??[]};
      });
     });break;
     case 'update_bid_items':result=await mutate(actor,a,name,j=>{
@@ -137,19 +140,19 @@ export function createBidTools({workspace,store,catalogs,template,publicUrl,env=
       if(!lookup(data,i.li,i.sku)||cost(data,i.li,i.sku)===null)throw new BidError('UNKNOWN_SKU','SKU unavailable in the selected finish: '+i.sku);
       const source=checkEvidence(j,i.evidence);j.provenance.push({unit_id:u.id,sku:i.sku,evidence:i.evidence});
       if(source.kind==='plan')j.exceptions.push('Plan-derived quantities require human review.');
-      return{sku:i.sku,li:i.li,qty:i.qty};
+      return{sku:i.sku,li:i.li,qty:i.qty,...(i.handleCount!==undefined?{handleCount:i.handleCount}:{}),...(i.handlesIncluded?{handlesIncluded:true,handleInclusion:i.handleInclusion}:{}),...(i.assemblyId?{assemblyId:i.assemblyId}:{})};
      });
     });break;
-    case 'price_bid':{const r=calculateProject(data,current.state);result={purchase:r.purchase,sale:r.sale,profit:r.profit,count:r.count,margin:r.margin,issues:r.issues};break;}
-    case 'validate_bid':{const all=issues(current);result={valid:all.length===0,issues:all,human_approval_required:true};break;}
+    case 'price_bid':{const r=calculateProject(data,current.state),missing=customerIssues(data,current.state,r);result={purchase:r.purchase,sale:r.sale,profit:r.profit,count:r.count,margin:r.margin,issues:r.issues,costsComplete:r.costsComplete,profitBasis:r.profitBasis,total:r.total,tax:r.tax,charges:r.charges,customerReady:missing.length===0,missingFields:missing};break;}
+    case 'validate_bid':{const all=[...new Set([...issues(current),...customerIssues(data,current.state,calculateProject(data,current.state))])];result={valid:all.length===0,issues:all,human_approval_required:true};break;}
     case 'save_bid':result=await store.mutate(actor,a.job_id,a.expected_revision,name,j=>{j.saved=true;});break;
     case 'export_bid':{
      const j=current;if(j.revision!==a.expected_revision)throw new BidError('REVISION_CONFLICT','Bid changed. Reload before export.');
      const all=issues(j).filter(value=>!planReviewWarnings.has(value));if(all.length)throw new BidError('VALIDATION_FAILED',all.join(' '));
      if(!j.saved)throw new BidError('UNSAVED_DRAFT','Save the draft before exporting.');
-     verifyTax(j.state.tax,env);
+     if(a.type==='customer'){const missing=customerIssues(data,j.state,calculateProject(data,j.state));if(missing.length)throw new BidError('VALIDATION_FAILED',missing.join(' '));verifyTax(j.state.tax,env);}
      const exportState=draftExportState(j,a.scope_notes);
-     const bytes=a.format==='xlsx'?XLSX.write(createWorkbook(XLSX,data,exportState),{type:'buffer',bookType:'xlsx',compression:true}):Buffer.from(await generateQuote(PDFLib,data,exportState,a.type,template));
+     const bytes=a.format==='xlsx'?XLSX.write(createWorkbook(XLSX,data,exportState),{type:'buffer',bookType:'xlsx',compression:true}):Buffer.from(await generateQuote(PDFLib,data,exportState,a.type,template,new Date(),{signatureBytes}));
      const token=randomUUID()+randomUUID(),expires=Date.now()+15*60*1000,filename=j.state.quoteId+'_'+a.type+'_DRAFT.'+a.format,mime=a.format==='pdf'?'application/pdf':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
      await store.putExport(actor,j,{id:hash(token),expires,filename,mime,bytes});
      result={url:new URL('downloads/'+token,publicUrl).href,filename,mime_type:mime,expires_at:new Date(expires).toISOString(),sha256:hash(bytes)};break;
@@ -158,9 +161,9 @@ export function createBidTools({workspace,store,catalogs,template,publicUrl,env=
    await store.audit(actor,name,a.job_id??a.quote_id??result?.id??null,result?.revision??null);
    return outputs[name].parse({ok:true,data:result});
   }catch(e){
-   const code=e instanceof BidError?e.code:e.name==='ZodError'?'INVALID_INPUT':'INTERNAL_ERROR';
+   const code=e instanceof BidError?e.code:e.status===422?'VALIDATION_FAILED':e.name==='ZodError'?'INVALID_INPUT':'INTERNAL_ERROR';
    if(actor?.sub&&actor?.org)await store.audit(actor,name,null,null,code);
-   return{ok:false,error:{code,message:e instanceof BidError?e.message:code==='INVALID_INPUT'?'Input does not match the strict tool schema.':'The operation could not be completed.',retryable:code==='REVISION_CONFLICT'}};
+   return{ok:false,error:{code,message:e instanceof BidError||e.status===422?e.message:code==='INVALID_INPUT'?'Input does not match the strict tool schema.':'The operation could not be completed.',retryable:code==='REVISION_CONFLICT'}};
   }
  }
  function server(actor){

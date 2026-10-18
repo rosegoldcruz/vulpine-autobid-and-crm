@@ -1,3 +1,4 @@
+import {projectCharges,freightItem} from './proposal-policy.mjs';
 import {taxSummary} from './tax.mjs';
 export const LINES=[['White Shaker','Shaker',2],['Grey Shaker','Shaker',2],['Dove White Slim Shaker','Shaker',2],['Modern Slate Shaker','Shaker',3],['Onyx Shaker','Shaker',3],['Signature Blue Shaker','Shaker',3],['Saige Green Slim Shaker','Shaker',3],['Mountain Timber Shaker','Shaker',4],['Euro Classic','Euro',2],['Euro Deluxe','Euro',3],['Euro Custom Deluxe','Euro',4]];
 export const money=c=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(c/100);
@@ -24,13 +25,19 @@ export function calculateUnit(data,unit,margin){
  return{...unit,entries,issues:[...new Set(issues)],purchase,sale,profit:sale-purchase};
 }
 export function calculateProject(data,state,margin=state.margin){
- const units=state.units.map(u=>calculateUnit(data,u,margin)),active=units.filter(u=>u.repeat!==0);
+ const units=state.units.map(u=>calculateUnit(data,u,margin));if(state.pricingPolicy===2)for(const u of units){u.sale-=u.entries.filter(freightItem).reduce((sum,r)=>sum+r.sale*r.qty,0);u.profit=u.sale-u.purchase;}const active=units.filter(u=>u.repeat!==0);
  const issues=active.flatMap(u=>u.issues.map(s=>u.name+': '+s));
  for(const u of active)if(!u.entries.length)issues.push(u.name+': add items or set repeat count to 0.');
  if(!active.length)issues.push('Include at least one unit with a positive repeat count.');
  const purchase=active.reduce((s,u)=>s+u.purchase*(whole(u.repeat)?u.repeat:0),0),sale=active.reduce((s,u)=>s+u.sale*(whole(u.repeat)?u.repeat:0),0);
  if(!Number.isSafeInteger(purchase)||!Number.isSafeInteger(sale))issues.push('Project amount exceeds the supported range.');
- const tax=taxSummary(state.tax,sale);if(tax.issue)issues.push(tax.issue);
+ const charges=state.pricingPolicy===2?projectCharges(data,state,units):null;
+ let cabinetSale=sale,customerSale=sale;
+ if(charges){customerSale=cabinetSale+charges.handles.amount+charges.freight.amount;for(const service of [charges.installation,charges.assembly]){if(service.status==='included'&&Number.isSafeInteger(service.amount)&&service.amount>=0)customerSale+=service.amount;else if(service.status!=='excluded')charges.issues.push('Assembly/installation must be priced and included, or expressly excluded.');}}
+ const taxableItems=charges?{cabinets:cabinetSale,handles:charges.handles.amount,freight:charges.freight.amount,installation:charges.installation.status==='included'?charges.installation.amount:0,assembly:charges.assembly.status==='included'?charges.assembly.amount:0}:null;
+ const tax=taxSummary(state.tax,customerSale,Date.now(),taxableItems,state.date);if(tax.issue&&state.tax?.enabled&&!charges)issues.push(tax.issue);
  if(tax.total!==null&&!Number.isSafeInteger(tax.total))issues.push('Tax-inclusive total exceeds the supported range.');
- return{units,issues,purchase,sale,tax,total:tax.total,profit:sale-purchase,count:active.reduce((s,u)=>s+(whole(u.repeat)?u.repeat:0),0),margin,actualMargin:sale?(sale-purchase)/sale*100:0};
+ const catalogFreight=active.reduce((sum,u)=>sum+u.entries.filter(freightItem).reduce((n,r)=>n+r.purchase*r.qty*u.repeat,0),0),knownSupplierTotal=purchase+(charges?(charges.handles.supplierCost??0)+(charges.freight.supplierCost??catalogFreight)-catalogFreight:0);
+ const costsComplete=!charges||(charges.handles.supplierCost!==null&&charges.freight.supplierCost!==null);
+ return{units,issues,purchase,knownSupplierTotal,costsComplete,profitBasis:costsComplete?'Known supplier costs':'Before unverified handle/freight supplier costs',sale:customerSale,cabinetSale,charges,taxableItems,tax,total:tax.total,profit:customerSale-knownSupplierTotal,count:active.reduce((s,u)=>s+(whole(u.repeat)?u.repeat:0),0),margin,actualMargin:customerSale?(customerSale-knownSupplierTotal)/customerSale*100:0};
 }

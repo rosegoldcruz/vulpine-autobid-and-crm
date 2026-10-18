@@ -1,3 +1,29 @@
+## 2026-10-18 — pricing proposal correction
+
+Pricing now has a shared policy for revised/new drafts: decorative handles at
+$3.33 each, shipping at $133 per actual apartment/named amenity area, separate
+supplier costs, and customer-ready field/finish/construction/transaction-tax gates.
+UI, MCP and saved calculation snapshots share the engine. Prepared PDFs retain
+approved artwork/schedule on Letter pages, wrap four customer scope sections,
+place the specifically approved private signature, leave customer signing blank,
+and keep closing artwork final. Issued records reject edits; revisions are additive.
+
+The owner selected VP-D9C7A18D and VP-FF0FE5BA as regression records (these are
+saved Auto Bid jobs). Added shared Pricing drafts with -R1 suffix; originals,
+9 pre-existing shared quotes and 11 stored exports were verified unchanged.
+Private recovery: /opt/vulpine-backups/pricing-proposals-20261018T170419Z.
+Final PDFs and evidence: /opt/output/pricing-revised-20261018 (private).
+
+These are INTERNAL drafts, not final compliant customer bids: Bonner Springs
+lacks GC/delivery evidence and priced Brighton Pearl/White two-tone mapping;
+Dawson specifies KITH frameless Maple Forestwood/White Oak Sand but the saved
+HCI framed baseline is ineligible. Source-supported GC and partial Dawson
+address are retained. Neither has completed transaction tax; credentials are
+unconfigured. Preserve missing inputs explicitly rather than inventing them.
+No customer communication was sent. /home and Vulpine Supply remain untouched.
+
+---
+
 ## 2026-10-18 — completed first-party consolidation
 
 The owner's complete consolidation request has been executed at
