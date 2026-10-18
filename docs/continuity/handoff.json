@@ -1,11 +1,12 @@
 {
-  "last_change": "Checked server-to-Windows credential transfer reachability; owner then reported obtaining the credential, so stopped without transferring files or changing configuration.",
+  "last_change": "Verified separate Hermes server credential and prepared Windows profile connection instructions for the backoffice authenticated endpoint. No Windows configuration modified from this server.",
   "verification": [
-    "Windows LAN IP 192.168.0.174 port 22 timed out from server. Matching online Windows Tailscale peer was found, but its SSH port also timed out. No credentials printed and no files sent.",
-    "Owner reported i got it; Windows environment installation and MCP runtime remain owner-side and unverified. No /home, Vulpine Supply or application changes."
+    "Existing private Hermes credential authenticated MCP initialize/tools-list successfully and returned 28 tools, without printing its value.",
+    "Inspected current server Hermes configuration and official Hermes MCP configuration reference: remote url/headers support profile-scoped environment references. Screenshot Windows profile reports no configured MCP and probes an older OAuth endpoint."
   ],
   "decisions": [
-    "Owner authorized copying the OpenCode credential to their Windows PC, then reported having it before transfer. Stop the transfer attempt; direct masked entry, OpenCode restart and Windows initialize/tools-list verification."
+    "Owner requests Hermes connection on Windows Dell Precision. Use https://backoffice.vulpine.llc/api/mcp and Hermes identity credential, not the older api.vulpinehomes.com/bidding/mcp OAuth endpoint or Muse/OpenCode key.",
+    "Have Windows agent inspect its actual active profile/runtime, retrieve private credential over existing SSH access, keep token out of chat/logs/tracked configuration, and verify a registered MCP read of real projects. Remote Windows setup remains unverified until the client performs it."
   ],
   "open_work": [
     "Provision approved ZITADEL management authentication for actual directory, permission and settings administration; own agent grant inspection already works.",
@@ -21,10 +22,10 @@
     "Bonner complete delivery address unavailable in attached job sources, queried tracker records or accessible Drive search. Dawson complete delivery point/ZIP and compliant specified frameless finish pricing unavailable; Bonner specified two-tone pricing unresolved. TaxJar transaction credential or applicable verified exemption evidence is unavailable. Narrow source questions were submitted to the owner.",
     "Exact original temporary Muse PDF download files are absent from the live table; available backups predate the relevant exports. Collection labels regenerated saved-state drafts separately from actual copied revisions."
   ],
-  "next_action": "Owner finishes secure Windows environment entry, restarts OpenCode and asks the Windows agent to verify initialize/tools-list.",
-  "recorded_at": "2026-10-18T19:57:04.630Z",
+  "next_action": "Windows Hermes configures its active profile with the backoffice authenticated endpoint and profile-scoped Hermes credential, reloads MCP and invokes list_projects through a registered tool.",
+  "recorded_at": "2026-10-18T20:57:17.487Z",
   "snapshot": {
-    "head": "77fc00fdf8d335d0a8fe52bb37b0603a63000b47",
+    "head": "550932a4437d788e9201fa190777f29b5ca4032b",
     "branch": "codex/cabinet-brain-integration-recovery",
     "worktree": "",
     "sources": {
@@ -62,7 +63,7 @@
   },
   "vault": {
     "project": "vulpine-platform",
-    "session_id": "661e80d4-0442-46f2-88e7-94d4b5b7996e",
-    "record": "sources/aeon-sessions/vulpine-platform/661e80d4-0442-46f2-88e7-94d4b5b7996e.md"
+    "session_id": "b45cfb17-c6ea-4b3e-9222-4f1dec22f133",
+    "record": "sources/aeon-sessions/vulpine-platform/b45cfb17-c6ea-4b3e-9222-4f1dec22f133.md"
   }
 }
