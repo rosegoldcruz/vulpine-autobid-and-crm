@@ -12,7 +12,6 @@ const outfit = Outfit({ subsets: ["latin"], weight: ["400", "500", "600", "700",
 export const metadata: Metadata = {
   title: 'Vulpine Command Center',
   description: 'Vulpine Command Center — CRM, Bid Engine, and revenue operations platform for cabinet contracting.',
-  generator: 'v0.app',
   icons: {
     icon: [
       {

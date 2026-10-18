@@ -154,3 +154,20 @@ desktop app itself has not been enrolled or verified: this session has no live
 control of its account/window or secure credential input. See the integration
 document for the exact endpoint and non-secret setup request. No Muse CLI was
 installed; the screenshot identifies the desktop product rather than Muse Code.
+
+
+### Generator attribution removal and Muse secure enrollment check
+
+Removed the third-party generator metadata property from the backoffice layout.
+Production deployment `dpl_9AmSQknpSbtud5JKbYoJnJo9GMm5` passed its build. Live
+`/signed-out` and `/access-denied` return HTTP 200 with the Vulpine title and no
+generator meta tags or removed-vendor domain references. Repository source scan
+found no further vendor attribution or named integration dependencies. The
+existing Vulpine favicon and all unrelated infrastructure remain unchanged.
+
+The owner supplied Muse's secure credential-entry URL. Its decoded specification
+restricts the connector host to backoffice.vulpine.llc and places the access
+credential in an authentication header. The URL redirects from agent.meta.ai to
+muse.ai, then returns HTTP 401 to this execution session. No key was submitted.
+Enrollment requires the owner's signed-in Muse browser; keep the one-time URL,
+its session identifier, and all private credentials out of repository memory.
