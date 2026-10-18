@@ -1,14 +1,10 @@
 {
-  "last_change": "Created private /root/MetaMuse-PDFs collection: 10 explicitly labeled recreated internal Muse drafts and 3 unchanged corrected-revision PDFs, with CSV index and provenance/SHA256 manifest. No application source or database changes.",
+  "last_change": "Located existing private OpenCode credential for owner Windows setup; verified authentication without printing or transferring its value.",
   "verification": [
-    "Inspected current pricing exports and bid audit: ten saved jobs owned by mcp:muse; original temporary bid_exports table has no retained PDF bytes. No OpenCode-owned exports identified.",
-    "Available dedicated database backups end before the relevant exports. Checked server PDF copies without accessing /home or changing Vulpine Supply.",
-    "All 13 output PDFs parsed successfully and passed independent SHA256 readback checks; total 63970433 bytes. Existing three corrected PDFs copied byte-identically. New drafts have RECREATED-DRAFT filenames and no added signatures.",
-    "Output directory mode 0700 and PDF/index/manifest mode 0600. No original records, stored exports or source PDFs overwritten; no sending or database export creation."
+    "Existing /root/.config/vulpine-mcp/clients/opencode.json is mode 0600. Authenticated initialize/tools-list completed using the credential internally, without displaying it. No credential rotation, configuration edits or database writes."
   ],
   "decisions": [
-    "Owner requested all MetaMuse PDFs in the server home folder. Actual account home is /root; use /root/MetaMuse-PDFs and leave /home untouched.",
-    "Original temporary download bytes are unavailable. Recreated drafts use current saved bid state and current pricing rules; do not call them originals or exact historical reproductions. Keep existing Codex-corrected PDFs in a separate subfolder and record provenance."
+    "Owner asks how to obtain the Windows OpenCode credential. Direct the owner to open the private OpenCode JSON in their server-connected editor and copy only the token value into their separate masked PowerShell prompt. Never post the token in chat. Server home and Windows account paths differ."
   ],
   "open_work": [
     "Provision approved ZITADEL management authentication for actual directory, permission and settings administration; own agent grant inspection already works.",
@@ -24,10 +20,10 @@
     "Bonner complete delivery address unavailable in attached job sources, queried tracker records or accessible Drive search. Dawson complete delivery point/ZIP and compliant specified frameless finish pricing unavailable; Bonner specified two-tone pricing unresolved. TaxJar transaction credential or applicable verified exemption evidence is unavailable. Narrow source questions were submitted to the owner.",
     "Exact original temporary Muse PDF download files are absent from the live table; available backups predate the relevant exports. Collection labels regenerated saved-state drafts separately from actual copied revisions."
   ],
-  "next_action": "Use /root/MetaMuse-PDFs to review the collection. Exact original Muse PDFs require another retained copy because their temporary download bytes expired. Preserve existing pricing-data blockers.",
-  "recorded_at": "2026-10-18T19:47:28.445Z",
+  "next_action": "Owner copies the private OpenCode token into the masked Windows PowerShell prompt, restarts OpenCode, and verifies tools there. Windows ipconfig is unrelated to credential retrieval.",
+  "recorded_at": "2026-10-18T19:54:53.940Z",
   "snapshot": {
-    "head": "9cc5886cb835e32828f785e4375706ad2a0bd941",
+    "head": "94daae34b9a602b341cc85e764e21c7e4613cdca",
     "branch": "codex/cabinet-brain-integration-recovery",
     "worktree": "",
     "sources": {
@@ -65,7 +61,7 @@
   },
   "vault": {
     "project": "vulpine-platform",
-    "session_id": "79e15cd3-f44c-42db-80cd-7801fec9ac06",
-    "record": "sources/aeon-sessions/vulpine-platform/79e15cd3-f44c-42db-80cd-7801fec9ac06.md"
+    "session_id": "95850289-c7bc-4d25-a6dc-6fdaca52c252",
+    "record": "sources/aeon-sessions/vulpine-platform/95850289-c7bc-4d25-a6dc-6fdaca52c252.md"
   }
 }
