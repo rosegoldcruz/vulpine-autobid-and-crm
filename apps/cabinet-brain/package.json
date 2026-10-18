@@ -1,0 +1,51 @@
+{
+  "name": "react-example",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "exec python3 scripts/next-lifecycle.py dev",
+    "build": "next build",
+    "start": "exec python3 scripts/next-lifecycle.py start",
+    "clean": "rm -rf .next",
+    "lint": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@google/genai": "^2.4.0",
+    "@types/adm-zip": "^0.5.8",
+    "adm-zip": "^0.6.1",
+    "canvas": "^3.2.3",
+    "dotenv": "^17.2.3",
+    "lucide-react": "^0.546.0",
+    "motion": "^12.23.24",
+    "next": "^15.5.27",
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^6.3.289",
+    "react": "^19.0.1",
+    "react-dom": "^19.0.1",
+    "recharts": "^3.10.1",
+    "server-only": "^0.0.1",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.14",
+    "@types/node": "^22.14.0",
+    "@types/react": "19.3.0",
+    "autoprefixer": "^10.4.21",
+    "playwright-core": "^1.63.0",
+    "tailwindcss": "^4.1.14",
+    "typescript": "~5.8.2",
+    "vitest": "^4.1.11"
+  },
+  "overrides": {
+    "sharp": "0.35.5",
+    "postcss": "8.5.28",
+    "source-map-js": "1.2.2"
+  },
+  "allowScripts": {
+    "canvas@3.2.3": true,
+    "protobufjs@7.6.6": true
+  }
+}
