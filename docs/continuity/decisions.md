@@ -71,3 +71,14 @@ organizational context for every root Codex workspace and full project restorati
 inside the registered checkout. Do not assign unrelated projects to this monorepo.
 Do not modify trust records or bypass the review. Reviewed completion remains the
 agent's responsibility. Other accounts/clients are not automatically covered.
+
+## 2026-10-18 — all agent clients in scope, read-only initial release
+
+The owner explicitly included GitHub, Qwen, Muse, Claude, Codex, ChatGPT, MetaMuse,
+Copilot, Grok, Grokbot, OpenCode, Cursor and Hermes. Configure the actual host
+runtime rather than treating a model-provider endpoint as an MCP client. Use one
+authenticated backoffice endpoint with individually revocable, organization-scoped
+client credentials and existing operations read adapters. Initial tools cannot
+mutate records. Read-only was the assistant's proposed implementation choice;
+the owner expanded client scope and requested timing, without separately granting
+write access. Hosted/account/device integrations remain open until verified there.

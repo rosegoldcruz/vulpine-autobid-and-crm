@@ -1,39 +1,41 @@
 {
-  "last_change": "Installed and verified server-wide root Codex AEON instructions; added and tested supported SessionStart loader/definition and repeatable installer. Inventoried the existing vault for the owner. Hook execution requires explicit Codex trust; global instructions are active and observed in live context.",
+  "last_change": "Implemented and deployed read-only backoffice MCP; configured six local clients with private per-client credential files and stdio adapter. Recorded all requested agent surfaces and remaining account/device/runtime onboarding.",
   "verification": [
-    "Codex CLI 0.163.0: hooks stable/enabled.",
-    "codex debug prompt-input: global AEON instructions found; also observed in live conversation instruction context.",
-    "node --test scripts/continuity.test.mjs scripts/vault-memory.test.mjs scripts/quartz-privacy.test.mjs scripts/codex-session-start.test.mjs: 25 passed, 0 failed.",
-    "node --check scripts/codex-session-start.mjs and scripts/install-codex-memory.mjs: passed.",
-    "Explicit startup loader at /opt returned organizational memory without wrong-project assignment; inside /opt/vulpine-platform it restored prior results and returned a session ID.",
-    "Actual automatic SessionStart execution is not certified until the owner reviews/trusts the hook. No trust bypass or model-agent invocation was used."
+    "corepack pnpm exec tsx --test tests/*.test.ts: 41 passed, zero failed.",
+    "corepack pnpm --filter @vulpine/backoffice typecheck: passed.",
+    "Targeted eslint for lib/mcp.ts and app/api/mcp/route.ts: passed.",
+    "node --check scripts/agent-mcp.mjs: passed.",
+    "Vercel production build/deploy dpl_BCBP9ksQLJGUPcfXeA2111qy6Lcu: READY, aliased backoffice.vulpine.llc. Initial deployment returned fail-closed 503 before registry redeployment; final unauthenticated probe returned 401.",
+    "Official SDK stdio client probes for codex, claude, qwen, opencode, copilot and hermes: initialize, tools/list, list_workspaces and real read_workspace projects passed for every adapter; records were not printed.",
+    "opencode mcp list: vulpine-backoffice connected. Codex and Copilot native config inspection: enabled. No actual model-session calls tested."
   ],
   "decisions": [
-    "Use supported global AGENTS.md for account-wide discovery and fallback, and a supported SessionStart hook for automatic loading after trust.",
-    "Use organizational context outside registered projects; never silently treat another repository as Vulpine Platform.",
-    "Preserve existing project/user authorization, private data boundaries and reviewed completion. No trust-store or sandbox changes."
+    "Owner scope includes all named agent surfaces; avoid claiming account/device integrations from local config changes.",
+    "Use read-only explicit projects/CRM tools, organization-scoped short-lived upstream GET claims, per-client machine credential digests and private local credential files.",
+    "Deploy from isolated clean HEAD plus task files to exclude existing tracker migration; preserve staged and unstaged unrelated work."
   ],
   "open_work": [
-    "Owner must review/trust the AEON SessionStart hook in Codex /hooks before claiming automatic hook execution. Global instructions already load and require fallback invocation.",
-    "Other Unix accounts/Codex homes and unrelated repositories need their own supported onboarding.",
-    "Foundation/company notes are dated and should be revalidated when relevant; vault is not a complete server map.",
-    "Preserve unrelated staged tracker migration and other existing edits."
+    "Enroll hosted ChatGPT/Claude and actual Cursor device/account; OAuth discovery/onboarding is not implemented by the bearer-only first release.",
+    "Identify actual Grok/Grokbot host configurations; no standalone executables or root config directories found on this server.",
+    "GitHub-hosted coding agents need their own environment setup; GitHub Copilot CLI is configured locally.",
+    "Restart existing clients to discover new tools and verify model-session tool selection.",
+    "Preserve unrelated tracker migration and runtime files."
   ],
   "blockers": [
-    "Codex non-managed hook review/trust is a required human control; not bypassed."
+    "No account/device configuration access established for ChatGPT hosted connector, Cursor or separate Grok/Grokbot runtimes. Qwen/Claude user settings exist, but executables are not on PATH; their transports were verified through the configured adapter rather than native CLI sessions."
   ],
-  "next_action": "Review/trust the AEON SessionStart hook via /hooks in root Codex, then verify its context on a new session. Global instructions provide the active fallback. Continue selected project work using verified memory and reviewed completion.",
-  "recorded_at": "2026-10-16T09:46:23.268Z",
+  "next_action": "Enroll remaining account/device/runtime surfaces through supported authentication, then run live discovery/read probes there and model-session tests. Commit and push reviewed task files and continuity, preserving unrelated tracker changes.",
+  "recorded_at": "2026-10-18T12:36:30.716Z",
   "snapshot": {
-    "head": "c506b8e0390631aed15733279340d0bc05a53b97",
+    "head": "ed56d57df0fea452edbf70d00d40c76183459a77",
     "branch": "codex/cabinet-brain-integration-recovery",
-    "worktree": " M .gitignore\n M AGENTS.md\n M docs/architecture/current-system-map.md\n M docs/continuity/current.md\n M docs/continuity/decisions.md\n M docs/continuity/sources.json\n M docs/continuity/vault-integration.md\n M docs/continuity/verification.md\n M pnpm-lock.yaml\nR  legacy/bids-tracker/.npmrc -> services/bids-tracker/.npmrc\nR  legacy/bids-tracker/README.monorepo.md -> services/bids-tracker/README.monorepo.md\nRM legacy/bids-tracker/db.js -> services/bids-tracker/db.js\nR  legacy/bids-tracker/ecosystem.config.js -> services/bids-tracker/ecosystem.config.js\nRM legacy/bids-tracker/extract.js -> services/bids-tracker/extract.js\nR  legacy/bids-tracker/integration-auth.js -> services/bids-tracker/integration-auth.js\nR  legacy/bids-tracker/package-lock.json -> services/bids-tracker/package-lock.json\nR  legacy/bids-tracker/package.json -> services/bids-tracker/package.json\nRM legacy/bids-tracker/profit.js -> services/bids-tracker/profit.js\nRM legacy/bids-tracker/public/app.js -> services/bids-tracker/public/app.js\nRM legacy/bids-tracker/public/index.html -> services/bids-tracker/public/index.html\nRM legacy/bids-tracker/public/style.css -> services/bids-tracker/public/style.css\nR  legacy/bids-tracker/scripts/reimport_uploads.js -> services/bids-tracker/scripts/reimport_uploads.js\nRM legacy/bids-tracker/server.js -> services/bids-tracker/server.js\nR  legacy/bids-tracker/test/dependency-compatibility.test.js -> services/bids-tracker/test/dependency-compatibility.test.js\nR  legacy/bids-tracker/test/integration-auth.test.js -> services/bids-tracker/test/integration-auth.test.js\nR  legacy/bids-tracker/test/upload-policy.test.js -> services/bids-tracker/test/upload-policy.test.js\nR  legacy/bids-tracker/upload-policy.js -> services/bids-tracker/upload-policy.js\nRM legacy/bids-tracker/workbook.js -> services/bids-tracker/workbook.js\n?? infra/codex/\n?? infra/deploy/README.md\n?? infra/deploy/check-next-processes.py\n?? infra/deploy/engine-runtime.override.yml\n?? infra/deploy/next-process-monitor.service\n?? infra/deploy/next-process-monitor.timer\n?? scripts/codex-session-start.mjs\n?? scripts/codex-session-start.test.mjs\n?? scripts/install-codex-memory.mjs\n?? services/bids-tracker/scripts/import-email-audit.js",
+    "worktree": " M .gitignore\n M apps/backoffice/.env.example\n M apps/backoffice/package.json\n M docs/architecture/current-system-map.md\n M docs/continuity/current.md\n M docs/continuity/decisions.md\n M pnpm-lock.yaml\nR  legacy/bids-tracker/.npmrc -> services/bids-tracker/.npmrc\nR  legacy/bids-tracker/README.monorepo.md -> services/bids-tracker/README.monorepo.md\nRM legacy/bids-tracker/db.js -> services/bids-tracker/db.js\nR  legacy/bids-tracker/ecosystem.config.js -> services/bids-tracker/ecosystem.config.js\nRM legacy/bids-tracker/extract.js -> services/bids-tracker/extract.js\nR  legacy/bids-tracker/integration-auth.js -> services/bids-tracker/integration-auth.js\nR  legacy/bids-tracker/package-lock.json -> services/bids-tracker/package-lock.json\nR  legacy/bids-tracker/package.json -> services/bids-tracker/package.json\nRM legacy/bids-tracker/profit.js -> services/bids-tracker/profit.js\nRM legacy/bids-tracker/public/app.js -> services/bids-tracker/public/app.js\nRM legacy/bids-tracker/public/index.html -> services/bids-tracker/public/index.html\nRM legacy/bids-tracker/public/style.css -> services/bids-tracker/public/style.css\nR  legacy/bids-tracker/scripts/reimport_uploads.js -> services/bids-tracker/scripts/reimport_uploads.js\nRM legacy/bids-tracker/server.js -> services/bids-tracker/server.js\nR  legacy/bids-tracker/test/dependency-compatibility.test.js -> services/bids-tracker/test/dependency-compatibility.test.js\nR  legacy/bids-tracker/test/integration-auth.test.js -> services/bids-tracker/test/integration-auth.test.js\nR  legacy/bids-tracker/test/upload-policy.test.js -> services/bids-tracker/test/upload-policy.test.js\nR  legacy/bids-tracker/upload-policy.js -> services/bids-tracker/upload-policy.js\nRM legacy/bids-tracker/workbook.js -> services/bids-tracker/workbook.js\n?? apps/backoffice/app/api/mcp/\n?? apps/backoffice/lib/mcp.ts\n?? docs/integrations/\n?? infra/deploy/README.md\n?? infra/deploy/check-next-processes.py\n?? infra/deploy/engine-runtime.override.yml\n?? infra/deploy/next-process-monitor.service\n?? infra/deploy/next-process-monitor.timer\n?? scripts/agent-mcp.mjs\n?? services/bids-tracker/scripts/import-email-audit.js\n?? tests/mcp.test.ts",
     "sources": {
       "AGENTS.md": "c51e08a8021528ff818e5f62620aae587530eeec275750b2d38c2771ef732460",
       "README.md": "7951ca56e47884a6a9b802d018e69ff82845ffcacf1877024fbd5cf094d55ec1",
       "package.json": "fafa60aeae85182092017dfc87134dabfa1df3484315a510e118b4d879566a49",
-      "docs/continuity/current.md": "d335bf0f9a442237ccfdad47ec0bb2e1f4d2bfeb4c21e7dcf6e3f3479578281d",
-      "docs/continuity/decisions.md": "55b64c99a0aec583deb955b22b8183d36b453b469b366adfe344375b6c457ab4",
+      "docs/continuity/current.md": "39961a2a08a5cafe827efd86f5fa1495b14756defaaefb751695ebe1d2d9a974",
+      "docs/continuity/decisions.md": "5c75dc2f108d21bb0081d62f5aec9e623f9d01b32011a5d8bb1941c0f42350d6",
       "docs/continuity/audit.md": "c849de622d00377d1fadd3ba41cda2933eb9370b6fa13c2baf53bf36c0c471b2",
       "docs/continuity/verification.md": "5daeea53454a06fcf3b928b1fd12c8f69448beb8fc31a75b441181cc57962f28",
       "docs/continuity/sources.json": "0380630765b71a413ac27edd875e120cf51f501232720ee130160cd1f885937b",
@@ -63,7 +65,7 @@
   },
   "vault": {
     "project": "vulpine-platform",
-    "session_id": "92fca19e-69cd-40c5-9b9f-0565581a6371",
-    "record": "sources/aeon-sessions/vulpine-platform/92fca19e-69cd-40c5-9b9f-0565581a6371.md"
+    "session_id": "27da1621-8397-4e19-8b3c-39681b880097",
+    "record": "sources/aeon-sessions/vulpine-platform/27da1621-8397-4e19-8b3c-39681b880097.md"
   }
 }

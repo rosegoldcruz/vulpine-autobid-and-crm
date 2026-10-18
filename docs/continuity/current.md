@@ -124,3 +124,20 @@ it. Global instructions require a fallback loader if hook context is absent.
 This supersedes the earlier no-hook-definition statement; completion still requires
 a reviewed end handoff. The vault's foundational notes are dated context, not a
 complete live inventory of all server projects.
+
+## 2026-10-18 — read-only agent access
+
+Backoffice now serves authenticated MCP at `/api/mcp` with `list_workspaces` and
+`read_workspace` for explicitly scoped projects/CRM reads. Each local agent has a
+separate bearer credential; production stores only digests in `MCP_CLIENTS_JSON`.
+The adapter at `scripts/agent-mcp.mjs` keeps raw credentials outside the repository.
+See `docs/integrations/agent-mcp.md` for configuration and verification boundaries.
+
+Production deployment `dpl_BCBP9ksQLJGUPcfXeA2111qy6Lcu` passed live initialization,
+tool listing and project reads through six client adapters (Codex, Claude Code,
+Qwen, OpenCode, GitHub Copilot CLI and Hermes); OpenCode's native MCP list also
+reported connected. This certifies transport/tool execution, not model behavior.
+Muse/MetaMuse are configured through OpenCode/Hermes. Desktop/web ChatGPT, Cursor,
+separate Grok/Grokbot and GitHub-hosted agents remain unenrolled/unverified; their
+actual account/device/runtime access is needed. This route does not implement
+OAuth onboarding. The separate pricing/bidding MCP service remains independent.
