@@ -1,21 +1,16 @@
 {
-  "last_change": "Added authenticated MCP Drive read/write for seven configured identities; folder uploads with large-file disk spooling, streamed downloads, batching, progress and session resume. Retired standalone Drive only; preserved Backoffice Drive and shared storage. Pricing deletion implemented and pushed separately as dfeab93.",
+  "last_change": "Repaired missing documents access-history schema with an idempotent migration and service migrate command; documented verified incomplete source/runtime consolidation and preserved Backoffice Drive and stored files.",
   "verification": [
-    "corepack pnpm test: 48 root tests plus documents 14, operations 10, Vision 4 and tracker 8 passed.",
-    "corepack pnpm typecheck: all packages, services and Backoffice passed. Targeted Backoffice ESLint passed.",
-    "Four Playwright Drive checks passed: desktop/mobile nested folder selection, read-only upload controls, and 3000-file progress/resume after 125 acknowledged files. Initial bulk assertion incorrectly assumed filesystem order; corrected to actual first pending path and reran all four.",
-    "Vercel production dpl_DxkqTmyQXx6U2xZ1T1JEdecTdvrz READY and aliased backoffice.vulpine.llc. Documents live release four changed source files match canonical hashes. Nginx validation passed.",
-    "drive.vulpine.llc returns 410; Backoffice Drive redirects unauthenticated users to sign-in; documents health 200. Standalone PM2 frontend removed, documents retained. QA ports 3113 and 3115 stopped.",
-    "All seven configured MCP identities discover 27 tools including vulpine_drive, delete_bid and delete_project_quote. Earlier live Muse upload/preview/download/delete, nested folder upload and unsafe manifest rejection passed; disposable fixtures removed.",
-    "Pricing commit dfeab93 pushed on its main branch; 26 pricing tests, Postgres integration and browser deletion/reload checks passed. Removed one explicitly labeled demo job and two Workspace QA quotes through authenticated tools; retained other bids.",
-    "Live 257 MiB upload succeeded; full-file streamed download exceeded a four-minute verification-client timeout. Unique verification folder removed afterward.",
-    "Repeated live 257 MiB upload passed, streamed download headers matched full size, one-MiB range readback SHA256 matched, service RSS grew about 4 MiB; unique verification folder deleted and absence verified."
+    "Documents runtime database initially returned PostgreSQL 42P01 for missing vault_ui.access_log; connection and root SFTP listing were healthy.",
+    "Applied SQL twice successfully; verified transactional access write/read/rollback; ran corepack pnpm --filter @vulpine/documents-service migrate with the running service environment successfully. Follow-up relation and query check passed.",
+    "Live authenticated documents root listing 200, access write 200, Recent 200 with 2500 bounded entries, and literal-backslash folder listing 200. No service restart or stored-file deletion.",
+    "corepack pnpm --filter @vulpine/documents-service typecheck passed; documents test suite 14 passed, zero failed. git diff --check passed.",
+    "Vercel production remains READY dpl_DxkqTmyQXx6U2xZ1T1JEdecTdvrz. Deployment file API Drive component SHA1 equals canonical source SHA1 0bc1c7aa53ca0f2b1116652392a259fca3d898f0 containing folder uploads and progress/resume. Existing browser tab cache not directly inspected.",
+    "Audited PM2 runtime paths, systemd working directories, Docker Compose labels/mount sources and Git roots without printing environments. Canonical platform consolidation remains incomplete; recorded actual consumers in docs/architecture/consolidation-status.md. No cleanup deletion performed."
   ],
   "decisions": [
-    "Explicit owner final instruction: preserve Backoffice Drive and stored files; retire only the standalone drive.vulpine.llc website. This supersedes the brief request to repair standalone auth.",
-    "Explicit owner final Drive scope is read and write for configured agents. Use scoped expiring transfer URLs without sharing master service credentials.",
-    "Support large folder selections and files above the old 250 MiB rejection using private disk spooling and 100-file batches; progress/resume retains remaining browser File objects only while the tab stays open.",
-    "Explicit owner requested UI and MCP bid deletion, with revision checks, existing write access, owner/organization boundaries, active-run protection and audit retention."
+    "Owner reiterated /opt/vulpine-platform as intended consolidated source and requested explanation of excess folders. Identify active release deployments, persistent state, vendor apps and unique edits before removal. Do not describe partial source copying as full consolidation.",
+    "Backoffice Drive and stored files remain preserved. Apply the missing access-history migration to the actual service database rather than masking Recent failures."
   ],
   "open_work": [
     "Provision approved ZITADEL management authentication for actual directory, permission and settings administration; own agent grant inspection already works.",
@@ -23,23 +18,24 @@
     "Enrol and verify hosted accounts/other-device clients separately; local transports do not configure hosted ChatGPT/Claude, other-device Cursor, standalone Grok/Grokbot or GitHub-hosted agents.",
     "Confirm actual model sessions invoke read_aeon_context; transport retrieval and startup hints alone are not model-session evidence.",
     "Assess the owner-reported prior chat credential exposure and rotate the affected identity through secure enrollment if the credential is still active; no raw value was supplied in the pasted transcript.",
-    "Resolve the private vault review queue against project evidence; preserve prior concurrent engineering open work."
+    "Resolve the private vault review queue against project evidence; preserve prior concurrent engineering open work.",
+    "Complete remaining source/history and release deployment consolidation before deleting proven redundant directories; active mounts and dirty old checkouts are recorded in the runtime audit."
   ],
   "blockers": [
     "ZITADEL management credential is absent. Inbox provider rejects the configured credential with HTTP 401. External hosted accounts/device sessions are not connected to this server tooling."
   ],
-  "next_action": "Refresh Backoffice Drive to load the deployed upload code, then upload the selected plan folder. Preserve unrelated continuity open work.",
-  "recorded_at": "2026-10-18T14:24:20.700Z",
+  "next_action": "Reload existing Backoffice Drive tab to obtain deployed controls. Use the verified consolidation audit for source reconciliation and service cutovers; preserve active mounts and unique uncommitted edits.",
+  "recorded_at": "2026-10-18T14:46:21.793Z",
   "snapshot": {
-    "head": "90b65ebf5871e4bf5e4cd673a9e68c0d0de9ee55",
+    "head": "9235057030dba285c906e6f496f8f25ba43e62f5",
     "branch": "codex/cabinet-brain-integration-recovery",
-    "worktree": " M .gitignore\n M apps/backoffice/components/cards/drive-section.tsx\n M apps/backoffice/lib/agent-access.ts\n M apps/backoffice/lib/mcp.ts\n M docs/architecture/current-system-map.md\n M docs/continuity/current.md\n M docs/continuity/decisions.md\n M docs/continuity/handoff.json\n M docs/integrations/agent-mcp.md\n M infra/nginx/vulpine-documents.conf\n M packages/sdk/src/index.ts\n M services/documents/.env.example\n M services/documents/README.md\n M services/documents/src/path.ts\n M services/documents/src/server.ts\n M services/documents/src/sftp.ts\n M services/documents/src/upload-storage.ts\n M services/documents/tests/download-limits.test.ts\n M services/documents/tests/path.test.ts\n M services/documents/tests/transfer-limits.test.ts\n?? apps/backoffice/lib/agent-drive.ts\n?? infra/nginx/drive-retired.conf\n?? tests/agent-drive.test.ts\n?? tests/drive-client-upload.test.ts\n?? tests/e2e/drive-upload-folder.spec.ts",
+    "worktree": " M docs/architecture/current-system-map.md\n M docs/continuity/current.md\n M docs/continuity/decisions.md\n M services/documents/README.md\n M services/documents/package.json\n?? docs/architecture/consolidation-status.md\n?? services/documents/db/\n?? services/documents/src/migrate.ts",
     "sources": {
       "AGENTS.md": "c51e08a8021528ff818e5f62620aae587530eeec275750b2d38c2771ef732460",
       "README.md": "7951ca56e47884a6a9b802d018e69ff82845ffcacf1877024fbd5cf094d55ec1",
       "package.json": "fafa60aeae85182092017dfc87134dabfa1df3484315a510e118b4d879566a49",
-      "docs/continuity/current.md": "95f1223cff7c23224246bf218f574f288b35019cf901ddd37381f38d6c49e908",
-      "docs/continuity/decisions.md": "374a2a6a57622a89bf46bbf59b20b0820ab6f1dd3cbd962e742e1d1e7af7afad",
+      "docs/continuity/current.md": "7b3135345241cdbb9fd66abe32aaf225d8425835fecd37beee2176389d964ae9",
+      "docs/continuity/decisions.md": "fcfa8780a7cfddcf2ef2f83dbfa534ca2d6b41c8dcc91e48b621174fe3a02881",
       "docs/continuity/audit.md": "c849de622d00377d1fadd3ba41cda2933eb9370b6fa13c2baf53bf36c0c471b2",
       "docs/continuity/verification.md": "5daeea53454a06fcf3b928b1fd12c8f69448beb8fc31a75b441181cc57962f28",
       "docs/continuity/sources.json": "0380630765b71a413ac27edd875e120cf51f501232720ee130160cd1f885937b",
@@ -69,7 +65,7 @@
   },
   "vault": {
     "project": "vulpine-platform",
-    "session_id": "e930461c-f109-484f-96b2-8abbe3478c35",
-    "record": "sources/aeon-sessions/vulpine-platform/e930461c-f109-484f-96b2-8abbe3478c35.md"
+    "session_id": "ace60f5d-1622-4165-906b-a2b52b769eec",
+    "record": "sources/aeon-sessions/vulpine-platform/ace60f5d-1622-4165-906b-a2b52b769eec.md"
   }
 }

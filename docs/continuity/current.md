@@ -290,3 +290,26 @@ Repeated live 257 MiB upload passed; streamed download headers matched full size
 and a one-MiB range readback matched SHA256. Service RSS grew approximately 4 MiB.
 The unique verification folder was removed and absence verified. All seven
 configured MCP clients again discovered 27 tools including Drive and bid deletion.
+
+
+## 2026-10-18 — Drive history failure and consolidation audit
+
+User screenshot showed Document operation failed and missing folder controls.
+Live diagnosis found the documents database connected but vault_ui.access_log
+was absent (42P01), breaking access writes and Recent while root listing worked.
+Added services/documents/db/migrations/001_access_log.sql and the service migrate
+command, applied using the actual documents runtime environment. Idempotence,
+transactional write/read/rollback and actual migrate command passed. Live listing,
+access write, Recent and literal-backslash folder listing all returned 200.
+No stored files were deleted and no service restart was required. Documents
+typecheck and all 14 service tests passed. Current production deployment's Drive
+source SHA1 matches canonical folder-upload/progress/resume source exactly. The
+old browser tab needs reload; its actual cache state was not directly inspected.
+
+Owner challenged incomplete consolidation. Audited PM2, systemd, Docker labels
+and mounts, and Git roots. docs/architecture/consolidation-status.md records the
+actual split: canonical Backoffice/operations/Engine API/ERPNext, release-backed
+Drive/tracker/Vision, separately versioned pricing, and external vendor apps.
+Old engine directories still supply uploads, DB init and n8n workflow mounts;
+old MCP checkout has five tracked edits. No bulk deletion was performed. Source
+and runtime consolidation remains incomplete; current system map links this audit.

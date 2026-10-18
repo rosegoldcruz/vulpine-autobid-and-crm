@@ -150,3 +150,14 @@ whole files in Node memory. Allow individual files above the batching target,
 retain 100-file batches and scoped authentication, and show progress with resume
 for remaining files after acknowledged partial failures. Resume requires the
 current browser tab; cross-reload and byte-range resume are not implemented.
+
+
+## 2026-10-18 — consolidation status must match runtime
+
+The owner reiterated /opt/vulpine-platform as the intended consolidated repository
+and requested an explanation of the excess folders. Distinguish canonical source,
+active release deployments, persistent state, vendor projects and unmerged old
+checkouts using runtime evidence. Do not call source copying full consolidation
+or remove still-mounted files/unique edits. Backoffice Drive remains preserved.
+Apply the documents access-history migration to the same database as its runtime;
+working SFTP listing and a shallow health response do not verify Recent/history.

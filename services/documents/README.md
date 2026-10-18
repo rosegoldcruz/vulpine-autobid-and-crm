@@ -12,7 +12,7 @@ the browser never receives the master integration credential.
 - Default bind: `127.0.0.1:3016`
 - Public ingress: `https://api.vulpinehomes.com/documents/*`
 - Authoritative storage: the existing SFTP Storage Box
-- Access history: the existing `vault_ui.access_log` PostgreSQL table
+- Access history: `vault_ui.access_log` in the documents service PostgreSQL database
 
 ## Required server environment
 
@@ -25,6 +25,11 @@ SFTP_PASSWORD
 DATABASE_URL
 BACKOFFICE_ORIGIN
 ```
+
+Before starting a new deployment, run `corepack pnpm --filter @vulpine/documents-service migrate`
+with the same server environment as the running documents service. The idempotent
+SQL migration creates only its access-history schema/type/table/index; it does not
+move or delete stored files. Merely configuring DATABASE_URL does not apply it.
 
 Metadata routes require `x-vulpine-integration-key`. Transfer routes accept either that server-side key or
 a five-minute HMAC ticket scoped to the authenticated subject, action, and exact Drive path. Upload and preview CORS are

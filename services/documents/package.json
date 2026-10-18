@@ -6,7 +6,8 @@
   "scripts": {
     "start": "tsx src/server.ts",
     "typecheck": "tsc -p tsconfig.json",
-    "test": "node --import tsx --test tests/*.test.ts"
+    "test": "node --import tsx --test tests/*.test.ts",
+    "migrate": "tsx src/migrate.ts"
   },
   "dependencies": {
     "@vulpine/auth": "workspace:*",

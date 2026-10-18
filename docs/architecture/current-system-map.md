@@ -1,6 +1,6 @@
 # Current system map
 
-Inspected 2026-09-20 from the working trees under `/opt`. Runtime evidence and source take precedence over older prose.
+The initial inventory below was inspected 2026-09-20. Read [the current runtime consolidation audit](consolidation-status.md) for verified 2026-10-18 paths and remaining migration boundaries. Runtime evidence and source take precedence over older prose.
 
 | Source | Current implementation and state | Runtime/data assumption | Canonical target | First-milestone treatment |
 | --- | --- | --- | --- | --- |
