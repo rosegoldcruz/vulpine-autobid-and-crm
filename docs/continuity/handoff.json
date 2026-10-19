@@ -1,36 +1,29 @@
 {
-  "last_change": "Restored supplied signature on existing311 and Mission drafts; retained311 Addenda1/2 after owner correction. Added catalog-only saved-quote item editing and explicit signature controls to MCP. Removed self-added glass accessories and incompatible narrow waste-kit costs from Mission proposed stock alternate; corrected actual-Euro schedule label and regenerated PDFs/XLSX/review workbook.",
+  "last_change": "Recovered interrupted 311/Mission Farms session. Reverified existing saved quote revisions and signed PDF downloads; implementation already pushed as2f73ce8. No quote changes during recovery.",
   "verification": [
-    "node --test tests/*.test.mjs:52 passed before final label edit; node --test tests/proposal-policy.test.mjs:22 affected tests passed after label edit.",
-    "node --env-file=/etc/vulpine-bidding/runtime.env --test tests/*.integration.mjs:5 passed, including catalog-only item editing, revision/org/read-only/issued guards, signature validation, addenda removal and retained historical documents.",
-    "node scripts/build.mjs:510 product records built. Both pricing and bidding services restarted and health endpoints returned ok.",
-    "All7 registered local clients discover27 pricing tools /35 total. Installed ChatGPT metadata refresh remains unverified.",
-    "Real MCP mutation/readback and retained exports:311 revision10 total9824983 cents unchanged, Addenda1/2 present; Mission revision25 and source job revision70 agree at137071844 cents.",
-    "Embedded PNG pixels in both PDFs exactly match supplied owner image; all pages612x792 and closing artwork last.311 signaturepage8/9, Mission14/15. Export hashes byte-match local downloads.",
-    "Mis-scoped test-edit shell initially used wrong cwd and changed no test file; corrected path and tests passed. Temporary signature config override pointed inside root-only directory, causing EACCES/502. Removed override and private duplicate copies, installed supplied asset at established proposal-assets path with existing group permissions; live discovery/export recovery verified.",
-    "Mission stock mapping review updated to440 actual quoted SKU rows; original source records preserved; narrow mechanism/glass exclusions explicitly disclosed. No browser or customer submission performed."
+    "Live MCP:311 revision10 total98249.83;Mission revision25 total1370718.44;both signatures approved.",
+    "apps/pricing npm test:52 passed;integration tests with runtime env:5 passed;pricing build:510 products passed.",
+    "verify-signed-pdfs.py:Letter pages,signature pixel match,311 Addenda1/2 present,Mission acknowledgment absent.",
+    "Both retained document downloads hash-match local signed PDFs.",
+    "Live discovery:27 pricing/35 total tools.",
+    "Extra root build failed Backoffice TypeScript checks:incompatible ReactNode types in existing components. No Backoffice source changes;removed generated next-env import.",
+    "git ls-remote confirms2f73ce8d58693a1c1597e19f85c85f2209bcfcb1 pushed on configured branch."
   ],
   "decisions": [
-    "Latest owner explicitly corrects prior message: acknowledgment of Addenda1/2 belongs on311. Preserve it; do not copy toMission. Bonner separate acknowledgment remains untouched.",
-    "Owner explicitly supplies Daniel signature PNG and directs restoring use on these prepared bids. Quote-specific approval saved; customer acceptance fields remain blank.",
-    "Corrected optional glass-front and15/18-inch waste-kit selection errors in proposed stock alternate. This does not imply owner approval of every substitution or exact original-spec compliance.",
-    "No confirmed factory surcharge exists. Standard cabinet hinges/slides are included. Excluded glass hardware and narrow waste organizers are no longer represented as incompletely priced included selections."
+    "Preserve saved drafts and qualifications;signature approval does not establish supplier compliance or original-spec completeness."
   ],
   "open_work": [
-    "311 still uses framed supplier cost records as a provisional frameless price basis; obtain actual matching frameless costs/configuration before unqualified issuance.",
-    "Mission remains a stock supply alternate. Resolve accessible/removable dimensions, stacked linen/pantry configurations and remaining original custom/source-scope exclusions before a full original-spec customer-ready bid.",
-    "Verify installed ChatGPT connection refresh discovers27 pricing tools in a new conversation."
+    "311 factory frameless compliance remains unresolved;framed costs are disclosed allowances.",
+    "Mission remains a qualified stock alternate;original custom/accessible scope incomplete and handle supplier cost unknown.",
+    "Separate Backoffice React type build failures outside bid recovery scope."
   ],
-  "blockers": [
-    "Actual supplier confirmation for the original specified custom/accessible configurations is not present; no unqualified original-spec complete bid can be claimed.",
-    "Installed ChatGPT cached metadata cannot be refreshed with exposed connection controls."
-  ],
-  "next_action": "Deliver corrected signed PDFs; continue existing quotes to resolve precisely listed original-spec supplier/configuration gaps without restarting takeoffs or inventing costs. Keep311 Addenda1/2 and Mission no addenda.",
-  "recorded_at": "2026-10-19T14:20:58.236Z",
+  "blockers": [],
+  "next_action": "Review signed qualified drafts;obtain factory pricing/compliance before claiming original-spec customer readiness. Send/order only on instruction.",
+  "recorded_at": "2026-10-19T14:22:41.393Z",
   "snapshot": {
-    "head": "aab7dac749c7193fa640ef6b056a570dbdadf9b6",
+    "head": "2f73ce8d58693a1c1597e19f85c85f2209bcfcb1",
     "branch": "codex/cabinet-brain-integration-recovery",
-    "worktree": " M apps/pricing/agent/schemas.mjs\n M apps/pricing/agent/tools.mjs\n M apps/pricing/docs/bidding-agent.md\n M apps/pricing/src/proposal-pdf.mjs\n M apps/pricing/tests/agent-fields.integration.mjs\n M apps/pricing/tests/bidding.integration.mjs\n M apps/pricing/tests/proposal-policy.test.mjs\n M docs/continuity/current.md\n M docs/continuity/decisions.md",
+    "worktree": "",
     "sources": {
       "AGENTS.md": "c51e08a8021528ff818e5f62620aae587530eeec275750b2d38c2771ef732460",
       "README.md": "b6948f9084afb5f1bcceb4466e627c78f2288ba7f4876ceb64f3702b4fea5bd1",
@@ -66,7 +59,7 @@
   },
   "vault": {
     "project": "vulpine-platform",
-    "session_id": "98c55a5b-8fc7-4f84-acbd-fc2d7168078c",
-    "record": "sources/aeon-sessions/vulpine-platform/98c55a5b-8fc7-4f84-acbd-fc2d7168078c.md"
+    "session_id": "181b9c10-37cc-46f9-92ad-05ca48c0c6aa",
+    "record": "sources/aeon-sessions/vulpine-platform/181b9c10-37cc-46f9-92ad-05ca48c0c6aa.md"
   }
 }
