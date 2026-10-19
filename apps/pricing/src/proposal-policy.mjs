@@ -47,6 +47,10 @@ export function projectCharges(data,state,units){
  const handlesAmount=remaining*HANDLE_RATE,shippingAmount=counts.shippingUnits*(nonnegative(rate)?rate:0);if(!Number.isSafeInteger(handlesAmount)||!Number.isSafeInteger(shippingAmount))issues.push('Project charges exceed the supported currency range.');
  return {counts,boxes,accessories,handles:{quantity:handles,chargedQuantity:remaining,includedQuantity:includedHandles+listedHandles,rate:HANDLE_RATE,amount:handlesAmount,supplierCost:state.charges?.handles?.supplierCost??null},freight:{quantity:counts.shippingUnits,rate,amount:shippingAmount,supplierCost:freight?.supplierCost??(freightCost||null),approval:freight?.approval||''},installation:state.charges?.installation??{status:'excluded',amount:0},assembly:state.charges?.assembly??{status:'excluded',amount:0},issues};
 }
+function qualifiedBidApproved(state){
+ const approval=state.projectInfo?.qualifiedBidApproval,scope=state.customerSections;
+ return approval?.quoteId===state.quoteId&&typeof approval?.basis==='string'&&approval.basis.trim()&&['included','basis','substitutions','exclusions'].every(key=>typeof scope?.[key]==='string'&&scope[key].trim());
+}
 export function customerIssues(data,state,result){
  const errors=[...result.issues,...(result.charges?.issues||[])];
  if(result.tax.issue)errors.push(result.tax.issue);
@@ -57,8 +61,8 @@ export function customerIssues(data,state,result){
  if(!state.projectInfo?.cabinetLine?.trim())errors.push('Cabinet line is required.');
  if(!selected.length||selected.some(i=>!linesFor(data)[i.li]))errors.push('Select a verified cabinet finish for every item.');
  if(!state.projectInfo?.finishBasis?.trim())errors.push('Record the specified finish/location mapping or disclosed preliminary White Shaker basis.');
- if(state.projectInfo?.construction==='frameless'&&selected.some(i=>!String(data.families?.[i.li]||linesFor(data)[i.li]?.[1]).match(/frameless|euro/i)))errors.push('Frameless construction is required; framed cabinetry cannot be substituted.');
- if(state.projectInfo?.scopeIncomplete)errors.push('The project scope is incomplete; this is an internal priced-scope draft.');
+ if(state.projectInfo?.construction==='frameless'&&selected.some(i=>!String(data.families?.[i.li]||linesFor(data)[i.li]?.[1]).match(/frameless|euro/i))&&!(qualifiedBidApproved(state)&&state.projectInfo?.pricingAllowanceBasis?.trim()))errors.push('Frameless construction is required; framed cabinetry cannot be substituted.');
+ if(state.projectInfo?.scopeIncomplete&&!qualifiedBidApproved(state))errors.push('The project scope is incomplete; this is an internal priced-scope draft.');
  if(!state.tax?.enabled&&!state.tax?.exemption)errors.push('Verified sales tax or a documented applicable exemption is required.');
  if(state.tax?.enabled&&!state.tax.lookup?.taxableItems)errors.push('Verify which line items are taxable, including handles and freight.');
  if(state.tax?.enabled&&state.tax.lookup?.addressKey!==addressKey(state.tax.address))errors.push('Tax must match the verified delivery address.');
@@ -66,6 +70,7 @@ export function customerIssues(data,state,result){
 }
 export function customerQualifications(state){
  const notes=["The General Cabinet Specifications table states Vulpine's required specification; supplier compliance must be confirmed before ordering."];
+ if(qualifiedBidApproved(state))notes.push('This bid covers the priced scope, allowances, substitutions and exclusions stated in this proposal. Original drawing requirements outside that scope are not included in this price; changes require separate pricing before ordering.');
  if(state.projectInfo?.finishUnresolved)notes.push('Finish selections are subject to final approval; pricing uses the finish allowances stated in this proposal.');
  for(const conflict of state.projectInfo?.conflicts||[])notes.push('Drawing / project qualification: '+conflict);
  return notes;

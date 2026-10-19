@@ -1,35 +1,34 @@
 {
-  "last_change": "Recovered interrupted 311/Mission Farms session. Reverified existing saved quote revisions and signed PDF downloads; implementation already pushed as2f73ce8. No quote changes during recovery.",
+  "last_change": "Implemented quote-specific approval for customer bids using disclosed priced alternatives; generated customer PDFs/XLSX for311 revision11 and Mission revision26 and placed in respective project folders.",
   "verification": [
-    "Live MCP:311 revision10 total98249.83;Mission revision25 total1370718.44;both signatures approved.",
-    "apps/pricing npm test:52 passed;integration tests with runtime env:5 passed;pricing build:510 products passed.",
-    "verify-signed-pdfs.py:Letter pages,signature pixel match,311 Addenda1/2 present,Mission acknowledgment absent.",
-    "Both retained document downloads hash-match local signed PDFs.",
-    "Live discovery:27 pricing/35 total tools.",
-    "Extra root build failed Backoffice TypeScript checks:incompatible ReactNode types in existing components. No Backoffice source changes;removed generated next-env import.",
-    "git ls-remote confirms2f73ce8d58693a1c1597e19f85c85f2209bcfcb1 pushed on configured branch."
+    "53 pricing unit tests passed;5 integration checks passed;510-product build passed.",
+    "Both pricing services restarted;health endpoints ok.",
+    "Live quote edits preserve units,SKUs,quantities,margin,tax,signature and totals:31198249.83;Mission1370718.44.",
+    "Actual customer PDFs:no internal-draft label;Letter size;closing artwork last;signature pixels match owner image;311 Addenda1/2 retained;Mission no addenda and Cream Toffee HG retained;suppliers hidden;folder copies hash-match.",
+    "Initial new regression test failed only on wrapped PDF whitespace;normalized whitespace and all53 tests passed."
   ],
   "decisions": [
-    "Preserve saved drafts and qualifications;signature approval does not establish supplier compliance or original-spec completeness."
+    "Owner explicitly authorizes bidding current priced alternatives before factory verification with scope qualifications visible.",
+    "Keep selected Mission Cream Toffee HG frameless Alabaster alternate;owner reiterates Cream Toffee HG or Beige Textile.",
+    "Do not erase incomplete original-spec facts or waive actual price,tax or quantity validation. No submission recipient or portal action inferred."
   ],
   "open_work": [
-    "311 factory frameless compliance remains unresolved;framed costs are disclosed allowances.",
-    "Mission remains a qualified stock alternate;original custom/accessible scope incomplete and handle supplier cost unknown.",
-    "Separate Backoffice React type build failures outside bid recovery scope."
+    "Factory construction/fit confirmation remains procurement coordination;original custom scope excluded or qualified as disclosed.",
+    "No email or portal submission performed."
   ],
   "blockers": [],
-  "next_action": "Review signed qualified drafts;obtain factory pricing/compliance before claiming original-spec customer readiness. Send/order only on instruction.",
-  "recorded_at": "2026-10-19T14:22:41.393Z",
+  "next_action": "Owner can download customer proposals from project folders;submit only through an explicitly identified recipient/portal on instruction.",
+  "recorded_at": "2026-10-19T14:31:08.244Z",
   "snapshot": {
-    "head": "2f73ce8d58693a1c1597e19f85c85f2209bcfcb1",
+    "head": "b4da1bf11aff8051f87d8fbf51ad9bedc87de358",
     "branch": "codex/cabinet-brain-integration-recovery",
-    "worktree": "",
+    "worktree": " M apps/pricing/docs/bidding-agent.md\n M apps/pricing/src/proposal-policy.mjs\n M apps/pricing/tests/proposal-policy.test.mjs\n M docs/continuity/current.md\n M docs/continuity/decisions.md",
     "sources": {
       "AGENTS.md": "c51e08a8021528ff818e5f62620aae587530eeec275750b2d38c2771ef732460",
       "README.md": "b6948f9084afb5f1bcceb4466e627c78f2288ba7f4876ceb64f3702b4fea5bd1",
       "package.json": "fafa60aeae85182092017dfc87134dabfa1df3484315a510e118b4d879566a49",
-      "docs/continuity/current.md": "40026bf49bee7445dab74749c3284211b2f18b967f5e84e579cc65ba99c23bb2",
-      "docs/continuity/decisions.md": "c79e00a424c9c2f2d6a7315e6f1e4e0d68a2d4ef072e947e82f800284b9aa721",
+      "docs/continuity/current.md": "c088f4ea4c6b02851511920a23a20fe2db6af09cbf9ae179c9e004f5e93dfa06",
+      "docs/continuity/decisions.md": "1c69ea2019b66ce59d18cb254e88b5aaa19e54e0bcf726b56639df7673503011",
       "docs/continuity/audit.md": "c849de622d00377d1fadd3ba41cda2933eb9370b6fa13c2baf53bf36c0c471b2",
       "docs/continuity/verification.md": "5daeea53454a06fcf3b928b1fd12c8f69448beb8fc31a75b441181cc57962f28",
       "docs/continuity/sources.json": "0380630765b71a413ac27edd875e120cf51f501232720ee130160cd1f885937b",
@@ -59,7 +58,7 @@
   },
   "vault": {
     "project": "vulpine-platform",
-    "session_id": "181b9c10-37cc-46f9-92ad-05ca48c0c6aa",
-    "record": "sources/aeon-sessions/vulpine-platform/181b9c10-37cc-46f9-92ad-05ca48c0c6aa.md"
+    "session_id": "daa1acf4-6e42-430a-a9e4-38436aeec318",
+    "record": "sources/aeon-sessions/vulpine-platform/daa1acf4-6e42-430a-a9e4-38436aeec318.md"
   }
 }

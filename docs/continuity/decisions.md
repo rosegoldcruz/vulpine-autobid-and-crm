@@ -388,3 +388,12 @@ hardware remains included. These are proposed substitutions/exclusions under the
 ongoing bid-completion task, not a claim of explicit owner approval of each change.
 No confirmed factory surcharge exists. Keep original-spec scope gaps visible; do
 not mistake completing these corrections for finishing the full original casework bid.
+## 2026-10-19 — owner authorizes qualified customer proposals before factory confirmation
+
+Owner explicitly accepts bidding the current priced alternatives with disclosed
+scope, substitutions and exclusions, rather than withholding bids for factory
+confirmation. Use quote-specific qualifiedBidApproval; require complete customer
+scope sections and construction allowance disclosure. Preserve source facts,
+unresolved factory compliance and actual price/tax/quantity checks. Generate
+customer proposals rather than internal drafts. Existing signature authorization
+remains scoped to these bids. Mission retains Cream Toffee HG as Alabaster alternate.

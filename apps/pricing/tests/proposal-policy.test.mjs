@@ -88,3 +88,16 @@ test('pull-out trash mechanisms are not decorative handle lines',()=>{
  const s=fixture();s.units[0].items.push({sku:'Trash Kit',li:8,qty:1});
  const r=calculateProject(data,s);assert.equal(r.charges.handles.includedQuantity,0);assert.equal(r.charges.handles.chargedQuantity,r.charges.handles.quantity);
 });
+
+test('quote-specific approval exports a qualified customer bid without hiding scope or pricing errors',async()=>{
+ const s=fixture();s.projectInfo.scopeIncomplete=true;s.projectInfo.construction='frameless';s.projectInfo.pricingAllowanceBasis='Catalog costs allow specified frameless supply; factory compliance requires confirmation.';
+ s.customerSections={included:'Listed cabinet modules only.',basis:'Existing priced scope.',substitutions:'Stock modules and fillers replace custom configurations.',exclusions:'Custom fabrication and installation by others.'};
+ s.projectInfo.qualifiedBidApproval={quoteId:'OTHER',basis:'Owner authorizes bid with disclosed allowances.'};
+ assert.equal(customerIssues(data,s,calculateProject(data,s)).length,2);
+ s.projectInfo.qualifiedBidApproval.quoteId=s.quoteId;
+ assert.deepEqual(customerIssues(data,s,calculateProject(data,s)),[]);
+ const text=await pdfText(await generateQuote(PDFLib,data,s,'customer',template));assert.doesNotMatch(text,/INTERNAL DRAFT|INTERNAL PROPOSAL DRAFT|NOT FOR SUBMISSION/);assert.match(text,/Custom fabrication and installation by others/);assert.match(text.replace(/\s+/g,' '),/Original drawing requirements outside that scope/);assert.match(text,/factory compliance requires confirmation/);
+ delete s.customerSections.exclusions;assert.equal(customerIssues(data,s,calculateProject(data,s)).length,2);s.customerSections.exclusions='Custom fabrication excluded.';
+ delete s.projectInfo.pricingAllowanceBasis;assert.ok(customerIssues(data,s,calculateProject(data,s)).some(v=>v.includes('Frameless construction')));
+ s.projectInfo.pricingAllowanceBasis='Disclosed allowance.';s.units[0].items.push({sku:'INVENTED',li:0,qty:1});assert.ok(customerIssues(data,s,calculateProject(data,s)).length);
+});

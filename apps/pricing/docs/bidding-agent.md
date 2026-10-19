@@ -175,3 +175,12 @@ creating a duplicate quote. Pass the current revision, unit_id, items and a
 source/configuration basis. Prices come from the existing supplier catalog;
 margin, unit repetitions and tax stay unchanged. This clears signature approval;
 apply explicit owner approval again only after the revised scope is reviewed.
+
+When the owner explicitly authorizes bidding the priced alternate before factory
+verification, record projectInfo.qualifiedBidApproval with this quote's quoteId and
+a basis describing that authorization. Customer sections included, basis,
+substitutions and exclusions must all be populated. A construction pricing
+allowance also requires pricingAllowanceBasis. This permits a customer proposal
+with visible qualifications while retaining scopeIncomplete and construction
+facts; it does not waive missing prices, quantities, tax or required project data.
+Do not infer this authorization from a signature or urgency alone.

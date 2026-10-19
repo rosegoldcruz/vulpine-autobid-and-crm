@@ -848,3 +848,26 @@ Production Bonner remains rev3/total360590.19; River Pointe rev44/226824.88.
 No frontend build/deployment or env changes were needed: Backoffice forwards
 pricing tool discovery dynamically. Existing clients that cache a tool inventory
 need fresh discovery to expose added names in that conversation.
+## 2026-10-19 — owner authorizes customer bids on disclosed priced scope
+
+Owner explicitly directs bidding now on the existing priced scope rather than
+waiting for factory verification. Both existing quotes now have quote-specific
+qualifiedBidApproval and customer PDFs with visible allowances, substitutions
+and exclusions, without internal-draft banners. Original construction/scope flags
+remain truthful. Missing prices, quantities, tax and project-data gates remain.
+Owner reiterates Mission Alabaster alternate is catalog frameless Cream Toffee HG
+or Beige Textile; retain previously selected Cream Toffee HG, not a new question.
+
+311 revision11: $98,249.83, customer PDF f9f53769-2136-4b11-9a5b-dec77ae3beb5,
+8 Letter pages, signature7, Addenda1/2 retained. Mission revision26: $1,370,718.44,
+customer PDF1558be12-8a1d-4f44-baed-5e4d48fe0274,14 Letter pages, signature13,
+no addenda, benches excluded. Units, SKUs, quantities, margin, tax and signatures
+unchanged. PDFs/XLSX updated in /mnt/data and respective /home/bid-workspace
+folders. Mission review workbook status/revision updated without changing takeoff.
+Historical PDFs retained in database. No email, portal submission or order sent.
+
+Verification:53 unit tests,5 integration checks,510-product pricing build pass;
+both services active and health ok. Actual exported PDFs have no internal-draft
+label, preserve qualifications/closing artwork, match supplied signature pixels,
+hide upstream suppliers and hash-match folder copies. Evidence under
+/opt/output/customer-bids-results.json and customer-bids-verification.json.
