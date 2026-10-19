@@ -63,7 +63,7 @@ export function customerIssues(data,state,result){
  return [...new Set(errors)];
 }
 export function customerQualifications(state){
- const notes=[];
+ const notes=["The General Cabinet Specifications table states Vulpine's required specification; supplier compliance must be confirmed before ordering."];
  if(state.projectInfo?.finishUnresolved)notes.push('Finish selections are subject to final approval; pricing uses the finish allowances stated in this proposal.');
  for(const conflict of state.projectInfo?.conflicts||[])notes.push('Drawing / project qualification: '+conflict);
  return notes;
@@ -72,3 +72,12 @@ export function customerNotes(state){
  const s=state.customerSections||{};
  return {'Included Scope':s.included||'Cabinet boxes and listed trim/panels; decorative handles and project delivery are priced in the summary.', 'Pricing Basis':s.basis||state.projectInfo?.finishBasis||'Finish and project mix require verification.',Substitutions:s.substitutions||'No product substitution is approved.',Exclusions:s.exclusions||'Installation and assembly excluded. Countertops, appliances and plumbing fixtures excluded.'};
 }
+
+// Owner-approved page-three finish label; detailed location/finish mapping stays in scope.
+export function proposalFinish(data,units){
+ const selected=units.filter(u=>u.repeat>0).flatMap(u=>u.entries.filter(r=>r.qty>0));
+ if(!data.supplier&&selected.length&&selected.every(r=>linesFor(data)[r.li]?.[1]==='Euro'))return 'White Euro';
+ return [...new Set(selected.map(r=>linesFor(data)[r.li]?.[0]).filter(Boolean))].join(', ')||'Finish pending verification';
+}
+
+export const PROPOSAL_SPECIFICATIONS=['HDF','Plywood with maple finish','Plywood','DTC soft-close','SOLID WOOD DOVETAILED','Undermount soft-close'];

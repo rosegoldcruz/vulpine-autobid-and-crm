@@ -27,7 +27,7 @@ test('manual tax allows customer PDF without delivery address or address evidenc
 test('customer and draft PDFs hide upstream suppliers in specifications, notes, schedules and footers',async()=>{
  const s=fixture();s.units[0].items=[{sku:'B24',li:9,qty:1}];s.projectInfo.cabinetLine='HCI Euro Deluxe';s.projectInfo.finishBasis='Highland Cabinetry Colorado white';
  s.customerSections={included:'HCI cabinet supply',basis:'Rythern and US Cabinet Depot comparison; USCD',substitutions:'Highland Cabinetry selected fronts',exclusions:'Installation by others'};
- for(const type of ['customer','draft']){const text=await pdfText(await generateQuote(PDFLib,data,s,type,template));assert.doesNotMatch(text,/\bHCI\b|Highland|Rythern|US Cabinet Depot|\bUSCD\b/i);assert.match(text,/engineered furniture board/);assert.match(text,/VULPINE/);}
+ for(const type of ['customer','draft']){const text=await pdfText(await generateQuote(PDFLib,data,s,type,template));assert.doesNotMatch(text,/\bHCI\b|Highland|Rythern|US Cabinet Depot|\bUSCD\b/i);assert.match(text,/Plywood with maple finish/);assert.match(text,/VULPINE/);}
 });
 
  test('finish and drawing qualifications print on customer PDF without blocking download',async()=>{const s=fixture();s.projectInfo.finishUnresolved=true;s.projectInfo.conflicts=['Nine floor labels conflict; priced mix A57/B51 retained.'];assert.deepEqual(customerIssues(data,s,calculateProject(data,s)),[]);const text=await pdfText(await generateQuote(PDFLib,data,s,'customer',template));assert.match(text,/BID QUALIFICATIONS/);assert.match(text,/Finish selections are subject to final approval/);assert.match(text,/Nine floor labels conflict/);assert.doesNotMatch(text,/INTERNAL DRAFT|export is blocked/);});

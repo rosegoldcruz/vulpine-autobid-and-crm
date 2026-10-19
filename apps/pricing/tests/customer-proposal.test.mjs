@@ -24,13 +24,25 @@ test('customer schedule continues across pages for long unit type schedules',asy
  const bytes=await generateQuote(PDFLib,data,complete(input),'customer',template);
  assert.ok((await PDFLib.PDFDocument.load(bytes)).getPageCount()>6);
 });
-test('Euro draft specifications describe furniture board and metal drawers instead of framed defaults',async()=>{
+test('Euro draft uses the owner page-three specifications and keeps supplier confirmation explicit',async()=>{
  const input=complete({...state,units:[{id:'euro',name:'Euro kitchen',repeat:1,auto:true,defaultLi:9,items:[{sku:'3DB21',li:9,qty:1}]}]});
  const bytes=await generateQuote(PDFLib,data,input,'draft',template);
  const extracted=spawnSync('pdftotext',['-layout','-','-'],{input:Buffer.from(bytes),encoding:'utf8'});
  assert.equal(extracted.status,0,extracted.stderr);
- assert.match(extracted.stdout,/18 mm engineered furniture board/);
- assert.match(extracted.stdout,/Premium metal; melamine bottom\/back/);
- assert.doesNotMatch(extracted.stdout,/Plywood with maple finish|Solid wood dovetailed|DTC soft-close/);
+ for(const wording of ['HDF','Plywood with maple finish','Plywood','DTC soft-close','SOLID WOOD DOVETAILED','Undermount soft-close','White Euro'])assert.ok(extracted.stdout.includes(wording),wording);
+ assert.match(extracted.stdout,/supplier compliance must be confirmed before ordering/);
+ assert.doesNotMatch(extracted.stdout,/melamine|furniture board|Premium metal/i);
  assert.equal(calculateProject(data,input).charges.boxes,1);
+});
+
+test('page-three specification defaults stay fixed for framed lines and supplier catalogs while finish follows selection',async()=>{
+ for(const [catalog,li,sku,finish] of [[data,0,'B24','White Shaker'],[JSON.parse(await fs.readFile(new URL('../src/suppliers/rythern.json',import.meta.url))),0,'B24','SW / SG']]){
+  const input=complete({...state,units:[{id:'spec',name:'Kitchen',repeat:1,auto:false,defaultLi:li,items:[{sku,li,qty:1}]}]});
+  const before=calculateProject(catalog,input),bytes=await generateQuote(PDFLib,catalog,input,'draft',template);
+  const extracted=spawnSync('pdftotext',['-f','3','-l','3','-layout','-','-'],{input:Buffer.from(bytes),encoding:'utf8'});
+  assert.equal(extracted.status,0,extracted.stderr);
+  for(const wording of ['HDF','Plywood with maple finish','DTC soft-close','SOLID WOOD DOVETAILED','Undermount soft-close',finish])assert.ok(extracted.stdout.includes(wording),wording);
+  assert.doesNotMatch(extracted.stdout,/White Euro|Birch-veneer|Boke hardware|MDF/);
+  assert.deepEqual(calculateProject(catalog,input),before);
+ }
 });

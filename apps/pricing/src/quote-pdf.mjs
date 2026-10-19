@@ -1,5 +1,5 @@
 import {generateProposal} from './proposal-pdf.mjs';
-import {customerIssues} from './proposal-policy.mjs';
+import {customerIssues,proposalFinish,PROPOSAL_SPECIFICATIONS} from './proposal-policy.mjs';
 import {money,calculateProject,lookup,quoteDates} from './pricing.mjs';
 const safe=s=>String(s??'').replace(/[“”″]/g,'"').replace(/[‘’]/g,"'").replace(/[–—]/g,'-').replace(/×/g,'x').replace(/[^\x20-\x7e\n]/g,'?');
 export async function generateQuote(PDFLib,data,input,type='customer',templateBytes=null,now=new Date(),options={}){
@@ -37,9 +37,10 @@ export async function generateQuote(PDFLib,data,input,type='customer',templateBy
   text(p,money(amount),368,506,70,9,true,rgb(1,1,1));text(p,data.countsVerified===false?'Not supplied':totalCabinets,449,506,49,8,true,rgb(1,1,1));text(p,data.countsVerified===false?'Not supplied':totalHardware+' est.',510,506,54,7,true,rgb(1,1,1));
   const values=[money(amount),'Excluded from material cost',type==='purchase'?'Pending verification':state.tax?.enabled?money(result.tax.amount):'Pending verification','Excluded','Excluded',money(type==='purchase'?amount:result.total)];values.forEach((v,i)=>text(p,v,201,562+i*18.5,83,8,i===5));
   const snapshot=[result.count,result.units.filter(u=>u.repeat>0).length,data.countsVerified===false?'Not supplied':totalCabinets,data.countsVerified===false?'Not supplied':totalHardware+' (estimate)','Excluded',state.status+' quantities'];snapshot.forEach((v,i)=>text(p,v,438,562+i*18.5,126,8,i===5));
-  // Approved specification wording from the supplied Garden Villas, Sunset Ridge,
-  // and Gracious Manor proposals. Finish names still come from the selected items.
-  const specifications=[...(data.specifications||['HDF','Plywood with maple finish','Plywood','DTC soft-close','Solid wood dovetailed','Undermount soft-close']),finishes.join(', ')];specifications.forEach((v,i)=>text(p,v,215,701+i*14,348,7));
+  // Preserve the owner's page-three specification wording; vary finish only.
+  PROPOSAL_SPECIFICATIONS.forEach((value,i)=>text(p,value,213.33,701+i*13.846426,348,7));
+  p.drawRectangle({x:210,y:H-789,width:358,height:13,color:rgb(1,1,1)});
+  text(p,proposalFinish(data,activeUnits),213.33,785,348,7);
   text(p,state.quoteId+' | '+state.status+' | Valid until '+shortDate(state.validUntil)+' | Schedule '+(index+1)+'/'+pages,29,804,536,8);
   text(p,type==='customer'?'VULPINE | Cabinet supply proposal':data.label?data.label+' | '+data.basis:'Historical material-cost snapshot. Create a revised draft for current handle and delivery selling charges.',29,817,536,7);
  }

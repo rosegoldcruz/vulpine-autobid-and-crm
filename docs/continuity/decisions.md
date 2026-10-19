@@ -269,3 +269,16 @@ to Letter with no contain-fit side bands or cropped content. Reuse original
 gold frame/corner artwork and masthead styling for continuation pages, preserving
 all qualifications and acceptance fields. Existing saved PDFs remain historical;
 regeneration adds a new export to the same unchanged quote revision.
+
+
+## 2026-10-19 — owner-selected proposal specification wording
+
+Owner explicitly supplies /home/aeon pinky.pdf page three as the schedule
+reference and requests its six fixed specifications for future PDFs, with only
+style/finish varying. Original other artwork pages and bid data stay intact.
+Use HDF, Plywood with maple finish, Plywood, DTC soft-close, SOLID WOOD
+DOVETAILED, Undermount soft-close. White Euro is the requested HCI Euro label;
+framed selections retain their actual line names. Supplier source metadata is
+not rewritten. Actual source construction conflicts were disclosed; treat this
+as a required specification pending supplier compliance, explicitly qualified
+in the proposal, rather than confirmed manufacturing facts.

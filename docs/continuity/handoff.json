@@ -1,33 +1,33 @@
 {
-  "last_change": "Reconciled River Pointe cabinet subtotal versus pre-tax quote total; removed added PDF side bands in current/legacy generators and restored branded continuation frames and cover typography. New customer PDF saved without changing quote revision44.",
+  "last_change": "Used owner-supplied page three for the proposal schedule and shared fixed specification wording; preserve existing other pages, supplier source data, quantities and prices. Regenerated River Pointe PDF.",
   "verification": [
-    "node --test tests/*.test.mjs: 44 passed in apps/pricing.",
-    "node apps/pricing/scripts/build.mjs: passed.",
-    "node /opt/output/river-print/browser-download-check.mjs: real Generate/download and print popup passed; desktop/mobile manual-tax regression passed.",
-    "Authenticated production customer export passed; new document73f83060-feea-4b2a-817b-c13d55f55779 at revision44. Initial immediate request after service restart hit ECONNREFUSED; retry succeeded.",
-    "Rendered cover, schedule, detail and closing pages visually inspected; side bands removed and prices unchanged.",
-    "Pricing and bidding health endpoints both returned status ok.",
-    "git diff --check passed."
+    "45 pricing tests passed; two old assertions expecting former catalog wording were updated to owner-directed template requirements.",
+    "node scripts/build.mjs in apps/pricing passed.",
+    "Production customer PDF export at revision44 succeeded; final document071905bb-7d01-4ee5-a4a9-eaa3d79c1f57; total226824.88 unchanged.",
+    "Rendered final page-three schedule visually inspected; exact six specifications and White Euro present; obsolete material wording absent.",
+    "Original template cover, approach and closing content streams unchanged after copying only supplied page3.",
+    "Both pricing and bidding health checks returned ok; git diff --check passed."
   ],
   "decisions": [
-    "Owner requests removal of added white PDF margins and restoration of branded appearance. Retain Letter sizing, quote values, qualifications and historical documents."
+    "Owner explicitly requires page3 wording and no use of supplied page1; fixed specification defaults now shared by current and legacy PDF generators.",
+    "Supplier construction conflicts were disclosed to owner; required specifications remain explicitly qualified pending supplier compliance confirmation."
   ],
   "open_work": [
-    "Existing finish/drawing qualifications remain unresolved; no new commercial approval asserted."
+    "Supplier compliance with owner-required construction remains unconfirmed; finish/drawing qualifications remain."
   ],
   "blockers": [],
-  "next_action": "Download the corrected River Pointe PDF or generate a fresh PDF in Backoffice; historical exports retain their original appearance.",
-  "recorded_at": "2026-10-19T07:22:08.909Z",
+  "next_action": "Use the corrected download or generate a new proposal; confirm actual supplier compliance before ordering.",
+  "recorded_at": "2026-10-19T07:33:53.980Z",
   "snapshot": {
-    "head": "623856e1d180e9d4557311e1d4961b8ec93470b4",
+    "head": "498645db8191c87ed573bf4f515beddc22424f2f",
     "branch": "codex/cabinet-brain-integration-recovery",
-    "worktree": " M apps/pricing/deploy/README.md\n M apps/pricing/src/proposal-pdf.mjs\n M apps/pricing/src/quote-pdf.mjs\n M docs/continuity/current.md\n M docs/continuity/decisions.md",
+    "worktree": " M apps/pricing/assets/proposal-template.pdf\n M apps/pricing/src/proposal-pdf.mjs\n M apps/pricing/src/proposal-policy.mjs\n M apps/pricing/src/quote-pdf.mjs\n M apps/pricing/tests/customer-proposal.test.mjs\n M apps/pricing/tests/proposal-policy.test.mjs\n M docs/continuity/current.md\n M docs/continuity/decisions.md",
     "sources": {
       "AGENTS.md": "c51e08a8021528ff818e5f62620aae587530eeec275750b2d38c2771ef732460",
       "README.md": "b6948f9084afb5f1bcceb4466e627c78f2288ba7f4876ceb64f3702b4fea5bd1",
       "package.json": "fafa60aeae85182092017dfc87134dabfa1df3484315a510e118b4d879566a49",
-      "docs/continuity/current.md": "a5c566696b5a8abd689e2832e1628de416a4dec65bac58b31d10229daca16041",
-      "docs/continuity/decisions.md": "4d1c8ee0d14d3ec2a267d4e8d126e32717e08953b83ec2afc5ddf961f38862b3",
+      "docs/continuity/current.md": "11796a6c4ed09f18bf9d3899b7ab86468016d1c0076f98ebb318e04445d53a7d",
+      "docs/continuity/decisions.md": "89734ff637b9cd8b0d98068419ca37c21130b1b2d47bde1965dffbb0c81f884f",
       "docs/continuity/audit.md": "c849de622d00377d1fadd3ba41cda2933eb9370b6fa13c2baf53bf36c0c471b2",
       "docs/continuity/verification.md": "5daeea53454a06fcf3b928b1fd12c8f69448beb8fc31a75b441181cc57962f28",
       "docs/continuity/sources.json": "0380630765b71a413ac27edd875e120cf51f501232720ee130160cd1f885937b",
@@ -57,7 +57,7 @@
   },
   "vault": {
     "project": "vulpine-platform",
-    "session_id": "1a3c4d08-567a-4286-877c-854ab77e8515",
-    "record": "sources/aeon-sessions/vulpine-platform/1a3c4d08-567a-4286-877c-854ab77e8515.md"
+    "session_id": "2e2f6df5-66b8-4a4c-94dc-af5ce3aecf4e",
+    "record": "sources/aeon-sessions/vulpine-platform/2e2f6df5-66b8-4a4c-94dc-af5ce3aecf4e.md"
   }
 }

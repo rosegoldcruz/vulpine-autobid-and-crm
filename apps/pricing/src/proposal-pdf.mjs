@@ -1,5 +1,5 @@
 import {calculateProject,money,linesFor,lookup} from './pricing.mjs';
-import {customerIssues,customerNotes,customerQualifications} from './proposal-policy.mjs';
+import {customerIssues,customerNotes,customerQualifications,proposalFinish,PROPOSAL_SPECIFICATIONS} from './proposal-policy.mjs';
 import {customerText} from './customer-text.mjs';
 const safe=s=>String(s??'').replace(/[“”″]/g,'"').replace(/[‘’]/g,"'").replace(/[–—]/g,'-').replace(/×/g,'x').replace(/[^\x20-\x7e\n]/g,'?');
 export async function generateProposal(PDFLib,data,state,type,templateBytes,options={}){
@@ -38,12 +38,10 @@ export async function generateProposal(PDFLib,data,state,type,templateBytes,opti
   cell(money(result.cabinetSale),368,506,70,9,true,rgb(1,1,1));cell(charges?.boxes,449,506,49,8,true,rgb(1,1,1));cell(charges?.handles.quantity,510,506,54,8,true,rgb(1,1,1));
   [money(result.cabinetSale),money(charges?.handles.amount||0),result.tax.amount===null||!state.tax?.enabled&&!state.tax?.exemption?'Pending verification':money(result.tax.amount),money(charges?.freight.amount||0),charges?.installation.status==='excluded'?'Excluded':money(charges.installation.amount),result.total===null?'Subtotal '+money(result.sale):money(result.total)].forEach((v,i)=>cell(v,201,562+i*18.5,83,7,i===5));
   [charges?charges.counts.apartments+' apts + '+charges.counts.amenities+' areas':result.count,charges?.counts.groups,charges?.boxes,charges?.handles.quantity,charges?.installation.status==='excluded'?'Excluded':'Priced and included',type==='draft'?'Internal draft':'Cabinet supply'].forEach((v,i)=>cell(v,438,562+i*18.5,126,8,i===5));
-  const euroOnly=active.every(u=>u.entries.every(r=>linesFor(data)[r.li]?.[1]==='Euro'));
-  // HCI Euro catalog PDF6: furniture-board boxes/shelves and metal drawers.
-  const specifications=data.specifications||(euroOnly
-   ?['Selected HCI Euro front; verify finish','18 mm engineered furniture board; white interior','18 mm melamine-laminated shelf','6-way adjustable soft-close hinges','Premium metal; melamine bottom/back','Full-access soft-close drawer system']
-   :['HDF','Plywood with maple finish','Plywood','DTC soft-close','Solid wood dovetailed','Undermount soft-close']);
-  [...specifications,state.projectInfo?.finishBasis||'Finish pending verification'].forEach((v,i)=>cell(v,215,701+i*14,348,7));
+  // Exact owner-supplied page-three wording; only door style / finish varies.
+  PROPOSAL_SPECIFICATIONS.forEach((value,i)=>cell(value,213.33,701+i*13.846426,348,7));
+  p.drawRectangle({x:210*scaleX,y:(850.079956-789-box.y)*scaleY,width:358*scaleX,height:13*scaleY,color:rgb(1,1,1)});
+  cell(proposalFinish(data,active),213.33,785,348,7);
   if(result.total===null){p.drawRectangle({x:(34-box.x)*scaleX,y:(850.079956-661-box.y)*scaleY,width:164*scaleX,height:18*scaleY,color:rgb(.94,.925,.89)});cell('SUBTOTAL BEFORE TAX',36,654,160,8,true);}
   cell(state.quoteId+' | '+(type==='draft'?'INTERNAL DRAFT - NOT FOR SUBMISSION':'PREPARED PROPOSAL')+' | '+state.date,29,804,536,8);
  }

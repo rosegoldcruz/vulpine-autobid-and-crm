@@ -498,3 +498,28 @@ qualifications. Production export passed after service startup; immediate first
 request raced startup (ECONNREFUSED), retry passed. Both services healthy.
 Rendered cover, schedule, detail and closing inspected; side bands removed,
 prices preserved, supplier names absent. No frontend deployment or env change.
+
+
+## 2026-10-19 — owner page-three specification template
+
+Owner supplied /home/aeon pinky.pdf and explicitly selected page three only.
+Imported that schedule page into the existing template; original cover, approach
+and closing content streams verified unchanged. Blank specification text cells
+are filled by one shared exact wording list: HDF; Plywood with maple finish;
+Plywood; DTC soft-close; SOLID WOOD DOVETAILED; Undermount soft-close.
+White Euro labels all-HCI-Euro schedules; other selected lines retain their
+finish names. Fixed customer specification wording no longer changes according
+to supplier catalog metadata. Catalog/pricing source files remain unchanged.
+
+The source Euro construction differs from the requested specification; this
+was explicitly disclosed to owner. Printed qualification identifies the table
+as Vulpine required specifications with supplier compliance pending ordering
+confirmation. No supplier compliance was invented or newly approved.
+
+45 pricing tests and protected build pass, including fixed wording, framed
+finish changes, supplier metadata isolation and unchanged calculations. Live
+customer export succeeded at unchanged River Pointe revision44/total226824.88;
+final document071905bb-7d01-4ee5-a4a9-eaa3d79c1f57. Rendered schedule inspected,
+exact six rows plus White Euro verified, obsolete material wording absent.
+Corrected /mnt/data/River_Pointe_Apartments_Bid.pdf regenerated; intermediate
+exports retained. Both services restarted/healthy; no env/frontend deployment.
