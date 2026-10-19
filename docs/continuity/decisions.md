@@ -310,3 +310,14 @@ River Pointe has6.75% manual tax on cabinets/handles only. This is not an
 automatic universal tax rate for every destination. Owner has erased installation
 from both page-three summaries; leave those rows blank, not Excluded.
 Preserve the approved general specification wording and other snapshot content.
+
+
+## 2026-10-19 — Bonner Springs owner decisions
+
+Only Bungalows at Bonner Springs is in scope. Owner chooses184 apartments,
+White Shaker throughout, standard B30 at amenity microwave location and9.25%
+manual tax. Record substitutions and stock fit/compliance limits visibly.
+Owner requests acknowledgment of Addenda1 and2 in very large bold text;
+customerSections.addenda now controls an optional22pt yellow-orange notes banner.
+Acknowledgment of Addendum2 is owner instruction, not independently reviewed
+source evidence. Preserve other projects and existing20% cabinet margin.

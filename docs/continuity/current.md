@@ -583,3 +583,41 @@ and explicit footer product-revenue/product-cost assertions passed. Production
 get_project_quote and price_bid verified product-only outputs. Rendered final
 schedule inspected; exact specs, rate/totals and blank installation rows checked.
 Both services restarted/healthy. No env changes or Vercel deployment needed.
+
+
+## 2026-10-19 — Bonner Springs revision3 and addenda acknowledgment
+
+Owner limits current work to Bungalows at Bonner Springs. Saved shared quote
+ccb7467c-d729-4c75-964e-bbca58ee278d from revision2 to3 using existing
+QuoteStore.save with revision protection; original inaccessible Auto Bid job
+was not changed. Owner explicitly selects all White Shaker,184 apartments and
+B30 in place of amenity microwave cabinet, and supplies9.25% manual tax.
+Preserved apartment mix28/86/70 and existing20% cabinet margin.
+
+Clubhouse spec PDF114 provides kitchen widths; PDF119 gives two B33/two W3342
+copy-room cabinets. Added kitchen B30,B12,B18,SB33,trash kit and three WF342
+blanks across kitchen/copy room. B12 replaces adjacent B15 to fit B30 within
+133.75in run with1.75in fillers. Copy room66in boxes plus2.75in fillers fits
+68.75in run. Replaced unsupported two VSB30 allowances: clubhouse restroom
+specifies40in wall-mounted sinks. Standard-stock height, appliance/apron-sink
+and trash modifications, accessibility compliance, clearances and shop drawings
+remain explicitly by others/pending verification; no false ADA claim.
+
+Owner explicitly requests acknowledgment of Addenda1 and2. Saved exact text
+in customerSections.addenda and added optional22pt bold yellow-orange banner
+at top of scope/notes PDF. Addendum1 was inspected; Addendum2 acknowledgment
+is owner-instructed, not an assertion that its documents were reviewed locally.
+
+Verified current quote:1962 bodies,3971 handles; cabinets294314.50,
+handles13223.43, product revenue307537.93, known product cost235450.44,
+estimated product profit72087.49 before handle cost, freight24605.00,
+9.25% tax28447.26 on cabinets/handles only; total360590.19. MissingFields empty.
+
+49 pricing tests and protected build pass. Live authenticated customer export
+and MCP read verified revision3 and totals; documentcb6ac450-4f2c-4d9b-b595-624019abca03.
+Rendered schedule/notes inspected; PDF text/bbox verify large acknowledgment,
+correct tax/specs/amounts, blank installation rows and no supplier identity.
+Both services restarted/healthy. Final matching copies at
+/mnt/data/Bungalows_at_Bonner_Springs_Bid.pdf and
+/home/bid-workspace/Bungalows at Bonner Springs/Bungalows_at_Bonner_Springs_Bid.pdf.
+No customer communication or other bid changes performed.

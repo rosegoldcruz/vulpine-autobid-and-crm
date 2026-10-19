@@ -1,38 +1,37 @@
 {
-  "last_change": "Implemented shared product-only revenue/profit fields across engine, Backoffice footer, MCP schemas/responses and future quote snapshots. Left cleared installation PDF rows blank and regenerated/copied final River Pointe PDF with unchanged quote values.",
+  "last_change": "Updated only Bonner Springs shared quote to revision3 with owner-selected White Shaker,184 apartments,B30 substitution and9.25% tax; reconciled amenity stock scope and added large optional addenda acknowledgment banner; exported matching server PDFs.",
   "verification": [
-    "48 pricing tests passed, including service/freight changes not altering revenue/profit/tax supply and PDF cleared rows.",
-    "Persistent bidding.integration and proposal-flow.integration passed in isolated orgs; proposal-flow reran after schema descriptions passed.",
-    "Protected pricing build passed.",
-    "Desktop/mobile browser manual6.75 tax, Generate/download/print, save/reopen and Product revenue/Product cost footer checks passed.",
-    "Live get_project_quote revision44:revenue198029.86, productCost172661.88, profit25367.98 before handle cost, tax13367.02 at6.75%, sale213457.86,total226824.88.",
-    "Live MCP price_bid also returns explicit product-only revenue/productCost/profit; separate saved job preserved.",
-    "Production PDF export document a68733c9-e774-45ae-8995-6d04ef5476e1; final rendered schedule/specs/tax/blank rows checked; both server PDF paths byte-identical.",
-    "Pricing and bidding restarted/healthy; git diff --check passed."
+    "49 pricing tests passed; protected pricing build passed.",
+    "Exact catalog SKUs and kitchen133.75in/copy-room68.75in stock width arithmetic verified against clubhouse spec PDF114/119.",
+    "Shared quote saved with expected revision2; live MCP read confirms revision3 and missingFields empty.",
+    "Production PDF export documentcb6ac450-4f2c-4d9b-b595-624019abca03; total360590.19; product profit72087.49 before unverified handle cost.",
+    "Rendered final notes and schedule inspected; text/bbox verify22pt bold Addendum1/2 acknowledgment,9.25% cabinet/handle tax,correct amounts/specs,blank installation rows and supplier suppression.",
+    "Matching PDF bytes verified at both requested server paths.",
+    "Pricing/bidding restarted and both health endpoints ok; git diff --check passed."
   ],
   "decisions": [
-    "Owner explicitly requires these accounting rules globally for all Backoffice/MCP bids, not only River Pointe.",
-    "Product accounting excludes shipping, tax and all services; customer total due retains separately billed pass-throughs.",
-    "Only cabinets and handles taxed; River Pointe saved manual rate6.75%.",
-    "Owner-cleared installation rows stay blank; approved specifications and Project Snapshot preserved."
+    "Owner explicitly approves White Shaker throughout,184 apartments and standard B30 instead of amenity microwave cabinet.",
+    "Owner supplies9.25% tax rate.",
+    "Owner requests prominent acknowledgment of Addenda1 and2; only Addendum1 source documents were inspected locally.",
+    "Use dimensioned kitchen/copy-room stock takeoff and disclose ordinary-stock modifications/clearance/accessibility limits. Preserve existing20% cabinet margin and other projects."
   ],
   "open_work": [
-    "Handle supplier cost remains unverified; profit is estimated before that cost.",
-    "Prior disclosed finish/drawing and supplier-compliance qualifications remain unresolved."
+    "Handle supplier cost unverified; profit remains estimated before it.",
+    "Shop drawings/appliance openings,trash-kit fit,stock-height/accessibility modifications and supplier compliance require verification before ordering."
   ],
   "blockers": [],
-  "next_action": "Refresh Backoffice to load the Product revenue footer; use final PDF from either server path.",
-  "recorded_at": "2026-10-19T07:47:35.340Z",
+  "next_action": "Owner downloads and reviews final Bonner Springs PDF; no other project is in scope.",
+  "recorded_at": "2026-10-19T08:15:48.219Z",
   "snapshot": {
-    "head": "5eb45dad7b377d285db5e5264f2d6d9e7c9a4b2b",
+    "head": "d9853ab1f2fa56df7ae5147dc69a4abce10cb9a5",
     "branch": "codex/cabinet-brain-integration-recovery",
-    "worktree": " M apps/pricing/agent/schemas.mjs\n M apps/pricing/agent/tools.mjs\n M apps/pricing/docs/tax.md\n M apps/pricing/quote-store.mjs\n M apps/pricing/src/app.mjs\n M apps/pricing/src/index.html\n M apps/pricing/src/pricing.mjs\n M apps/pricing/src/proposal-pdf.mjs\n M apps/pricing/src/quote-pdf.mjs\n M apps/pricing/tests/proposal-flow.integration.mjs\n M apps/pricing/tests/proposal-policy.test.mjs\n M docs/continuity/current.md\n M docs/continuity/decisions.md",
+    "worktree": " M apps/pricing/src/proposal-pdf.mjs\n M apps/pricing/tests/proposal-policy.test.mjs\n M docs/continuity/current.md\n M docs/continuity/decisions.md",
     "sources": {
       "AGENTS.md": "c51e08a8021528ff818e5f62620aae587530eeec275750b2d38c2771ef732460",
       "README.md": "b6948f9084afb5f1bcceb4466e627c78f2288ba7f4876ceb64f3702b4fea5bd1",
       "package.json": "fafa60aeae85182092017dfc87134dabfa1df3484315a510e118b4d879566a49",
-      "docs/continuity/current.md": "f85eba3c7e186f4daf80868c52d4ddf7a3f32a358cbc95dff21ed58fae41ee97",
-      "docs/continuity/decisions.md": "646c53ab72883d948307b5558d78ff708456db19ac684d91a25a9c2d63d7f841",
+      "docs/continuity/current.md": "ab1b774dcc859b06613e2b51d784d4572b7b5fcc5668fc61efb0c31d93503d74",
+      "docs/continuity/decisions.md": "2c285762f16bd3508ef7a1a4996455ad767b070045fc6888ce4f60d5195511d0",
       "docs/continuity/audit.md": "c849de622d00377d1fadd3ba41cda2933eb9370b6fa13c2baf53bf36c0c471b2",
       "docs/continuity/verification.md": "5daeea53454a06fcf3b928b1fd12c8f69448beb8fc31a75b441181cc57962f28",
       "docs/continuity/sources.json": "0380630765b71a413ac27edd875e120cf51f501232720ee130160cd1f885937b",
@@ -62,7 +61,7 @@
   },
   "vault": {
     "project": "vulpine-platform",
-    "session_id": "fceb3a81-2c2e-4b63-aba2-772b6a58ce41",
-    "record": "sources/aeon-sessions/vulpine-platform/fceb3a81-2c2e-4b63-aba2-772b6a58ce41.md"
+    "session_id": "2c45fe4b-41cd-4887-9045-e49cfeed4d58",
+    "record": "sources/aeon-sessions/vulpine-platform/2c45fe4b-41cd-4887-9045-e49cfeed4d58.md"
   }
 }

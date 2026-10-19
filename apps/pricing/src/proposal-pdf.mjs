@@ -92,6 +92,12 @@ export async function generateProposal(PDFLib,data,state,type,templateBytes,opti
   if(!customer)for(const row of u.entries)pair(row.sku+' | '+row.line+' | '+row.qty+' x '+u.repeat+' = '+row.qty*u.repeat,money((type==='purchase'?row.purchase:row.sale)*row.qty*u.repeat));
  }
  next('SCOPE & PRICING BASIS');
+ const addenda=state.customerSections?.addenda?.trim();
+ if(addenda){
+  const lines=wrap(addenda,R-L-24,22,true),height=lines.length*28+24;room(height+16);
+  page.drawRectangle({x:L,y:y-height+9,width:R-L,height,color:rgb(1,.73,.2)});
+  lines.forEach((value,i)=>draw(page,value,L+12,y-20-i*28,22,true));y-=height+16;
+ }
  const qualifications=customerQualifications(state);
  if(qualifications.length){heading('BID QUALIFICATIONS');qualifications.forEach(value=>text(value));}
  for(const [title,value]of Object.entries(customerNotes(state))){heading(title.toUpperCase());text(value);}

@@ -59,3 +59,5 @@ test('only cabinets and handles generate revenue, profit and taxable supply at 6
  assert.equal(r.tax.rate,.0675);assert.equal(r.tax.taxableAmount,r.revenue);assert.equal(r.tax.amount,Math.round(r.revenue*.0675));assert.equal(r.total,r.sale+r.tax.amount);assert.notEqual(r.sale,r.revenue);
  const text=await pdfText(await generateQuote(PDFLib,data,fixture(),'customer',template)),schedule=text.split('\f')[2];assert.doesNotMatch(schedule,/Excluded|Installation/i);
 });
+
+test('explicit addenda acknowledgment prints at the top of the scope section',async()=>{const s=fixture();s.customerSections={addenda:'WE ACKNOWLEDGE ADDENDUM 1 AND ADDENDUM 2.'};const text=await pdfText(await generateQuote(PDFLib,data,s,'customer',template));const normalized=text.replace(/\s+/g,' ');assert.match(normalized,/WE ACKNOWLEDGE ADDENDUM 1 AND ADDENDUM 2\./);assert.ok(normalized.indexOf('WE ACKNOWLEDGE')<normalized.indexOf('BID QUALIFICATIONS'));assert.equal(s.customerSections.addenda,'WE ACKNOWLEDGE ADDENDUM 1 AND ADDENDUM 2.');});
