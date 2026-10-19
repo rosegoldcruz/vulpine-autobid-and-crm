@@ -71,3 +71,24 @@ test('MCP edits draft/shared fields, signs tax and exports saved customer PDFs w
   await workspace.close();await app.close();
  }
 });
+
+test('saved cabinet details preserve prices/quantities and enforce revision and access',async()=>{
+ const env={...process.env,OPS_ORGANIZATION_ID:'qa-counts-'+randomUUID(),BIDDING_PUBLIC_URL:'http://127.0.0.1:3039/'};
+ const app=await createBiddingServer(env,{worker:false}),workspace=new QuoteStore(env.QUOTES_DATABASE_URL||env.BIDDING_DATABASE_URL);
+ const actor={sub:randomUUID(),org:env.OPS_ORGANIZATION_ID,scopes:['bids.read','bids.write']};
+ const execute=(name,a,who=actor)=>app.bidding.execute(name,a,who);
+ await new Promise(resolve=>app.server.listen(3039,'127.0.0.1',resolve));
+ try{
+  const unitId=randomUUID(),state=complete({project:'Count fixture',quoteId:'QA-COUNTS',customer:'Fixture GC',email:'',notes:'',preparedBy:'Daniel Cruz',status:'Tentative',margin:20,comparison:false,units:[{id:unitId,name:'A1',repeat:2,auto:false,defaultLi:0,items:[{sku:'B24',li:0,qty:3}]}]});
+  const ref=await workspace.save(actor,state),before=calculateProject(app.catalogs.hci,state);
+  const args={quote_id:ref.id,expected_revision:ref.revision,units:[{unit_id:unitId,kind:'apartment',items:[{sku:'B24',li:0,boxCount:1,handleCount:4,configurationBasis:'Source elevation confirms four operating fronts.'}]}]};
+  assert.equal((await execute('set_project_quote_cabinet_details',args,{...actor,scopes:['bids.read']})).error.code,'FORBIDDEN');
+  assert.equal((await execute('set_project_quote_cabinet_details',args,{...actor,org:'other'})).error.code,'NOT_FOUND');
+  assert.equal((await execute('set_project_quote_cabinet_details',{...args,units:[{...args.units[0],unit_id:randomUUID()}]})).error.code,'NOT_FOUND');
+  assert.equal((await execute('set_project_quote_cabinet_details',{...args,units:[{...args.units[0],items:[{...args.units[0].items[0],qty:9}]}]})).error.code,'INVALID_INPUT');
+  const r=await execute('set_project_quote_cabinet_details',args);assert.equal(r.ok,true,JSON.stringify(r));
+  assert.equal(r.data.state.units[0].items[0].qty,3);assert.equal(r.data.state.margin,state.margin);assert.equal(r.data.totals.purchase,before.purchase);assert.equal(r.data.totals.charges.boxes,6);assert.equal(r.data.totals.charges.handles.quantity,24);
+  assert.equal((await execute('set_project_quote_cabinet_details',args)).error.code,'REVISION_CONFLICT');
+  const toe=await execute('set_project_quote_cabinet_details',{quote_id:ref.id,expected_revision:r.data.revision,units:[{unit_id:unitId,auto:true}]});assert.equal(toe.ok,true,JSON.stringify(toe));assert.equal(toe.data.state.units[0].auto,true);assert.equal(toe.data.state.units[0].items[0].qty,3);assert.ok(toe.data.totals.purchase>r.data.totals.purchase);
+ }finally{for(const table of ['pricing_quote_revisions','pricing_quotes','pricing_projects'])await workspace.pool.query('DELETE FROM '+table+' WHERE org=$1',[actor.org]);await app.store.pool.query('DELETE FROM bid_audit WHERE org=$1',[actor.org]);await workspace.close();await app.close();}
+});

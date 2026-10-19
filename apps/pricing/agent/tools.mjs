@@ -13,9 +13,10 @@ import {readPricingMemory} from './memory.mjs';
 import {prepareSource} from './sources.mjs';
 
 const hash=value=>createHash('sha256').update(value).digest('hex');
-const writes=new Set(['revise_project_quote','set_project_quote_details','set_project_quote_tax','set_bid_tax','export_project_quote','set_bid_details','delete_bid','delete_project_quote','create_bid_job','set_unit_mix','update_bid_items','save_bid','export_bid','save_bid_to_project','set_bid_margin','set_project_quote_margin']);
+const writes=new Set(['set_project_quote_cabinet_details','revise_project_quote','set_project_quote_details','set_project_quote_tax','set_bid_tax','export_project_quote','set_bid_details','delete_bid','delete_project_quote','create_bid_job','set_unit_mix','update_bid_items','save_bid','export_bid','save_bid_to_project','set_bid_margin','set_project_quote_margin']);
 const descriptions={
  revise_project_quote:'Create a NEW shared revised draft from an existing quote at its current revision, including issued historical quotes. Explicitly upgrades to current handles/freight/product-accounting rules and recalculates pricing, preserves items and source fields, clears signature approval, and leaves the original quote/documents untouched. Returns the new quote ID/revision and totals. Use this before editing tax or exporting a legacy quote; never silently revise an issued record.',
+ set_project_quote_cabinet_details:'Set documented cabinet-body and operating-handle counts on existing saved quote items at the current revision. Provide drawing/configuration basis for each item; accessories have zero bodies and handles. May classify apartment/amenity groups and set auto to control calculated toe-kick material. Preserves entered SKUs/quantities, supplier prices, margin and historical PDFs; automatic toe changes may recalculate derived material. Does not approve construction or finish equivalence.',
  set_project_quote_details:'Edit an existing shared project quote at its current revision, including customer/company, email, preparedBy, dates, internal notes, projectInfo, charge costs and customerSections (included, basis, substitutions, exclusions, addenda). Provided record fields merge with existing fields; omitted values are preserved. Use set_project_quote_tax for signed tax. Preserves quantities, SKUs, margin, supplier and historical documents. Issued/archived quotes cannot be edited. Supplier identities are automatically removed from customer PDFs; no browser edit is required.',
  set_bid_tax:'Apply tax to your Auto Bid draft at its current revision. For user-provided manual rates pass mode manual and rate_percent (9.25 means9.25%, zero must be explicit); optional address preserves current address. Server signs the tax record. Automatic mode uses the configured provider and verified full address; missing provider fails explicitly. Exempt mode requires documented exemption evidence. Tax applies to cabinets and handles only. Never invent a tax rate or exemption. Marks draft unsaved.',
  set_project_quote_tax:'Apply signed tax to an existing shared quote at its current revision. Manual mode takes the user-provided rate_percent (9.25 means9.25%; zero must be explicit). Optional address preserves existing address. Automatic mode uses configured provider/full address; exempt mode requires evidence. Server owns signatures; do not fabricate lookup records. Cabinets and handles only are taxable. Saves a revision without changing quantities, SKUs, margin, prices or historical PDFs.',
@@ -96,6 +97,20 @@ export function createBidTools({workspace,store,catalogs,template,signatureBytes
      if(!workspace)throw new BidError('WORKSPACE_UNAVAILABLE','Project storage is unavailable.');
      try{result=await workspace.delete(actor,a.quote_id,a.expected_revision);}catch(e){if(e.status===404)throw new BidError('NOT_FOUND','Quote not found or access denied.');if(e.status===409)throw new BidError('REVISION_CONFLICT',e.message);throw e;}
      break;
+    }
+    case 'set_project_quote_cabinet_details':{
+     const q=await shared(actor,a),state=structuredClone(q.state);
+     for(const detail of a.units){
+      const unit=state.units.find(u=>u.id===detail.unit_id);if(!unit)throw new BidError('NOT_FOUND','Unit does not belong to this quote.');
+      const keys=detail.items.map(i=>i.li+':'+i.sku);if(new Set(keys).size!==keys.length)throw new BidError('DUPLICATE_SKU','Provide each SKU and finish once.');
+      for(const config of detail.items){
+       const item=unit.items.find(i=>i.sku===config.sku&&i.li===config.li);if(!item)throw new BidError('NOT_FOUND','Item does not belong to this unit.');
+       if(!config.boxCount&&config.handleCount)throw new BidError('INVALID_INPUT','Accessory rows cannot carry cabinet handles.');
+       Object.assign(item,{boxCount:config.boxCount,handleCount:config.handleCount,configurationBasis:config.configurationBasis});
+      }
+      if(detail.kind)unit.kind=detail.kind;if(detail.auto!==undefined)unit.auto=detail.auto;
+     }
+     result=await sharedResult(actor,q,state);break;
     }
     case 'set_bid_details':result=await mutate(actor,a,name,j=>{applyDetails(j.state,a);j.state.pricingPolicy=2;});break;
     case 'revise_project_quote':{
@@ -189,7 +204,7 @@ export function createBidTools({workspace,store,catalogs,template,signatureBytes
       const source=checkEvidence(j,u.evidence),unitId=existing?.id||randomUUID();
       j.provenance=j.provenance.filter(p=>p.unit_id!==unitId||p.sku!==null);j.provenance.push({unit_id:unitId,sku:null,evidence:u.evidence});
       if(source.kind==='plan')j.exceptions.push('Plan-derived unit mix requires human review.');
-      return{id:unitId,name:u.name,repeat:u.repeat,kind:u.kind||existing?.kind,areaId:u.areaId||existing?.areaId,areas:u.areas||existing?.areas,defaultLi:u.defaultLi,auto:existing?.auto??(data.autoToe!==false),items:existing?.items??[]};
+      return{id:unitId,name:u.name,repeat:u.repeat,kind:u.kind||existing?.kind,areaId:u.areaId||existing?.areaId,areas:u.areas||existing?.areas,defaultLi:u.defaultLi,auto:u.auto??existing?.auto??(data.autoToe!==false),items:existing?.items??[]};
      });
     });break;
     case 'update_bid_items':result=await mutate(actor,a,name,j=>{
@@ -200,7 +215,7 @@ export function createBidTools({workspace,store,catalogs,template,signatureBytes
       if(!lookup(data,i.li,i.sku)||cost(data,i.li,i.sku)===null)throw new BidError('UNKNOWN_SKU','SKU unavailable in the selected finish: '+i.sku);
       const source=checkEvidence(j,i.evidence);j.provenance.push({unit_id:u.id,sku:i.sku,evidence:i.evidence});
       if(source.kind==='plan')j.exceptions.push('Plan-derived quantities require human review.');
-      return{sku:i.sku,li:i.li,qty:i.qty,...(i.handleCount!==undefined?{handleCount:i.handleCount}:{}),...(i.handlesIncluded?{handlesIncluded:true,handleInclusion:i.handleInclusion}:{}),...(i.assemblyId?{assemblyId:i.assemblyId}:{})};
+      return{sku:i.sku,li:i.li,qty:i.qty,...(i.boxCount!==undefined?{boxCount:i.boxCount,configurationBasis:i.configurationBasis}:{}),...(i.handleCount!==undefined?{handleCount:i.handleCount}:{}),...(i.handlesIncluded?{handlesIncluded:true,handleInclusion:i.handleInclusion}:{}),...(i.assemblyId?{assemblyId:i.assemblyId}:{})};
      });
     });break;
     case 'price_bid':{const r=calculateProject(data,current.state),missing=customerIssues(data,current.state,r);result={purchase:r.purchase,sale:r.sale,revenue:r.revenue,productCost:r.productCost,actualMargin:r.actualMargin,profit:r.profit,count:r.count,margin:r.margin,issues:r.issues,costsComplete:r.costsComplete,profitBasis:r.profitBasis,total:r.total,tax:r.tax,charges:r.charges,customerReady:missing.length===0,missingFields:missing};break;}

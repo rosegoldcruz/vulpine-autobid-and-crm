@@ -8,11 +8,11 @@ Protected-resource metadata: https://api.vulpinehomes.com/bidding/.well-known/oa
 
 ## Implementation
 
-The official MCP SDK serves Streamable HTTP. The current server registers 25 pricing tools from `agent/schemas.mjs`, including customer details, tax, saved-quote export and revision tools. The Back Office MCP proxy adds eight operations tools, for 33 total. These are different connections; do not promise 33 tools on the pricing-only ChatGPT connection.
+The official MCP SDK serves Streamable HTTP. The current server registers 26 pricing tools from `agent/schemas.mjs`, including customer details, tax, saved-quote export and revision tools. The Back Office MCP proxy adds eight operations tools, for 34 total. These are different connections; do not promise 33 tools on the pricing-only ChatGPT connection.
 
 Check live authenticated discovery with `node scripts/check-pricing-mcp.mjs codex` from the repository root (optionally list other registered local clients). This read-only check compares discovery with the current schema and does not print private credentials.
 
-After deploying tool/schema changes, refresh the **Vulpine Pricing MCP – ChatGPT** connection in ChatGPT Plugins, confirm discovery shows 25 tools, and start a new conversation. ChatGPT retains installed metadata; restarting this server does not replace that saved snapshot. See [OpenAI’s metadata refresh instructions](https://developers.openai.com/plugins/deploy/connect-chatgpt#refresh-metadata). The exposed Plugin Management tools do not offer a connection-refresh action. Do not uninstall the connection or reset credentials to solve a stale inventory. Verify the refreshed ChatGPT inventory before claiming that connection is fixed.
+After deploying tool/schema changes, refresh the **Vulpine Pricing MCP – ChatGPT** connection in ChatGPT Plugins, confirm discovery shows 26 tools, and start a new conversation. ChatGPT retains installed metadata; restarting this server does not replace that saved snapshot. See [OpenAI’s metadata refresh instructions](https://developers.openai.com/plugins/deploy/connect-chatgpt#refresh-metadata). The exposed Plugin Management tools do not offer a connection-refresh action. Do not uninstall the connection or reset credentials to solve a stale inventory. Verify the refreshed ChatGPT inventory before claiming that connection is fixed.
 
 Postgres database `vulpine_bidding` holds owned jobs, CAS revisions, source evidence, audit records, queued runs, catalog snapshots and expiring exports. Existing workspace files remain intact; `agent/import-workspace.mjs --run` imports additive snapshots. It is idempotent for an unchanged workspace.
 
@@ -141,3 +141,25 @@ Product revenue/profit covers cabinets and handles only. Shipping and customer
 tax remain separate from product accounting. No new connection scopes or secrets
 are required for these tools. MCP tool discovery is dynamic; clients that cache
 an old inventory must rediscover tools before they can invoke a newly added name.
+
+
+## Cabinet configuration and automatic toe material
+
+`set_project_quote_cabinet_details` edits documented body/operating-front counts
+on existing shared quote SKUs, with revision, organization and write-scope checks.
+Each count patch requires its source/configuration basis; it cannot edit catalog
+prices, entered quantities, margins or supplier. `kind` distinguishes apartments
+from named amenities. `auto` explicitly controls calculated toe material, so
+measured toe items can remain authoritative instead of being replaced by the
+automatic calculator. `set_unit_mix` also accepts optional `auto`, preserving
+existing behavior when omitted. Changes to automatic toe can alter derived costs.
+
+Per-item `boxCount` and `handleCount` allow a reviewed takeoff to carry explicit
+counts when an imported price list lacks them. Supplier-wide metadata is not
+rewritten. Pull-out waste mechanisms are cabinet accessories, not decorative
+handles. Browser job saves preserve these documented per-item fields.
+
+A documented `projectInfo.pricingAllowanceBasis` may label a frameless proposal
+as an allowance and preserve a separately stated `proposalFinish`. This is a
+presentation disclosure; it does not waive customer-ready construction checks or
+turn framed catalog stock into verified frameless products.

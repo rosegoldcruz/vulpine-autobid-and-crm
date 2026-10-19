@@ -4,7 +4,7 @@ const text=z.string().trim().min(1).max(200);
 export const id=z.uuid();
 export const count=z.number().int().min(0).max(100000);
 export const finish=z.number().int().min(0).max(500);
-export const item=z.strictObject({sku:text,li:finish,qty:count,handleCount:count.optional(),handlesIncluded:z.boolean().optional(),handleInclusion:text.optional(),assemblyId:text.optional()});
+export const item=z.strictObject({sku:text,li:finish,qty:count,boxCount:z.number().int().min(0).max(1).optional(),configurationBasis:z.string().min(1).max(2000).optional(),handleCount:count.optional(),handlesIncluded:z.boolean().optional(),handleInclusion:text.optional(),assemblyId:text.optional()});
 export const unit=z.strictObject({id,name:text,repeat:count,defaultLi:finish,auto:z.boolean(),items:z.array(item).max(2000),kind:z.enum(['apartment','amenity']).optional(),areaId:text.optional(),areas:z.array(text).max(100).optional()});
 const tax=z.object({enabled:z.boolean(),mode:z.enum(['automatic','manual']).optional(),address:z.object({street:z.string().max(200),city:z.string().max(100),state:z.string().max(2),zip:z.string().max(10)}),lookup:z.object({provider:z.string(),manual:z.boolean().optional(),enteredBy:z.string().optional(),addressKey:z.string(),rate:z.number(),components:z.array(z.object({name:z.string(),rate:z.number()})).max(30),retrievedAt:z.string(),signature:z.string(),applicableDate:z.string().optional(),lineAmounts:z.record(z.string(),z.number()).optional(),taxableItems:z.record(z.string(),z.boolean()).optional(),taxAmount:z.number().int().optional(),taxableAmounts:z.record(z.string(),z.number()).optional()}).nullable(),exemption:z.object({reason:text,document:z.string().min(1),authority:text,validFrom:text,validUntil:text,addressKey:z.string(),signature:z.string()}).optional()});
 export const state=z.strictObject({version:z.literal(2),supplier:z.enum(['hci','rythern','uscd']).default('hci'),project:text,status:z.literal('Tentative'),quoteId:text,date:text,validUntil:text,customer:z.string().max(200),email:z.string().max(200),preparedBy:z.enum(['Daniel Cruz','Mike Musonda']),notes:z.string().max(10000),margin:z.number().int().min(1).max(50),comparison:z.boolean(),pricingPolicy:z.literal(2).optional(),projectInfo:z.record(z.string(),z.unknown()).optional(),charges:z.record(z.string(),z.unknown()).optional(),customerSections:z.record(z.string(),z.string()).optional(),signature:z.object({approved:z.boolean(),quoteId:text}).optional(),revisionOf:text.optional(),tax:tax.optional(),units:z.array(unit).max(500)});
@@ -21,6 +21,7 @@ export const inputs={
  delete_project_quote:z.strictObject({quote_id:id,expected_revision:z.number().int().positive()}),
  set_bid_details:z.strictObject({...mutation,...details}),
  set_project_quote_details:z.strictObject({...quoteMutation,...details}),
+ set_project_quote_cabinet_details:z.strictObject({...quoteMutation,units:z.array(z.strictObject({unit_id:id,kind:z.enum(['apartment','amenity']).optional(),auto:z.boolean().optional(),items:z.array(z.strictObject({sku:text,li:finish,boxCount:z.number().int().min(0).max(1),handleCount:count,configurationBasis:z.string().min(1).max(2000)})).max(2000).default([])})).min(1).max(500)}),
  revise_project_quote:z.strictObject(quoteMutation),
  set_bid_tax:z.strictObject({...mutation,...taxRequest}),
  set_project_quote_tax:z.strictObject({...quoteMutation,...taxRequest}),
@@ -35,7 +36,7 @@ export const inputs={
  create_bid_job:z.strictObject({project:text,supplier:z.enum(['hci','rythern','uscd']).default('hci'),instruction:z.string().min(1).max(300000),margin:z.number().int().min(1).max(50).default(20)}),
  get_bid_job:z.strictObject(key),
  extract_takeoff:z.strictObject({...key,source_id:id.optional(),expected_revision:z.number().int().positive().optional(),name:text.optional(),text:z.string().min(1).max(300000).optional(),pdf_base64:z.string().max(2800000).optional()}).refine(v=>v.source_id?!v.text&&!v.pdf_base64&&!v.name&&!v.expected_revision:!!v.expected_revision&&!!v.name&&(!!v.text!==!!v.pdf_base64)),
- set_unit_mix:z.strictObject({...mutation,units:z.array(z.strictObject({id:id.optional(),name:text,repeat:count,defaultLi:finish,kind:z.enum(['apartment','amenity']).optional(),areaId:text.optional(),areas:z.array(text).max(100).optional(),evidence})).min(1).max(500)}),
+ set_unit_mix:z.strictObject({...mutation,units:z.array(z.strictObject({id:id.optional(),name:text,repeat:count,defaultLi:finish,auto:z.boolean().optional(),kind:z.enum(['apartment','amenity']).optional(),areaId:text.optional(),areas:z.array(text).max(100).optional(),evidence})).min(1).max(500)}),
  search_catalog:z.strictObject({supplier:z.enum(['hci','rythern','uscd']).default('hci'),query:z.string().max(200),li:finish,limit:z.number().int().min(1).max(50).default(20)}),
  update_bid_items:z.strictObject({...mutation,unit_id:id,items:z.array(item.extend({evidence})).max(2000)}),
  price_bid:z.strictObject(key),
@@ -52,6 +53,7 @@ export const outputs={
  delete_project_quote:success(z.strictObject({quote_id:id,deleted:z.literal(true)})),
  set_bid_details:success(job),
  set_bid_tax:success(job),
+ set_project_quote_cabinet_details:success(z.object({quote_id:id,revision:z.number().int(),state:z.record(z.string(),z.unknown()),totals,documents:z.array(z.record(z.string(),z.unknown()))})),
  revise_project_quote:success(z.object({quote_id:id,revision:z.number().int(),state:z.record(z.string(),z.unknown()),totals,documents:z.array(z.record(z.string(),z.unknown()))})),
  set_project_quote_details:success(z.object({quote_id:id,revision:z.number().int(),state:z.record(z.string(),z.unknown()),totals,documents:z.array(z.record(z.string(),z.unknown()))})),
  set_project_quote_tax:success(z.object({quote_id:id,revision:z.number().int(),state:z.record(z.string(),z.unknown()),totals,documents:z.array(z.record(z.string(),z.unknown()))})),

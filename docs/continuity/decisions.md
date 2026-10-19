@@ -357,3 +357,17 @@ bench assemblies by others in Mission Farms and future bids. Preserve source
 records, and do not confuse a tall cabinet in a mudroom with a bench assembly.
 Do not describe specified Acorn Velvet Elm/Alabaster colors as inherently custom;
 verify catalog equivalents independently. No White Euro substitution is approved.
+
+
+## 2026-10-19 — 311 then Mission Farms; color discretion and qualified pricing
+
+Owner confirms311 tax6.75% and address; finish its existing six-group takeoff first.
+Preserve its15% cabinet margin and source-selected front counts. Then resume Mission
+Farms; owner directs Cream Toffee HG / authorizes closest HCI color determination
+without more selection questions. Retain bench exclusion. Use actual catalog/official
+swatch pixels for a bounded digital comparison,not a physical color-match guarantee.
+Cream Toffee HG follows owner preference; Fashionista is the closest sampled woodgrain.
+Never turn a stock pricing allowance or missing special hardware into a verified exact
+custom supplier configuration. Qualified drafts may be printed while the customer-ready
+construction/incomplete-scope gates remain active; retain the qualifications and unknown
+costs visibly. Count handles from documented operating fronts,not pull-out mechanism names.

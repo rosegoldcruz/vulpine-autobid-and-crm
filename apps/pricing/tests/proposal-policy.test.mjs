@@ -61,3 +61,27 @@ test('only cabinets and handles generate revenue, profit and taxable supply at 6
 });
 
 test('explicit addenda acknowledgment prints at the top of the scope section',async()=>{const s=fixture();s.customerSections={addenda:'WE ACKNOWLEDGE ADDENDUM 1 AND ADDENDUM 2.'};const text=await pdfText(await generateQuote(PDFLib,data,s,'customer',template));const normalized=text.replace(/\s+/g,' ');assert.match(normalized,/WE ACKNOWLEDGE ADDENDUM 1 AND ADDENDUM 2\./);assert.ok(normalized.indexOf('WE ACKNOWLEDGE')<normalized.indexOf('BID QUALIFICATIONS'));assert.equal(s.customerSections.addenda,'WE ACKNOWLEDGE ADDENDUM 1 AND ADDENDUM 2.');});
+
+test('documented item counts charge handles when a supplier list omits body metadata',()=>{
+ const catalog=structuredClone(data),s=fixture();catalog.countsVerified=false;
+ for(const family of ['Shaker','Euro'])for(const row of catalog[family]||[])row[5]=0;
+ const before=calculateProject(catalog,s),row=s.units[0].items[0];
+ row.boxCount=1;row.handleCount=4;row.configurationBasis='Drawing elevation: one box with four operating fronts.';
+ const after=calculateProject(catalog,s);
+ assert.equal(after.purchase,before.purchase);assert.equal(after.charges.boxes,row.qty*s.units[0].repeat);assert.equal(after.charges.handles.quantity,4*row.qty*s.units[0].repeat);
+ assert.equal(after.revenue,before.revenue+after.charges.handles.amount);assert.equal(after.tax.amount,Math.round(after.revenue*after.tax.rate));
+ delete row.configurationBasis;assert.ok(calculateProject(catalog,s).charges.issues.some(v=>v.includes('Document a valid cabinet configuration')));
+});
+
+
+test('frameless allowance labels retain construction validation',async()=>{
+ const s=fixture();s.projectInfo.construction='frameless';s.projectInfo.pricingAllowanceBasis='Catalog costs are estimating allowances; factory frameless compliance requires confirmation.';s.projectInfo.proposalFinish='Euro slab / finish approval pending';
+ assert.ok(customerIssues(data,s,calculateProject(data,s)).some(v=>v.includes('Frameless construction')));
+ const text=await pdfText(await generateQuote(PDFLib,data,s,'draft',template));assert.match(text,/Frameless \(allowance\)/);assert.match(text,/factory frameless compliance requires confirmation/);assert.match(text,/Euro slab \/ finish approval pending/);
+});
+
+
+test('pull-out trash mechanisms are not decorative handle lines',()=>{
+ const s=fixture();s.units[0].items.push({sku:'Trash Kit',li:8,qty:1});
+ const r=calculateProject(data,s);assert.equal(r.charges.handles.includedQuantity,0);assert.equal(r.charges.handles.chargedQuantity,r.charges.handles.quantity);
+});

@@ -3,7 +3,7 @@ import {addressKey} from './tax.mjs';
 export const HANDLE_RATE=333, FREIGHT_RATE=13300;
 const nonnegative=n=>Number.isSafeInteger(n)&&n>=0;
 export const freightItem=row=>/delivery|freight|feight|shipping/i.test(row.sku+' '+row.description);
-export const handleItem=row=>/\b(handle|pull|knob)s?\b/i.test(row.description)&&!row.boxes;
+export const handleItem=row=>/\b(handle|pull|knob)s?\b/i.test(row.description)&&!/pull[ -]?out|trash|waste|slide|mechanism/i.test(row.description)&&!row.boxes;
 export function quantities(data,state,units){
  const areas=new Map(),apartmentGroups=new Map(),issues=[];
  for(const u of units.filter(u=>u.repeat>0)){
@@ -26,11 +26,13 @@ export function projectCharges(data,state,units){
   const meta=lookup(data,r.li,r.sku),extended=r.qty*u.repeat;
   if(freightItem(r)){freightCost+=r.purchase*extended;continue;}
   if(handleItem(r)){listedHandles+=extended;continue;}
-  if(data.countsVerified===false&&meta?.[5]===0&&/cabinet|base|vanity|wall/i.test(r.description))issues.push('Verify cabinet-box and handle quantities for '+u.name+' / '+r.sku+'.');
-  if(!meta?.[5]){accessories+=extended;continue;}
+  if(data.countsVerified===false&&r.boxCount===undefined&&meta?.[5]===0&&/cabinet|base|vanity|wall/i.test(r.description))issues.push('Verify cabinet-box and handle quantities for '+u.name+' / '+r.sku+'.');
+  const bodyCount=r.boxCount??meta?.[5]??0;
+  if(!nonnegative(bodyCount)||bodyCount>1||r.boxCount!==undefined&&!r.configurationBasis?.trim()){issues.push('Document a valid cabinet configuration for '+u.name+' / '+r.sku+'.');continue;}
+  if(!bodyCount){accessories+=extended;continue;}
   const key=(u.areaId||u.id)+':'+(r.assemblyId||r.li+':'+r.sku);
   if(r.assemblyId&&assemblies.has(key)){issues.push('Duplicate cabinet assembly across finishes: '+r.assemblyId+'. Charge each physical cabinet once.');continue;}
-  assemblies.add(key);boxes+=meta[5]*extended;
+  assemblies.add(key);boxes+=bodyCount*extended;
   const configuration=r.handleCount??(data.countsVerified===false?null:meta[7]);
   if(!nonnegative(configuration)||configuration===0){issues.push('Verify door/drawer handle configuration for '+u.name+' / '+r.sku+'.');continue;}
   const quantity=configuration*extended;handles+=quantity;

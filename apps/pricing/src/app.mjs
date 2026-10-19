@@ -127,7 +127,7 @@ function save(){
   invalidatePdf();
 }
 function invalidatePdf(){if(pdfUrl){URL.revokeObjectURL(pdfUrl);pdfUrl=null}$('downloadResult').hidden=true}
-function cleanJobState(s){return Object.fromEntries(['version','supplier','project','status','quoteId','date','validUntil','customer','email','preparedBy','notes','margin','comparison','pricingPolicy','projectInfo','charges','customerSections','signature','revisionOf','tax','units'].map(k=>[k,k==='status'?'Tentative':k==='units'?s.units.map(u=>({id:u.id,name:u.name,repeat:u.repeat,defaultLi:u.defaultLi,auto:u.auto,kind:u.kind,areaId:u.areaId,areas:u.areas,items:u.items.map(i=>({sku:i.sku,li:i.li,qty:i.qty,handleCount:i.handleCount,handlesIncluded:i.handlesIncluded,handleInclusion:i.handleInclusion,assemblyId:i.assemblyId}))})):s[k]]));}
+function cleanJobState(s){return Object.fromEntries(['version','supplier','project','status','quoteId','date','validUntil','customer','email','preparedBy','notes','margin','comparison','pricingPolicy','projectInfo','charges','customerSections','signature','revisionOf','tax','units'].map(k=>[k,k==='status'?'Tentative':k==='units'?s.units.map(u=>({id:u.id,name:u.name,repeat:u.repeat,defaultLi:u.defaultLi,auto:u.auto,kind:u.kind,areaId:u.areaId,areas:u.areas,items:u.items.map(i=>({sku:i.sku,li:i.li,qty:i.qty,handleCount:i.handleCount,boxCount:i.boxCount,configurationBasis:i.configurationBasis,handlesIncluded:i.handlesIncluded,handleInclusion:i.handleInclusion,assemblyId:i.assemblyId}))})):s[k]]));}
 document.addEventListener('vulpine-open-studio',async()=>{
   // Let the existing debounced save finish before leaving the pricing document.
   await new Promise(resolve=>setTimeout(resolve,450));await saveQueue;

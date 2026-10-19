@@ -14,7 +14,7 @@ export async function generateQuote(PDFLib,data,input,type='customer',templateBy
  const [cover,approach]=await doc.copyPages(template,[0,1]);doc.addPage(cover);doc.addPage(approach);stamp(cover);stamp(approach);text(cover,state.preparedBy.trim()||'Daniel Cruz',34,567,255,27);text(cover,shortDate(state.validUntil),34,649,205,17,true);
  // Customer package: three supplied branded pages, unit summary, separate signatures.
  if(type==='customer'){const [brand]=await doc.copyPages(template,[3]);doc.addPage(brand);stamp(brand,false,true);}
- const activeUnits=result.units.filter(u=>u.repeat>0),rows=activeUnits.flatMap(u=>u.entries.map(r=>({...r,unit:u,extendedQty:r.qty*u.repeat}))),totalCabinets=rows.reduce((s,r)=>s+(lookup(data,r.li,r.sku)?.[5]||0)*r.extendedQty,0),totalHardware=rows.reduce((s,r)=>s+(lookup(data,r.li,r.sku)?.[7]||0)*r.extendedQty,0),finishes=[...new Set(rows.map(r=>r.line))],schedule=type==='customer'?activeUnits:rows,pages=Math.max(1,Math.ceil(schedule.length/20)),amount=type==='purchase'?result.purchase:result.sale;
+ const activeUnits=result.units.filter(u=>u.repeat>0),rows=activeUnits.flatMap(u=>u.entries.map(r=>({...r,unit:u,extendedQty:r.qty*u.repeat}))),countsSupplied=data.countsVerified!==false||rows.every(r=>r.boxCount!==undefined&&r.configurationBasis?.trim()&&(r.boxCount===0||Number.isSafeInteger(r.handleCount))),totalCabinets=rows.reduce((s,r)=>s+(r.boxCount??lookup(data,r.li,r.sku)?.[5]??0)*r.extendedQty,0),totalHardware=rows.reduce((s,r)=>s+(r.handleCount??lookup(data,r.li,r.sku)?.[7]??0)*r.extendedQty,0),finishes=[...new Set(rows.map(r=>r.line))],schedule=type==='customer'?activeUnits:rows,pages=Math.max(1,Math.ceil(schedule.length/20)),amount=type==='purchase'?result.purchase:result.sale;
  const abbreviations=data.lines?.map(l=>l[0])||['WHS','GRS','SDW','MSL','ONB','SBS','SSG','MTS','Euro Classic','Euro Deluxe','Euro Custom'];
  for(let index=0;index<pages;index++){
   const [p]=await doc.copyPages(template,[2]);doc.addPage(p);stamp(p,true);
@@ -30,13 +30,13 @@ export async function generateQuote(PDFLib,data,input,type='customer',templateBy
     const families=[...new Set(r.entries.map(i=>data.families?.[i.li]||(i.li<8?'Framed':'Frameless')))];
     text(p,families.join(' / '),30,top,93,7.5,true);text(p,r.name,134,top,107,8,true);text(p,r.repeat,254,top,31,8);
     text(p,money(r.sale),292,top,66,8);text(p,money(r.sale*r.repeat),368,top,68,8);
-    text(p,data.countsVerified===false?'Not supplied':r.entries.reduce((s,i)=>s+(lookup(data,i.li,i.sku)?.[5]||0)*i.qty*r.repeat,0),449,top,49,8);
-    text(p,data.countsVerified===false?'Not supplied':r.entries.reduce((s,i)=>s+(lookup(data,i.li,i.sku)?.[7]||0)*i.qty*r.repeat,0)+' est.',510,top,54,7);
-   }else{const price=type==='purchase'?r.purchase:r.sale,meta=lookup(data,r.li,r.sku);text(p,r.sku,30,top,93,7.5,true);text(p,r.unit.name+' / '+abbreviations[r.li],134,top-3,107,7);text(p,r.qty+' each x '+r.unit.repeat+' units',134,top+5,107,6);text(p,r.extendedQty,254,top,31,8);text(p,money(price),292,top,66,8);text(p,money(price*r.extendedQty),368,top,68,8);text(p,(meta?.[5]||0)*r.extendedQty,449,top,49,8);text(p,(meta?.[7]||0)*r.extendedQty+' est.',510,top,54,7)}
+    text(p,!countsSupplied?'Not supplied':r.entries.reduce((s,i)=>s+(i.boxCount??lookup(data,i.li,i.sku)?.[5]??0)*i.qty*r.repeat,0),449,top,49,8);
+    text(p,!countsSupplied?'Not supplied':r.entries.reduce((s,i)=>s+(i.handleCount??lookup(data,i.li,i.sku)?.[7]??0)*i.qty*r.repeat,0)+' est.',510,top,54,7);
+   }else{const price=type==='purchase'?r.purchase:r.sale,meta=lookup(data,r.li,r.sku);text(p,r.sku,30,top,93,7.5,true);text(p,r.unit.name+' / '+abbreviations[r.li],134,top-3,107,7);text(p,r.qty+' each x '+r.unit.repeat+' units',134,top+5,107,6);text(p,r.extendedQty,254,top,31,8);text(p,money(price),292,top,66,8);text(p,money(price*r.extendedQty),368,top,68,8);text(p,(r.boxCount??meta?.[5]??0)*r.extendedQty,449,top,49,8);text(p,(r.handleCount??meta?.[7]??0)*r.extendedQty+' est.',510,top,54,7)}
   });
-  text(p,money(amount),368,506,70,9,true,rgb(1,1,1));text(p,data.countsVerified===false?'Not supplied':totalCabinets,449,506,49,8,true,rgb(1,1,1));text(p,data.countsVerified===false?'Not supplied':totalHardware+' est.',510,506,54,7,true,rgb(1,1,1));
+  text(p,money(amount),368,506,70,9,true,rgb(1,1,1));text(p,!countsSupplied?'Not supplied':totalCabinets,449,506,49,8,true,rgb(1,1,1));text(p,!countsSupplied?'Not supplied':totalHardware+' est.',510,506,54,7,true,rgb(1,1,1));
   const values=[money(amount),'Excluded from material cost',type==='purchase'?'Pending verification':state.tax?.enabled?money(result.tax.amount):'Pending verification','Excluded','',money(type==='purchase'?amount:result.total)];values.forEach((v,i)=>text(p,v,201,562+i*18.5,83,8,i===5));
-  const snapshot=[result.count,result.units.filter(u=>u.repeat>0).length,data.countsVerified===false?'Not supplied':totalCabinets,data.countsVerified===false?'Not supplied':totalHardware+' (estimate)','',state.status+' quantities'];snapshot.forEach((v,i)=>text(p,v,438,562+i*18.5,126,8,i===5));
+  const snapshot=[result.count,result.units.filter(u=>u.repeat>0).length,!countsSupplied?'Not supplied':totalCabinets,!countsSupplied?'Not supplied':totalHardware+' (estimate)','',state.status+' quantities'];snapshot.forEach((v,i)=>text(p,v,438,562+i*18.5,126,8,i===5));
   // Preserve the owner's page-three specification wording; vary finish only.
   PROPOSAL_SPECIFICATIONS.forEach((value,i)=>text(p,value,213.33,701+i*13.846426,348,7));
   p.drawRectangle({x:210,y:H-789,width:358,height:13,color:rgb(1,1,1)});
@@ -47,7 +47,7 @@ export async function generateQuote(PDFLib,data,input,type='customer',templateBy
  // Details retain full descriptions and notes when narrow template cells must abbreviate.
  const needsDetails=state.notes.trim()||state.customer.length>35||state.project.length>40||rows.some(r=>r.unit.name.length>20||r.sku.length>18);
  if(type!=='customer'&&(type==='internal'||needsDetails)){const detail=await PDFDocument.load(await generateInternalReport(PDFLib,data,state,type));const copied=await doc.copyPages(detail,detail.getPageIndices());copied.forEach(p=>doc.addPage(p))}
- if(type==='customer')addAcceptancePage(doc,PDFLib,state,result,{totalCabinets:data.countsVerified===false?null:totalCabinets,totalHardware:data.countsVerified===false?null:totalHardware,finishes,font,bold,gold,ink});
+ if(type==='customer')addAcceptancePage(doc,PDFLib,state,result,{totalCabinets:countsSupplied?totalCabinets:null,totalHardware:countsSupplied?totalHardware:null,finishes,font,bold,gold,ink});
 
  if(type!=='purchase'&&state.tax?.enabled){
   const p=doc.addPage([595.5,842.25]);let y=790;

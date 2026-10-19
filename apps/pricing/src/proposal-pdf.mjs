@@ -34,14 +34,14 @@ export async function generateProposal(PDFLib,data,state,type,templateBytes,opti
   const original=source.getPage(2),box=original.getMediaBox(),scaleX=W/box.width,scaleY=H/box.height,p=artwork(2);
   const cell=(value,x,top,width=100,size=8,strong=false,color=ink)=>{let v=visible(value),actual=size,f=strong?bold:font;while(f.widthOfTextAtSize(v,actual)>width&&actual>5.5)actual-=.25;if(f.widthOfTextAtSize(v,actual)>width){while(v&&f.widthOfTextAtSize(v+'...',actual)>width)v=v.slice(0,-1);v+='...';}draw(p,v,(x-box.x)*scaleX,(850.079956-top-box.y)*scaleY,actual*Math.min(scaleX,scaleY),strong,color);};
   cell(state.project+' / '+(state.customer||'GC PENDING'),108,70,201,8,true);cell(state.projectInfo?.cabinetLine||'Line pending',422,70,144,8);
-  active.slice(offset,offset+20).forEach((u,i)=>{const top=125+i*18.8;cell([...new Set(u.entries.map(r=>data.families?.[r.li]||(r.li<8?'Framed':'Frameless')))].join('/'),30,top,93,7,true);cell(u.name,134,top,107,7,true);cell(u.repeat,254,top,31,8);cell(money(u.sale),292,top,66,8);cell(money(u.sale*u.repeat),368,top,68,8);cell(u.entries.reduce((s,r)=>s+(lookup(data,r.li,r.sku)?.[5]||0)*r.qty*u.repeat,0),449,top,49,8);cell(u.entries.reduce((s,r)=>s+(r.handleCount??lookup(data,r.li,r.sku)?.[7]??0)*r.qty*u.repeat,0),510,top,54,8);});
+  active.slice(offset,offset+20).forEach((u,i)=>{const top=125+i*18.8;cell(state.projectInfo?.pricingAllowanceBasis&&state.projectInfo?.construction==='frameless'?'Frameless (allowance)':[...new Set(u.entries.map(r=>data.families?.[r.li]||(r.li<8?'Framed':'Frameless')))].join('/'),30,top,93,7,true);cell(u.name,134,top,107,7,true);cell(u.repeat,254,top,31,8);cell(money(u.sale),292,top,66,8);cell(money(u.sale*u.repeat),368,top,68,8);cell(u.entries.reduce((s,r)=>s+(r.boxCount??lookup(data,r.li,r.sku)?.[5]??0)*r.qty*u.repeat,0),449,top,49,8);cell(u.entries.reduce((s,r)=>s+(r.handleCount??lookup(data,r.li,r.sku)?.[7]??0)*r.qty*u.repeat,0),510,top,54,8);});
   cell(money(result.cabinetSale),368,506,70,9,true,rgb(1,1,1));cell(charges?.boxes,449,506,49,8,true,rgb(1,1,1));cell(charges?.handles.quantity,510,506,54,8,true,rgb(1,1,1));
   [money(result.cabinetSale),money(charges?.handles.amount||0),result.tax.amount===null||!state.tax?.enabled&&!state.tax?.exemption?'Pending verification':money(result.tax.amount),money(charges?.freight.amount||0),'',result.total===null?'Subtotal '+money(result.sale):money(result.total)].forEach((v,i)=>cell(v,201,562+i*18.5,83,7,i===5));
   [charges?charges.counts.apartments+' apts + '+charges.counts.amenities+' areas':result.count,charges?.counts.groups,charges?.boxes,charges?.handles.quantity,'',type==='draft'?'Internal draft':'Cabinet supply'].forEach((v,i)=>cell(v,438,562+i*18.5,126,8,i===5));
   // Exact owner-supplied page-three wording; only door style / finish varies.
   PROPOSAL_SPECIFICATIONS.forEach((value,i)=>cell(value,213.33,701+i*13.846426,348,7));
   p.drawRectangle({x:210*scaleX,y:(850.079956-789-box.y)*scaleY,width:358*scaleX,height:13*scaleY,color:rgb(1,1,1)});
-  cell(proposalFinish(data,active),213.33,785,348,7);
+  cell(state.projectInfo?.proposalFinish||proposalFinish(data,active),213.33,785,348,7);
   if(result.total===null){p.drawRectangle({x:(34-box.x)*scaleX,y:(850.079956-661-box.y)*scaleY,width:164*scaleX,height:18*scaleY,color:rgb(.94,.925,.89)});cell('SUBTOTAL BEFORE TAX',36,654,160,8,true);}
   cell(state.quoteId+' | '+(type==='draft'?'INTERNAL DRAFT - NOT FOR SUBMISSION':'PREPARED PROPOSAL')+' | '+state.date,29,804,536,8);
  }
@@ -61,6 +61,7 @@ export async function generateProposal(PDFLib,data,state,type,templateBytes,opti
  pair('Cabinet line',state.projectInfo?.cabinetLine||'MISSING - cabinet line');
  text('Finish basis: '+(state.projectInfo?.finishBasis||[...new Set(active.flatMap(u=>u.entries.map(r=>r.line)))].join(', ')));
  if(charges){pair('Apartments / named amenity areas',charges.counts.apartments+' apartments / '+charges.counts.amenities+' areas');pair('Apartment type groups / cabinet boxes',charges.counts.groups+' groups / '+charges.boxes+' boxes');pair('Accessories / decorative handles',charges.accessories+' accessories / '+charges.handles.quantity+' handles');}
+ if(state.projectInfo?.pricingAllowanceBasis)text('Pricing allowance qualification: '+state.projectInfo.pricingAllowanceBasis);
  heading('PRICE SUMMARY');
  pair('Cabinet and material supply',money(customer?result.cabinetSale:result.purchase));
  if(charges&&type!=='purchase'){
@@ -86,7 +87,7 @@ export async function generateProposal(PDFLib,data,state,type,templateBytes,opti
  for(const u of active){
   heading(u.name+' | '+(u.areas?.length?u.areas.length+' named areas / 1 combined schedule':u.repeat+' '+(u.kind==='amenity'?'named area':'apartments')));
   pair('Cabinet supply per '+(u.kind==='amenity'?'area':'apartment'),money(type==='purchase'?u.purchase:u.sale));pair('Extended cabinet supply x '+u.repeat,money((type==='purchase'?u.purchase:u.sale)*u.repeat),true);
-  const counts=u.entries.reduce((r,item)=>{const m=lookup(data,item.li,item.sku);r.boxes+=(m?.[5]||0)*item.qty*u.repeat;r.handles+=(item.handleCount??m?.[7]??0)*item.qty*u.repeat;return r;},{boxes:0,handles:0});
+  const counts=u.entries.reduce((r,item)=>{const m=lookup(data,item.li,item.sku);r.boxes+=(item.boxCount??m?.[5]??0)*item.qty*u.repeat;r.handles+=(item.handleCount??m?.[7]??0)*item.qty*u.repeat;return r;},{boxes:0,handles:0});
   if(u.areas?.length)text('Named areas: '+u.areas.join(', ')+'. Island included within its kitchen.');
   text(counts.boxes+' cabinet boxes | '+counts.handles+' decorative handles | '+[...new Set(u.entries.map(i=>i.line))].join(', '));
   if(!customer)for(const row of u.entries)pair(row.sku+' | '+row.line+' | '+row.qty+' x '+u.repeat+' = '+row.qty*u.repeat,money((type==='purchase'?row.purchase:row.sale)*row.qty*u.repeat));

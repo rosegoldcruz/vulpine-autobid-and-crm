@@ -1,3 +1,70 @@
+## 2026-10-19 — 311 exported; Mission Farms priced stock alternate; cabinet-detail MCP deployed
+
+User explicitly switched work to finish existing311 first, confirming311 W.St.George
+Boulevard,St.George UT84770 and6.75% combined tax,then resume Mission Farms.
+User directs Cream Toffee HG as Alabaster alternative and authorizes agent color
+comparison/selection without asking for confirmation. No mudroom benches.
+
+311 quote f126ebda-3a7c-48c5-af3b-251a62ef50f5 is revision9; six original groups,
+SKUs,quantities,repetitions and15% cabinet margin preserved. Bonneville Builders /
+STGBIDS@BONNEVILLEBUILDERS.COM and confirmed tax/address saved. Documented item
+counts from the retained source front schedules give579 cabinets and1269 handles.
+Product revenue$85,558.62,cost$69,133.04,estimated profit$16,425.58 before handle
+supplier cost;delivery$6,916,tax$5,775.21,total$98,249.83. Saved PDF document
+ dde8c31a-60c6-4c76-8915-6b1126b6496c,9 pages. File /mnt/data/311_Mixed_Use_Bid.pdf
+and same filename in /home/bid-workspace/311 Mixed Use. Prior alternate quote617ec2a7
+was not edited. This is a QUALIFIED PRICING DRAFT: saved same-SKU costs are allowances
+for specified Euro frameless TFL,not verified supplier equivalence; customer-ready
+construction gate remains active. No unqualified final compliance claim.
+
+Mission Farms private job7cf5a601-f40f-4376-b1f8-04b0b0b58c17 revision45 and shared
+quote acfffedd-db0b-4d37-821c-515ac983c7db revision2 retain162 apartments /19types
+plus9 priced named amenity areas. Stock alternative covers4565 quoted cabinet
+modules and9672 operating handles; these are proposed stock assemblies,NOT a claim
+that original drawings name these SKUs or that4565 equals original custom assemblies.
+Tall linen/pantry assemblies,glass units,drawer counts,dimensions,panels and toe
+allowances are traced and explicitly qualified. Manual toe takeoff is authoritative
+(auto:false). Mudroom bench assemblies excluded; package/folding-table/specialty
+furniture and original custom fabrication remain outside the qualified stock alternate.
+Specialty glass hinges/handleless bottom panels and special factory adaptation costs
+remain UNPRICED; scopeIncomplete:true and customer-ready gate deliberately retained.
+No exact compliant full-original-scope final bid is claimed.
+
+Mission product revenue$1,263,153.77,cost$984,753.60,estimated profit$278,400.17 before
+handle supplier cost plus unpriced specialty/factory costs;delivery$22,743,
+10.35% tax$130,736.42,total$1,416,633.19.20% cabinet margin retained. Draft PDF
+ dccc97a9-f150-4104-98ba-9cecf7d4d0dd is15 Letter pages. Files /mnt/data/Mission_Farms_Bid.pdf
+and .xlsx, plus matching copies in /home/bid-workspace/Mission Farms. Review workbook
+now8 sheets with472 quoted SKU rows,original dimensional records,substitutions and
+color comparison. All numeric totals checked against saved quote and source job.
+
+HCI source /home/EURO-CATALOG-v3.11.10.25-RE.pdf page10. Actual median image sRGB/CIE76
+comparison: named Alabaster officialD431 #F9F6EF (drawing saysD31-60,code conflict);
+Cream Toffee HG #E4D8D0 is closer than Beige Textile between owner's two choices.
+Winter Frost SM is digitally closest OVERALL,but owner directs Cream Toffee HG.
+Fashionista #927352 is closest sampled woodgrain to Acorn Velvet Elm #937B5B.
+Use Cream Toffee HG kitchen/drybar lower/pantry fronts and Fashionista uppers/bath/linen;
+aluminum glass fronts identified separately. Digital colors are not physical sample
+matches. Custom-color tier prices used; availability/final factory compliance pending.
+Comparison evidence /opt/output/mission-review/color-comparison.json;mapping and
+qualifications /opt/output/mission-review/stock-mapping.json.
+
+New MCP set_project_quote_cabinet_details patches reviewed body/handle counts,
+apartment/amenity classification and automatic toe on existing saved items,with
+source basis,revision/write/org guards. Does not edit entered SKUs/quantities or
+supplier prices/margin. boxCount/configurationBasis persist through job schema and
+browser saves; counts and PDFs honor item overrides when imported catalogs omit
+counts. Pull-out waste mechanisms no longer count as decorative handles. Frameless
+allowance/finish labels are explicitly qualified and do not bypass construction QA.
+Public pricing registration26 tools; Backoffice34 total; all7 local clients verified.
+Installed ChatGPT connection refresh remains unverified; do not claim its old18-tool
+snapshot is fixed. Both pricing/bidding services deployed and healthy;52 unit and5
+integration checks pass; build passes;PDF hashes,Letter geometry and final closing
+artwork checked. No customer email or supplier order sent. Continue from saved drafts,
+not fresh takeoffs; resolve supplier/factory gaps before unqualified final issuance.
+
+---
+
 ## 2026-10-19 — owner excludes mudroom benches
 
 Owner explicitly states Vulpine does not supply mudroom benches. Apply this scope
