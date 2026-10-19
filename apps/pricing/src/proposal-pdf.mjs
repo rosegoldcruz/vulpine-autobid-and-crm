@@ -1,5 +1,5 @@
 import {calculateProject,money,linesFor,lookup} from './pricing.mjs';
-import {customerIssues,customerNotes} from './proposal-policy.mjs';
+import {customerIssues,customerNotes,customerQualifications} from './proposal-policy.mjs';
 import {customerText} from './customer-text.mjs';
 const safe=s=>String(s??'').replace(/[“”″]/g,'"').replace(/[‘’]/g,"'").replace(/[–—]/g,'-').replace(/×/g,'x').replace(/[^\x20-\x7e\n]/g,'?');
 export async function generateProposal(PDFLib,data,state,type,templateBytes,options={}){
@@ -83,6 +83,8 @@ export async function generateProposal(PDFLib,data,state,type,templateBytes,opti
   if(!customer)for(const row of u.entries)pair(row.sku+' | '+row.line+' | '+row.qty+' x '+u.repeat+' = '+row.qty*u.repeat,money((type==='purchase'?row.purchase:row.sale)*row.qty*u.repeat));
  }
  next('SCOPE & PRICING BASIS');
+ const qualifications=customerQualifications(state);
+ if(qualifications.length){heading('BID QUALIFICATIONS');qualifications.forEach(value=>text(value));}
  for(const [title,value]of Object.entries(customerNotes(state))){heading(title.toUpperCase());text(value);}
  if(state.projectInfo?.mixEvidence){heading('PROJECT QUANTITY BASIS');text(state.projectInfo.mixEvidence);}
  next('PREPARED PROPOSAL / ACCEPTANCE');

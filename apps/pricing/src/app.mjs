@@ -1,4 +1,4 @@
-import {customerIssues} from './proposal-policy.mjs';
+import {customerIssues,customerQualifications} from './proposal-policy.mjs';
 import {mountWorkspace} from './workspace.mjs';
 import {LINES as HCI_LINES,linesFor,money,whole,lookup,cost,calculateUnit,calculateProject,quoteDates} from './pricing.mjs';
 import {generateQuote} from './quote-pdf.mjs';
@@ -311,6 +311,8 @@ function renderQuote(){
   if(!state.date)problems.push('Enter a quote date.');
   if(state.email&&!$('email').validity.valid)problems.push('That customer email doesn’t look right. Fix it or leave it blank.');
   $('documentIssues').textContent=problems.join('\n');$('documentIssues').hidden=!problems.length;
+  const qualifications=documentType==='customer'?customerQualifications(state):[];
+  $('documentQualifications').textContent=qualifications.length?'Included on your PDF: '+qualifications.join(' '):'';$('documentQualifications').hidden=!qualifications.length;
   $('generate').disabled=$('printGenerate').disabled=problems.length>0;
   const amount=documentType==='purchase'?r.purchase:r.total??r.sale;
   $('documentSummary').innerHTML='<p class="sumName">'+esc(state.project||'Unnamed project')+'<br><small>'+esc([...new Set(r.units.filter(u=>u.repeat>0).flatMap(u=>u.entries.map(x=>x.line)))].join(', '))+' · '+r.count+' unit'+(r.count===1?'':'s')+' · '+esc(state.status)+'</small></p><strong class="sumAmt">'+(ok?money(amount):'Check units')+'</strong><p class="hint">'+(documentType==='customer'?'Customer selling total. Your cost and profit are hidden.':documentType==='purchase'?'Supplier purchase total. Shipping and delivery use full catalog rates.':'Internal document: shows cost, selling price, margin and profit.')+'</p>';

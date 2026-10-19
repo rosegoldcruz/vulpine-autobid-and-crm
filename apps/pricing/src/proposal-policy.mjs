@@ -56,13 +56,17 @@ export function customerIssues(data,state,result){
  if(!selected.length||selected.some(i=>!linesFor(data)[i.li]))errors.push('Select a verified cabinet finish for every item.');
  if(!state.projectInfo?.finishBasis?.trim())errors.push('Record the specified finish/location mapping or disclosed preliminary White Shaker basis.');
  if(state.projectInfo?.construction==='frameless'&&selected.some(i=>!String(data.families?.[i.li]||linesFor(data)[i.li]?.[1]).match(/frameless|euro/i)))errors.push('Frameless construction is required; framed cabinetry cannot be substituted.');
- if(state.projectInfo?.finishUnresolved)errors.push('Specified finish/location mapping remains unresolved; customer-ready export is blocked.');
  if(state.projectInfo?.scopeIncomplete)errors.push('The project scope is incomplete; this is an internal priced-scope draft.');
- if(state.projectInfo?.conflicts?.length)errors.push(...state.projectInfo.conflicts.filter(s=>!/\b(delivery address|delivery title blocks|ship-to|shipping address)\b/i.test(s)).map(s=>'Source conflict: '+s));
  if(!state.tax?.enabled&&!state.tax?.exemption)errors.push('Verified sales tax or a documented applicable exemption is required.');
  if(state.tax?.enabled&&!state.tax.lookup?.taxableItems)errors.push('Verify which line items are taxable, including handles and freight.');
  if(state.tax?.enabled&&state.tax.lookup?.addressKey!==addressKey(state.tax.address))errors.push('Tax must match the verified delivery address.');
  return [...new Set(errors)];
+}
+export function customerQualifications(state){
+ const notes=[];
+ if(state.projectInfo?.finishUnresolved)notes.push('Finish selections are subject to final approval; pricing uses the finish allowances stated in this proposal.');
+ for(const conflict of state.projectInfo?.conflicts||[])notes.push('Drawing / project qualification: '+conflict);
+ return notes;
 }
 export function customerNotes(state){
  const s=state.customerSections||{};

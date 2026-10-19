@@ -456,3 +456,22 @@ pricing service without altering quote data: 922 bodies, handles1857 at3.33, man
 supplier names; schedule visually inspected. Still explicitly an internal draft
 because saved finish allowance and apartment-label conflicts remain unresolved;
 no false final approval or supplier finish equivalence was asserted.
+
+
+## 2026-10-19 — customer download unblocked with printed qualifications
+
+Owner screenshot established that finishUnresolved and source conflicts still
+disabled both customer Generate buttons after address fix. Converted these two
+metadata flags to visible bid qualifications in UI and customer PDF. Preserve
+actual pricing, quantities, construction, incomplete scope and tax validation.
+No approval or finish equivalence is invented. Customer download now succeeds
+using River Pointe quote revision44 and unchanged total226824.88/922 bodies.
+Saved customer document0ce8c6a5-c00f-4317-8b64-4ab27118e1ef in shared history;
+/mnt/data/River_Pointe_Apartments_Bid.pdf now contains the customer version with
+printed finish/drawing qualifications and no internal-draft banner or supplier
+names. Prior documents retained; no quote data changed.
+
+44 tests passed; protected build passed. Actual browser Generate/download and
+print popup passed with unresolved finish and conflicting drawing metadata,
+along with existing desktop/mobile manual-tax flow. Actual production customer
+export passed authenticated tax verification. Both services restarted/healthy.

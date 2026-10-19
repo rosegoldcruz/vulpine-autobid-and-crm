@@ -1,34 +1,34 @@
 {
-  "last_change": "Removed mandatory delivery-address/source-evidence printing gates, exempted address-only conflicts, hid supplier identity throughout customer and draft PDF text and legacy footer. Generated latest River Pointe PDF from saved revision44 with 922 cabinet bodies and total $226,824.88, preserving quote values.",
+  "last_change": "Converted unresolved finish/source conflicts from customer download blockers to printed qualifications. Generated and downloaded customer River Pointe PDF from saved revision44; preserved all prices, tax and922 bodies.",
   "verification": [
-    "node --test tests/*.test.mjs in apps/pricing: 43 passed, zero failed.",
-    "node scripts/build.mjs: succeeded, 510 products.",
-    "Authenticated production pricing export succeeded for shared quote revision44; newest document e0fb446b-1922-48b3-a92e-9a416971f524.",
-    "PDF text scan: 922 bodies, total $226,824.88, no HCI/Highland/Rythern/USCD/Cabinet Depot supplier identity. Letter schedule visually inspected.",
-    "Restarted cabinet-pricing and bidding services; health on ports3021/3022 status ok after startup retry.",
+    "node --test tests/*.test.mjs:44 passed.",
+    "node scripts/build.mjs: passed.",
+    "node /opt/output/river-print/browser-download-check.mjs: passed actual customer Generate/download and print popup with unresolved finish/drawing metadata; PDF qualifications present and supplier names absent; desktop/mobile manual tax regression also passed.",
+    "Authenticated production customer PDF export succeeded; shared document0ce8c6a5-c00f-4317-8b64-4ab27118e1ef, revision44, total226824.88.",
+    "PDF text confirms922 bodies, BID QUALIFICATIONS and no INTERNAL DRAFT/HCI/Highland/Rythern/USCD.",
+    "Both pricing and bidding services restarted; health status ok.",
     "git diff --check passed."
   ],
   "decisions": [
-    "Owner explicitly revokes mandatory delivery address for bid printing.",
-    "Owner forbids supplier identity anywhere on customer bids, including footers.",
-    "Preserved existing user quote revision, 10 percent margin, 6.75 percent manual rate, handles at3.33 and all922 cabinet bodies."
+    "Owner explicitly requires remaining screenshot finish/source-conflict messages not block downloads. Preserve the uncertainty as written bid qualifications.",
+    "Do not change saved customer quote or imply final finish approval."
   ],
   "open_work": [
-    "River Pointe remains explicitly a preliminary draft because saved finish equivalence and apartment-label conflicts are unresolved. Existing customer notes include old tax-confirmation wording; actual displayed tax uses saved manual6.75 percent and is calculated. No final approval fabricated."
+    "Finish and source-drawing qualifications remain disclosed; final ordering selections still require resolution."
   ],
   "blockers": [],
-  "next_action": "Owner downloads the generated River Pointe PDF; finalize finish and drawing qualifications before representing the bid as fully approved.",
-  "recorded_at": "2026-10-19T07:04:10.731Z",
+  "next_action": "Owner refreshes Backoffice and uses enabled Generate/download or print, or downloads the saved customer PDF directly.",
+  "recorded_at": "2026-10-19T07:05:37.080Z",
   "snapshot": {
-    "head": "5ec7c06bac83374f0430ae6b7f83e18627f3ecb6",
+    "head": "94ed7c9f73878bbe99f6f2e423435724e4d0beb7",
     "branch": "codex/cabinet-brain-integration-recovery",
-    "worktree": " M apps/pricing/scripts/build.mjs\n M apps/pricing/src/index.html\n M apps/pricing/src/proposal-pdf.mjs\n M apps/pricing/src/proposal-policy.mjs\n M apps/pricing/src/quote-pdf.mjs\n M apps/pricing/tests/proposal-policy.test.mjs\n M docs/continuity/current.md\n M docs/continuity/decisions.md\n?? apps/pricing/src/customer-text.mjs",
+    "worktree": " M apps/pricing/src/app.mjs\n M apps/pricing/src/index.html\n M apps/pricing/src/proposal-pdf.mjs\n M apps/pricing/src/proposal-policy.mjs\n M apps/pricing/tests/proposal-policy.test.mjs\n M docs/continuity/current.md\n M docs/continuity/decisions.md",
     "sources": {
       "AGENTS.md": "c51e08a8021528ff818e5f62620aae587530eeec275750b2d38c2771ef732460",
       "README.md": "b6948f9084afb5f1bcceb4466e627c78f2288ba7f4876ceb64f3702b4fea5bd1",
       "package.json": "fafa60aeae85182092017dfc87134dabfa1df3484315a510e118b4d879566a49",
-      "docs/continuity/current.md": "9144e6ee4bb99be1c29f741394877fca2654f96c3a1b0aa1acd421be1286d113",
-      "docs/continuity/decisions.md": "5b8af0ed19be651590a9d1d8abbfca7e44f27eff52483c8e718b0821d05b3f48",
+      "docs/continuity/current.md": "7babdb42debe056ac951b899dd3f0c26d5cc3c7f5cc1bfca26debc7cac648b43",
+      "docs/continuity/decisions.md": "c43709652523cc26e5696c40ff10e21761a61d9491b9f9b68b6d6d62c72f83f9",
       "docs/continuity/audit.md": "c849de622d00377d1fadd3ba41cda2933eb9370b6fa13c2baf53bf36c0c471b2",
       "docs/continuity/verification.md": "5daeea53454a06fcf3b928b1fd12c8f69448beb8fc31a75b441181cc57962f28",
       "docs/continuity/sources.json": "0380630765b71a413ac27edd875e120cf51f501232720ee130160cd1f885937b",
@@ -58,7 +58,7 @@
   },
   "vault": {
     "project": "vulpine-platform",
-    "session_id": "9b5cf810-aec5-4bd7-b55e-25c8ed918e87",
-    "record": "sources/aeon-sessions/vulpine-platform/9b5cf810-aec5-4bd7-b55e-25c8ed918e87.md"
+    "session_id": "4e7df352-2fcb-49c7-838b-b14476f05b1c",
+    "record": "sources/aeon-sessions/vulpine-platform/4e7df352-2fcb-49c7-838b-b14476f05b1c.md"
   }
 }

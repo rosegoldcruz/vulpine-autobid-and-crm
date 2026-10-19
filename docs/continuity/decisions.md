@@ -248,3 +248,14 @@ customer bids, including small footer text. Apply suppression before PDF wrappin
 and truncation, across draft and customer documents; keep provenance privately
 in the quote/catalog and procurement/internal reports. River Pointe's actual
 finish and apartment-label qualifications remain visible; do not invent approval.
+
+
+## 2026-10-19 — permit qualified customer bid downloads
+
+Owner requires the displayed finish and drawing conflicts to stop blocking
+download. Retain them as bid qualifications on the UI and exported customer PDF,
+using current priced scope and disclosed finish allowances. This supersedes
+mandatory finishUnresolved/source-conflict export gates, without representing
+finish equivalence or conflicting source quantities as verified. Actual missing
+prices, invalid quantities, wrong construction, incomplete scope and tax errors
+remain separate validation failures.
