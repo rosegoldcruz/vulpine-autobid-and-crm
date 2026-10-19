@@ -17,3 +17,15 @@ test('signature is opt-in for one proposal, preserves image aspect ratio and lea
 test('known supplier handle and freight costs stay separate from fixed selling charges',()=>{const s=fixture(),before=calculateProject(data,s);s.charges={handles:{supplierCost:1000},freight:{supplierCost:2000}};const after=calculateProject(data,s);assert.equal(after.sale,before.sale);assert.equal(after.purchase,before.purchase);assert.equal(after.knownSupplierTotal,before.purchase+3000);assert.equal(after.profit,before.profit-3000);assert.equal(after.costsComplete,true);});
 
 test('tax exemption signatures survive PostgreSQL JSONB object-key reordering',()=>{const s=fixture(),reorder=v=>Array.isArray(v)?v.map(reorder):v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().reverse().map(k=>[k,reorder(v[k])])):v;verifyTax(reorder(s.tax),testEnv);});
+
+test('manual tax allows customer PDF without delivery address or address evidence',async()=>{
+ const {manualTax}=await import('../tax-provider.mjs');const s=fixture();delete s.projectInfo.addressEvidence;s.projectInfo.conflicts=['Delivery title blocks show two ship-to addresses; coordinate before shipment.'];
+ s.tax={enabled:true,address:{street:'',city:'',state:'',zip:''},lookup:manualTax({address:{},ratePercent:6.75},testEnv,'fixture')};
+ assert.deepEqual(customerIssues(data,s,calculateProject(data,s)),[]);
+ const text=await pdfText(await generateQuote(PDFLib,data,s,'customer',template));assert.match(text,/6\.7500%/);assert.doesNotMatch(text,/MISSING - verified delivery address|Delivery street address is required/);
+});
+test('customer and draft PDFs hide upstream suppliers in specifications, notes, schedules and footers',async()=>{
+ const s=fixture();s.units[0].items=[{sku:'B24',li:9,qty:1}];s.projectInfo.cabinetLine='HCI Euro Deluxe';s.projectInfo.finishBasis='Highland Cabinetry Colorado white';
+ s.customerSections={included:'HCI cabinet supply',basis:'Rythern and US Cabinet Depot comparison; USCD',substitutions:'Highland Cabinetry selected fronts',exclusions:'Installation by others'};
+ for(const type of ['customer','draft']){const text=await pdfText(await generateQuote(PDFLib,data,s,type,template));assert.doesNotMatch(text,/\bHCI\b|Highland|Rythern|US Cabinet Depot|\bUSCD\b/i);assert.match(text,/engineered furniture board/);assert.match(text,/VULPINE/);}
+});

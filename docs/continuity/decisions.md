@@ -235,3 +235,16 @@ external provider or daily lookup. Delivery and other customer-ready requirement
 remain separately enforced. Show estimated profit from known costs rather than
 hiding it when handle/freight supplier costs remain unverified. Sales tax is
 collected in the payable total and does not become profit.
+
+
+## 2026-10-19 — owner revokes delivery-address gate; hides suppliers
+
+Owner explicitly directs delivery address must not be mandatory to print a bid.
+Supersedes the earlier customer-ready address/evidence requirement. Retain
+automatic tax destination requirements, permit signed manual tax with blank
+delivery fields and treat delivery-address-only conflicts as coordination notes.
+Owner also explicitly forbids upstream supplier identification anywhere in
+customer bids, including small footer text. Apply suppression before PDF wrapping
+and truncation, across draft and customer documents; keep provenance privately
+in the quote/catalog and procurement/internal reports. River Pointe's actual
+finish and apartment-label qualifications remain visible; do not invent approval.

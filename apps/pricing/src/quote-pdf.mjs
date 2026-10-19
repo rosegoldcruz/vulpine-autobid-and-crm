@@ -41,7 +41,7 @@ export async function generateQuote(PDFLib,data,input,type='customer',templateBy
   // and Gracious Manor proposals. Finish names still come from the selected items.
   const specifications=[...(data.specifications||['HDF','Plywood with maple finish','Plywood','DTC soft-close','Solid wood dovetailed','Undermount soft-close']),finishes.join(', ')];specifications.forEach((v,i)=>text(p,v,215,701+i*14,348,7));
   text(p,state.quoteId+' | '+state.status+' | Valid until '+shortDate(state.validUntil)+' | Schedule '+(index+1)+'/'+pages,29,804,536,8);
-  text(p,data.label?data.label+' | '+data.basis:'Historical material-cost snapshot. Create a revised draft for current handle and delivery selling charges.',29,817,536,7);
+  text(p,type==='customer'?'VULPINE | Cabinet supply proposal':data.label?data.label+' | '+data.basis:'Historical material-cost snapshot. Create a revised draft for current handle and delivery selling charges.',29,817,536,7);
  }
  // Details retain full descriptions and notes when narrow template cells must abbreviate.
  const needsDetails=state.notes.trim()||state.customer.length>35||state.project.length>40||rows.some(r=>r.unit.name.length>20||r.sku.length>18);

@@ -1,32 +1,34 @@
 {
-  "last_change": "Pricing: signed manual tax entry with automatic application; cabinet materials and handles only taxable; display estimated profit and known supplier cost; shared schema preserves manual rate attribution. Sources apps/pricing/src, tax-provider.mjs, server.mjs, agent/schemas.mjs and regression tests.",
+  "last_change": "Removed mandatory delivery-address/source-evidence printing gates, exempted address-only conflicts, hid supplier identity throughout customer and draft PDF text and legacy footer. Generated latest River Pointe PDF from saved revision44 with 922 cabinet bodies and total $226,824.88, preserving quote values.",
   "verification": [
-    "node --test tests/*.test.mjs in apps/pricing: 41 passed, zero failures.",
-    "node scripts/build.mjs: protected pricing build succeeded, 510 products.",
-    "node /opt/output/manual-tax/browser-check.mjs: passed actual frontend/API synthetic fixture on desktop and mobile, unavailable provider, auto-applied 6.75 percent, correct cabinet/handle base, save/reopen, quantity recalculation, estimated profit, customer PDF, invalid percentage and deliberate zero.",
-    "Screenshots inspected; browser reported only expected provider-unavailable 503.",
-    "Restarted vulpine-cabinet-pricing.service and vulpine-bidding.service; ports 3021 and 3022 health status ok after startup retry.",
-    "git diff --check: passed."
+    "node --test tests/*.test.mjs in apps/pricing: 43 passed, zero failed.",
+    "node scripts/build.mjs: succeeded, 510 products.",
+    "Authenticated production pricing export succeeded for shared quote revision44; newest document e0fb446b-1922-48b3-a92e-9a416971f524.",
+    "PDF text scan: 922 bodies, total $226,824.88, no HCI/Highland/Rythern/USCD/Cabinet Depot supplier identity. Letter schedule visually inspected.",
+    "Restarted cabinet-pricing and bidding services; health on ports3021/3022 status ok after startup retry.",
+    "git diff --check passed."
   ],
   "decisions": [
-    "Owner explicitly approved manual tax entry and requires tax only on cabinet materials and handles, never freight, installation or assembly.",
-    "Preserve handles at $3.33 each. Do not overwrite River Pointe quote edits or choose a tax percentage on behalf of owner.",
-    "Display estimated profit with remaining supplier-cost limitation; sales tax does not increase profit."
+    "Owner explicitly revokes mandatory delivery address for bid printing.",
+    "Owner forbids supplier identity anywhere on customer bids, including footers.",
+    "Preserved existing user quote revision, 10 percent margin, 6.75 percent manual rate, handles at3.33 and all922 cabinet bodies."
   ],
-  "open_work": [],
+  "open_work": [
+    "River Pointe remains explicitly a preliminary draft because saved finish equivalence and apartment-label conflicts are unresolved. Existing customer notes include old tax-confirmation wording; actual displayed tax uses saved manual6.75 percent and is calculated. No final approval fabricated."
+  ],
   "blockers": [],
-  "next_action": "Owner refreshes Backoffice and enters the intended manual percentage to finish the quote; supplier costs still determine whether displayed profit is estimated.",
-  "recorded_at": "2026-10-19T06:51:58.935Z",
+  "next_action": "Owner downloads the generated River Pointe PDF; finalize finish and drawing qualifications before representing the bid as fully approved.",
+  "recorded_at": "2026-10-19T07:04:10.731Z",
   "snapshot": {
-    "head": "f9a5880e7a61d0a45d35f524b22eecc12ccb35e6",
+    "head": "5ec7c06bac83374f0430ae6b7f83e18627f3ecb6",
     "branch": "codex/cabinet-brain-integration-recovery",
-    "worktree": " M apps/pricing/agent/schemas.mjs\n M apps/pricing/server.mjs\n M apps/pricing/src/app.mjs\n M apps/pricing/src/index.html\n M apps/pricing/src/tax-ui.mjs\n M apps/pricing/src/tax.mjs\n M apps/pricing/src/workflow.css\n M apps/pricing/tax-provider.mjs\n M apps/pricing/tests/export-server.test.mjs\n M apps/pricing/tests/proposal-policy.test.mjs\n M apps/pricing/tests/tax.test.mjs\n M docs/continuity/current.md\n M docs/continuity/decisions.md",
+    "worktree": " M apps/pricing/scripts/build.mjs\n M apps/pricing/src/index.html\n M apps/pricing/src/proposal-pdf.mjs\n M apps/pricing/src/proposal-policy.mjs\n M apps/pricing/src/quote-pdf.mjs\n M apps/pricing/tests/proposal-policy.test.mjs\n M docs/continuity/current.md\n M docs/continuity/decisions.md\n?? apps/pricing/src/customer-text.mjs",
     "sources": {
       "AGENTS.md": "c51e08a8021528ff818e5f62620aae587530eeec275750b2d38c2771ef732460",
       "README.md": "b6948f9084afb5f1bcceb4466e627c78f2288ba7f4876ceb64f3702b4fea5bd1",
       "package.json": "fafa60aeae85182092017dfc87134dabfa1df3484315a510e118b4d879566a49",
-      "docs/continuity/current.md": "b787237df2dbfcd4551b73be782942deb133623e530f3e130a827880767b9c53",
-      "docs/continuity/decisions.md": "19ec1ef51dfc856c2a81eb7116539ee1d5a390fde9b26982f29f699d1815da96",
+      "docs/continuity/current.md": "9144e6ee4bb99be1c29f741394877fca2654f96c3a1b0aa1acd421be1286d113",
+      "docs/continuity/decisions.md": "5b8af0ed19be651590a9d1d8abbfca7e44f27eff52483c8e718b0821d05b3f48",
       "docs/continuity/audit.md": "c849de622d00377d1fadd3ba41cda2933eb9370b6fa13c2baf53bf36c0c471b2",
       "docs/continuity/verification.md": "5daeea53454a06fcf3b928b1fd12c8f69448beb8fc31a75b441181cc57962f28",
       "docs/continuity/sources.json": "0380630765b71a413ac27edd875e120cf51f501232720ee130160cd1f885937b",
@@ -56,7 +58,7 @@
   },
   "vault": {
     "project": "vulpine-platform",
-    "session_id": "6532246b-647e-46b1-a8ef-29675b4f9cdc",
-    "record": "sources/aeon-sessions/vulpine-platform/6532246b-647e-46b1-a8ef-29675b4f9cdc.md"
+    "session_id": "9b5cf810-aec5-4bd7-b55e-25c8ed918e87",
+    "record": "sources/aeon-sessions/vulpine-platform/9b5cf810-aec5-4bd7-b55e-25c8ed918e87.md"
   }
 }

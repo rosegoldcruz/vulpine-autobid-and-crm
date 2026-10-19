@@ -24,7 +24,7 @@
       <div class="taxAddress">
         <div class="field"><label for="taxState">Project state</label><select id="taxState" autocomplete="address-level1"></select></div>
         <div class="field"><label for="taxCity">Project city</label><input id="taxCity" maxlength="100" autocomplete="address-level2" placeholder="City"></div>
-        <div class="field"><label for="taxStreet">Delivery street address</label><input id="taxStreet" maxlength="200" autocomplete="address-line1" placeholder="Street address"></div>
+        <div class="field"><label for="taxStreet">Delivery street address (optional for manual tax)</label><input id="taxStreet" maxlength="200" autocomplete="address-line1" placeholder="Street address"></div>
         <div class="field"><label for="taxZip">ZIP code</label><input id="taxZip" maxlength="10" autocomplete="postal-code" inputmode="numeric" placeholder="ZIP or ZIP+4"></div>
         <button id="taxLookup" type="button" class="secondary">Refresh tax</button>
       </div>
@@ -111,7 +111,7 @@
         </div>
         <div class="field"><label for="mixEvidence">Project mix source / reconciliation</label><textarea id="mixEvidence" rows="2"></textarea></div>
         <div class="field"><label for="finishBasis">Specified finishes and locations / disclosed preliminary basis</label><textarea id="finishBasis" rows="2"></textarea></div>
-        <div class="field"><label for="addressEvidence">Verified delivery address source</label><input id="addressEvidence" maxlength="500"></div>
+        <div class="field"><label for="addressEvidence">Delivery address source (optional)</label><input id="addressEvidence" maxlength="500"></div>
         <div class="field"><label for="includedScope">Included Scope</label><textarea id="includedScope" rows="2"></textarea></div>
         <div class="field"><label for="pricingBasis">Pricing Basis</label><textarea id="pricingBasis" rows="2"></textarea></div>
         <div class="field"><label for="substitutions">Substitutions</label><textarea id="substitutions" rows="2"></textarea></div>

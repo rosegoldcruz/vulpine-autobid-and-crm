@@ -1,5 +1,6 @@
 import {calculateProject,money,linesFor,lookup} from './pricing.mjs';
 import {customerIssues,customerNotes} from './proposal-policy.mjs';
+import {customerText} from './customer-text.mjs';
 const safe=s=>String(s??'').replace(/[“”″]/g,'"').replace(/[‘’]/g,"'").replace(/[–—]/g,'-').replace(/×/g,'x').replace(/[^\x20-\x7e\n]/g,'?');
 export async function generateProposal(PDFLib,data,state,type,templateBytes,options={}){
  const {PDFDocument,StandardFonts,rgb}=PDFLib,result=calculateProject(data,state),missing=customerIssues(data,state,result),customer=type==='customer'||type==='draft';
@@ -8,8 +9,9 @@ export async function generateProposal(PDFLib,data,state,type,templateBytes,opti
  const doc=await PDFDocument.create(),source=await PDFDocument.load(templateBytes||await(await fetch('./proposal-template.pdf')).arrayBuffer());
  const font=await doc.embedFont(StandardFonts.Helvetica),bold=await doc.embedFont(StandardFonts.HelveticaBold),gold=rgb(.67,.49,.23),ink=rgb(.13,.14,.13),muted=rgb(.38,.39,.38),paper=rgb(.98,.975,.96),lineColor=rgb(.82,.8,.75);
  const W=612,H=792,L=35,R=577;
- const draw=(p,value,x,y,size=9,strong=false,color=ink)=>p.drawText(safe(value),{x,y,size,font:strong?bold:font,color});
- const wrap=(value,width,size=9,strong=false)=>{const f=strong?bold:font,out=[];for(const para of safe(value).split('\n')){let row='';for(let word of para.split(/\s+/)){while(f.widthOfTextAtSize(word,size)>width){let n=1;while(n<word.length&&f.widthOfTextAtSize(word.slice(0,n+1),size)<=width)n++;if(row){out.push(row);row='';}out.push(word.slice(0,n));word=word.slice(n);}const next=row?row+' '+word:word;if(f.widthOfTextAtSize(next,size)>width&&row){out.push(row);row=word;}else row=next;}out.push(row);}return out;};
+ const visible=value=>safe(customer?customerText(value,data):value);
+ const draw=(p,value,x,y,size=9,strong=false,color=ink)=>p.drawText(visible(value),{x,y,size,font:strong?bold:font,color});
+ const wrap=(value,width,size=9,strong=false)=>{const f=strong?bold:font,out=[];for(const para of visible(value).split('\n')){let row='';for(let word of para.split(/\s+/)){while(f.widthOfTextAtSize(word,size)>width){let n=1;while(n<word.length&&f.widthOfTextAtSize(word.slice(0,n+1),size)<=width)n++;if(row){out.push(row);row='';}out.push(word.slice(0,n));word=word.slice(n);}const next=row?row+' '+word:word;if(f.widthOfTextAtSize(next,size)>width&&row){out.push(row);row=word;}else row=next;}out.push(row);}return out;};
  const branded=(title)=>{const p=doc.addPage([W,H]);p.drawRectangle({x:0,y:0,width:W,height:H,color:paper});p.drawRectangle({x:0,y:0,width:5,height:H,color:gold});draw(p,'VULPINE',L,749,24,true);draw(p,title,L,710,16,true);p.drawLine({start:{x:L,y:732},end:{x:R,y:732},color:gold,thickness:1});draw(p,state.quoteId,R-bold.widthOfTextAtSize(safe(state.quoteId),8),752,8,true,muted);draw(p,state.date+' | Valid until '+state.validUntil,L,25,8,false,muted);return p;};
  const artwork=async index=>{const original=source.getPage(index),box=original.getMediaBox(),embedded=await doc.embedPage(original,{left:box.x,bottom:box.y,right:box.x+box.width,top:box.y+box.height}),scale=Math.min(W/box.width,H/box.height);const p=doc.addPage([W,H]);p.drawRectangle({x:0,y:0,width:W,height:H,color:paper});p.drawPage(embedded,{x:(W-box.width*scale)/2,y:(H-box.height*scale)/2,width:box.width*scale,height:box.height*scale});if(index===0)p.drawRectangle({x:(W-box.width*scale)/2,y:0,width:5*scale,height:H,color:paper});return p;};
  const cover=await artwork(0);draw(cover,state.preparedBy||'Daniel Cruz',38,255,21);draw(cover,state.validUntil,38,179,14,true);draw(cover,state.date,501,704,8);
@@ -19,7 +21,7 @@ export async function generateProposal(PDFLib,data,state,type,templateBytes,opti
  // Fill the approved schedule artwork; all artwork is uniformly fitted to Letter.
  if(customer)for(let offset=0;offset<active.length;offset+=20){
   const original=source.getPage(2),box=original.getMediaBox(),scale=Math.min(W/box.width,H/box.height),dx=(W-box.width*scale)/2,dy=(H-box.height*scale)/2,p=await artwork(2);
-  const cell=(value,x,top,width=100,size=8,strong=false,color=ink)=>{let v=safe(value),actual=size,f=strong?bold:font;while(f.widthOfTextAtSize(v,actual)>width&&actual>5.5)actual-=.25;if(f.widthOfTextAtSize(v,actual)>width){while(v&&f.widthOfTextAtSize(v+'...',actual)>width)v=v.slice(0,-1);v+='...';}draw(p,v,dx+(x-box.x)*scale,dy+(850.079956-top-box.y)*scale,actual*scale,strong,color);};
+  const cell=(value,x,top,width=100,size=8,strong=false,color=ink)=>{let v=visible(value),actual=size,f=strong?bold:font;while(f.widthOfTextAtSize(v,actual)>width&&actual>5.5)actual-=.25;if(f.widthOfTextAtSize(v,actual)>width){while(v&&f.widthOfTextAtSize(v+'...',actual)>width)v=v.slice(0,-1);v+='...';}draw(p,v,dx+(x-box.x)*scale,dy+(850.079956-top-box.y)*scale,actual*scale,strong,color);};
   cell(state.project+' / '+(state.customer||'GC PENDING'),108,70,201,8,true);cell(state.projectInfo?.cabinetLine||'Line pending',422,70,144,8);
   active.slice(offset,offset+20).forEach((u,i)=>{const top=125+i*18.8;cell([...new Set(u.entries.map(r=>data.families?.[r.li]||(r.li<8?'Framed':'Frameless')))].join('/'),30,top,93,7,true);cell(u.name,134,top,107,7,true);cell(u.repeat,254,top,31,8);cell(money(u.sale),292,top,66,8);cell(money(u.sale*u.repeat),368,top,68,8);cell(u.entries.reduce((s,r)=>s+(lookup(data,r.li,r.sku)?.[5]||0)*r.qty*u.repeat,0),449,top,49,8);cell(u.entries.reduce((s,r)=>s+(r.handleCount??lookup(data,r.li,r.sku)?.[7]??0)*r.qty*u.repeat,0),510,top,54,8);});
   cell(money(result.cabinetSale),368,506,70,9,true,rgb(1,1,1));cell(charges?.boxes,449,506,49,8,true,rgb(1,1,1));cell(charges?.handles.quantity,510,506,54,8,true,rgb(1,1,1));
@@ -45,7 +47,8 @@ export async function generateProposal(PDFLib,data,state,type,templateBytes,opti
  heading('PROJECT INFORMATION');
  pair('Project',state.project||'MISSING - project name');pair('General contractor / customer',state.customer||'MISSING - GC/company');
  if(state.projectInfo?.contact)pair('Project contact',[state.projectInfo.contact,state.email].filter(Boolean).join(' | '));
- pair('Delivery address',(state.tax?.address?Object.values(state.tax.address).filter(Boolean).join(', '):'')||'MISSING - verified delivery address');
+ const delivery=state.tax?.address?Object.values(state.tax.address).filter(Boolean).join(', '):'';
+ if(delivery)pair('Project location',delivery);
  pair('Cabinet line',state.projectInfo?.cabinetLine||'MISSING - cabinet line');
  text('Finish basis: '+(state.projectInfo?.finishBasis||[...new Set(active.flatMap(u=>u.entries.map(r=>r.line)))].join(', ')));
  if(charges){pair('Apartments / named amenity areas',charges.counts.apartments+' apartments / '+charges.counts.amenities+' areas');pair('Apartment type groups / cabinet boxes',charges.counts.groups+' groups / '+charges.boxes+' boxes');pair('Accessories / decorative handles',charges.accessories+' accessories / '+charges.handles.quantity+' handles');}

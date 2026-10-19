@@ -1,5 +1,5 @@
 import {linesFor,lookup} from './pricing.mjs';
-import {validAddress,addressKey} from './tax.mjs';
+import {addressKey} from './tax.mjs';
 export const HANDLE_RATE=333, FREIGHT_RATE=13300;
 const nonnegative=n=>Number.isSafeInteger(n)&&n>=0;
 export const freightItem=row=>/delivery|freight|feight|shipping/i.test(row.sku+' '+row.description);
@@ -50,9 +50,6 @@ export function customerIssues(data,state,result){
  if(result.tax.issue)errors.push(result.tax.issue);
  if(!state.project?.trim())errors.push('Project name is required.');
  if(!state.customer?.trim())errors.push('General contractor/customer company is required.');
- if(!validAddress(state.tax?.address))errors.push('A verified complete delivery address is required.');
- for(const [key,label]of [['street','Delivery street address'],['city','Delivery city'],['state','Delivery state'],['zip','Delivery ZIP code']])if(!String(state.tax?.address?.[key]||'').trim())errors.push(label+' is required.');
- if(!state.projectInfo?.addressEvidence?.trim())errors.push('Delivery address source verification is required.');
  if(state.pricingPolicy!==2)errors.push('Create a revised draft using current handles, freight and project-count rules. Historical quotes are preserved.');
  const selected=state.units.filter(u=>u.repeat>0).flatMap(u=>u.items.filter(i=>i.qty>0));
  if(!state.projectInfo?.cabinetLine?.trim())errors.push('Cabinet line is required.');
@@ -61,7 +58,7 @@ export function customerIssues(data,state,result){
  if(state.projectInfo?.construction==='frameless'&&selected.some(i=>!String(data.families?.[i.li]||linesFor(data)[i.li]?.[1]).match(/frameless|euro/i)))errors.push('Frameless construction is required; framed cabinetry cannot be substituted.');
  if(state.projectInfo?.finishUnresolved)errors.push('Specified finish/location mapping remains unresolved; customer-ready export is blocked.');
  if(state.projectInfo?.scopeIncomplete)errors.push('The project scope is incomplete; this is an internal priced-scope draft.');
- if(state.projectInfo?.conflicts?.length)errors.push(...state.projectInfo.conflicts.map(s=>'Source conflict: '+s));
+ if(state.projectInfo?.conflicts?.length)errors.push(...state.projectInfo.conflicts.filter(s=>!/\b(delivery address|delivery title blocks|ship-to|shipping address)\b/i.test(s)).map(s=>'Source conflict: '+s));
  if(!state.tax?.enabled&&!state.tax?.exemption)errors.push('Verified sales tax or a documented applicable exemption is required.');
  if(state.tax?.enabled&&!state.tax.lookup?.taxableItems)errors.push('Verify which line items are taxable, including handles and freight.');
  if(state.tax?.enabled&&state.tax.lookup?.addressKey!==addressKey(state.tax.address))errors.push('Tax must match the verified delivery address.');

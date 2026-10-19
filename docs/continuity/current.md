@@ -434,3 +434,25 @@ tests passed; actual frontend/API synthetic browser flow passed desktop/mobile,
 provider failure, automatic manual-rate application, save/reopen, quantity change,
 customer PDF, invalid rate and explicit zero. Pricing and bidding services were
 restarted and both health endpoints returned status ok. No environment changes.
+
+
+## 2026-10-19 — optional delivery address and confidential supplier identity
+
+Owner supersedes the former delivery-address export requirement. Manual-tax
+proposals can print without street address or address-source evidence; shipping
+address-only source conflicts are no longer customer-export blockers. Automatic
+provider lookup still needs its destination. Customer/draft PDF text is stripped
+of supported supplier names before wrapping/truncation, including specifications,
+notes and qualifications. Legacy customer footer uses Vulpine rather than source
+label/basis. Procurement/internal documents preserve their source information.
+
+43 pricing tests passed, including blank-address manual-tax customer export and
+supplier suppression in customer/draft PDFs. Build succeeded; pricing/bidding
+services restarted and both health endpoints returned ok. River Pointe shared
+quote 043c7714-3d83-4a79-91f8-8e83bc0e4e0c revision44 was exported via authenticated
+pricing service without altering quote data: 922 bodies, handles1857 at3.33, manual
+6.75 percent on cabinets/handles, total226824.88. PDF saved in shared history and
+/mnt/data/River_Pointe_Apartments_Bid.pdf. Text extraction found no supported
+supplier names; schedule visually inspected. Still explicitly an internal draft
+because saved finish allowance and apartment-label conflicts remain unresolved;
+no false final approval or supplier finish equivalence was asserted.
