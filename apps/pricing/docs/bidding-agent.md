@@ -8,7 +8,11 @@ Protected-resource metadata: https://api.vulpinehomes.com/bidding/.well-known/oa
 
 ## Implementation
 
-The official MCP SDK serves Streamable HTTP. Seventeen tools use the existing pricing engine and PDF/Excel generators: `create_bid_job`, `get_bid_job`, `extract_takeoff`, `set_unit_mix`, `search_catalog`, `update_bid_items`, `price_bid`, `validate_bid`, `save_bid`, `export_bid`, `list_bid_jobs`, `list_projects`, `get_project_quote`, `get_project_document`, `save_bid_to_project`, `set_bid_margin`, `set_project_quote_margin`.
+The official MCP SDK serves Streamable HTTP. The current server registers 25 pricing tools from `agent/schemas.mjs`, including customer details, tax, saved-quote export and revision tools. The Back Office MCP proxy adds eight operations tools, for 33 total. These are different connections; do not promise 33 tools on the pricing-only ChatGPT connection.
+
+Check live authenticated discovery with `node scripts/check-pricing-mcp.mjs codex` from the repository root (optionally list other registered local clients). This read-only check compares discovery with the current schema and does not print private credentials.
+
+After deploying tool/schema changes, refresh the **Vulpine Pricing MCP – ChatGPT** connection in ChatGPT Plugins, confirm discovery shows 25 tools, and start a new conversation. ChatGPT retains installed metadata; restarting this server does not replace that saved snapshot. See [OpenAI’s metadata refresh instructions](https://developers.openai.com/plugins/deploy/connect-chatgpt#refresh-metadata). The exposed Plugin Management tools do not offer a connection-refresh action. Do not uninstall the connection or reset credentials to solve a stale inventory. Verify the refreshed ChatGPT inventory before claiming that connection is fixed.
 
 Postgres database `vulpine_bidding` holds owned jobs, CAS revisions, source evidence, audit records, queued runs, catalog snapshots and expiring exports. Existing workspace files remain intact; `agent/import-workspace.mjs --run` imports additive snapshots. It is idempotent for an unchanged workspace.
 
