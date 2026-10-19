@@ -86,3 +86,54 @@ operations. Stale revisions, a different organization/owner, or an active bid
 run reject deletion. Deletion removes the selected record, its revisions and
 exports while preserving audit metadata; independent saved copies remain.
 The background bid-building worker does not receive either deletion tool.
+
+## Customer details, signed tax and saved-quote exports
+
+Agents use the same engine and customer PDF renderer as Backoffice. These actions
+require existing pricing write permission; no browser-only editing is necessary.
+
+- `revise_project_quote`: create a NEW revised draft, including from issued or
+  historical quotes, explicitly applying current pricing rules. Original quote
+  and PDFs stay unchanged; new drafts clear signature approval. Read returned
+  totals before proceeding. Historical tax edits require this explicit action.
+- `set_bid_details`: edit a private Auto Bid's customer/company, email, preparedBy,
+  dates, internal notes, projectInfo, charge supplier costs and customerSections.
+- `set_project_quote_details`: edit those fields on an existing shared quote.
+  Read its current revision with `get_project_quote` first. Issued and archived
+  quotes reject edits. Catalog supplier, prices, SKUs, quantities and margin are
+  preserved. Record patches merge with existing values; omitted fields remain.
+- `set_bid_tax` / `set_project_quote_tax`: generate signed tax records server-side.
+  Manual mode takes the actual user-provided `rate_percent`, e.g. 9.25 means9.25%,
+  with explicit0 allowed. Omitted address preserves the existing one. Automatic
+  mode requires a verified full address and configured transaction-tax provider;
+  unavailable providers fail explicitly without changing the bid. Exempt mode
+  requires reason, document, authority, validFrom, validUntil and a valid address.
+  Do not fabricate signatures, rates, exemption evidence or supplier facts.
+- `export_project_quote`: export an existing shared quote to PDF or XLSX at its
+  expected_revision. Customer export checks project fields and signed tax; draft
+  export retains incomplete work and qualifications. Returns quote_id, revision,
+  document_id, download URL, filename and SHA256. Retains historical documents
+  and does not change quote fields, approve, sign or send the proposal.
+
+Every edit takes expected_revision and rejects stale writes. Draft edits mark
+that draft unsaved; call save_bid before export_bid. Shared edits save a new
+revision directly. Customer scope keys are included, basis, substitutions,
+exclusions and addenda. Internal notes remain private. Explicit addenda text
+prints in the prominent acknowledgment banner. Supplier identities are removed
+from customer/draft PDFs automatically; internal and purchase data keep sources.
+
+Example saved-quote sequence:
+
+```json
+{"tool":"get_project_quote","arguments":{"quote_id":"<quote UUID>"}}
+{"tool":"set_project_quote_details","arguments":{"quote_id":"<quote UUID>","expected_revision":3,"customer":"Verified GC","email":"contact@example.test","projectInfo":{"contact":"Verified contact"},"customerSections":{"addenda":"WE ACKNOWLEDGE ADDENDUM 1 AND ADDENDUM 2."}}}
+{"tool":"set_project_quote_tax","arguments":{"quote_id":"<quote UUID>","expected_revision":4,"mode":"manual","rate_percent":9.25}}
+{"tool":"export_project_quote","arguments":{"quote_id":"<quote UUID>","expected_revision":5,"format":"pdf","type":"customer"}}
+```
+
+The rate and addenda in this example must come from the user/project; they are
+not defaults. Always use the revisions returned by each successful action.
+Product revenue/profit covers cabinets and handles only. Shipping and customer
+tax remain separate from product accounting. No new connection scopes or secrets
+are required for these tools. MCP tool discovery is dynamic; clients that cache
+an old inventory must rediscover tools before they can invoke a newly added name.

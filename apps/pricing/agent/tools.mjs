@@ -1,6 +1,6 @@
 import {customerIssues} from '../src/proposal-policy.mjs';
 import {planReviewWarnings,draftExportState} from './draft-export.mjs';
-import {verifyTax} from '../tax-provider.mjs';
+import {verifyTax,manualTax,lookupTransactionTax,verifyExemption} from '../tax-provider.mjs';
 import {randomUUID,createHash} from 'node:crypto';
 import {McpServer} from '@modelcontextprotocol/server';
 import {inputs,outputs,BidError} from './schemas.mjs';
@@ -13,9 +13,14 @@ import {readPricingMemory} from './memory.mjs';
 import {prepareSource} from './sources.mjs';
 
 const hash=value=>createHash('sha256').update(value).digest('hex');
-const writes=new Set(['set_bid_details','delete_bid','delete_project_quote','create_bid_job','set_unit_mix','update_bid_items','save_bid','export_bid','save_bid_to_project','set_bid_margin','set_project_quote_margin']);
+const writes=new Set(['revise_project_quote','set_project_quote_details','set_project_quote_tax','set_bid_tax','export_project_quote','set_bid_details','delete_bid','delete_project_quote','create_bid_job','set_unit_mix','update_bid_items','save_bid','export_bid','save_bid_to_project','set_bid_margin','set_project_quote_margin']);
 const descriptions={
- set_bid_details:'Set verified GC, project counts, delivery/finish evidence, construction, customer scope sections and approved charge overrides on the current bid. Source data must support every field. Missing facts remain draft errors; never invent an exemption or tax lookup.',
+ revise_project_quote:'Create a NEW shared revised draft from an existing quote at its current revision, including issued historical quotes. Explicitly upgrades to current handles/freight/product-accounting rules and recalculates pricing, preserves items and source fields, clears signature approval, and leaves the original quote/documents untouched. Returns the new quote ID/revision and totals. Use this before editing tax or exporting a legacy quote; never silently revise an issued record.',
+ set_project_quote_details:'Edit an existing shared project quote at its current revision, including customer/company, email, preparedBy, dates, internal notes, projectInfo, charge costs and customerSections (included, basis, substitutions, exclusions, addenda). Provided record fields merge with existing fields; omitted values are preserved. Use set_project_quote_tax for signed tax. Preserves quantities, SKUs, margin, supplier and historical documents. Issued/archived quotes cannot be edited. Supplier identities are automatically removed from customer PDFs; no browser edit is required.',
+ set_bid_tax:'Apply tax to your Auto Bid draft at its current revision. For user-provided manual rates pass mode manual and rate_percent (9.25 means9.25%, zero must be explicit); optional address preserves current address. Server signs the tax record. Automatic mode uses the configured provider and verified full address; missing provider fails explicitly. Exempt mode requires documented exemption evidence. Tax applies to cabinets and handles only. Never invent a tax rate or exemption. Marks draft unsaved.',
+ set_project_quote_tax:'Apply signed tax to an existing shared quote at its current revision. Manual mode takes the user-provided rate_percent (9.25 means9.25%; zero must be explicit). Optional address preserves existing address. Automatic mode uses configured provider/full address; exempt mode requires evidence. Server owns signatures; do not fabricate lookup records. Cabinets and handles only are taxable. Saves a revision without changing quantities, SKUs, margin, prices or historical PDFs.',
+ export_project_quote:'Generate and retain a PDF/Excel document for an existing shared quote at its current revision without browser interaction. Returns document_id and expiring download URL. Customer PDF automatically removes supplier identities and validates signed tax and required project fields; draft PDF retains incomplete work and qualifications. Does not change quote fields/revision, sign, approve or send anything.',
+ set_bid_details:'Edit your Auto Bid draft customer/company, email, preparedBy, dates, internal notes, projectInfo, customerSections (included, basis, substitutions, exclusions, addenda) and approved charge costs. Provided record fields merge with existing fields; omitted fields stay unchanged. Use set_bid_tax to generate signed manual/automatic tax or documented exemption. Supplier identity removal is automatic in customer PDFs. Source data must support changes; never invent facts.',
  delete_bid:'Permanently delete your Auto Bid draft and its revisions/exports at the current revision. Read get_bid_job first. Active runs block deletion. Retains audit metadata. Only delete bids the user asks to remove.',
  delete_project_quote:'Permanently delete one saved shared Pricing quote and its saved PDFs/Excel/revisions, at the current revision. Read get_project_quote first. Other quotes and projects are retained. Only delete quotes the user asks to remove.',
  set_bid_margin:'Set the user-requested gross profit margin percentage (whole number 1–50, e.g. 25 means 25%) on your bid draft. Read its current revision first. Preserves catalog costs and quantities; marks draft unsaved. Then price_bid, save_bid and export_bid as needed. Never infer a new margin from source documents.',
@@ -46,6 +51,37 @@ export function createBidTools({workspace,store,catalogs,template,signatureBytes
  };
  const issues=j=>[...new Set([...calculateProject(catalogs[j.state.supplier||'hci'],j.state).issues,...j.exceptions])];
  const mutate=async(actor,a,name,fn)=>{await get(actor,a.job_id);return store.mutate(actor,a.job_id,a.expected_revision,name,j=>{fn(j);j.saved=false;});};
+ const applyDetails=(state,a)=>{
+  for(const key of ['customer','email','preparedBy','notes','date','validUntil','tax'])if(a[key]!==undefined)state[key]=a[key];
+  for(const key of ['projectInfo','customerSections'])if(a[key]!==undefined)state[key]={...state[key],...a[key]};
+  if(a.charges!==undefined){state.charges={...state.charges};for(const [key,value]of Object.entries(a.charges))state.charges[key]=value&&typeof value==='object'&&!Array.isArray(value)?{...state.charges[key],...value}:value;}
+  if(a.tax!==undefined)verifyTax(state.tax,env);
+ };
+ const taxFor=async(state,a,actor)=>{
+  if(state.pricingPolicy!==2)throw new BidError('VALIDATION_FAILED','Create a revised draft using revise_project_quote before applying current tax rules to a historical quote.');
+  const address=a.address||state.tax?.address||{street:'',city:'',state:'',zip:''};
+  if(a.mode==='manual'){if(a.exemption!==undefined)throw new BidError('INVALID_INPUT','Manual tax cannot include an exemption.');return {enabled:true,mode:'manual',address,lookup:manualTax({address,ratePercent:a.rate_percent},env,actor.sub)};}
+  if(a.rate_percent!==undefined)throw new BidError('INVALID_INPUT','rate_percent is only supported for manual tax.');
+  if(a.mode==='exempt'){if(!a.exemption)throw new BidError('INVALID_INPUT','Documented exemption evidence is required.');return {enabled:false,address,lookup:null,exemption:verifyExemption({...a.exemption,address},env)};}
+  if(a.exemption!==undefined)throw new BidError('INVALID_INPUT','Automatic tax cannot include an exemption.');
+  const r=calculateProject(catalogs[state.supplier||'hci'],state);
+  try{return {enabled:true,mode:'automatic',address,lookup:await lookupTransactionTax(address,r.taxableItems,state.date,env)};}catch(e){if(e.status===503)throw e;throw new BidError('VALIDATION_FAILED',e.message);}
+ };
+ const shared=async(actor,a)=>{
+  if(!workspace)throw new BidError('WORKSPACE_UNAVAILABLE','Project storage is unavailable.');
+  let q;try{q=await workspace.get(actor,a.quote_id);}catch(e){if(e.status===404)throw new BidError('NOT_FOUND','Quote not found or access denied.');throw e;}
+  if(q.deleted_at)throw new BidError('ARCHIVED_PROJECT','Restore the project before editing or exporting.');
+  if(a.expected_revision!==undefined&&q.revision!==a.expected_revision)throw new BidError('REVISION_CONFLICT','Quote changed. Reload before editing or exporting.');
+  return q;
+ };
+ const sharedResult=async(actor,q,state)=>{
+  let ref;try{ref=await workspace.save(actor,state,{id:q.id,revision:q.revision});}catch(e){if(e.status===409)throw new BidError('REVISION_CONFLICT',e.message);throw e;}
+  return quoteResult(actor,ref);
+ };
+ const quoteResult=async(actor,ref)=>{
+  const saved=await workspace.get(actor,ref.id),r=calculateProject(catalogs[saved.state.supplier||'hci'],saved.state);
+  return {quote_id:ref.id,revision:ref.revision,state:saved.state,totals:{purchase:r.purchase,sale:r.sale,revenue:r.revenue,productCost:r.productCost,actualMargin:r.actualMargin,profit:r.profit,count:r.count,margin:r.margin,issues:r.issues,costsComplete:r.costsComplete,profitBasis:r.profitBasis,total:r.total,tax:r.tax,charges:r.charges,customerReady:customerIssues(catalogs[saved.state.supplier||'hci'],saved.state,r).length===0,missingFields:customerIssues(catalogs[saved.state.supplier||'hci'],saved.state,r)},documents:await workspace.exports(actor,ref.id)};
+ };
  async function execute(name,raw,actor){
   try{
    const write=writes.has(name)||name==='extract_takeoff'&&!raw?.source_id;
@@ -61,7 +97,31 @@ export function createBidTools({workspace,store,catalogs,template,signatureBytes
      try{result=await workspace.delete(actor,a.quote_id,a.expected_revision);}catch(e){if(e.status===404)throw new BidError('NOT_FOUND','Quote not found or access denied.');if(e.status===409)throw new BidError('REVISION_CONFLICT',e.message);throw e;}
      break;
     }
-    case 'set_bid_details':result=await mutate(actor,a,name,j=>{for(const key of ['customer','projectInfo','charges','customerSections','tax'])if(a[key]!==undefined)j.state[key]=a[key];j.state.pricingPolicy=2;});break;
+    case 'set_bid_details':result=await mutate(actor,a,name,j=>{applyDetails(j.state,a);j.state.pricingPolicy=2;});break;
+    case 'revise_project_quote':{
+     const q=await shared(actor,a),revised={...q.state,pricingPolicy:2,revisionOf:q.quote_number,quoteId:q.quote_number+'-R'+randomUUID().slice(0,6).toUpperCase(),status:'Tentative'};
+     delete revised.signature;delete revised.issuedAt;delete revised._history;
+     const ref=await workspace.save(actor,revised,null);result=await quoteResult(actor,ref);break;
+    }
+    case 'set_bid_tax':{if(current.revision!==a.expected_revision)throw new BidError('REVISION_CONFLICT','Bid changed. Reload before applying tax.');const tax=await taxFor(current.state,a,actor);result=await mutate(actor,a,name,j=>{j.state.tax=tax;j.state.pricingPolicy=2;});break;}
+    case 'set_project_quote_details':
+    case 'set_project_quote_tax':{
+     const q=await shared(actor,a);if(q.state.issuedAt||q.state.status==='Issued')throw new BidError('ISSUED_QUOTE','Issued quotes are immutable. Create a revised draft.');
+     const updated=structuredClone(q.state);
+     if(name==='set_project_quote_tax'){updated.tax=await taxFor(updated,a,actor);updated.pricingPolicy=2;}else applyDetails(updated,a);
+     result=await sharedResult(actor,q,updated);break;
+    }
+    case 'export_project_quote':{
+     const q=await shared(actor,a),state=q.state,catalog=catalogs[state.supplier||'hci'];if(!catalog)throw new BidError('INVALID_SUPPLIER','Quote supplier is unavailable.');
+     const r=calculateProject(catalog,state);if(r.issues.length)throw new BidError('VALIDATION_FAILED',r.issues.join(' '));
+     if(a.type==='customer'){const missing=customerIssues(catalog,state,r);if(missing.length)throw new BidError('VALIDATION_FAILED',missing.join(' '));verifyTax(state.tax,env);}
+     const bytes=a.format==='xlsx'?XLSX.write(createWorkbook(XLSX,catalog,state),{type:'buffer',bookType:'xlsx',compression:true}):Buffer.from(await generateQuote(PDFLib,catalog,state,a.type,template,new Date(),{signatureBytes}));
+     await shared(actor,a);
+     const ref={id:q.id,revision:q.revision},documentId=await workspace.addExport(actor,ref,a.type,a.format,bytes),token=randomUUID()+randomUUID(),expires=Date.now()+15*60*1000;
+     const filename=(state.quoteId||'Vulpine').replace(/[^a-zA-Z0-9_-]/g,'_')+'_'+a.type+'.'+a.format,mime=a.format==='pdf'?'application/pdf':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+     await store.putExport(actor,q,{id:hash(token),expires,filename,mime,bytes});
+     result={quote_id:q.id,revision:q.revision,document_id:documentId,url:new URL('downloads/'+token,publicUrl).href,filename,mime_type:mime,expires_at:new Date(expires).toISOString(),sha256:hash(bytes)};break;
+    }
     case 'set_bid_margin':result=await mutate(actor,a,name,j=>{j.state.margin=a.margin;});break;
     case 'set_project_quote_margin':{
      if(!workspace)throw new BidError('WORKSPACE_UNAVAILABLE','Project storage is unavailable.');
@@ -161,9 +221,9 @@ export function createBidTools({workspace,store,catalogs,template,signatureBytes
    await store.audit(actor,name,a.job_id??a.quote_id??result?.id??null,result?.revision??null);
    return outputs[name].parse({ok:true,data:result});
   }catch(e){
-   const code=e instanceof BidError?e.code:e.status===422?'VALIDATION_FAILED':e.name==='ZodError'?'INVALID_INPUT':'INTERNAL_ERROR';
+   const code=e instanceof BidError?e.code:e.status===422?'VALIDATION_FAILED':e.status===503?'PROVIDER_UNAVAILABLE':e.name==='ZodError'?'INVALID_INPUT':'INTERNAL_ERROR';
    if(actor?.sub&&actor?.org)await store.audit(actor,name,null,null,code);
-   return{ok:false,error:{code,message:e instanceof BidError||e.status===422?e.message:code==='INVALID_INPUT'?'Input does not match the strict tool schema.':'The operation could not be completed.',retryable:code==='REVISION_CONFLICT'}};
+   return{ok:false,error:{code,message:e instanceof BidError||e.status===422||e.status===503?e.message:code==='INVALID_INPUT'?'Input does not match the strict tool schema.':'The operation could not be completed.',retryable:code==='REVISION_CONFLICT'||code==='PROVIDER_UNAVAILABLE'}};
   }
  }
  function server(actor){
@@ -175,7 +235,7 @@ export function createBidTools({workspace,store,catalogs,template,signatureBytes
   });
   for(const name of Object.keys(inputs))mcp.registerTool(name,{description:descriptions[name],inputSchema:inputs[name],outputSchema:outputs[name],annotations:{readOnlyHint:!writes.has(name)&&name!=='extract_takeoff',destructiveHint:['delete_bid','delete_project_quote'].includes(name),openWorldHint:false}},async a=>{
    const value=await execute(name,a,actor);const content=[{type:'text',text:JSON.stringify(value)}];
-   if(['export_bid','get_project_document'].includes(name)&&value.ok)content.push({type:'resource_link',uri:value.data.url,name:value.data.filename,mimeType:value.data.mime_type});
+   if(['export_bid','export_project_quote','get_project_document'].includes(name)&&value.ok)content.push({type:'resource_link',uri:value.data.url,name:value.data.filename,mimeType:value.data.mime_type});
    return{content,structuredContent:value,isError:!value.ok};
   });return mcp;
  }

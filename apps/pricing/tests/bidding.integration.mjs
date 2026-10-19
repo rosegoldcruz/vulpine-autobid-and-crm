@@ -50,7 +50,7 @@ test('persistent bids enforce ownership, scopes, revisions, real catalog costs a
   const {Client}=await import('@modelcontextprotocol/client');
   const [clientTransport,serverTransport]=InMemoryTransport.createLinkedPair();const mcp=app.bidding.server(actor),client=new Client({name:'vulpine-acceptance',version:'1'});
   await mcp.connect(serverTransport);await client.connect(clientTransport);
-  assert.equal((await client.listTools()).tools.length,20);
+  assert.equal((await client.listTools()).tools.length,25);
   assert.equal((await client.callTool({name:'price_bid',arguments:{job_id:j.id}})).structuredContent.data.purchase,293784);
   await client.close();await mcp.close();
   const {StreamableHTTPClientTransport}=await import('@modelcontextprotocol/client');
@@ -60,7 +60,7 @@ test('persistent bids enforce ownership, scopes, revisions, real catalog costs a
    headers.set('x-vulpine-operations',payload+'.'+createHmac('sha256',env.OPS_SIGNING_SECRET).update(payload).digest('base64url'));return fetch(url,{...init,headers});
   };
   await remote.connect(new StreamableHTTPClientTransport(new URL('http://127.0.0.1:3029/agent/mcp'),{fetch:signedFetch}));
-  assert.equal((await remote.listTools()).tools.length,20);
+  assert.equal((await remote.listTools()).tools.length,25);
   assert.equal((await remote.callTool({name:'price_bid',arguments:{job_id:j.id}})).structuredContent.data.sale,calculateProject(app.catalogs.rythern,j.state).sale);
   const remoteQuote=await remote.callTool({name:'get_project_quote',arguments:{quote_id:published.data.quote_id}});assert.equal(remoteQuote.structuredContent.data.quote_id,published.data.quote_id);
   const remotePdf=await remote.callTool({name:'get_project_document',arguments:{quote_id:published.data.quote_id,document_id:published.data.document_id}});assert.equal(remotePdf.structuredContent.data.sha256,storedPdf.data.sha256);assert.ok(remotePdf.content.some(c=>c.type==='resource_link'));

@@ -321,3 +321,17 @@ Owner requests acknowledgment of Addenda1 and2 in very large bold text;
 customerSections.addenda now controls an optional22pt yellow-orange notes banner.
 Acknowledgment of Addendum2 is owner instruction, not independently reviewed
 source evidence. Preserve other projects and existing20% cabinet margin.
+
+
+## 2026-10-19 — agents must edit customer/tax/scope without browser workarounds
+
+Owner explicitly requires pricing agents to have the tools needed for customer
+details, tax, scope notes and supplier-free customer PDFs. Provide server-side
+signed-tax generation and saved-quote editing/export with existing write scopes
+and expected revisions. Merge omitted record fields rather than erasing them.
+Never silently change catalog prices, SKUs, quantities or margins during field
+edits. Historical/issued pricing upgrades require an explicit revised copy;
+clear signature approval on that new copy and retain original documents.
+Customer supplier-name removal remains automatic in the shared renderer, not
+an editable client-side switch. Keep assigned-job workers confined to their job.
+Existing conversations may cache discovery; backend inventory is authoritative.

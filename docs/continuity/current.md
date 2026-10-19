@@ -621,3 +621,47 @@ Both services restarted/healthy. Final matching copies at
 /mnt/data/Bungalows_at_Bonner_Springs_Bid.pdf and
 /home/bid-workspace/Bungalows at Bonner Springs/Bungalows_at_Bonner_Springs_Bid.pdf.
 No customer communication or other bid changes performed.
+
+
+## 2026-10-19 — agent customer-field, signed-tax and shared-export parity
+
+Owner reports agents falling back to browser for customer details, tax, scope
+notes and supplier-name removal. Actual gaps: draft set_bid_details lacked email,
+preparedBy, dates and internal notes; shared quotes had only margin editing;
+agents had no server-generated signed tax or shared-quote export action.
+
+Expanded set_bid_details with field-preserving record patches. Added
+set_project_quote_details, set_bid_tax, set_project_quote_tax, export_project_quote
+and revise_project_quote. Tax tools sign manual user rates (explicit zero),
+provider-backed automatic tax and evidence-backed exemptions server-side.
+Missing automatic provider returns explicit PROVIDER_UNAVAILABLE without saving.
+Raw forged tax records fail validation. Shared edits preserve quantities, margin,
+supplier, prices and original PDFs; legacy metadata edits do not silently upgrade
+pricing rules. Tax changes on legacy quotes require an explicit revised copy.
+revise_project_quote copies issued/historical records into a new current-policy
+draft and clears signature approval, preserving original quote/documents.
+Customer/draft exports use existing supplier suppression; no separate naming
+toggle or browser edit is needed. Shared PDF/XLSX exports retain document IDs
+and return download links without changing quote state/revision or sending.
+Worker receives only assigned-job tools, including set_bid_tax; new shared tools
+are excluded from its allowlist. Existing scopes/revision/issued/archive gates
+remain active. No permissions or credentials changed.
+
+49 pricing tests and4 isolated persistent integration tests passed, including
+real SDK Streamable HTTP discovery/calls, customer/email/addenda edits, merged
+records, manual9.25/6.75/zero rates, signed exemption, missing provider, forged
+tax, stale/read-only/cross-org rejection, PDF/XLSX downloads, supplier suppression,
+old-document hashes, issued revised copies and preserved legacy metadata pricing.
+Final fields integration reran after its legacy coverage extension and passed.
+Initial new-test harness incorrectly referenced app.workspace (not exported);
+corrected it to its own QuoteStore and removed its orphan fixture. Verified zero
+remaining generated fixture quotes. No model calls or business quote writes.
+
+After confirming no running bid jobs, restarted bidding service; health ok.
+All7 configured live clients (claude,codex,copilot,hermes,muse,opencode,qwen)
+discover33 tools through Backoffice, including5 new pricing tools and expanded
+draft fields. Evidence /opt/output/mcp-fields-discovery-results.json.
+Production Bonner remains rev3/total360590.19; River Pointe rev44/226824.88.
+No frontend build/deployment or env changes were needed: Backoffice forwards
+pricing tool discovery dynamically. Existing clients that cache a tool inventory
+need fresh discovery to expose added names in that conversation.
