@@ -61,7 +61,8 @@ A proposal must carry explicit `signature.approved` and its exact `quoteId`;
 new/revised UI drafts clear signature approval. Placement preserves PNG alpha
 and aspect ratio. Customer signature/name/date stay blank.
 
-The shared generator uniformly fits supplied artwork to 612 × 792 pt Letter,
+The shared generator maps the complete supplied artwork to 612 × 792 pt Letter
+without added side bands,
 uses the approved schedule, wraps scope sections, and appends closing artwork
 only after schedules, notes, appendices and acceptance. No customer delivery is
 performed by this pipeline.

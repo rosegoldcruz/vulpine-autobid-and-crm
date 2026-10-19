@@ -259,3 +259,13 @@ mandatory finishUnresolved/source-conflict export gates, without representing
 finish equivalence or conflicting source quantities as verified. Actual missing
 prices, invalid quantities, wrong construction, incomplete scope and tax errors
 remain separate validation failures.
+
+
+## 2026-10-19 — preserve original PDF presentation without side bands
+
+Owner rejects added white margins and plain continuation styling. Retain Letter
+page size and all commercial data; map the complete supplied artwork canvas
+to Letter with no contain-fit side bands or cropped content. Reuse original
+gold frame/corner artwork and masthead styling for continuation pages, preserving
+all qualifications and acceptance fields. Existing saved PDFs remain historical;
+regeneration adds a new export to the same unchanged quote revision.

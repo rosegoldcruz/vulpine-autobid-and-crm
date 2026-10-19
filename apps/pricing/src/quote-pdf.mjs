@@ -61,7 +61,7 @@ export async function generateQuote(PDFLib,data,input,type='customer',templateBy
  }
  if(type!=='customer'){const [closing]=await doc.copyPages(template,[3]);doc.addPage(closing);stamp(closing,false,true);}
  doc.setTitle((type==='customer'?'Cabinet proposal':type==='internal'?'Internal costing':'Purchase schedule')+' - '+state.project);doc.setAuthor(state.preparedBy||'Vulpine');doc.setSubject(state.quoteId+' | Generated '+state.date+' | Valid until '+state.validUntil);
- const letter=await PDFDocument.create();for(const p of doc.getPages()){const box=p.getMediaBox(),embedded=await letter.embedPage(p),scale=Math.min(612/box.width,792/box.height),page=letter.addPage([612,792]);page.drawPage(embedded,{x:(612-box.width*scale)/2,y:(792-box.height*scale)/2,width:box.width*scale,height:box.height*scale});}return letter.save();
+ const letter=await PDFDocument.create();for(const p of doc.getPages()){const embedded=await letter.embedPage(p),page=letter.addPage([612,792]);page.drawPage(embedded,{x:0,y:0,width:612,height:792});}return letter.save();
 }
 function addAcceptancePage(doc,PDFLib,state,result,{totalCabinets,totalHardware,finishes,font,bold,gold,ink}){
  const {rgb}=PDFLib,width=595.5,height=842.25,page=doc.addPage([width,height]);

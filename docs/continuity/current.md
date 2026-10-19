@@ -475,3 +475,26 @@ names. Prior documents retained; no quote data changed.
 print popup passed with unresolved finish and conflicting drawing metadata,
 along with existing desktop/mobile manual-tax flow. Actual production customer
 export passed authenticated tax verification. Both services restarted/healthy.
+
+
+## 2026-10-19 — PDF border and presentation repair
+
+Owner reported white PDF margins and degraded styling. Verified the original
+Canva artwork is 595.5 x 842.25 pt and the Letter contain-fit created side
+bands. Both current and legacy exports now map the full artwork canvas to
+612 x 792 pt Letter. Current continuation pages reuse the original gold
+frame/corner artwork with matching dark masthead; cover fields use serif text
+and original form coordinates. Schedule overlays use the same canvas mapping.
+
+River Pointe quote 043c7714-3d83-4a79-91f8-8e83bc0e4e0c revision44
+reconciles cabinetry191846.05 + handles6183.81 + freight15428.00 =
+pre-tax213457.86; tax13367.02 gives226824.88. Saved a new customer PDF
+document73f83060-feea-4b2a-817b-c13d55f55779; quote data/revision unchanged.
+Corrected file: /mnt/data/River_Pointe_Apartments_Bid.pdf. Older PDFs retained.
+
+44 pricing tests and protected build passed. Existing real browser Generate
+/download and print-popup flow passed on desktop/mobile with manual tax and
+qualifications. Production export passed after service startup; immediate first
+request raced startup (ECONNREFUSED), retry passed. Both services healthy.
+Rendered cover, schedule, detail and closing inspected; side bands removed,
+prices preserved, supplier names absent. No frontend deployment or env change.

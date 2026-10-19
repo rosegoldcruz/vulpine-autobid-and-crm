@@ -7,21 +7,32 @@ export async function generateProposal(PDFLib,data,state,type,templateBytes,opti
  if(type==='customer'&&missing.length)throw Object.assign(Error('Customer-ready export blocked:\n'+missing.join('\n')),{status:422});
  if(result.issues.length)throw Object.assign(Error(result.issues.join('\n')),{status:422});
  const doc=await PDFDocument.create(),source=await PDFDocument.load(templateBytes||await(await fetch('./proposal-template.pdf')).arrayBuffer());
- const font=await doc.embedFont(StandardFonts.Helvetica),bold=await doc.embedFont(StandardFonts.HelveticaBold),gold=rgb(.67,.49,.23),ink=rgb(.13,.14,.13),muted=rgb(.38,.39,.38),paper=rgb(.98,.975,.96),lineColor=rgb(.82,.8,.75);
+ const font=await doc.embedFont(StandardFonts.Helvetica),bold=await doc.embedFont(StandardFonts.HelveticaBold),serif=await doc.embedFont(StandardFonts.TimesRoman),gold=rgb(.67,.49,.23),ink=rgb(.13,.14,.13),muted=rgb(.38,.39,.38),paper=rgb(.98,.975,.96),lineColor=rgb(.82,.8,.75);
  const W=612,H=792,L=35,R=577;
  const visible=value=>safe(customer?customerText(value,data):value);
  const draw=(p,value,x,y,size=9,strong=false,color=ink)=>p.drawText(visible(value),{x,y,size,font:strong?bold:font,color});
  const wrap=(value,width,size=9,strong=false)=>{const f=strong?bold:font,out=[];for(const para of visible(value).split('\n')){let row='';for(let word of para.split(/\s+/)){while(f.widthOfTextAtSize(word,size)>width){let n=1;while(n<word.length&&f.widthOfTextAtSize(word.slice(0,n+1),size)<=width)n++;if(row){out.push(row);row='';}out.push(word.slice(0,n));word=word.slice(n);}const next=row?row+' '+word:word;if(f.widthOfTextAtSize(next,size)>width&&row){out.push(row);row=word;}else row=next;}out.push(row);}return out;};
- const branded=(title)=>{const p=doc.addPage([W,H]);p.drawRectangle({x:0,y:0,width:W,height:H,color:paper});p.drawRectangle({x:0,y:0,width:5,height:H,color:gold});draw(p,'VULPINE',L,749,24,true);draw(p,title,L,710,16,true);p.drawLine({start:{x:L,y:732},end:{x:R,y:732},color:gold,thickness:1});draw(p,state.quoteId,R-bold.widthOfTextAtSize(safe(state.quoteId),8),752,8,true,muted);draw(p,state.date+' | Valid until '+state.validUntil,L,25,8,false,muted);return p;};
- const artwork=async index=>{const original=source.getPage(index),box=original.getMediaBox(),embedded=await doc.embedPage(original,{left:box.x,bottom:box.y,right:box.x+box.width,top:box.y+box.height}),scale=Math.min(W/box.width,H/box.height);const p=doc.addPage([W,H]);p.drawRectangle({x:0,y:0,width:W,height:H,color:paper});p.drawPage(embedded,{x:(W-box.width*scale)/2,y:(H-box.height*scale)/2,width:box.width*scale,height:box.height*scale});if(index===0)p.drawRectangle({x:(W-box.width*scale)/2,y:0,width:5*scale,height:H,color:paper});return p;};
- const cover=await artwork(0);draw(cover,state.preparedBy||'Daniel Cruz',38,255,21);draw(cover,state.validUntil,38,179,14,true);draw(cover,state.date,501,704,8);
- const approach=await artwork(1);draw(approach,state.date,501,704,8);
+ // Map the complete original artwork to Letter, avoiding unprinted side bands.
+ const embeddedArtwork=await Promise.all(source.getPages().map(original=>{const box=original.getMediaBox();return doc.embedPage(original,{left:box.x,bottom:box.y,right:box.x+box.width,top:box.y+box.height});}));
+ const artwork=index=>{const p=doc.addPage([W,H]);p.drawPage(embeddedArtwork[index],{x:0,y:0,width:W,height:H});return p;};
+ // Embed only the frame so unused form labels do not remain as hidden PDF text.
+ const frameBox=source.getPage(2).getMediaBox(),frame=await Promise.all([[0,0,20,H],[W-20,0,20,H],[20,0,W-40,40],[20,770,W-40,22]].map(async([x,y,w,h])=>({x,y,w,h,page:await doc.embedPage(source.getPage(2),{left:frameBox.x+x/W*frameBox.width,bottom:frameBox.y+y/H*frameBox.height,right:frameBox.x+(x+w)/W*frameBox.width,top:frameBox.y+(y+h)/H*frameBox.height})})));
+ const branded=title=>{const p=doc.addPage([W,H]);p.drawRectangle({x:0,y:0,width:W,height:H,color:paper});
+  for(const part of frame)p.drawPage(part.page,{x:part.x,y:part.y,width:part.w,height:part.h});
+  p.drawRectangle({x:28,y:747,width:W-56,height:25,color:ink});draw(p,'VULPINE',W-80,756,9,true,gold);
+  draw(p,'CABINET SUPPLY PROPOSAL',37,756,9,true,rgb(1,1,1));
+  draw(p,title,L,710,18,true);p.drawLine({start:{x:L,y:696},end:{x:R,y:696},color:gold,thickness:1});
+  draw(p,state.quoteId,L,52,8,true,muted);draw(p,state.date+' | Valid until '+state.validUntil,L,25,8,false,muted);return p;};
+ const cover=artwork(0),coverBox=source.getPage(0).getMediaBox(),sx=W/coverBox.width,sy=H/coverBox.height;
+ const coverText=(value,x,top,size)=>cover.drawText(visible(value),{x:x*sx,y:(850.079956-top-coverBox.y)*sy,size:size*sy,font:serif,color:ink});
+ coverText(state.preparedBy||'Daniel Cruz',34,567,27);coverText(state.validUntil,34,649,17);draw(cover,state.date,501,704,8);
+ const approach=artwork(1);draw(approach,state.date,501,704,8);
  if(type==='draft'){const banner=p=>{p.drawRectangle({x:L,y:41,width:R-L,height:22,color:paper});draw(p,'INTERNAL DRAFT - INCOMPLETE / NOT FOR CUSTOMER SUBMISSION',L+6,48,9,true,gold);};banner(cover);banner(approach);}
  const charges=result.charges,active=result.units.filter(u=>u.repeat>0);
- // Fill the approved schedule artwork; all artwork is uniformly fitted to Letter.
+ // Fill the approved schedule using the same full-canvas Letter mapping.
  if(customer)for(let offset=0;offset<active.length;offset+=20){
-  const original=source.getPage(2),box=original.getMediaBox(),scale=Math.min(W/box.width,H/box.height),dx=(W-box.width*scale)/2,dy=(H-box.height*scale)/2,p=await artwork(2);
-  const cell=(value,x,top,width=100,size=8,strong=false,color=ink)=>{let v=visible(value),actual=size,f=strong?bold:font;while(f.widthOfTextAtSize(v,actual)>width&&actual>5.5)actual-=.25;if(f.widthOfTextAtSize(v,actual)>width){while(v&&f.widthOfTextAtSize(v+'...',actual)>width)v=v.slice(0,-1);v+='...';}draw(p,v,dx+(x-box.x)*scale,dy+(850.079956-top-box.y)*scale,actual*scale,strong,color);};
+  const original=source.getPage(2),box=original.getMediaBox(),scaleX=W/box.width,scaleY=H/box.height,p=artwork(2);
+  const cell=(value,x,top,width=100,size=8,strong=false,color=ink)=>{let v=visible(value),actual=size,f=strong?bold:font;while(f.widthOfTextAtSize(v,actual)>width&&actual>5.5)actual-=.25;if(f.widthOfTextAtSize(v,actual)>width){while(v&&f.widthOfTextAtSize(v+'...',actual)>width)v=v.slice(0,-1);v+='...';}draw(p,v,(x-box.x)*scaleX,(850.079956-top-box.y)*scaleY,actual*Math.min(scaleX,scaleY),strong,color);};
   cell(state.project+' / '+(state.customer||'GC PENDING'),108,70,201,8,true);cell(state.projectInfo?.cabinetLine||'Line pending',422,70,144,8);
   active.slice(offset,offset+20).forEach((u,i)=>{const top=125+i*18.8;cell([...new Set(u.entries.map(r=>data.families?.[r.li]||(r.li<8?'Framed':'Frameless')))].join('/'),30,top,93,7,true);cell(u.name,134,top,107,7,true);cell(u.repeat,254,top,31,8);cell(money(u.sale),292,top,66,8);cell(money(u.sale*u.repeat),368,top,68,8);cell(u.entries.reduce((s,r)=>s+(lookup(data,r.li,r.sku)?.[5]||0)*r.qty*u.repeat,0),449,top,49,8);cell(u.entries.reduce((s,r)=>s+(r.handleCount??lookup(data,r.li,r.sku)?.[7]??0)*r.qty*u.repeat,0),510,top,54,8);});
   cell(money(result.cabinetSale),368,506,70,9,true,rgb(1,1,1));cell(charges?.boxes,449,506,49,8,true,rgb(1,1,1));cell(charges?.handles.quantity,510,506,54,8,true,rgb(1,1,1));
@@ -33,7 +44,7 @@ export async function generateProposal(PDFLib,data,state,type,templateBytes,opti
    ?['Selected HCI Euro front; verify finish','18 mm engineered furniture board; white interior','18 mm melamine-laminated shelf','6-way adjustable soft-close hinges','Premium metal; melamine bottom/back','Full-access soft-close drawer system']
    :['HDF','Plywood with maple finish','Plywood','DTC soft-close','Solid wood dovetailed','Undermount soft-close']);
   [...specifications,state.projectInfo?.finishBasis||'Finish pending verification'].forEach((v,i)=>cell(v,215,701+i*14,348,7));
-  if(result.total===null){p.drawRectangle({x:dx+(34-box.x)*scale,y:dy+(850.079956-661-box.y)*scale,width:164*scale,height:18*scale,color:rgb(.94,.925,.89)});cell('SUBTOTAL BEFORE TAX',36,654,160,8,true);}
+  if(result.total===null){p.drawRectangle({x:(34-box.x)*scaleX,y:(850.079956-661-box.y)*scaleY,width:164*scaleX,height:18*scaleY,color:rgb(.94,.925,.89)});cell('SUBTOTAL BEFORE TAX',36,654,160,8,true);}
   cell(state.quoteId+' | '+(type==='draft'?'INTERNAL DRAFT - NOT FOR SUBMISSION':'PREPARED PROPOSAL')+' | '+state.date,29,804,536,8);
  }
 
