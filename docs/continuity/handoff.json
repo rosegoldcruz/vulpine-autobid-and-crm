@@ -1,34 +1,40 @@
 {
-  "last_change": "Implemented quote-specific approval for customer bids using disclosed priced alternatives; generated customer PDFs/XLSX for311 revision11 and Mission revision26 and placed in respective project folders.",
+  "last_change": "Released Backoffice/PDF/MCP reliability fixes in pushed15dc4d4; promoted READY deployment dpl_7FS8DKFKsWuYrLaP8zDQydUURrUp; pricing/bidding services running MCP1.1.0. No business quote changes.",
   "verification": [
-    "53 pricing unit tests passed;5 integration checks passed;510-product build passed.",
-    "Both pricing services restarted;health endpoints ok.",
-    "Live quote edits preserve units,SKUs,quantities,margin,tax,signature and totals:31198249.83;Mission1370718.44.",
-    "Actual customer PDFs:no internal-draft label;Letter size;closing artwork last;signature pixels match owner image;311 Addenda1/2 retained;Mission no addenda and Cream Toffee HG retained;suppliers hidden;folder copies hash-match.",
-    "Initial new regression test failed only on wrapped PDF whitespace;normalized whitespace and all53 tests passed."
+    "npm test:49 root+36 service tests passed. Pricing:53 unit+5 integration checks passed.",
+    "Final production Playwright suite:21 passed at1440px/390px,including previews,folder upload/resume,saving state,tracker editing,navigation and pricing retry/session cases.",
+    "Actual pricing service browser fixture:load saved quote,download customer PDF,reload,mobile resize and flush edit before returning to top-level Backoffice passed;no page errors. PDF text verifies customer company,total,no internal-draft banner.",
+    "Local Backoffice production build and Vercel release build passed. Affected ESLint passed. Initial React18/19 and19.2/19.3 type build failures repaired through host-scoped type peers.",
+    "Early development tests during dependency relinking/HMR failed; final frozen production build suite passes all21. New scoped alert test initially matched Next route announcer and was repaired.",
+    "All7 identities pass real access/quote/catalog/retained document calls after production release;27 pricing/35 total tools;Mission payload393KB->66KB. Actual ChatGPT pricing connector reads shared quote and resolves customer PDF.",
+    "Both services active and health ok. Vercel inspect confirms production alias on promoted release. Production sign-in page renders without page errors;post-release Vercel error query returns0 rows.",
+    "git push origin codex/cabinet-brain-integration-recovery succeeded for15dc4d4. QA server stopped;temporary generated instruction files removed."
   ],
   "decisions": [
-    "Owner explicitly authorizes bidding current priced alternatives before factory verification with scope qualifications visible.",
-    "Keep selected Mission Cream Toffee HG frameless Alabaster alternate;owner reiterates Cream Toffee HG or Beige Textile.",
-    "Do not erase incomplete original-spec facts or waive actual price,tax or quantity validation. No submission recipient or portal action inferred."
+    "Owner requests complete reliability work with emphasis on PDFs and AI/MCP; release scope is verified workflows,not a claim every external provider is configured.",
+    "Keep current prices,finishes,signature approvals,source records and historical exports unchanged.",
+    "Customer exports must use explicit customer type;incomplete work retains draft default and validation.",
+    "ChatGPT installed metadata remains a separate observable client limitation;no reset/uninstall or broader permission changes inferred."
   ],
   "open_work": [
-    "Factory construction/fit confirmation remains procurement coordination;original custom scope excluded or qualified as disclosed.",
-    "No email or portal submission performed."
+    "ChatGPT pricing connector exposes25 cached tools while server exposes27;refresh installed metadata to expose new item/configuration tools and updated schemas.",
+    "External provider configuration beyond tested bid/document workflows was not certified complete."
   ],
-  "blockers": [],
-  "next_action": "Owner can download customer proposals from project folders;submit only through an explicitly identified recipient/portal on instruction.",
-  "recorded_at": "2026-10-19T14:31:08.244Z",
+  "blockers": [
+    "No exposed Plugin Management operation can refresh ChatGPT connector metadata;server deployment does not update that installed snapshot."
+  ],
+  "next_action": "Use live Backoffice Pricing and tested direct agent connections;refresh the ChatGPT Pricing connection metadata for its remaining cached tool/schema mismatch.",
+  "recorded_at": "2026-10-19T19:37:32.175Z",
   "snapshot": {
-    "head": "b4da1bf11aff8051f87d8fbf51ad9bedc87de358",
+    "head": "15dc4d452c20eb4f07c3cea2d2c9d37bad020582",
     "branch": "codex/cabinet-brain-integration-recovery",
-    "worktree": " M apps/pricing/docs/bidding-agent.md\n M apps/pricing/src/proposal-policy.mjs\n M apps/pricing/tests/proposal-policy.test.mjs\n M docs/continuity/current.md\n M docs/continuity/decisions.md",
+    "worktree": " M docs/continuity/current.md\n M docs/continuity/decisions.md",
     "sources": {
       "AGENTS.md": "c51e08a8021528ff818e5f62620aae587530eeec275750b2d38c2771ef732460",
       "README.md": "b6948f9084afb5f1bcceb4466e627c78f2288ba7f4876ceb64f3702b4fea5bd1",
       "package.json": "fafa60aeae85182092017dfc87134dabfa1df3484315a510e118b4d879566a49",
-      "docs/continuity/current.md": "c088f4ea4c6b02851511920a23a20fe2db6af09cbf9ae179c9e004f5e93dfa06",
-      "docs/continuity/decisions.md": "1c69ea2019b66ce59d18cb254e88b5aaa19e54e0bcf726b56639df7673503011",
+      "docs/continuity/current.md": "ed74d8714b01617d7db3045265afddcf2be2054c61a465629677e702750fc336",
+      "docs/continuity/decisions.md": "b140f53f2ca3ecd7cbd53c5c5df01ad454c9ef60a84b3a4707c6a841a4163bf8",
       "docs/continuity/audit.md": "c849de622d00377d1fadd3ba41cda2933eb9370b6fa13c2baf53bf36c0c471b2",
       "docs/continuity/verification.md": "5daeea53454a06fcf3b928b1fd12c8f69448beb8fc31a75b441181cc57962f28",
       "docs/continuity/sources.json": "0380630765b71a413ac27edd875e120cf51f501232720ee130160cd1f885937b",
@@ -58,7 +64,7 @@
   },
   "vault": {
     "project": "vulpine-platform",
-    "session_id": "daa1acf4-6e42-430a-a9e4-38436aeec318",
-    "record": "sources/aeon-sessions/vulpine-platform/daa1acf4-6e42-430a-a9e4-38436aeec318.md"
+    "session_id": "6381ac34-2cc1-427b-a112-e840ca7051da",
+    "record": "sources/aeon-sessions/vulpine-platform/6381ac34-2cc1-427b-a112-e840ca7051da.md"
   }
 }

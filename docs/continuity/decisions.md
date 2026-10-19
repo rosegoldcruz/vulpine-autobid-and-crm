@@ -397,3 +397,16 @@ scope sections and construction allowance disclosure. Preserve source facts,
 unresolved factory compliance and actual price/tax/quantity checks. Generate
 customer proposals rather than internal drafts. Existing signature authorization
 remains scoped to these bids. Mission retains Cream Toffee HG as Alabaster alternate.
+
+## 2026-10-19 — treat PDF usability and real MCP calls as release evidence
+
+Owner prioritizes seamless customer PDFs and working partner AI tool access.
+Preserve prices, selected finishes and historical documents. Distinguish customer
+proposal generation from incomplete internal drafts in filenames and retained
+exports. Show saved-document revisions; do not present older PDFs as current.
+Verify MCP calls and actual PDF download bytes for every registered identity;
+discovery alone is insufficient. Reduce duplicated source/calculation payloads
+without deleting source snapshots. Installed ChatGPT schemas are separately cached
+and remain a client refresh limitation; never bypass auth or reset connections
+merely to hide that mismatch. Use production browser checks after dependency
+relinking rather than relying on stale development/HMR state.

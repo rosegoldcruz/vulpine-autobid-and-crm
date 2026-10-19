@@ -1,3 +1,45 @@
+## 2026-10-19 — Backoffice PDF/MCP reliability release
+
+Owner requests a full reliability pass, emphasizing PDF problems and partner AI
+MCP tool failures. Preserve existing financial selections and saved documents.
+Source fix15dc4d4 is pushed on codex/cabinet-brain-integration-recovery. Production
+Backoffice deployment dpl_7FS8DKFKsWuYrLaP8zDQydUURrUp is READY and promoted to
+backoffice.vulpine.llc. Pricing and bidding services are healthy; MCP version1.1.0.
+
+Pricing opens within the shell with loading, session-expiry and retry states;
+Continue your work includes Pricing. Proxy retains PDF filename headers. Saved
+PDF history distinguishes current/earlier revisions and customer/internal types.
+Customer Auto Bid exports no longer get a DRAFT filename or draft-only notes;
+save_bid_to_project accepts explicit type:customer while defaulting to draft for
+incomplete work. Existing signed tax/project/price guards remain. Returning from
+the embedded pricing screen flushes saves and navigates the top window; mobile
+resizing closes the project sidebar and failed history loads offer retry.
+
+React type dependency boundaries now follow the host app instead of inheriting
+React18 or mismatched React19 types from other workspaces. Backoffice uses
+19.3.0 types with scoped package extensions; runtime React/prices are unchanged.
+The QA helper uses an ephemeral backend port instead of production pricing3021.
+
+MCP shared reads omit duplicate _agent source snapshots and calculated item rows
+by default; editable units/totals and stored snapshots remain preserved. Detailed
+calculation rows are opt-in. Mission read shrank393KB to66KB; source/provenance
+remains in storage. Input validation errors identify repairable field paths.
+
+Verified85 root/service tests,53 pricing units,5 pricing integrations,21 production
+browser checks; local and remote production builds and affected lint pass. Actual
+pricing browser flow with isolated storage loads a saved quote, downloads customer
+PDF, reloads, resizes and flushes edits on return with no page errors. Production
+sign-in renders without page errors; post-release error log query returned0 rows.
+All7 registered agents perform access/quote/catalog/retained-PDF calls successfully,
+with27 pricing/35 total tools. ChatGPT's separate pricing connector reads/downloads
+successfully but exposes25 cached tools, lacking new saved item/configuration tools
+and current schemas. No available plugin operation can refresh that metadata. Do
+not claim installed metadata was refreshed, reset credentials or uninstall it.
+
+Evidence:/opt/output/backoffice-production-ui.txt,backoffice-real-pricing-results.txt,
+backoffice-mcp-functional-results.json,backoffice-live-deployment.txt and build/test
+logs. Existing business quotes/prices were not edited; no messages/orders sent.
+
 ## 2026-10-19 — signatures restored; 311 addenda confirmed; Mission hardware corrected
 
 Latest owner correction explicitly CONFIRMS Addenda 1 and 2 belong on 311.
