@@ -293,3 +293,20 @@ customer prices, tax, purchase costs or the selected cabinet margin. Unverified
 handle supplier cost still qualifies estimated profit. Delivery costs continue
 to be reported in known supplier totals when entered, while contributing zero
 to reported profit regardless of delivery revenue/cost differences.
+
+
+## 2026-10-19 — global cabinets/handles accounting and blank installation rows
+
+Owner explicitly extends the rule to every Backoffice/MCP-created bid: product
+revenue and profit must contain cabinets/handles only, with shipping, customer
+tax, installation and assembly excluded. Product margin uses product revenue
+as its denominator. Keep separate pass-through charges in the customer total
+due; never confuse customer subtotal sale with product revenue. Preserve
+existing prices and human-selected margin; unknown handle cost must remain
+visible in estimated profit. All MCP pricing paths and saved snapshots must
+expose the same product accounting fields and definitions.
+
+River Pointe has6.75% manual tax on cabinets/handles only. This is not an
+automatic universal tax rate for every destination. Owner has erased installation
+from both page-three summaries; leave those rows blank, not Excluded.
+Preserve the approved general specification wording and other snapshot content.

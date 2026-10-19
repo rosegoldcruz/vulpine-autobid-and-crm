@@ -36,8 +36,8 @@ export async function generateProposal(PDFLib,data,state,type,templateBytes,opti
   cell(state.project+' / '+(state.customer||'GC PENDING'),108,70,201,8,true);cell(state.projectInfo?.cabinetLine||'Line pending',422,70,144,8);
   active.slice(offset,offset+20).forEach((u,i)=>{const top=125+i*18.8;cell([...new Set(u.entries.map(r=>data.families?.[r.li]||(r.li<8?'Framed':'Frameless')))].join('/'),30,top,93,7,true);cell(u.name,134,top,107,7,true);cell(u.repeat,254,top,31,8);cell(money(u.sale),292,top,66,8);cell(money(u.sale*u.repeat),368,top,68,8);cell(u.entries.reduce((s,r)=>s+(lookup(data,r.li,r.sku)?.[5]||0)*r.qty*u.repeat,0),449,top,49,8);cell(u.entries.reduce((s,r)=>s+(r.handleCount??lookup(data,r.li,r.sku)?.[7]??0)*r.qty*u.repeat,0),510,top,54,8);});
   cell(money(result.cabinetSale),368,506,70,9,true,rgb(1,1,1));cell(charges?.boxes,449,506,49,8,true,rgb(1,1,1));cell(charges?.handles.quantity,510,506,54,8,true,rgb(1,1,1));
-  [money(result.cabinetSale),money(charges?.handles.amount||0),result.tax.amount===null||!state.tax?.enabled&&!state.tax?.exemption?'Pending verification':money(result.tax.amount),money(charges?.freight.amount||0),charges?.installation.status==='excluded'?'Excluded':money(charges.installation.amount),result.total===null?'Subtotal '+money(result.sale):money(result.total)].forEach((v,i)=>cell(v,201,562+i*18.5,83,7,i===5));
-  [charges?charges.counts.apartments+' apts + '+charges.counts.amenities+' areas':result.count,charges?.counts.groups,charges?.boxes,charges?.handles.quantity,charges?.installation.status==='excluded'?'Excluded':'Priced and included',type==='draft'?'Internal draft':'Cabinet supply'].forEach((v,i)=>cell(v,438,562+i*18.5,126,8,i===5));
+  [money(result.cabinetSale),money(charges?.handles.amount||0),result.tax.amount===null||!state.tax?.enabled&&!state.tax?.exemption?'Pending verification':money(result.tax.amount),money(charges?.freight.amount||0),'',result.total===null?'Subtotal '+money(result.sale):money(result.total)].forEach((v,i)=>cell(v,201,562+i*18.5,83,7,i===5));
+  [charges?charges.counts.apartments+' apts + '+charges.counts.amenities+' areas':result.count,charges?.counts.groups,charges?.boxes,charges?.handles.quantity,'',type==='draft'?'Internal draft':'Cabinet supply'].forEach((v,i)=>cell(v,438,562+i*18.5,126,8,i===5));
   // Exact owner-supplied page-three wording; only door style / finish varies.
   PROPOSAL_SPECIFICATIONS.forEach((value,i)=>cell(value,213.33,701+i*13.846426,348,7));
   p.drawRectangle({x:210*scaleX,y:(850.079956-789-box.y)*scaleY,width:358*scaleX,height:13*scaleY,color:rgb(1,1,1)});
@@ -68,7 +68,7 @@ export async function generateProposal(PDFLib,data,state,type,templateBytes,opti
   if(charges.handles.includedQuantity)text(charges.handles.includedQuantity+' handles included within cabinet/material lines; charged once.');
   pair('Shipping: '+charges.freight.quantity+' units/areas x '+money(charges.freight.rate),money(charges.freight.amount));
   if(charges.freight.approval)text('Freight override: '+charges.freight.approval);
-  for(const [label,item]of [['Installation',charges.installation],['Assembly',charges.assembly]])pair(label,item.status==='excluded'?'Excluded':money(item.amount)+' - priced and included');
+  for(const [label,item]of [['Assembly',charges.assembly]])pair(label,item.status==='excluded'?'Excluded':money(item.amount)+' - priced and included');
  }
  if(type!=='purchase'){
   pair('Selling subtotal before tax',money(result.sale),true);

@@ -1,32 +1,38 @@
 {
-  "last_change": "Excluded delivery revenue and costs from shared-engine profit/margin and clarified Backoffice caption. Preserved all customer prices/tax and quote revisions.",
+  "last_change": "Implemented shared product-only revenue/profit fields across engine, Backoffice footer, MCP schemas/responses and future quote snapshots. Left cleared installation PDF rows blank and regenerated/copied final River Pointe PDF with unchanged quote values.",
   "verification": [
-    "node --test apps/pricing/tests/*.test.mjs:47 passed.",
-    "node scripts/build.mjs in apps/pricing:passed.",
-    "node /opt/output/delivery-profit-browser.mjs:passed desktop/mobile manual tax, save/reopen, Generate/download/print, profit arithmetic and Excludes delivery caption.",
-    "Authenticated production get_project_quote revision44:profit25367.98, sale213457.86, total226824.88, purchase172661.88; profitBasis Excludes delivery; before handle supplier cost.",
-    "Pricing and bidding services restarted; health endpoints both ok.",
-    "git diff --check passed."
+    "48 pricing tests passed, including service/freight changes not altering revenue/profit/tax supply and PDF cleared rows.",
+    "Persistent bidding.integration and proposal-flow.integration passed in isolated orgs; proposal-flow reran after schema descriptions passed.",
+    "Protected pricing build passed.",
+    "Desktop/mobile browser manual6.75 tax, Generate/download/print, save/reopen and Product revenue/Product cost footer checks passed.",
+    "Live get_project_quote revision44:revenue198029.86, productCost172661.88, profit25367.98 before handle cost, tax13367.02 at6.75%, sale213457.86,total226824.88.",
+    "Live MCP price_bid also returns explicit product-only revenue/productCost/profit; separate saved job preserved.",
+    "Production PDF export document a68733c9-e774-45ae-8995-6d04ef5476e1; final rendered schedule/specs/tax/blank rows checked; both server PDF paths byte-identical.",
+    "Pricing and bidding restarted/healthy; git diff --check passed."
   ],
   "decisions": [
-    "Owner explicitly states delivery is excluded from profit; exclude both delivery revenue and supplier costs and use non-delivery revenue for margin."
+    "Owner explicitly requires these accounting rules globally for all Backoffice/MCP bids, not only River Pointe.",
+    "Product accounting excludes shipping, tax and all services; customer total due retains separately billed pass-throughs.",
+    "Only cabinets and handles taxed; River Pointe saved manual rate6.75%.",
+    "Owner-cleared installation rows stay blank; approved specifications and Project Snapshot preserved."
   ],
   "open_work": [
-    "Handle supplier cost remains unverified; estimated profit is before that cost."
+    "Handle supplier cost remains unverified; profit is estimated before that cost.",
+    "Prior disclosed finish/drawing and supplier-compliance qualifications remain unresolved."
   ],
   "blockers": [],
-  "next_action": "Refresh Backoffice to load corrected profit calculation and explicit delivery-exclusion caption.",
-  "recorded_at": "2026-10-19T07:40:08.897Z",
+  "next_action": "Refresh Backoffice to load the Product revenue footer; use final PDF from either server path.",
+  "recorded_at": "2026-10-19T07:47:35.340Z",
   "snapshot": {
-    "head": "a0e1f1460349efcced18e64b0405111af97d47e2",
+    "head": "5eb45dad7b377d285db5e5264f2d6d9e7c9a4b2b",
     "branch": "codex/cabinet-brain-integration-recovery",
-    "worktree": " M apps/pricing/src/app.mjs\n M apps/pricing/src/pricing.mjs\n M apps/pricing/tests/proposal-policy.test.mjs\n M docs/continuity/current.md\n M docs/continuity/decisions.md",
+    "worktree": " M apps/pricing/agent/schemas.mjs\n M apps/pricing/agent/tools.mjs\n M apps/pricing/docs/tax.md\n M apps/pricing/quote-store.mjs\n M apps/pricing/src/app.mjs\n M apps/pricing/src/index.html\n M apps/pricing/src/pricing.mjs\n M apps/pricing/src/proposal-pdf.mjs\n M apps/pricing/src/quote-pdf.mjs\n M apps/pricing/tests/proposal-flow.integration.mjs\n M apps/pricing/tests/proposal-policy.test.mjs\n M docs/continuity/current.md\n M docs/continuity/decisions.md",
     "sources": {
       "AGENTS.md": "c51e08a8021528ff818e5f62620aae587530eeec275750b2d38c2771ef732460",
       "README.md": "b6948f9084afb5f1bcceb4466e627c78f2288ba7f4876ceb64f3702b4fea5bd1",
       "package.json": "fafa60aeae85182092017dfc87134dabfa1df3484315a510e118b4d879566a49",
-      "docs/continuity/current.md": "d556787d7008ef16990eb46016038a7b437a2a17d723b42b76c6304109cad197",
-      "docs/continuity/decisions.md": "9360c37de5b9be4c18cc917144c2de59e1083cc657320e95ff8ba2bded4fdd9b",
+      "docs/continuity/current.md": "f85eba3c7e186f4daf80868c52d4ddf7a3f32a358cbc95dff21ed58fae41ee97",
+      "docs/continuity/decisions.md": "646c53ab72883d948307b5558d78ff708456db19ac684d91a25a9c2d63d7f841",
       "docs/continuity/audit.md": "c849de622d00377d1fadd3ba41cda2933eb9370b6fa13c2baf53bf36c0c471b2",
       "docs/continuity/verification.md": "5daeea53454a06fcf3b928b1fd12c8f69448beb8fc31a75b441181cc57962f28",
       "docs/continuity/sources.json": "0380630765b71a413ac27edd875e120cf51f501232720ee130160cd1f885937b",
@@ -56,7 +62,7 @@
   },
   "vault": {
     "project": "vulpine-platform",
-    "session_id": "9f3c7121-c0fe-404d-9d79-6abceabb7a39",
-    "record": "sources/aeon-sessions/vulpine-platform/9f3c7121-c0fe-404d-9d79-6abceabb7a39.md"
+    "session_id": "fceb3a81-2c2e-4b63-aba2-772b6a58ce41",
+    "record": "sources/aeon-sessions/vulpine-platform/fceb3a81-2c2e-4b63-aba2-772b6a58ce41.md"
   }
 }

@@ -31,7 +31,7 @@ const descriptions={
  set_unit_mix:'Set unit names, counts and finishes using exact source evidence. Existing units must retain their IDs. Omitted populated units cannot be deleted by agents.',
  search_catalog:'Find actual catalog SKUs by code or description for one finish. Never create or rename SKU codes.',
  update_bid_items:'Replace one unit item list using exact catalog SKUs, quantities, finish indexes and supporting evidence. No price inputs allowed.',
- price_bid:'Calculate cents using the existing immutable cabinet pricing engine and human-selected margin.',
+ price_bid:'Calculate the existing cabinet pricing engine totals in cents. revenue and productCost cover cabinets and handles only; profit and actualMargin exclude shipping, installation, assembly and sales tax. sale is the customer subtotal including separately billed pass-throughs; total includes tax. Missing handle supplier cost leaves profit estimated. Preserve the human-selected margin.',
  validate_bid:'Check the existing engine rules plus source and review exceptions. Plan-derived human-review warnings can remain while exporting a saved priced-scope-only draft; they do not block export_bid. Final customer submission always requires human approval.',
  save_bid:'Persist the draft at the expected revision. Saving does not approve final pricing or authorize sending.',
  export_bid:'Generate a priced-scope-only draft PDF or Excel workbook. Plan quantity review warnings do not block draft export and remain in the document. First save_bid at the current revision. Pass type draft to preserve incomplete work, with specific missing-field errors; customer export requires verified project and tax information. Use scope_notes to document unresolved quantities, finishes, supplier pricing and exclusions; never silently substitute products. Returns an expiring download link. Does not send the proposal.'
@@ -72,7 +72,7 @@ export function createBidTools({workspace,store,catalogs,template,signatureBytes
      if(!catalog)throw new BidError('INVALID_SUPPLIER','Quote supplier is unavailable.');
      const r=calculateProject(catalog,updated);let ref;
      try{ref=await workspace.save(actor,updated,{id:q.id,revision:a.expected_revision});}catch(e){if(e.status===409)throw new BidError('REVISION_CONFLICT',e.message);if(e.status===404)throw new BidError('NOT_FOUND','Quote not found or access denied.');throw e;}
-     result={quote_id:ref.id,revision:ref.revision,state:updated,totals:{purchase:r.purchase,sale:r.sale,profit:r.profit,count:r.count,margin:r.margin,issues:r.issues},documents:await workspace.exports(actor,q.id)};break;
+     result={quote_id:ref.id,revision:ref.revision,state:updated,totals:{purchase:r.purchase,sale:r.sale,revenue:r.revenue,productCost:r.productCost,actualMargin:r.actualMargin,profit:r.profit,count:r.count,margin:r.margin,issues:r.issues,profitBasis:r.profitBasis},documents:await workspace.exports(actor,q.id)};break;
     }
     case 'get_project_document':{
      if(!workspace)throw new BidError('WORKSPACE_UNAVAILABLE','Project storage is unavailable.');
@@ -143,7 +143,7 @@ export function createBidTools({workspace,store,catalogs,template,signatureBytes
       return{sku:i.sku,li:i.li,qty:i.qty,...(i.handleCount!==undefined?{handleCount:i.handleCount}:{}),...(i.handlesIncluded?{handlesIncluded:true,handleInclusion:i.handleInclusion}:{}),...(i.assemblyId?{assemblyId:i.assemblyId}:{})};
      });
     });break;
-    case 'price_bid':{const r=calculateProject(data,current.state),missing=customerIssues(data,current.state,r);result={purchase:r.purchase,sale:r.sale,profit:r.profit,count:r.count,margin:r.margin,issues:r.issues,costsComplete:r.costsComplete,profitBasis:r.profitBasis,total:r.total,tax:r.tax,charges:r.charges,customerReady:missing.length===0,missingFields:missing};break;}
+    case 'price_bid':{const r=calculateProject(data,current.state),missing=customerIssues(data,current.state,r);result={purchase:r.purchase,sale:r.sale,revenue:r.revenue,productCost:r.productCost,actualMargin:r.actualMargin,profit:r.profit,count:r.count,margin:r.margin,issues:r.issues,costsComplete:r.costsComplete,profitBasis:r.profitBasis,total:r.total,tax:r.tax,charges:r.charges,customerReady:missing.length===0,missingFields:missing};break;}
     case 'validate_bid':{const all=[...new Set([...issues(current),...customerIssues(data,current.state,calculateProject(data,current.state))])];result={valid:all.length===0,issues:all,human_approval_required:true};break;}
     case 'save_bid':result=await store.mutate(actor,a.job_id,a.expected_revision,name,j=>{j.saved=true;});break;
     case 'export_bid':{

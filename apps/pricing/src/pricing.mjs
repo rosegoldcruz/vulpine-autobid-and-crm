@@ -39,9 +39,10 @@ export function calculateProject(data,state,margin=state.margin){
  if(tax.total!==null&&!Number.isSafeInteger(tax.total))issues.push('Tax-inclusive total exceeds the supported range.');
  const catalogFreight=active.reduce((sum,u)=>sum+u.entries.filter(freightItem).reduce((n,r)=>n+r.purchase*r.qty*u.repeat,0),0),knownSupplierTotal=purchase+(charges?(charges.handles.supplierCost??0)+(charges.freight.supplierCost??catalogFreight)-catalogFreight:0);
  const costsComplete=!charges||(charges.handles.supplierCost!==null&&charges.freight.supplierCost!==null);
- // Delivery is pass-through: exclude its revenue and cost from profit and margin.
- const deliverySale=charges?.freight.amount||0,deliveryCost=charges?(charges.freight.supplierCost??catalogFreight):0;
- const profitRevenue=customerSale-deliverySale,profit=profitRevenue-(knownSupplierTotal-deliveryCost);
- const profitBasis=charges?'Excludes delivery'+(charges.handles.supplierCost===null?'; before handle supplier cost':''):'Known supplier costs';
- return{units,issues,purchase,knownSupplierTotal,costsComplete,profitBasis,sale:customerSale,cabinetSale,charges,taxableItems,tax,total:tax.total,profit,count:active.reduce((s,u)=>s+(whole(u.repeat)?u.repeat:0),0),margin,actualMargin:profitRevenue?profit/profitRevenue*100:0};
+ // Product revenue/profit includes cabinets and handles only, never pass-throughs or services.
+ const revenue=charges?cabinetSale+charges.handles.amount:customerSale;
+ const productCost=charges?purchase-catalogFreight+(charges.handles.supplierCost??0):knownSupplierTotal;
+ const profit=revenue-productCost;
+ const profitBasis=charges?'Cabinets + handles only'+(charges.handles.supplierCost===null?'; before handle supplier cost':''):'Known supplier costs';
+ return{units,issues,purchase,knownSupplierTotal,costsComplete,profitBasis,revenue,productCost,sale:customerSale,cabinetSale,charges,taxableItems,tax,total:tax.total,profit,count:active.reduce((s,u)=>s+(whole(u.repeat)?u.repeat:0),0),margin,actualMargin:revenue?profit/revenue*100:0};
 }

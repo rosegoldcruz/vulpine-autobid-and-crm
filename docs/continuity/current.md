@@ -548,3 +548,38 @@ Generate/download, print, save/reopen and manual-tax desktop/mobile regression
 passed with added profit and delivery-exclusion caption assertions. Both services
 restarted/healthy; authenticated get_project_quote returns corrected profit and
 unchanged revision/totals. No env or hosted frontend deployment required.
+
+
+## 2026-10-19 — shared product-only accounting and final River Pointe PDF
+
+Owner reiterates global Backoffice/MCP requirements, not a one-PDF correction:
+revenue, profit and actualMargin include cabinets and handles only; exclude
+freight, installation, assembly and sales tax. Shared engine now reports explicit
+revenue/productCost fields. UI footer labels Product cost/Product revenue and
+uses those fields. MCP price_bid and shared-margin responses expose them with
+explicit schema descriptions; future quote snapshots preserve product fields.
+Existing reads compute them without mutating quote revisions. sale remains
+customer subtotal before tax including pass-through charges; never product
+revenue. Tax remains cabinets/handles only. River Pointe saved rate6.75%.
+
+Final River Pointe revision44 verified live: product revenue198029.86, product
+cost172661.88, estimated profit25367.98 before unverified handle supplier cost,
+actual product margin12.810179 percent, separate freight15428.00, tax13367.02
+on198029.86, customer subtotal213457.86, total due226824.88. No quote values
+or revision changed. Other saved Auto Bid draft has different pricing/tax
+state; it was read for MCP verification only and was not substituted for rev44.
+
+Removed renderer-inserted Excluded from both cleared installation rows and
+installation line from detailed customer price summary. General cabinet specs
+and Project Snapshot otherwise preserved. Saved final customer export document
+a68733c9-e774-45ae-8995-6d04ef5476e1; both /mnt/data/River_Pointe_Apartments_Bid.pdf
+and /home/bid-workspace/River Pointe Apartments/River_Pointe_Apartments_Bid.pdf
+match byte-for-byte. Previous workspace PDF retained privately in backup.
+
+48 pricing tests and2 isolated persistent MCP integration suites passed; the
+proposal-flow integration reran successfully after schema descriptions changed.
+Protected build passed; desktop/mobile browser Generate, print, tax, save/reopen
+and explicit footer product-revenue/product-cost assertions passed. Production
+get_project_quote and price_bid verified product-only outputs. Rendered final
+schedule inspected; exact specs, rate/totals and blank installation rows checked.
+Both services restarted/healthy. No env changes or Vercel deployment needed.

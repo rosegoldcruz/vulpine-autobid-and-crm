@@ -36,7 +36,7 @@ test('delivery revenue and supplier costs never contribute to profit or its marg
  const s=fixture(),before=calculateProject(data,s);
  assert.equal(before.profit,before.cabinetSale+before.charges.handles.amount-before.purchase);
  assert.equal(before.actualMargin,before.profit/(before.sale-before.charges.freight.amount)*100);
- assert.match(before.profitBasis,/Excludes delivery/);
+ assert.match(before.profitBasis,/Cabinets \+ handles only/);
  s.charges={freight:{override:true,rate:95000,approval:'Owner freight change',supplierCost:60000}};
  let changed=calculateProject(data,s);
  assert.notEqual(changed.sale,before.sale);assert.notEqual(changed.knownSupplierTotal,before.knownSupplierTotal);
@@ -50,4 +50,12 @@ test('catalog freight cost is excluded from profit with explicit freight-cost pr
  const s=fixture(),base=calculateProject(catalog,s);s.units[0].items.push({sku:'QA-FREIGHT',li:0,qty:1});
  const included=calculateProject(catalog,s);assert.equal(included.profit,base.profit);
  s.charges={freight:{supplierCost:40000}};assert.equal(calculateProject(catalog,s).profit,base.profit);
+});
+
+test('only cabinets and handles generate revenue, profit and taxable supply at 6.75 percent',async()=>{
+ const {manualTax}=await import('../tax-provider.mjs'),s=fixture();s.tax={enabled:true,address:s.tax.address,lookup:manualTax({address:s.tax.address,ratePercent:6.75},testEnv,'fixture')};
+ const base=calculateProject(data,s);s.charges={installation:{status:'included',amount:70000},assembly:{status:'included',amount:30000},freight:{override:true,rate:99999,approval:'Fixture delivery',supplierCost:123456}};
+ const r=calculateProject(data,s);assert.equal(r.revenue,base.cabinetSale+base.charges.handles.amount);assert.equal(r.revenue,base.revenue);assert.equal(r.productCost,base.productCost);assert.equal(r.profit,base.profit);assert.equal(r.actualMargin,base.actualMargin);
+ assert.equal(r.tax.rate,.0675);assert.equal(r.tax.taxableAmount,r.revenue);assert.equal(r.tax.amount,Math.round(r.revenue*.0675));assert.equal(r.total,r.sale+r.tax.amount);assert.notEqual(r.sale,r.revenue);
+ const text=await pdfText(await generateQuote(PDFLib,data,fixture(),'customer',template)),schedule=text.split('\f')[2];assert.doesNotMatch(schedule,/Excluded|Installation/i);
 });

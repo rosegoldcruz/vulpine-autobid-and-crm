@@ -285,7 +285,7 @@ function renderItems(){
 function renderBar(){
   const r=project(),ok=Number.isSafeInteger(r.purchase)&&Number.isSafeInteger(r.sale);
   taxUI?.draw(r.sale);
-  $('tCost').textContent=ok?money(r.knownSupplierTotal):'—';$('tSell').textContent=ok?money(r.sale):'—';$('tProfit').textContent=ok?money(r.profit):'—';
+  $('tCost').textContent=ok?money(r.productCost):'—';$('tSell').textContent=ok?money(r.revenue):'—';$('tProfit').textContent=ok?money(r.profit):'—';
   $('tProfitLabel').textContent=!r.charges||r.charges.handles.supplierCost!==null?'Profit':'Estimated profit';
   $('tReal').textContent=ok&&r.sale?r.actualMargin.toFixed(2)+'% · '+r.profitBasis:'';
   $('mVal').textContent=state.margin+'%';$('mTog').textContent=state.margin+'%';$('mRange').value=state.margin;

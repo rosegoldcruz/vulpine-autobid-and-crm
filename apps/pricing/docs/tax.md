@@ -40,3 +40,19 @@ leave the draft with tax/total pending. No unknown rate becomes zero. An
 applicable exemption requires its reason, authority, evidence reference,
 effective dates, matching delivery address, and a server signature obtained
 through the authenticated app. Exemption evidence is not invented automatically.
+
+
+### Product revenue and profit reporting
+
+The shared browser/MCP engine reports revenue as cabinets plus handles only.
+productCost contains cabinet cost and known handle cost, excluding freight.
+profit = revenue - productCost; actualMargin = profit / revenue * 100.
+Shipping, installation, assembly and customer sales tax never contribute to
+product revenue or profit. Unknown handle cost leaves profit explicitly estimated.
+The sale field remains the complete customer subtotal before tax, including
+separately billed pass-throughs; total is that subtotal plus tax. Do not use
+sale or total as product revenue. New saved calculation snapshots retain the
+explicit product fields; reads calculate them for existing quotes.
+
+Taxable supply remains cabinets plus handles only. River Pointe's saved manual
+rate is6.75%; this project rate is not a universal rate for other destinations.
