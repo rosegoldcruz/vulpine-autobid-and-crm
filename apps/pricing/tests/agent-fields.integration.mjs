@@ -1,4 +1,7 @@
 import test from 'node:test';
+import fs from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
 import assert from 'node:assert/strict';
 import {randomUUID,createHash,createHmac} from 'node:crypto';
 import {spawnSync} from 'node:child_process';
@@ -10,7 +13,10 @@ import {verifyTax} from '../tax-provider.mjs';
 import {calculateProject} from '../src/pricing.mjs';
 
 test('MCP edits draft/shared fields, signs tax and exports saved customer PDFs without a browser',async()=>{
- const env={...process.env,OPS_ORGANIZATION_ID:'qa-fields-'+randomUUID(),BIDDING_PUBLIC_URL:'http://127.0.0.1:3038/',TAXJAR_API_TOKEN:undefined};
+ const signatureDir=await fs.mkdtemp(path.join(os.tmpdir(),'vulpine-signature-test-'));
+ const signaturePath=path.join(signatureDir,'signature.png');
+ await fs.writeFile(signaturePath,Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+a9YQAAAAASUVORK5CYII=','base64'));
+ const env={...process.env,VULPINE_SIGNATURE_PATH:signaturePath,OPS_ORGANIZATION_ID:'qa-fields-'+randomUUID(),BIDDING_PUBLIC_URL:'http://127.0.0.1:3038/',TAXJAR_API_TOKEN:undefined};
  assert.ok(env.BIDDING_DATABASE_URL);
  const app=await createBiddingServer(env,{worker:false});await new Promise(resolve=>app.server.listen(3038,'127.0.0.1',resolve));
  const workspace=new QuoteStore(env.QUOTES_DATABASE_URL||env.BIDDING_DATABASE_URL);
@@ -51,8 +57,12 @@ test('MCP edits draft/shared fields, signs tax and exports saved customer PDFs w
   const blocked=await execute('set_project_quote_tax',{quote_id:q.quote_id,expected_revision:changed.revision,mode:'automatic'});assert.equal(blocked.error.code,'PROVIDER_UNAVAILABLE');assert.match(blocked.error.message,/configured TaxJar/);
   assert.equal((await call('get_project_quote',{quote_id:q.quote_id})).revision,changed.revision);
   changed=await call('set_project_quote_tax',{quote_id:q.quote_id,expected_revision:changed.revision,rate_percent:6.75,address:{street:'',city:'',state:'',zip:''}});verifyTax(changed.state.tax,env);assert.equal(changed.totals.tax.rate,.0675);assert.equal(changed.totals.tax.amount,Math.round(original.revenue*.0675));assert.equal(changed.totals.profit,original.profit-500);
+  assert.equal((await execute('set_project_quote_details',{quote_id:q.quote_id,expected_revision:changed.revision,preparedBy:'Daniel Cruz',signature:{approved:true,quoteId:'OTHER'}})).error.code,'INVALID_INPUT');
+  assert.equal((await execute('set_project_quote_details',{quote_id:q.quote_id,expected_revision:changed.revision,signature:{approved:true,quoteId:changed.state.quoteId}})).error.code,'INVALID_INPUT');
+  changed=await call('set_project_quote_details',{quote_id:q.quote_id,expected_revision:changed.revision,preparedBy:'Daniel Cruz',signature:{approved:true,quoteId:changed.state.quoteId},customerSections:{addenda:''}});
+  assert.deepEqual(changed.state.signature,{approved:true,quoteId:changed.state.quoteId});
   const exported=await remote.callTool({name:'export_project_quote',arguments:{quote_id:q.quote_id,expected_revision:changed.revision,format:'pdf',type:'customer'}});assert.equal(exported.structuredContent.ok,true,JSON.stringify(exported));assert.ok(exported.content.some(c=>c.type==='resource_link'));
-  const bytes=Buffer.from(await(await fetch(exported.structuredContent.data.url)).arrayBuffer()),text=spawnSync('pdftotext',['-layout','-','-'],{input:bytes,encoding:'utf8'});assert.equal(text.status,0,text.stderr);assert.match(text.stdout,/6\.7500%/);assert.match(text.stdout.replace(/\s+/g,' '),/WE ACKNOWLEDGE ADDENDUM 1 AND ADDENDUM 2/);assert.doesNotMatch(text.stdout,/\bHCI\b|Highland|Private internal notes/);
+  const bytes=Buffer.from(await(await fetch(exported.structuredContent.data.url)).arrayBuffer()),text=spawnSync('pdftotext',['-layout','-','-'],{input:bytes,encoding:'utf8'});assert.equal(text.status,0,text.stderr);assert.match(text.stdout,/6\.7500%/);assert.doesNotMatch(text.stdout.replace(/\s+/g,' '),/WE ACKNOWLEDGE ADDENDUM/);assert.doesNotMatch(text.stdout,/\bHCI\b|Highland|Private internal notes/);
   q=await call('get_project_quote',{quote_id:q.quote_id});assert.equal(q.revision,changed.revision);assert.equal(q.state.email,'changed@example.test');assert.ok(q.documents.some(d=>d.id===exported.structuredContent.data.document_id));assert.equal(createHash('sha256').update((await workspace.download(actor,published.document_id)).bytes).digest('hex'),originalHash);
   const xlsx=await call('export_project_quote',{quote_id:q.quote_id,expected_revision:q.revision,format:'xlsx',type:'purchase'});assert.equal((await fetch(xlsx.url)).status,200);
   changed=await call('set_project_quote_tax',{quote_id:q.quote_id,expected_revision:q.revision,rate_percent:0});assert.equal(changed.totals.tax.amount,0);
@@ -68,7 +78,7 @@ test('MCP edits draft/shared fields, signs tax and exports saved customer PDFs w
   await remote.close().catch(()=>{});
   for(const table of ['pricing_quote_deletions','pricing_quote_exports','pricing_quote_revisions','pricing_quotes','pricing_projects'])await workspace.pool.query('DELETE FROM '+table+' WHERE org=$1',[actor.org]);
   for(const table of ['bid_exports','bid_runs','bid_audit','bid_job_revisions','bid_jobs'])await app.store.pool.query('DELETE FROM '+table+' WHERE org=$1',[actor.org]);
-  await workspace.close();await app.close();
+  await workspace.close();await app.close();await fs.rm(signatureDir,{recursive:true,force:true});
  }
 });
 
@@ -90,5 +100,13 @@ test('saved cabinet details preserve prices/quantities and enforce revision and 
   assert.equal(r.data.state.units[0].items[0].qty,3);assert.equal(r.data.state.margin,state.margin);assert.equal(r.data.totals.purchase,before.purchase);assert.equal(r.data.totals.charges.boxes,6);assert.equal(r.data.totals.charges.handles.quantity,24);
   assert.equal((await execute('set_project_quote_cabinet_details',args)).error.code,'REVISION_CONFLICT');
   const toe=await execute('set_project_quote_cabinet_details',{quote_id:ref.id,expected_revision:r.data.revision,units:[{unit_id:unitId,auto:true}]});assert.equal(toe.ok,true,JSON.stringify(toe));assert.equal(toe.data.state.units[0].auto,true);assert.equal(toe.data.state.units[0].items[0].qty,3);assert.ok(toe.data.totals.purchase>r.data.totals.purchase);
+  const edit={quote_id:ref.id,expected_revision:toe.data.revision,unit_id:unitId,items:[{sku:'B24',li:0,qty:2}],basis:'Reviewed source configuration: two B24 stock bases replace three.'};
+  for(const [args,who,code]of [[edit,{...actor,scopes:['bids.read']},'FORBIDDEN'],[edit,{...actor,org:'other'},'NOT_FOUND'],[{...edit,unit_id:randomUUID()},actor,'NOT_FOUND'],[{...edit,expected_revision:1},actor,'REVISION_CONFLICT'],[{...edit,items:[{sku:'INVENTED',li:0,qty:2}]},actor,'UNKNOWN_SKU'],[{...edit,items:[{sku:'B24',li:0,qty:2,price:1}]},actor,'INVALID_INPUT'],[{...edit,items:[...edit.items,...edit.items]},actor,'DUPLICATE_SKU']])assert.equal((await execute('set_project_quote_items',args,who)).error.code,code);
+  const signed=await workspace.save(actor,{...toe.data.state,signature:{approved:true,quoteId:state.quoteId}},{id:ref.id,revision:toe.data.revision});
+  const edited=await execute('set_project_quote_items',{...edit,expected_revision:signed.revision});assert.equal(edited.ok,true,JSON.stringify(edited));
+  assert.deepEqual(edited.data.state.units[0].items,edit.items);assert.equal(edited.data.state.units[0].repeat,2);assert.equal(edited.data.state.margin,state.margin);assert.deepEqual(edited.data.state.tax,state.tax);assert.equal(edited.data.state.signature,undefined);assert.equal(edited.data.state.projectInfo.itemRevisionBasis[unitId],edit.basis);assert.ok(edited.data.totals.purchase<toe.data.totals.purchase);
+  await workspace.pool.query("UPDATE pricing_quotes SET state=jsonb_set(state,'{issuedAt}',to_jsonb('2026-10-19'::text)) WHERE id=$1 AND org=$2",[ref.id,actor.org]);
+  assert.equal((await execute('set_project_quote_items',{...edit,expected_revision:edited.data.revision})).error.code,'ISSUED_QUOTE');
+
  }finally{for(const table of ['pricing_quote_revisions','pricing_quotes','pricing_projects'])await workspace.pool.query('DELETE FROM '+table+' WHERE org=$1',[actor.org]);await app.store.pool.query('DELETE FROM bid_audit WHERE org=$1',[actor.org]);await workspace.close();await app.close();}
 });

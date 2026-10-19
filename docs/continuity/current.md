@@ -1,3 +1,60 @@
+## 2026-10-19 — signatures restored; 311 addenda confirmed; Mission hardware corrected
+
+Latest owner correction explicitly CONFIRMS Addenda 1 and 2 belong on 311.
+Do not remove that banner. Bonner Springs retains its separate owner-requested
+banner; Mission Farms has no acknowledgment. Never copy addenda between projects.
+Owner supplies /home/dan signature (1).png and orders signature restored.
+Installed that exact image in the established private proposal-assets path; both
+services already had the group-access drop-in. Missing quote approval, rather
+than an absent service configuration, caused these unsigned drafts. No asset in Git.
+
+Shared 311 quote f126ebda-3a7c-48c5-af3b-251a62ef50f5 revision10 retains all
+six groups, prices, quantities and $98,249.83 total. Signature approved for
+VP-1F98311F. Addenda1/2 retained. Saved PDF c5b66fef-f63f-48b8-bfdb-cafa3f23d389
+has9 Letter pages; actual signature on page8, closing artwork page9. Existing
+frameless allowance still uses framed supplier price records; no verified factory
+frameless price or construction equivalence has been invented. Remains qualified.
+
+Mission shared quote acfffedd-db0b-4d37-821c-515ac983c7db revision25 and source
+job7cf5a601-f40f-4376-b1f8-04b0b0b58c17 revision70 now agree. Removed833 extended
+optional GD glass fronts, retaining complete solid-front wall cabinets with their
+standard included hinges/slides. Removed5 incompatible18-inch Trash Kits from
+15-inch waste locations (Event kitchen1,Private dining2,Closing room2); B15 boxes
+remain, narrow organizers by others. This is a disclosed proposed STOCK ALTERNATE,
+not owner approval of exact original-spec substitution or proof of full original
+casework coverage. No confirmed factory surcharge exists; prior vague wording
+about unverified factory costs was too broad. Glass/glass hardware are now outside
+the priced alternate, rather than incompletely priced included selections.
+
+Mission retains162 apartments,9 amenities,4565 stock bodies,9672 handles and20%
+cabinet margin. Product revenue$1,221,545.48,cost$951,466.97,estimated product
+profit$270,078.51 before supplier handle cost. Freight$22,743;10.35% tax$126,429.96;
+payable$1,370,718.44, down$45,914.75. PDF fd9622b7-7eba-4c30-a490-a2d9de9cd706
+has15 Letter pages,signature on page14. Files /mnt/data/Mission_Farms_Bid.pdf/.xlsx,
+/311_Mixed_Use_Bid.pdf/.xlsx and matching project-folder copies updated. Review
+workbook has8 sheets/440 actual quoted SKU rows; corrected mapping keeps original
+source trace and labels excluded glass/narrow organizers. scopeIncomplete:true:
+original custom/accessible configurations and other listed source scope still need
+resolution for a full original-spec customer-ready bid. Do not call it complete.
+
+MCP now exposes27 pricing tools /35 via Backoffice. set_project_quote_items edits
+one existing unit with catalog-only prices, supplied basis, write/org/revision and
+issued guards, saving history and clearing signature approval; avoids duplicate
+quote creation. Existing details tools accept explicit quote-specific signature
+approval and fail on wrong quote/preparer or missing asset. Frameless allowance
+label applies only where selected cost records are not frameless; actual Euro
+stock remains labeled Frameless without waiving source-compliance qualifications.
+
+Verification:52 unit tests +5 integration checks passed; after schedule-label edit,
+22 affected proposal tests passed and510-product build passed. All7 local clients
+actually discover27/35 tools; installed ChatGPT cache refresh remains unverified.
+Both services healthy; actual retained downloads hash-match local files. Embedded
+signature pixels match supplied PNG exactly; 311 acknowledgment present, Mission
+absent; Letter/artwork ordering verified and signature/schedule visuals inspected.
+A wrong temporary private config path caused EACCES/502 during deployment; removed
+that override, used established proposal-assets path and verified recovery. No
+customer email/submission, supplier order or customer signature/date performed.
+
 ## 2026-10-19 — 311 exported; Mission Farms priced stock alternate; cabinet-detail MCP deployed
 
 User explicitly switched work to finish existing311 first, confirming311 W.St.George

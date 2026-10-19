@@ -13,15 +13,16 @@ import {readPricingMemory} from './memory.mjs';
 import {prepareSource} from './sources.mjs';
 
 const hash=value=>createHash('sha256').update(value).digest('hex');
-const writes=new Set(['set_project_quote_cabinet_details','revise_project_quote','set_project_quote_details','set_project_quote_tax','set_bid_tax','export_project_quote','set_bid_details','delete_bid','delete_project_quote','create_bid_job','set_unit_mix','update_bid_items','save_bid','export_bid','save_bid_to_project','set_bid_margin','set_project_quote_margin']);
+const writes=new Set(['set_project_quote_items','set_project_quote_cabinet_details','revise_project_quote','set_project_quote_details','set_project_quote_tax','set_bid_tax','export_project_quote','set_bid_details','delete_bid','delete_project_quote','create_bid_job','set_unit_mix','update_bid_items','save_bid','export_bid','save_bid_to_project','set_bid_margin','set_project_quote_margin']);
 const descriptions={
+ set_project_quote_items:'Replace the item list of one existing shared quote unit at the current revision using actual available catalog SKUs, finish indexes and quantities. Provide the source/configuration basis; no price inputs are accepted. Preserves unit mix, supplier, margin, tax and historical PDFs, recalculates totals and clears signature approval. Does not certify drawing fit, approve substitutions or send anything.',
  revise_project_quote:'Create a NEW shared revised draft from an existing quote at its current revision, including issued historical quotes. Explicitly upgrades to current handles/freight/product-accounting rules and recalculates pricing, preserves items and source fields, clears signature approval, and leaves the original quote/documents untouched. Returns the new quote ID/revision and totals. Use this before editing tax or exporting a legacy quote; never silently revise an issued record.',
  set_project_quote_cabinet_details:'Set documented cabinet-body and operating-handle counts on existing saved quote items at the current revision. Provide drawing/configuration basis for each item; accessories have zero bodies and handles. May classify apartment/amenity groups and set auto to control calculated toe-kick material. Preserves entered SKUs/quantities, supplier prices, margin and historical PDFs; automatic toe changes may recalculate derived material. Does not approve construction or finish equivalence.',
- set_project_quote_details:'Edit an existing shared project quote at its current revision, including customer/company, email, preparedBy, dates, internal notes, projectInfo, charge costs and customerSections (included, basis, substitutions, exclusions, addenda). Provided record fields merge with existing fields; omitted values are preserved. Use set_project_quote_tax for signed tax. Preserves quantities, SKUs, margin, supplier and historical documents. Issued/archived quotes cannot be edited. Supplier identities are automatically removed from customer PDFs; no browser edit is required.',
+ set_project_quote_details:'Edit an existing shared project quote at its current revision, including customer/company, email, preparedBy, dates, internal notes, explicit quote-specific Daniel Cruz signature approval, projectInfo, charge costs and customerSections (included, basis, substitutions, exclusions, addenda). Provided record fields merge with existing fields; omitted values are preserved. Use set_project_quote_tax for signed tax. Preserves quantities, SKUs, margin, supplier and historical documents. Issued/archived quotes cannot be edited. Supplier identities are automatically removed from customer PDFs; no browser edit is required.',
  set_bid_tax:'Apply tax to your Auto Bid draft at its current revision. For user-provided manual rates pass mode manual and rate_percent (9.25 means9.25%, zero must be explicit); optional address preserves current address. Server signs the tax record. Automatic mode uses the configured provider and verified full address; missing provider fails explicitly. Exempt mode requires documented exemption evidence. Tax applies to cabinets and handles only. Never invent a tax rate or exemption. Marks draft unsaved.',
  set_project_quote_tax:'Apply signed tax to an existing shared quote at its current revision. Manual mode takes the user-provided rate_percent (9.25 means9.25%; zero must be explicit). Optional address preserves existing address. Automatic mode uses configured provider/full address; exempt mode requires evidence. Server owns signatures; do not fabricate lookup records. Cabinets and handles only are taxable. Saves a revision without changing quantities, SKUs, margin, prices or historical PDFs.',
  export_project_quote:'Generate and retain a PDF/Excel document for an existing shared quote at its current revision without browser interaction. Returns document_id and expiring download URL. Customer PDF automatically removes supplier identities and validates signed tax and required project fields; draft PDF retains incomplete work and qualifications. Does not change quote fields/revision, sign, approve or send anything.',
- set_bid_details:'Edit your Auto Bid draft customer/company, email, preparedBy, dates, internal notes, projectInfo, customerSections (included, basis, substitutions, exclusions, addenda) and approved charge costs. Provided record fields merge with existing fields; omitted fields stay unchanged. Use set_bid_tax to generate signed manual/automatic tax or documented exemption. Supplier identity removal is automatic in customer PDFs. Source data must support changes; never invent facts.',
+ set_bid_details:'Edit your Auto Bid draft customer/company, email, preparedBy, dates, internal notes, explicit quote-specific Daniel Cruz signature approval, projectInfo, customerSections (included, basis, substitutions, exclusions, addenda) and approved charge costs. Provided record fields merge with existing fields; omitted fields stay unchanged. Use set_bid_tax to generate signed manual/automatic tax or documented exemption. Supplier identity removal is automatic in customer PDFs. Source data must support changes; never invent facts.',
  delete_bid:'Permanently delete your Auto Bid draft and its revisions/exports at the current revision. Read get_bid_job first. Active runs block deletion. Retains audit metadata. Only delete bids the user asks to remove.',
  delete_project_quote:'Permanently delete one saved shared Pricing quote and its saved PDFs/Excel/revisions, at the current revision. Read get_project_quote first. Other quotes and projects are retained. Only delete quotes the user asks to remove.',
  set_bid_margin:'Set the user-requested gross profit margin percentage (whole number 1–50, e.g. 25 means 25%) on your bid draft. Read its current revision first. Preserves catalog costs and quantities; marks draft unsaved. Then price_bid, save_bid and export_bid as needed. Never infer a new margin from source documents.',
@@ -56,6 +57,11 @@ export function createBidTools({workspace,store,catalogs,template,signatureBytes
   for(const key of ['customer','email','preparedBy','notes','date','validUntil','tax'])if(a[key]!==undefined)state[key]=a[key];
   for(const key of ['projectInfo','customerSections'])if(a[key]!==undefined)state[key]={...state[key],...a[key]};
   if(a.charges!==undefined){state.charges={...state.charges};for(const [key,value]of Object.entries(a.charges))state.charges[key]=value&&typeof value==='object'&&!Array.isArray(value)?{...state.charges[key],...value}:value;}
+  if(a.signature!==undefined){
+   if(a.signature.approved&&(a.signature.quoteId!==state.quoteId||state.preparedBy!=='Daniel Cruz'))throw new BidError('INVALID_INPUT','Signature approval must name this quote and Daniel Cruz as preparer.');
+   if(a.signature.approved&&!signatureBytes)throw new BidError('VALIDATION_FAILED','Approved Daniel Cruz signature asset is unavailable.');
+   state.signature={...a.signature};
+  }
   if(a.tax!==undefined)verifyTax(state.tax,env);
  };
  const taxFor=async(state,a,actor)=>{
@@ -97,6 +103,16 @@ export function createBidTools({workspace,store,catalogs,template,signatureBytes
      if(!workspace)throw new BidError('WORKSPACE_UNAVAILABLE','Project storage is unavailable.');
      try{result=await workspace.delete(actor,a.quote_id,a.expected_revision);}catch(e){if(e.status===404)throw new BidError('NOT_FOUND','Quote not found or access denied.');if(e.status===409)throw new BidError('REVISION_CONFLICT',e.message);throw e;}
      break;
+    }
+    case 'set_project_quote_items':{
+     const q=await shared(actor,a),state=structuredClone(q.state),catalog=catalogs[state.supplier||'hci'];
+     if(state.issuedAt||state.status==='Issued')throw new BidError('ISSUED_QUOTE','Issued quotes are immutable. Create a revised draft.');
+     const unit=state.units.find(u=>u.id===a.unit_id);if(!unit)throw new BidError('NOT_FOUND','Unit does not belong to this quote.');
+     const keys=a.items.map(i=>i.li+':'+i.sku);if(new Set(keys).size!==keys.length)throw new BidError('DUPLICATE_SKU','Combine quantities for each SKU and finish.');
+     for(const i of a.items)if(!lookup(catalog,i.li,i.sku)||cost(catalog,i.li,i.sku)===null)throw new BidError('UNKNOWN_SKU','SKU unavailable in the selected finish: '+i.sku);
+     unit.items=a.items;state.projectInfo={...state.projectInfo,itemRevisionBasis:{...state.projectInfo?.itemRevisionBasis,[unit.id]:a.basis}};
+     delete state.signature;
+     result=await sharedResult(actor,q,state);break;
     }
     case 'set_project_quote_cabinet_details':{
      const q=await shared(actor,a),state=structuredClone(q.state);

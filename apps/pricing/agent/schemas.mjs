@@ -13,7 +13,7 @@ export const evidence=z.strictObject({source_id:id,quote:z.string().min(1).max(2
 export const job=z.strictObject({id,revision:z.number().int().positive(),state,sources:z.array(source),provenance:z.array(z.strictObject({unit_id:id,sku:z.string().nullable(),evidence})),exceptions:z.array(z.string()),catalog_hash:z.string().length(64),saved:z.boolean(),created_at:z.string(),updated_at:z.string()});
 const key={job_id:id};
 const mutation={...key,expected_revision:z.number().int().positive()};
-const details={customer:z.string().max(200).optional(),email:z.string().max(200).optional(),preparedBy:state.shape.preparedBy.optional(),notes:state.shape.notes.optional(),date:state.shape.date.optional(),validUntil:state.shape.validUntil.optional(),projectInfo:state.shape.projectInfo,charges:state.shape.charges,customerSections:state.shape.customerSections,tax:state.shape.tax};
+const details={customer:z.string().max(200).optional(),email:z.string().max(200).optional(),preparedBy:state.shape.preparedBy.optional(),notes:state.shape.notes.optional(),date:state.shape.date.optional(),validUntil:state.shape.validUntil.optional(),projectInfo:state.shape.projectInfo,charges:state.shape.charges,customerSections:state.shape.customerSections,signature:state.shape.signature,tax:state.shape.tax};
 const quoteMutation={quote_id:id,expected_revision:z.number().int().positive()};
 const taxRequest={mode:z.enum(['manual','automatic','exempt']).default('manual'),address:tax.shape.address.optional(),rate_percent:z.number().min(0).max(100).optional(),exemption:z.strictObject({reason:text,document:z.string().min(1).max(10000),authority:text,validFrom:text,validUntil:text}).optional()};
 export const inputs={
@@ -21,6 +21,7 @@ export const inputs={
  delete_project_quote:z.strictObject({quote_id:id,expected_revision:z.number().int().positive()}),
  set_bid_details:z.strictObject({...mutation,...details}),
  set_project_quote_details:z.strictObject({...quoteMutation,...details}),
+ set_project_quote_items:z.strictObject({...quoteMutation,unit_id:id,items:z.array(item).max(2000),basis:z.string().trim().min(1).max(10000)}),
  set_project_quote_cabinet_details:z.strictObject({...quoteMutation,units:z.array(z.strictObject({unit_id:id,kind:z.enum(['apartment','amenity']).optional(),auto:z.boolean().optional(),items:z.array(z.strictObject({sku:text,li:finish,boxCount:z.number().int().min(0).max(1),handleCount:count,configurationBasis:z.string().min(1).max(2000)})).max(2000).default([])})).min(1).max(500)}),
  revise_project_quote:z.strictObject(quoteMutation),
  set_bid_tax:z.strictObject({...mutation,...taxRequest}),
@@ -53,6 +54,7 @@ export const outputs={
  delete_project_quote:success(z.strictObject({quote_id:id,deleted:z.literal(true)})),
  set_bid_details:success(job),
  set_bid_tax:success(job),
+ set_project_quote_items:success(z.object({quote_id:id,revision:z.number().int(),state:z.record(z.string(),z.unknown()),totals,documents:z.array(z.record(z.string(),z.unknown()))})),
  set_project_quote_cabinet_details:success(z.object({quote_id:id,revision:z.number().int(),state:z.record(z.string(),z.unknown()),totals,documents:z.array(z.record(z.string(),z.unknown()))})),
  revise_project_quote:success(z.object({quote_id:id,revision:z.number().int(),state:z.record(z.string(),z.unknown()),totals,documents:z.array(z.record(z.string(),z.unknown()))})),
  set_project_quote_details:success(z.object({quote_id:id,revision:z.number().int(),state:z.record(z.string(),z.unknown()),totals,documents:z.array(z.record(z.string(),z.unknown()))})),

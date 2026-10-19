@@ -8,11 +8,11 @@ Protected-resource metadata: https://api.vulpinehomes.com/bidding/.well-known/oa
 
 ## Implementation
 
-The official MCP SDK serves Streamable HTTP. The current server registers 26 pricing tools from `agent/schemas.mjs`, including customer details, tax, saved-quote export and revision tools. The Back Office MCP proxy adds eight operations tools, for 34 total. These are different connections; do not promise 33 tools on the pricing-only ChatGPT connection.
+The official MCP SDK serves Streamable HTTP. The current server registers 27 pricing tools from `agent/schemas.mjs`, including customer details, tax, saved-quote export and revision tools. The Back Office MCP proxy adds eight operations tools, for 35 total. These are different connections; do not promise the Back Office total on the pricing-only ChatGPT connection.
 
 Check live authenticated discovery with `node scripts/check-pricing-mcp.mjs codex` from the repository root (optionally list other registered local clients). This read-only check compares discovery with the current schema and does not print private credentials.
 
-After deploying tool/schema changes, refresh the **Vulpine Pricing MCP – ChatGPT** connection in ChatGPT Plugins, confirm discovery shows 26 tools, and start a new conversation. ChatGPT retains installed metadata; restarting this server does not replace that saved snapshot. See [OpenAI’s metadata refresh instructions](https://developers.openai.com/plugins/deploy/connect-chatgpt#refresh-metadata). The exposed Plugin Management tools do not offer a connection-refresh action. Do not uninstall the connection or reset credentials to solve a stale inventory. Verify the refreshed ChatGPT inventory before claiming that connection is fixed.
+After deploying tool/schema changes, refresh the **Vulpine Pricing MCP – ChatGPT** connection in ChatGPT Plugins, confirm discovery shows 27 tools, and start a new conversation. ChatGPT retains installed metadata; restarting this server does not replace that saved snapshot. See [OpenAI’s metadata refresh instructions](https://developers.openai.com/plugins/deploy/connect-chatgpt#refresh-metadata). The exposed Plugin Management tools do not offer a connection-refresh action. Do not uninstall the connection or reset credentials to solve a stale inventory. Verify the refreshed ChatGPT inventory before claiming that connection is fixed.
 
 Postgres database `vulpine_bidding` holds owned jobs, CAS revisions, source evidence, audit records, queued runs, catalog snapshots and expiring exports. Existing workspace files remain intact; `agent/import-workspace.mjs --run` imports additive snapshots. It is idempotent for an unchanged workspace.
 
@@ -122,21 +122,27 @@ require existing pricing write permission; no browser-only editing is necessary.
 Every edit takes expected_revision and rejects stale writes. Draft edits mark
 that draft unsaved; call save_bid before export_bid. Shared edits save a new
 revision directly. Customer scope keys are included, basis, substitutions,
-exclusions and addenda. Internal notes remain private. Explicit addenda text
-prints in the prominent acknowledgment banner. Supplier identities are removed
+exclusions and addenda. Internal notes remain private. Addenda are project-specific: never copy an acknowledgment from another bid.
+Omit addenda unless explicitly supported for this project; send an empty string
+to clear an incorrect banner. Explicit addenda text prints in the banner.
+To use the owner-supplied private signature asset after explicit owner authorization,
+pass signature {approved:true,quoteId:<this quote number>} to either details tool.
+The preparer must be Daniel Cruz. Approval never carries into a revised copy.
+The runtime requires VULPINE_SIGNATURE_PATH; never commit the signature image.
+Supplier identities are removed
 from customer/draft PDFs automatically; internal and purchase data keep sources.
 
 Example saved-quote sequence:
 
 ```json
 {"tool":"get_project_quote","arguments":{"quote_id":"<quote UUID>"}}
-{"tool":"set_project_quote_details","arguments":{"quote_id":"<quote UUID>","expected_revision":3,"customer":"Verified GC","email":"contact@example.test","projectInfo":{"contact":"Verified contact"},"customerSections":{"addenda":"WE ACKNOWLEDGE ADDENDUM 1 AND ADDENDUM 2."}}}
+{"tool":"set_project_quote_details","arguments":{"quote_id":"<quote UUID>","expected_revision":3,"customer":"Verified GC","email":"contact@example.test","projectInfo":{"contact":"Verified contact"}}}
 {"tool":"set_project_quote_tax","arguments":{"quote_id":"<quote UUID>","expected_revision":4,"mode":"manual","rate_percent":9.25}}
 {"tool":"export_project_quote","arguments":{"quote_id":"<quote UUID>","expected_revision":5,"format":"pdf","type":"customer"}}
 ```
 
-The rate and addenda in this example must come from the user/project; they are
-not defaults. Always use the revisions returned by each successful action.
+The rate in this example must come from the user/project; it is
+not a default. Always use the revisions returned by each successful action.
 Product revenue/profit covers cabinets and handles only. Shipping and customer
 tax remain separate from product accounting. No new connection scopes or secrets
 are required for these tools. MCP tool discovery is dynamic; clients that cache
@@ -163,3 +169,9 @@ A documented `projectInfo.pricingAllowanceBasis` may label a frameless proposal
 as an allowance and preserve a separately stated `proposalFinish`. This is a
 presentation disclosure; it does not waive customer-ready construction checks or
 turn framed catalog stock into verified frameless products.
+
+Use set_project_quote_items to correct one saved unit's SKU/quantity list without
+creating a duplicate quote. Pass the current revision, unit_id, items and a
+source/configuration basis. Prices come from the existing supplier catalog;
+margin, unit repetitions and tax stay unchanged. This clears signature approval;
+apply explicit owner approval again only after the revised scope is reviewed.

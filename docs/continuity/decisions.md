@@ -371,3 +371,20 @@ Never turn a stock pricing allowance or missing special hardware into a verified
 custom supplier configuration. Qualified drafts may be printed while the customer-ready
 construction/incomplete-scope gates remain active; retain the qualifications and unknown
 costs visibly. Count handles from documented operating fronts,not pull-out mechanism names.
+
+
+## 2026-10-19 — owner corrects 311 addenda; restore supplied signature
+
+Owner retracts request to remove the acknowledgment from311: Addenda1 and2 DO
+belong there. Preserve311 and Bonner acknowledgments, keep Mission blank, and
+never treat those numbers as a global default. Owner supplies new Daniel Cruz PNG
+and explicitly directs restoring signatures on these prepared bids. Use the private
+asset and quote-specific approvals; do not fill customer acceptance fields or dates.
+No supplier cost, physical fit or source-scope compliance is established by signing.
+
+Mission correction removes optional glass fronts and incompatible18-inch kits at
+15-inch positions from its disclosed stock alternate. Standard solid-front cabinet
+hardware remains included. These are proposed substitutions/exclusions under the
+ongoing bid-completion task, not a claim of explicit owner approval of each change.
+No confirmed factory surcharge exists. Keep original-spec scope gaps visible; do
+not mistake completing these corrections for finishing the full original casework bid.

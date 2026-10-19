@@ -78,6 +78,9 @@ test('frameless allowance labels retain construction validation',async()=>{
  const s=fixture();s.projectInfo.construction='frameless';s.projectInfo.pricingAllowanceBasis='Catalog costs are estimating allowances; factory frameless compliance requires confirmation.';s.projectInfo.proposalFinish='Euro slab / finish approval pending';
  assert.ok(customerIssues(data,s,calculateProject(data,s)).some(v=>v.includes('Frameless construction')));
  const text=await pdfText(await generateQuote(PDFLib,data,s,'draft',template));assert.match(text,/Frameless \(allowance\)/);assert.match(text,/factory frameless compliance requires confirmation/);assert.match(text,/Euro slab \/ finish approval pending/);
+ s.units[0].defaultLi=10;s.units[0].items=s.units[0].items.map(i=>({...i,li:10}));
+ assert.ok(!customerIssues(data,s,calculateProject(data,s)).some(v=>v.includes('Frameless construction')));
+ const actual=await pdfText(await generateQuote(PDFLib,data,s,'draft',template));assert.match(actual,/Frameless/);assert.doesNotMatch(actual,/Frameless \(allowance\)/);
 });
 
 
