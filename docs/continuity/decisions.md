@@ -348,3 +348,12 @@ No connection reset/uninstall is authorized or needed for the observed stale lis
 Do not claim refresh completion without observing the refreshed client inventory.
 Mission Farms is the only active bid. No final price or stock/finish substitution
 approval has been inferred from the absence of an answer to the pending question.
+
+
+## 2026-10-19 — Vulpine does not supply mudroom benches
+
+Owner explicitly excludes mudroom benches from Vulpine scope. Mark benches and
+bench assemblies by others in Mission Farms and future bids. Preserve source
+records, and do not confuse a tall cabinet in a mudroom with a bench assembly.
+Do not describe specified Acorn Velvet Elm/Alabaster colors as inherently custom;
+verify catalog equivalents independently. No White Euro substitution is approved.

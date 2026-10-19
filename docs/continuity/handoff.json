@@ -1,42 +1,32 @@
 {
-  "last_change": "Verified current MCP inventory, corrected stale17-tool documentation and pushed read-only checker734a475. Saved incomplete Mission Farms working draft revision9 and source-backed takeoff review workbook; no final bid or prices claimed.",
+  "last_change": "Applied owner no-mudroom-benches scope direction to Mission Farms job and review workbook; clarified actual specified colors.",
   "verification": [
-    "node scripts/check-pricing-mcp.mjs codex plus6 other registered clients:25 pricing tools and33 total; required customer fields present.",
-    "ChatGPT pricing list_projects call succeeded; installed callable tool inventory still17 names; refresh unverified.",
-    "node --check scripts/check-pricing-mcp.mjs passed.",
-    "Public bidding health:statusok,remoteOAuthConfiguredtrue.",
-    "Mission Farms matrix read:19 types,162 apartments; B14/B15 five dimensional multisets match.",
-    "MCP set_bid_details and set_bid_tax succeeded; signed10.35% manual tax; set_unit_mix and save_bid producedrevision9.",
-    "validate_bid correctly returnsfalse for absent item prices,incomplete scope and pending plan review.",
-    "Review workbook readback:5 sheets,19 types,162 apartments,568 dimensional callout records,14 pricing gaps. No full quantity certification.",
-    "Initial Poppler read failed on original plans; PyMuPDF recovered417/207/207 pages; original source PDFs unchanged."
+    "Read A-420 finish tags directly:Acorn Velvet Elm15602 uppers/bath cabinets;AlabasterD31-60 kitchen bases.",
+    "Authenticated MCP set_bid_details/save_bid succeeded; jobrevision11,savedtrue,mudroomBenchesExcludedtrue.",
+    "Workbook readback marks15 M1 dimensional source records excluded; original source records retained."
   ],
   "decisions": [
-    "Owner explicitly orders MCP correction before Mission Farms. Only Mission Farms bid is in scope.",
-    "No reset/uninstall performed. ChatGPT refresh is a client setting unavailable through exposed tools.",
-    "No unsupported custom costs,finish equivalence,final totals or profit fabricated. White Euro is a proposed alternative only; no response or approval received."
+    "Owner explicitly states Vulpine does not do mudroom benches; benches and bench assemblies by others. Separate tall cabinets remain cabinet scope."
   ],
   "open_work": [
-    "Verify ChatGPT connection tool refresh to25 tools in a new conversation.",
-    "Complete Mission Farms measured takeoff and SKU mapping; reconcile untagged/custom components,trim,hardware and accessible units.",
-    "Obtain supported custom/specification prices or explicit stock alternate approvals; price/export/retain actual completed bid only after review."
+    "Complete Mission Farms catalog matching and supported pricing for remaining cabinet scope.",
+    "Verify ChatGPT connection tool metadata refresh."
   ],
   "blockers": [
-    "ChatGPT installed metadata refresh cannot be triggered through exposed controls; owner/guy confirmation pending.",
-    "Specified custom finishes,millwork,accessible configurations and specialty hardware lack verified matching supplier costs; stock alternate question pending."
+    "Specified finish and specialty cabinet pricing/compliance remain unverified; no stock finish substitution approved."
   ],
-  "next_action": "Refresh ChatGPT connection tool metadata; resume Mission Farms from revision9 and the review workbook, resolving custom supplier prices or owner-selected stock alternative before a full bid export.",
-  "recorded_at": "2026-10-19T09:17:49.843Z",
+  "next_action": "Continue Mission Farms cabinet-only matching/pricing, excluding benches and preserving unresolved nonbench scope.",
+  "recorded_at": "2026-10-19T12:49:25.804Z",
   "snapshot": {
-    "head": "734a4755b595878b3e61db008e8204cf68cff32f",
+    "head": "d0dd46733aae3353d2ec8e4a8c9d8d09831c0ad2",
     "branch": "codex/cabinet-brain-integration-recovery",
     "worktree": " M docs/continuity/current.md\n M docs/continuity/decisions.md",
     "sources": {
       "AGENTS.md": "c51e08a8021528ff818e5f62620aae587530eeec275750b2d38c2771ef732460",
       "README.md": "b6948f9084afb5f1bcceb4466e627c78f2288ba7f4876ceb64f3702b4fea5bd1",
       "package.json": "fafa60aeae85182092017dfc87134dabfa1df3484315a510e118b4d879566a49",
-      "docs/continuity/current.md": "0ac02ae7d748ae0e34fc162a26938a0cc30d16786cf6e152eb1e52b72f063750",
-      "docs/continuity/decisions.md": "3505603ce54ec7e1ea4b58a3fa64688196c9e26896e7c82178b28f46953010cd",
+      "docs/continuity/current.md": "8158b7e7d502f0cb400fd771456462f02374de5aded727351b150151334cc10d",
+      "docs/continuity/decisions.md": "4b077eb040daad81d4b0f9652838d3dac3689ff814e45f0bff7cdd29ecf170f6",
       "docs/continuity/audit.md": "c849de622d00377d1fadd3ba41cda2933eb9370b6fa13c2baf53bf36c0c471b2",
       "docs/continuity/verification.md": "5daeea53454a06fcf3b928b1fd12c8f69448beb8fc31a75b441181cc57962f28",
       "docs/continuity/sources.json": "0380630765b71a413ac27edd875e120cf51f501232720ee130160cd1f885937b",
@@ -66,7 +56,7 @@
   },
   "vault": {
     "project": "vulpine-platform",
-    "session_id": "8d981419-0b27-4e0e-ad50-a6dc6fc89f4d",
-    "record": "sources/aeon-sessions/vulpine-platform/8d981419-0b27-4e0e-ad50-a6dc6fc89f4d.md"
+    "session_id": "810dfe26-a238-42fb-bcce-db7f0c96286d",
+    "record": "sources/aeon-sessions/vulpine-platform/810dfe26-a238-42fb-bcce-db7f0c96286d.md"
   }
 }

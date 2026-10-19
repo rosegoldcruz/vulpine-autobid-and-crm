@@ -1,3 +1,19 @@
+## 2026-10-19 — owner excludes mudroom benches
+
+Owner explicitly states Vulpine does not supply mudroom benches. Apply this scope
+rule to Mission Farms and future bids; do not treat bench pricing as a bid blocker.
+Mission Farms working job7cf5a601-f40f-4376-b1f8-04b0b0b58c17 is saved revision11
+with mudroomBenchesExcluded:true and explicit customer scope notes. Review workbook
+in /mnt/data and the project folder now marks15 M1 source-callout records excluded.
+Retain original drawing evidence. Tall cabinets located in mudrooms remain separate
+cabinet scope; the owner excluded benches, not all cabinets in that room.
+Specified colors verified directly on A-420: Acorn Velvet Elm15602 uppers and
+bathroom cabinetry; AlabasterD31-60 kitchen bases; slab doors. These colors are
+unmatched in current stock catalogs, not inherently custom colors. No stock finish
+substitution has been approved. Other pricing gaps and ChatGPT refresh remain open.
+
+---
+
 ## 2026-10-19 — MCP inventory discrepancy and Mission Farms work in progress
 
 Owner requires MCP correction first, then only Mission Farms. Live authenticated
