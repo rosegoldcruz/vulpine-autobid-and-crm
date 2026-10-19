@@ -5,6 +5,7 @@ import fs from 'node:fs/promises';
 import * as PDFLib from 'pdf-lib';
 import {generateQuote} from '../src/quote-pdf.mjs';
 import {calculateProject} from '../src/pricing.mjs';
+import {spawnSync} from 'node:child_process';
 
 const data=JSON.parse(await fs.readFile(new URL('../src/catalog.json',import.meta.url)));
 const template=await fs.readFile(new URL('../assets/proposal-template.pdf',import.meta.url));
@@ -22,4 +23,14 @@ test('customer schedule continues across pages for long unit type schedules',asy
  const input={...state,units:Array.from({length:21},(_,i)=>({...state.units[0],id:String(i),name:'Unit '+i}))};
  const bytes=await generateQuote(PDFLib,data,complete(input),'customer',template);
  assert.ok((await PDFLib.PDFDocument.load(bytes)).getPageCount()>6);
+});
+test('Euro draft specifications describe furniture board and metal drawers instead of framed defaults',async()=>{
+ const input=complete({...state,units:[{id:'euro',name:'Euro kitchen',repeat:1,auto:true,defaultLi:9,items:[{sku:'3DB21',li:9,qty:1}]}]});
+ const bytes=await generateQuote(PDFLib,data,input,'draft',template);
+ const extracted=spawnSync('pdftotext',['-layout','-','-'],{input:Buffer.from(bytes),encoding:'utf8'});
+ assert.equal(extracted.status,0,extracted.stderr);
+ assert.match(extracted.stdout,/18 mm engineered furniture board/);
+ assert.match(extracted.stdout,/Premium metal; melamine bottom\/back/);
+ assert.doesNotMatch(extracted.stdout,/Plywood with maple finish|Solid wood dovetailed|DTC soft-close/);
+ assert.equal(calculateProject(data,input).charges.boxes,1);
 });

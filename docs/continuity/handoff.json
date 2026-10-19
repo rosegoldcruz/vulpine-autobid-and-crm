@@ -1,12 +1,19 @@
 {
-  "last_change": "Verified separate Hermes server credential and prepared Windows profile connection instructions for the backoffice authenticated endpoint. No Windows configuration modified from this server.",
+  "last_change": "Prepared River Pointe owner-revised regular-stock HCI Euro draft VP-A316F39A through Backoffice MCP, saved shared quote043c7714-3d83-4a79-91f8-8e83bc0e4e0c with922 bodies and224744.45 USD pre-tax. Measured clubhouse wall-upper run79.5 inches and section depth14 inches; recorded27+24+27 stock widths plus1.5 filler,36-inch height,12-inch stock depth with2-inch blocking by installer. Added explicit regular cabinets / ADA modifications by others note. Corrected false framed specifications in apps/pricing/src/proposal-pdf.mjs, added rendered PDF regression in tests/customer-proposal.test.mjs, rebuilt and restarted only pricing/bidding services. Final PDF/Excel and evidence are private under /opt/output/river-pointe-rebid.",
   "verification": [
-    "Existing private Hermes credential authenticated MCP initialize/tools-list successfully and returned 28 tools, without printing its value.",
-    "Inspected current server Hermes configuration and official Hermes MCP configuration reference: remote url/headers support profile-scoped environment references. Screenshot Windows profile reports no configured MCP and probes an older OAuth endpoint."
+    "node --test tests/*.test.mjs in apps/pricing:39 passed,0 failed.",
+    "node scripts/build.mjs:PASS; pricing/bidding services active after restart. Pricing health3021 and bidding health3022 returned ok. An initial probe used wrong port3023 and failed; inspected actual service listener and verified3021.",
+    "MCP price/readback:922 cabinet bodies,114 apartments,2 amenity areas,116 delivery units,1857 handles,15% cabinet margin,224744.45 USD before tax; no catalog pricing issues. Customer-ready validation intentionally fails for missing verified GC/delivery/tax, unresolved exact finishes and source conflicts.",
+    "MCP shared quote readback confirms regular-cabinet ADA note and922 bodies at same price. Prior two original HCI shared quote states/revisions/document metadata unchanged. Earlier interim rebid snapshot retained.",
+    "Downloaded final PDF/Excel; SHA256 matches tool metadata. Extracted PDF contains922,224744.45,ADA note,79.5-inch layout and correct Euro furniture-board/metal drawer specifications. False plywood/dovetailed/DTC defaults absent. Visually inspected rendered summary.",
+    "git diff --check:PASS; review artifacts, business source files and credentials excluded from Git."
   ],
   "decisions": [
-    "Owner requests Hermes connection on Windows Dell Precision. Use https://backoffice.vulpine.llc/api/mcp and Hermes identity credential, not the older api.vulpinehomes.com/bidding/mcp OAuth endpoint or Muse/OpenCode key.",
-    "Have Windows agent inspect its actual active profile/runtime, retrieve private credential over existing SSH access, keep token out of chat/logs/tracked configuration, and verify a registered MCP read of real projects. Remote Windows setup remains unverified until the client performs it."
+    "Owner chose HCI Euro frameless and MCP preparation for Backoffice inspection; no shared browser session required.",
+    "Owner approved114 three-drawer bases,36-inch-high clubhouse wall uppers, regular HCI Euro cabinets at ADA locations, and a note. Accessibility modifications/compliance are excluded and by others; do not label stock cabinets ADA-compliant.",
+    "Retain existing saved River Pointe15% gross cabinet margin, saved A57/B51/accessible6 estimating basis and all922 bodies. Correct white range-wall/dark-island finish location split; no Natural Oak substitution.",
+    "Use measured79.5-inch amenity upper run with27+24+27-inch stock boxes plus1.5-inch filler. Specified14-inch depth versus12-inch HCI stock is disclosed with installer-provided2-inch blocking; internal depth remains12.",
+    "All16 earlier custom/ADA cabinet body locations are now regular-stock supply at owner direction, not missing unpriced cabinet bodies. Customer release still requires finish/GC/delivery/tax and source-conflict review."
   ],
   "open_work": [
     "Provision approved ZITADEL management authentication for actual directory, permission and settings administration; own agent grant inspection already works.",
@@ -15,19 +22,20 @@
     "Confirm actual model sessions invoke read_aeon_context; transport retrieval and startup hints alone are not model-session evidence.",
     "Assess the owner-reported prior chat credential exposure and rotate the affected identity through secure enrollment if the credential is still active; no raw value was supplied in the pasted transcript.",
     "Resolve the private vault review queue against project evidence; preserve prior concurrent engineering open work.",
-    "Complete customer-ready Bonner Springs and Dawson Trails revised proposals after missing delivery evidence, specified finish/construction supplier pricing and verified transaction tax are provided. Existing baseline amounts are internal drafts, not compliant final bids."
+    "Complete customer-ready Bonner Springs and Dawson Trails revised proposals after missing delivery evidence, specified finish/construction supplier pricing and verified transaction tax are provided. Existing baseline amounts are internal drafts, not compliant final bids.",
+    "River Pointe customer release: verify GC, exact delivery, transaction tax, exact finishes and nine source layout conflicts; retain owner-approved stock/ADA-by-others scope."
   ],
   "blockers": [
     "ZITADEL management credential is absent. Inbox provider rejects the configured credential with HTTP 401. External hosted accounts/device sessions are not connected to this server tooling.",
     "Bonner complete delivery address unavailable in attached job sources, queried tracker records or accessible Drive search. Dawson complete delivery point/ZIP and compliant specified frameless finish pricing unavailable; Bonner specified two-tone pricing unresolved. TaxJar transaction credential or applicable verified exemption evidence is unavailable. Narrow source questions were submitted to the owner.",
     "Exact original temporary Muse PDF download files are absent from the live table; available backups predate the relevant exports. Collection labels regenerated saved-state drafts separately from actual copied revisions."
   ],
-  "next_action": "Windows Hermes configures its active profile with the backoffice authenticated endpoint and profile-scoped Hermes credential, reloads MCP and invokes list_projects through a registered tool.",
-  "recorded_at": "2026-10-18T20:57:17.487Z",
+  "next_action": "Owner inspects current River Pointe quote043c7714-3d83-4a79-91f8-8e83bc0e4e0c. Resolve final customer-release facts before submission. No customer communication sent.",
+  "recorded_at": "2026-10-19T06:36:15.417Z",
   "snapshot": {
-    "head": "550932a4437d788e9201fa190777f29b5ca4032b",
+    "head": "ae31162c682de0c46671522ba32da06d0ec8ecb5",
     "branch": "codex/cabinet-brain-integration-recovery",
-    "worktree": "",
+    "worktree": " M apps/pricing/src/proposal-pdf.mjs\n M apps/pricing/tests/customer-proposal.test.mjs\n M docs/continuity/handoff.json",
     "sources": {
       "AGENTS.md": "c51e08a8021528ff818e5f62620aae587530eeec275750b2d38c2771ef732460",
       "README.md": "b6948f9084afb5f1bcceb4466e627c78f2288ba7f4876ceb64f3702b4fea5bd1",
@@ -63,7 +71,7 @@
   },
   "vault": {
     "project": "vulpine-platform",
-    "session_id": "b45cfb17-c6ea-4b3e-9222-4f1dec22f133",
-    "record": "sources/aeon-sessions/vulpine-platform/b45cfb17-c6ea-4b3e-9222-4f1dec22f133.md"
+    "session_id": "95bbbd0b-a61f-4b47-987f-bf35a6172b78",
+    "record": "sources/aeon-sessions/vulpine-platform/95bbbd0b-a61f-4b47-987f-bf35a6172b78.md"
   }
 }
