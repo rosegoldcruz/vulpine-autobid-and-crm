@@ -1,47 +1,32 @@
 {
-  "last_change": "Prepared River Pointe owner-revised regular-stock HCI Euro draft VP-A316F39A through Backoffice MCP, saved shared quote043c7714-3d83-4a79-91f8-8e83bc0e4e0c with922 bodies and224744.45 USD pre-tax. Measured clubhouse wall-upper run79.5 inches and section depth14 inches; recorded27+24+27 stock widths plus1.5 filler,36-inch height,12-inch stock depth with2-inch blocking by installer. Added explicit regular cabinets / ADA modifications by others note. Corrected false framed specifications in apps/pricing/src/proposal-pdf.mjs, added rendered PDF regression in tests/customer-proposal.test.mjs, rebuilt and restarted only pricing/bidding services. Final PDF/Excel and evidence are private under /opt/output/river-pointe-rebid.",
+  "last_change": "Pricing: signed manual tax entry with automatic application; cabinet materials and handles only taxable; display estimated profit and known supplier cost; shared schema preserves manual rate attribution. Sources apps/pricing/src, tax-provider.mjs, server.mjs, agent/schemas.mjs and regression tests.",
   "verification": [
-    "node --test tests/*.test.mjs in apps/pricing:39 passed,0 failed.",
-    "node scripts/build.mjs:PASS; pricing/bidding services active after restart. Pricing health3021 and bidding health3022 returned ok. An initial probe used wrong port3023 and failed; inspected actual service listener and verified3021.",
-    "MCP price/readback:922 cabinet bodies,114 apartments,2 amenity areas,116 delivery units,1857 handles,15% cabinet margin,224744.45 USD before tax; no catalog pricing issues. Customer-ready validation intentionally fails for missing verified GC/delivery/tax, unresolved exact finishes and source conflicts.",
-    "MCP shared quote readback confirms regular-cabinet ADA note and922 bodies at same price. Prior two original HCI shared quote states/revisions/document metadata unchanged. Earlier interim rebid snapshot retained.",
-    "Downloaded final PDF/Excel; SHA256 matches tool metadata. Extracted PDF contains922,224744.45,ADA note,79.5-inch layout and correct Euro furniture-board/metal drawer specifications. False plywood/dovetailed/DTC defaults absent. Visually inspected rendered summary.",
-    "git diff --check:PASS; review artifacts, business source files and credentials excluded from Git."
+    "node --test tests/*.test.mjs in apps/pricing: 41 passed, zero failures.",
+    "node scripts/build.mjs: protected pricing build succeeded, 510 products.",
+    "node /opt/output/manual-tax/browser-check.mjs: passed actual frontend/API synthetic fixture on desktop and mobile, unavailable provider, auto-applied 6.75 percent, correct cabinet/handle base, save/reopen, quantity recalculation, estimated profit, customer PDF, invalid percentage and deliberate zero.",
+    "Screenshots inspected; browser reported only expected provider-unavailable 503.",
+    "Restarted vulpine-cabinet-pricing.service and vulpine-bidding.service; ports 3021 and 3022 health status ok after startup retry.",
+    "git diff --check: passed."
   ],
   "decisions": [
-    "Owner chose HCI Euro frameless and MCP preparation for Backoffice inspection; no shared browser session required.",
-    "Owner approved114 three-drawer bases,36-inch-high clubhouse wall uppers, regular HCI Euro cabinets at ADA locations, and a note. Accessibility modifications/compliance are excluded and by others; do not label stock cabinets ADA-compliant.",
-    "Retain existing saved River Pointe15% gross cabinet margin, saved A57/B51/accessible6 estimating basis and all922 bodies. Correct white range-wall/dark-island finish location split; no Natural Oak substitution.",
-    "Use measured79.5-inch amenity upper run with27+24+27-inch stock boxes plus1.5-inch filler. Specified14-inch depth versus12-inch HCI stock is disclosed with installer-provided2-inch blocking; internal depth remains12.",
-    "All16 earlier custom/ADA cabinet body locations are now regular-stock supply at owner direction, not missing unpriced cabinet bodies. Customer release still requires finish/GC/delivery/tax and source-conflict review."
+    "Owner explicitly approved manual tax entry and requires tax only on cabinet materials and handles, never freight, installation or assembly.",
+    "Preserve handles at $3.33 each. Do not overwrite River Pointe quote edits or choose a tax percentage on behalf of owner.",
+    "Display estimated profit with remaining supplier-cost limitation; sales tax does not increase profit."
   ],
-  "open_work": [
-    "Provision approved ZITADEL management authentication for actual directory, permission and settings administration; own agent grant inspection already works.",
-    "Repair inbox provider authentication returning 401; do not claim inbox writes work before successful provider authorization.",
-    "Enrol and verify hosted accounts/other-device clients separately; local transports do not configure hosted ChatGPT/Claude, other-device Cursor, standalone Grok/Grokbot or GitHub-hosted agents.",
-    "Confirm actual model sessions invoke read_aeon_context; transport retrieval and startup hints alone are not model-session evidence.",
-    "Assess the owner-reported prior chat credential exposure and rotate the affected identity through secure enrollment if the credential is still active; no raw value was supplied in the pasted transcript.",
-    "Resolve the private vault review queue against project evidence; preserve prior concurrent engineering open work.",
-    "Complete customer-ready Bonner Springs and Dawson Trails revised proposals after missing delivery evidence, specified finish/construction supplier pricing and verified transaction tax are provided. Existing baseline amounts are internal drafts, not compliant final bids.",
-    "River Pointe customer release: verify GC, exact delivery, transaction tax, exact finishes and nine source layout conflicts; retain owner-approved stock/ADA-by-others scope."
-  ],
-  "blockers": [
-    "ZITADEL management credential is absent. Inbox provider rejects the configured credential with HTTP 401. External hosted accounts/device sessions are not connected to this server tooling.",
-    "Bonner complete delivery address unavailable in attached job sources, queried tracker records or accessible Drive search. Dawson complete delivery point/ZIP and compliant specified frameless finish pricing unavailable; Bonner specified two-tone pricing unresolved. TaxJar transaction credential or applicable verified exemption evidence is unavailable. Narrow source questions were submitted to the owner.",
-    "Exact original temporary Muse PDF download files are absent from the live table; available backups predate the relevant exports. Collection labels regenerated saved-state drafts separately from actual copied revisions."
-  ],
-  "next_action": "Owner inspects current River Pointe quote043c7714-3d83-4a79-91f8-8e83bc0e4e0c. Resolve final customer-release facts before submission. No customer communication sent.",
-  "recorded_at": "2026-10-19T06:36:15.417Z",
+  "open_work": [],
+  "blockers": [],
+  "next_action": "Owner refreshes Backoffice and enters the intended manual percentage to finish the quote; supplier costs still determine whether displayed profit is estimated.",
+  "recorded_at": "2026-10-19T06:51:58.935Z",
   "snapshot": {
-    "head": "ae31162c682de0c46671522ba32da06d0ec8ecb5",
+    "head": "f9a5880e7a61d0a45d35f524b22eecc12ccb35e6",
     "branch": "codex/cabinet-brain-integration-recovery",
-    "worktree": " M apps/pricing/src/proposal-pdf.mjs\n M apps/pricing/tests/customer-proposal.test.mjs\n M docs/continuity/handoff.json",
+    "worktree": " M apps/pricing/agent/schemas.mjs\n M apps/pricing/server.mjs\n M apps/pricing/src/app.mjs\n M apps/pricing/src/index.html\n M apps/pricing/src/tax-ui.mjs\n M apps/pricing/src/tax.mjs\n M apps/pricing/src/workflow.css\n M apps/pricing/tax-provider.mjs\n M apps/pricing/tests/export-server.test.mjs\n M apps/pricing/tests/proposal-policy.test.mjs\n M apps/pricing/tests/tax.test.mjs\n M docs/continuity/current.md\n M docs/continuity/decisions.md",
     "sources": {
       "AGENTS.md": "c51e08a8021528ff818e5f62620aae587530eeec275750b2d38c2771ef732460",
       "README.md": "b6948f9084afb5f1bcceb4466e627c78f2288ba7f4876ceb64f3702b4fea5bd1",
       "package.json": "fafa60aeae85182092017dfc87134dabfa1df3484315a510e118b4d879566a49",
-      "docs/continuity/current.md": "caf75a645b596ba4984c991d8ed2254fec6cb6f0df40f37fcfed0677adbd7526",
-      "docs/continuity/decisions.md": "bbf24c6953c266ad53d587503562fd02ee572724ad9be9d3d645a89636abc40f",
+      "docs/continuity/current.md": "b787237df2dbfcd4551b73be782942deb133623e530f3e130a827880767b9c53",
+      "docs/continuity/decisions.md": "19ec1ef51dfc856c2a81eb7116539ee1d5a390fde9b26982f29f699d1815da96",
       "docs/continuity/audit.md": "c849de622d00377d1fadd3ba41cda2933eb9370b6fa13c2baf53bf36c0c471b2",
       "docs/continuity/verification.md": "5daeea53454a06fcf3b928b1fd12c8f69448beb8fc31a75b441181cc57962f28",
       "docs/continuity/sources.json": "0380630765b71a413ac27edd875e120cf51f501232720ee130160cd1f885937b",
@@ -71,7 +56,7 @@
   },
   "vault": {
     "project": "vulpine-platform",
-    "session_id": "95bbbd0b-a61f-4b47-987f-bf35a6172b78",
-    "record": "sources/aeon-sessions/vulpine-platform/95bbbd0b-a61f-4b47-987f-bf35a6172b78.md"
+    "session_id": "6532246b-647e-46b1-a8ef-29675b4f9cdc",
+    "record": "sources/aeon-sessions/vulpine-platform/6532246b-647e-46b1-a8ef-29675b4f9cdc.md"
   }
 }

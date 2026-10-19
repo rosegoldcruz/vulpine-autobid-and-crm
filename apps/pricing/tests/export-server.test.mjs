@@ -40,6 +40,9 @@ test('server denies unsigned / cross-organization requests, isolates drafts, rej
     const revise=await request('export','POST',{format:'revise-quote',quote_id:'00000000-0000-4000-8000-000000000000',expected_revision:1});assert.equal(revise.status,503);
     const missingTax=await request('export','POST',{format:'tax-rate',address:{street:'123 Test St',city:'Phoenix',state:'AZ',zip:'85001'}});
     assert.equal(missingTax.status,503);assert.match((await missingTax.json()).error,/connected tax service/);
+    const manual=await request('export','POST',{format:'manual-tax',ratePercent:6.75,address:{street:'',city:'',state:'',zip:''},taxableItems:{cabinets:true,handles:true,freight:true,installation:false,assembly:false}});
+    assert.equal(manual.status,200);const manualLookup=await manual.json();assert.equal(manualLookup.provider,'Manual entry');assert.equal(manualLookup.rate,.0675);assert.equal(manualLookup.enteredBy,'qa-user');assert.ok(manualLookup.signature);assert.deepEqual(manualLookup.taxableItems,{cabinets:true,handles:true,freight:false,installation:false,assembly:false});
+    const invalidManual=await request('export','POST',{format:'manual-tax',ratePercent:101});assert.equal(invalidManual.status,422);
     const pendingTax=await request('export','POST',{state:{...state,tax:{enabled:true,address:{street:'123 Test St',city:'Phoenix',state:'AZ',zip:'85001'},lookup:null}},format:'pdf',type:'customer'});
     assert.notEqual(pendingTax.status,200);
     assert.equal((await fetch(base+'/studio/index.html')).status,401);

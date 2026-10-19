@@ -416,3 +416,21 @@ CORS preflight returned 204 for the Backoffice origin.
 Production deployment dpl_3PCCxEzMJKCHJF6UgnrkaPTSEEkP is READY on Backoffice.
 Deployment file hashes match verified UI and SDK source. The isolated browser QA
 server was stopped. No backend restart or in-flight upload cancellation occurred.
+
+
+## 2026-10-18 — manual tax and visible estimated profit
+
+Signed-in Pricing supports an operator-entered percentage when automatic tax is
+unavailable. The rate auto-applies after typing, is signed server-side, survives
+shared quote reopening and recalculates on quantity changes. Owner explicitly
+requires tax on cabinet materials and handles only: freight, installation and
+assembly are excluded from both manual and automatic calculations. Handle
+selling rate remains $3.33. No customer quote or tax rate was overwritten.
+
+The pricing bar now shows calculated estimated profit while supplier costs are
+unverified, with that limitation beside the amount. Known supplier costs and
+customer tax-inclusive totals display consistently. Verification: 41 pricing
+tests passed; actual frontend/API synthetic browser flow passed desktop/mobile,
+provider failure, automatic manual-rate application, save/reopen, quantity change,
+customer PDF, invalid rate and explicit zero. Pricing and bidding services were
+restarted and both health endpoints returned status ok. No environment changes.

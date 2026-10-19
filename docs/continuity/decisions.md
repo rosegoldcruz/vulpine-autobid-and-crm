@@ -223,3 +223,15 @@ screenshot rather than independently verified correspondence. The phone is
 clipped; do not infer it. Update the existing internal R1 draft and append its
 new PDF while preserving earlier revisions and original bids. Delivery address,
 tax and specified finish pricing remain unresolved. Send nothing.
+
+
+## 2026-10-18 — owner tax base and manual rate
+
+Owner explicitly directs cabinet materials and handles as the only taxable
+charges; never tax freight, installation or assembly. Enforce this in manual
+rate creation, tax summary and automatic provider request. Manual percentages
+are authenticated, signed and saved with operator attribution; they need no
+external provider or daily lookup. Delivery and other customer-ready requirements
+remain separately enforced. Show estimated profit from known costs rather than
+hiding it when handle/freight supplier costs remain unverified. Sales tax is
+collected in the payable total and does not become profit.

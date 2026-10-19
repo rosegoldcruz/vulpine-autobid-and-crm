@@ -17,15 +17,22 @@
     </div>
     <div class="field"><label for="status">Quantities are</label><select id="status"><option>Tentative</option><option>Final</option></select></div>
   </section>
-  <section class="taxPanel" aria-label="Project location and sales tax">
+  <section id="projectTax" class="taxPanel" aria-label="Project location and sales tax">
     <div class="taxHeading"><h2>Project location &amp; tax</h2><label class="check"><input id="taxEnabled" type="checkbox"> Calculate required sales tax</label></div>
     <div id="taxFields">
+      <div class="field"><label for="taxMode">Tax rate source</label><select id="taxMode"><option value="automatic">Automatic lookup</option><option value="manual">Manual rate (%)</option></select></div>
       <div class="taxAddress">
         <div class="field"><label for="taxState">Project state</label><select id="taxState" autocomplete="address-level1"></select></div>
         <div class="field"><label for="taxCity">Project city</label><input id="taxCity" maxlength="100" autocomplete="address-level2" placeholder="City"></div>
         <div class="field"><label for="taxStreet">Delivery street address</label><input id="taxStreet" maxlength="200" autocomplete="address-line1" placeholder="Street address"></div>
         <div class="field"><label for="taxZip">ZIP code</label><input id="taxZip" maxlength="10" autocomplete="postal-code" inputmode="numeric" placeholder="ZIP or ZIP+4"></div>
         <button id="taxLookup" type="button" class="secondary">Refresh tax</button>
+      </div>
+      <div id="manualTaxFields" hidden>
+        <div class="field"><label for="manualTaxRate">Tax rate (%)</label><input id="manualTaxRate" type="number" min="0" max="100" step="0.0001" inputmode="decimal" placeholder="Example: 6.75"></div>
+        <p class="hint">Applies to cabinet materials and handles only. Freight, installation and assembly are excluded from tax.</p>
+        <button id="applyManualTax" type="button">Apply manual tax</button>
+        <p class="hint">Enter 6.75 for 6.75%. The rate applies automatically after typing, saves with the bid and recalculates when quantities change.</p>
       </div>
       <p class="hint">All 50 states + D.C. Rates follow the delivery address, including county and special districts. Standard taxable cabinet-supply estimate; exemptions, installation contracts and collection obligations require separate review.</p>
       <div id="taxBreakdown" class="taxBreakdown" tabindex="0" role="region" aria-label="Scrollable tax rate breakdown"></div>
@@ -147,7 +154,7 @@
   <div class="stats">
     <div><span>Your cost</span><strong id="tCost">$0.00</strong></div>
     <div><span>Sell price</span><strong id="tSell">$0.00</strong></div>
-    <div><span>Profit</span><strong id="tProfit">$0.00</strong><small id="tReal"></small></div>
+    <div><span id="tProfitLabel">Profit</span><strong id="tProfit">$0.00</strong><small id="tReal"></small></div>
   </div>
   <div class="margin" id="mPanel">
     <div class="marginTop"><label for="mRange">Margin</label>

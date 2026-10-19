@@ -1,5 +1,5 @@
 import {QuoteStore} from './quote-store.mjs';
-import {lookupTax,lookupTransactionTax,verifyExemption,taxProvider,verifyTax} from './tax-provider.mjs';
+import {lookupTax,lookupTransactionTax,manualTax,verifyExemption,taxProvider,verifyTax} from './tax-provider.mjs';
 import http from 'node:http';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -73,6 +73,7 @@ export async function createServer(env,root=path.dirname(fileURLToPath(import.me
         const input=JSON.parse(body);
         if(input.format==='revise-quote'){if(!history)return respond(res,503,{error:'Project storage unavailable.'});const q=await history.get(claim,input.quote_id);if(q.revision!==input.expected_revision)return respond(res,409,{error:'Quote changed. Reopen before revising.'});const revised={...q.state,pricingPolicy:2,revisionOf:q.quote_number,quoteId:q.quote_number+'-R'+randomUUID().slice(0,6).toUpperCase(),signature:undefined,issuedAt:undefined,status:'Tentative'};delete revised._history;const ref=await history.save(claim,revised,null);return respond(res,200,{state:{...revised,_history:ref}});}
         if(input.format==='tax-exemption')return respond(res,200,verifyExemption(input,env));
+        if(input.format==='manual-tax')return respond(res,200,manualTax(input,env,claim.sub));
         if(input.format==='delete-quote'){if(!history)return respond(res,503,{error:'Project storage is unavailable.'});if(!/^[a-f0-9-]{36}$/.test(input.quote_id)||!Number.isInteger(input.expected_revision)||input.expected_revision<1)return respond(res,400,{error:'Quote ID and current revision are required.'});return respond(res,200,await history.delete(claim,input.quote_id,input.expected_revision));}
         if(input.format==='project-action'){if(!history)return respond(res,503,{error:'Project storage is unavailable.'});return respond(res,200,await history.project(claim,input.name,input.action));}
         // Use the existing authenticated, same-origin POST proxy for the read-only rate calculation.

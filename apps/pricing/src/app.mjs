@@ -285,8 +285,9 @@ function renderItems(){
 function renderBar(){
   const r=project(),ok=Number.isSafeInteger(r.purchase)&&Number.isSafeInteger(r.sale);
   taxUI?.draw(r.sale);
-  $('tCost').textContent=ok?money(r.purchase):'—';$('tSell').textContent=ok?money(r.sale):'—';$('tProfit').textContent=ok?(r.costsComplete?money(r.profit):'Costs pending'):'—';
-  $('tReal').textContent=ok&&r.sale?(r.costsComplete?r.actualMargin.toFixed(2)+'% realized':'Handle/freight costs unverified'):'';
+  $('tCost').textContent=ok?money(r.knownSupplierTotal):'—';$('tSell').textContent=ok?money(r.sale):'—';$('tProfit').textContent=ok?money(r.profit):'—';
+  $('tProfitLabel').textContent=r.costsComplete?'Profit':'Estimated profit';
+  $('tReal').textContent=ok&&r.sale?r.actualMargin.toFixed(2)+'%'+(r.costsComplete?' margin':' · before remaining supplier costs'):'';
   $('mVal').textContent=state.margin+'%';$('mTog').textContent=state.margin+'%';$('mRange').value=state.margin;
   $('mChips').innerHTML=[20,25,30,33,35,40].map(m=>'<button type="button" data-m="'+m+'" aria-pressed="'+(m===state.margin)+'">'+m+'</button>').join('');
   const warn=$('barWarn'),bad=r.units.filter(u=>u.repeat!==0&&u.entries.length&&u.issues.length).length;
@@ -311,9 +312,9 @@ function renderQuote(){
   if(state.email&&!$('email').validity.valid)problems.push('That customer email doesn’t look right. Fix it or leave it blank.');
   $('documentIssues').textContent=problems.join('\n');$('documentIssues').hidden=!problems.length;
   $('generate').disabled=$('printGenerate').disabled=problems.length>0;
-  const amount=documentType==='purchase'?r.purchase:r.total;
+  const amount=documentType==='purchase'?r.purchase:r.total??r.sale;
   $('documentSummary').innerHTML='<p class="sumName">'+esc(state.project||'Unnamed project')+'<br><small>'+esc([...new Set(r.units.filter(u=>u.repeat>0).flatMap(u=>u.entries.map(x=>x.line)))].join(', '))+' · '+r.count+' unit'+(r.count===1?'':'s')+' · '+esc(state.status)+'</small></p><strong class="sumAmt">'+(ok?money(amount):'Check units')+'</strong><p class="hint">'+(documentType==='customer'?'Customer selling total. Your cost and profit are hidden.':documentType==='purchase'?'Supplier purchase total. Shipping and delivery use full catalog rates.':'Internal document: shows cost, selling price, margin and profit.')+'</p>';
-  $('chargeSummary').innerHTML=r.charges?'<p>'+r.charges.counts.apartments+' apartments + '+r.charges.counts.amenities+' named amenity areas; '+r.charges.boxes+' cabinet boxes; '+r.charges.accessories+' accessories.</p><div><span>Handles: '+r.charges.handles.chargedQuantity+' × $3.33</span><strong>'+money(r.charges.handles.amount)+'</strong></div><div><span>Shipping: '+r.charges.freight.quantity+' × '+money(r.charges.freight.rate)+'</span><strong>'+money(r.charges.freight.amount)+'</strong></div><div><span>Tax</span><strong>'+(r.tax.amount===null||(!state.tax?.enabled&&!state.tax?.exemption)?'Verification required':money(r.tax.amount))+'</strong></div>':'';
+  $('chargeSummary').innerHTML=r.charges?'<p>'+r.charges.counts.apartments+' apartments + '+r.charges.counts.amenities+' named amenity areas; '+r.charges.boxes+' cabinet boxes; '+r.charges.accessories+' accessories.</p><div><span>Handles: '+r.charges.handles.chargedQuantity+' × $3.33</span><strong>'+money(r.charges.handles.amount)+'</strong></div><div><span>Shipping: '+r.charges.freight.quantity+' × '+money(r.charges.freight.rate)+'</span><strong>'+money(r.charges.freight.amount)+'</strong></div><div><span>Tax <a href="#projectTax">Enter / edit rate</a></span><strong>'+(r.tax.amount===null||(!state.tax?.enabled&&!state.tax?.exemption)?'Enter a tax rate':money(r.tax.amount))+'</strong></div>':'';
   $('comparisonPdf').disabled=documentType!=='internal';
 }
 function go(next){

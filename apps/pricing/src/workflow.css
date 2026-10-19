@@ -52,4 +52,9 @@ body.studioOpen{height:100dvh;overflow:hidden;display:flex;flex-direction:column
 @media(max-width:600px){.assistantFields{grid-template-columns:1fr}.assistantActions button{flex:1;min-height:46px}}
 .builder > *{min-width:0}
 
+@media(min-width:901px){.workspaceOpen .app{width:calc(100% - 280px)}}
+#manualTaxFields{display:grid;gap:12px;margin:16px 0}
+#manualTaxFields .field{max-width:240px}
+#applyManualTax{justify-self:start}
+
 .taxPanel{border:1px solid var(--line,#777);border-radius:12px;padding:18px;margin:16px 0}.taxHeading,.taxTotals{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}.taxHeading h2{font-size:18px;margin:0}.taxAddress{display:grid;grid-template-columns:1fr 1fr 2fr 130px auto;gap:12px;align-items:end;margin-top:16px}.taxAddress input,.taxAddress select{width:100%;min-width:0}.taxBreakdown{max-height:180px;overflow:auto;overscroll-behavior:contain}.taxBreakdown:empty{display:none}.taxBreakdown>div{display:flex;justify-content:space-between;gap:20px;padding:10px;border-bottom:1px solid #8885}.taxCombined{font-weight:700}.taxTotals{border-top:1px solid #8885;padding-top:12px}.taxTotals strong{margin-left:12px}.taxPanel [hidden]{display:none!important}@media(max-width:900px){.taxAddress{grid-template-columns:1fr 1fr}.taxAddress .field:nth-child(3){grid-column:1/-1}}@media(max-width:480px){.taxAddress{grid-template-columns:1fr}.taxAddress .field:nth-child(3){grid-column:auto}}
