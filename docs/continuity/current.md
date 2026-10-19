@@ -1,3 +1,46 @@
+## 2026-10-19 — MCP inventory discrepancy and Mission Farms work in progress
+
+Owner requires MCP correction first, then only Mission Farms. Live authenticated
+Backoffice discovery compares against the25 current pricing schemas and returns33
+total tools for each of7 configured agent clients. The installed ChatGPT pricing
+connection in this conversation still exposes17 callable names (owner sees18).
+The public OAuth and signed proxy paths use the same server registration; an actual
+ChatGPT project read succeeds. ChatGPT metadata refresh has not been verified.
+OpenAI documents a connection Refresh followed by a new conversation; exposed
+Plugin Management tools provide no refresh action. Do not reset credentials or
+claim33 tools belong to the pricing-only connection. A read-only check and exact
+refresh instructions were pushed in734a475.
+
+Mission Farms draft7cf5a601-f40f-4376-b1f8-04b0b0b58c17 is saved revision9,
+with19 unit types /162 apartments and source evidence. NO SKUs/prices have been
+selected; customer export is blocked by incomplete scope and absent item prices.
+It is NOT a finished bid or shared customer proposal. Source matrix totals120
+Building10 plus42 COMBINED Buildings14/15. Supplied plan files fail Poppler index
+reading; PyMuPDF recovered readable copies outside originals (417/207/207 pages).
+Five B14/B15 unit-type dimension-callout multisets match. Machine extraction
+created568 dimensional review records, including shelves/custom assemblies;
+these are NOT568 verified cabinet bodies. Full measured/trim/custom reconciliation
+remains open. Original source files remain unchanged.
+
+The source requires slab doors, Acorn Velvet Elm uppers/bath cabinets and Alabaster
+bases. Stock White Euro is only a proposed alternative, with no owner response or
+approval yet. Custom mudrooms/linen storage, amenity millwork, glass units,
+accessible cabinetry and specified Top Knobs pulls need supplier pricing/compliance.
+Do not present missing costs as zero or fabricate a full project price/profit.
+Signed manual10.35% was set through the new MCP tax tool using KDOR October2026
+Publication1700 Mission Farms West TDD OVET6; actual exemption needs documentation.
+Product accounting continues to exclude tax/freight/services. No installation.
+
+Review workbook: /home/bid-workspace/Mission Farms/Mission_Farms_Takeoff_Review.xlsx
+and /mnt/data/Mission_Farms_Takeoff_Review.xlsx;5 sheets,19 unit types,568 source
+callout records,14 explicit scope/pricing gaps,source hashes. Readback passed.
+Working files and original/recovered page references: /opt/output/mission-review.
+Pending owner questions: ChatGPT connection refresh confirmation; specified-price
+bid vs clearly qualified White Euro stock alternate. Continue independent review;
+never call this bid complete or safe to send in its current state.
+
+---
+
 ## 2026-10-18 — pricing proposal correction
 
 Pricing now has a shared policy for revised/new drafts: decorative handles at

@@ -1,39 +1,42 @@
 {
-  "last_change": "Expanded agent customer-detail editing; added shared quote details, signed draft/shared tax, saved PDF/XLSX export and revised-copy tools. Deployed bidding backend; verified all seven configured clients discover33 tools. Existing business bids preserved.",
+  "last_change": "Verified current MCP inventory, corrected stale17-tool documentation and pushed read-only checker734a475. Saved incomplete Mission Farms working draft revision9 and source-backed takeoff review workbook; no final bid or prices claimed.",
   "verification": [
-    "node --test tests/*.test.mjs in apps/pricing:49 passed.",
-    "node --env-file=/etc/vulpine-bidding/runtime.env --test tests/*.integration.mjs:4 passed.",
-    "Final agent-fields integration rerun passed with issued-revision and legacy metadata-preservation checks.",
-    "Actual SDK Streamable HTTP edit/customer/email/addenda/tax/export flow passed with downloaded supplier-free customer PDF and XLSX. Read-only, stale, cross-org, forged tax, missing-provider, explicit zero, exemption and issued/archive checks passed.",
-    "Initial fixture harness app.workspace reference failed; fixed to independent QuoteStore, cleaned task-created orphan; verified remaining fixture quote count0.",
-    "No running bid jobs before service restart. Bidding health returned ok.",
-    "Live discovery through all7 configured clients returned33 tools, all five new tools and expanded customer input fields.",
-    "Production reads:Bonner revision3,total360590.19; River Pointe revision44,total226824.88. No business quote changes performed.",
-    "git diff --check passed; no frontend source/assets or env changes required."
+    "node scripts/check-pricing-mcp.mjs codex plus6 other registered clients:25 pricing tools and33 total; required customer fields present.",
+    "ChatGPT pricing list_projects call succeeded; installed callable tool inventory still17 names; refresh unverified.",
+    "node --check scripts/check-pricing-mcp.mjs passed.",
+    "Public bidding health:statusok,remoteOAuthConfiguredtrue.",
+    "Mission Farms matrix read:19 types,162 apartments; B14/B15 five dimensional multisets match.",
+    "MCP set_bid_details and set_bid_tax succeeded; signed10.35% manual tax; set_unit_mix and save_bid producedrevision9.",
+    "validate_bid correctly returnsfalse for absent item prices,incomplete scope and pending plan review.",
+    "Review workbook readback:5 sheets,19 types,162 apartments,568 dimensional callout records,14 pricing gaps. No full quantity certification.",
+    "Initial Poppler read failed on original plans; PyMuPDF recovered417/207/207 pages; original source PDFs unchanged."
   ],
   "decisions": [
-    "Owner requires browser-parity customer fields, signed tax and scope edits available to authorized MCP agents.",
-    "Server signs manual/automatic/exemption records and enforces existing revision/access/review gates; no fabricated lookup records.",
-    "Legacy/issued repricing uses explicit revised copies; field edits do not silently change prices.",
-    "Supplier-name suppression stays automatic in customer/draft PDFs; preserve procurement/internal source metadata."
+    "Owner explicitly orders MCP correction before Mission Farms. Only Mission Farms bid is in scope.",
+    "No reset/uninstall performed. ChatGPT refresh is a client setting unavailable through exposed tools.",
+    "No unsupported custom costs,finish equivalence,final totals or profit fabricated. White Euro is a proposed alternative only; no response or approval received."
   ],
   "open_work": [
-    "Existing client conversations may cache old discovery and require a tool-list refresh.",
-    "Automatic tax still requires its configured provider; manual user-provided tax works without provider credentials."
+    "Verify ChatGPT connection tool refresh to25 tools in a new conversation.",
+    "Complete Mission Farms measured takeoff and SKU mapping; reconcile untagged/custom components,trim,hardware and accessible units.",
+    "Obtain supported custom/specification prices or explicit stock alternate approvals; price/export/retain actual completed bid only after review."
   ],
-  "blockers": [],
-  "next_action": "Agents can read a quote, patch details/scope, apply signed user-supplied tax and export via MCP; refresh discovery in any session still displaying the old inventory.",
-  "recorded_at": "2026-10-19T08:40:30.067Z",
+  "blockers": [
+    "ChatGPT installed metadata refresh cannot be triggered through exposed controls; owner/guy confirmation pending.",
+    "Specified custom finishes,millwork,accessible configurations and specialty hardware lack verified matching supplier costs; stock alternate question pending."
+  ],
+  "next_action": "Refresh ChatGPT connection tool metadata; resume Mission Farms from revision9 and the review workbook, resolving custom supplier prices or owner-selected stock alternative before a full bid export.",
+  "recorded_at": "2026-10-19T09:17:49.843Z",
   "snapshot": {
-    "head": "fe71abc751a63fd01064bb76cd44388a66f1b1e0",
+    "head": "734a4755b595878b3e61db008e8204cf68cff32f",
     "branch": "codex/cabinet-brain-integration-recovery",
-    "worktree": " M apps/pricing/agent/schemas.mjs\n M apps/pricing/agent/tools.mjs\n M apps/pricing/agent/worker.mjs\n M apps/pricing/docs/bidding-agent.md\n M apps/pricing/tests/bidding.integration.mjs\n M docs/continuity/current.md\n M docs/continuity/decisions.md\n?? apps/pricing/tests/agent-fields.integration.mjs",
+    "worktree": " M docs/continuity/current.md\n M docs/continuity/decisions.md",
     "sources": {
       "AGENTS.md": "c51e08a8021528ff818e5f62620aae587530eeec275750b2d38c2771ef732460",
       "README.md": "b6948f9084afb5f1bcceb4466e627c78f2288ba7f4876ceb64f3702b4fea5bd1",
       "package.json": "fafa60aeae85182092017dfc87134dabfa1df3484315a510e118b4d879566a49",
-      "docs/continuity/current.md": "37784f7ef33bfe1cd906ba4bfa93dfe04e5f228c86c1830a02450a49cc41eb94",
-      "docs/continuity/decisions.md": "76b4c0564282a8792656af4b77ecbb981bc9a27ac35833649d50528f58e77557",
+      "docs/continuity/current.md": "0ac02ae7d748ae0e34fc162a26938a0cc30d16786cf6e152eb1e52b72f063750",
+      "docs/continuity/decisions.md": "3505603ce54ec7e1ea4b58a3fa64688196c9e26896e7c82178b28f46953010cd",
       "docs/continuity/audit.md": "c849de622d00377d1fadd3ba41cda2933eb9370b6fa13c2baf53bf36c0c471b2",
       "docs/continuity/verification.md": "5daeea53454a06fcf3b928b1fd12c8f69448beb8fc31a75b441181cc57962f28",
       "docs/continuity/sources.json": "0380630765b71a413ac27edd875e120cf51f501232720ee130160cd1f885937b",
@@ -63,7 +66,7 @@
   },
   "vault": {
     "project": "vulpine-platform",
-    "session_id": "eedc653d-00aa-4a36-b53d-2d652e1544c4",
-    "record": "sources/aeon-sessions/vulpine-platform/eedc653d-00aa-4a36-b53d-2d652e1544c4.md"
+    "session_id": "8d981419-0b27-4e0e-ad50-a6dc6fc89f4d",
+    "record": "sources/aeon-sessions/vulpine-platform/8d981419-0b27-4e0e-ad50-a6dc6fc89f4d.md"
   }
 }

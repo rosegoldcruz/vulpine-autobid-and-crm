@@ -335,3 +335,16 @@ clear signature approval on that new copy and retain original documents.
 Customer supplier-name removal remains automatic in the shared renderer, not
 an editable client-side switch. Keep assigned-job workers confined to their job.
 Existing conversations may cache discovery; backend inventory is authoritative.
+
+
+## 2026-10-19 — distinguish live MCP tools from installed ChatGPT metadata
+
+Owner reports18 tools in GPT and requires this fixed before Mission Farms. Verify
+the exact connection rather than substituting a different client's discovery.
+Pricing exposes25 tools; Backoffice adds8, for33. Official ChatGPT documentation
+requires refreshing a custom connection after metadata changes and testing in a
+new conversation. The available Plugin Management tools cannot trigger Refresh.
+No connection reset/uninstall is authorized or needed for the observed stale list.
+Do not claim refresh completion without observing the refreshed client inventory.
+Mission Farms is the only active bid. No final price or stock/finish substitution
+approval has been inferred from the absence of an answer to the pending question.
