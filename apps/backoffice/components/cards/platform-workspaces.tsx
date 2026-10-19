@@ -22,7 +22,7 @@ export function PlatformOverviewSection({ allowedSections }: { allowedSections?:
   const query = useDeferredValue(search.trim().toLocaleLowerCase())
   const available = platformModules.filter((workspace) => !allowedSections || allowedSections.includes(workspace.id))
   const matched = available.filter((workspace) => workspace.id !== "dashboard" && `${workspace.label} ${workspace.group} ${workspace.purpose}`.toLocaleLowerCase().includes(query))
-  const workspaces = available.filter((workspace) => ["bidstracker", "vision", "drive"].includes(workspace.id))
+  const workspaces = available.filter((workspace) => ["pricing", "bidstracker", "vision", "drive"].includes(workspace.id))
   return (
     <div className="space-y-6" data-testid="platform-overview">
       <OperationsWorkspace id="dashboard" compact />
@@ -32,7 +32,7 @@ export function PlatformOverviewSection({ allowedSections }: { allowedSections?:
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">Your bids, drawings, documents, and operations—together. Continue in an existing workspace or explore the next part of the platform.</p>
         <div className="mt-6 flex items-center gap-2 text-xs text-muted-foreground"><ShieldCheck className="size-4 text-primary" />Shared identity and capability-controlled access</div>
       </section>
-      {workspaces.length > 0 ? <section aria-label="Existing workspaces"><div className="mb-3 flex items-center justify-between"><h2 className="font-display text-lg font-bold">Continue your work</h2><span className="text-xs text-muted-foreground">Existing workspaces</span></div><div className="grid gap-3 xl:grid-cols-3">{workspaces.map((workspace) => <SurfaceLink key={workspace.id} id={workspace.id} />)}</div></section> : null}
+      {workspaces.length > 0 ? <section aria-label="Existing workspaces"><div className="mb-3 flex items-center justify-between"><h2 className="font-display text-lg font-bold">Continue your work</h2><span className="text-xs text-muted-foreground">Existing workspaces</span></div><div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">{workspaces.map((workspace) => <SurfaceLink key={workspace.id} id={workspace.id} />)}</div></section> : null}
       <section aria-label="Platform directory">
         <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><h2 className="font-display text-lg font-bold">Explore the platform</h2><p className="mt-1 text-xs text-muted-foreground">New workspaces show what is connected and what still needs integration.</p></div><label className="flex min-h-12 items-center gap-2 rounded-xl border border-border/60 bg-card px-3 sm:w-80"><Search className="size-4 shrink-0 text-muted-foreground" /><input aria-label="Find a module" placeholder="Find a module…" value={search} onChange={(event) => setSearch(event.target.value)} className="min-w-0 flex-1 bg-transparent py-3 text-base outline-none sm:text-sm" /></label></div>
         {platformGroups.map((group) => {

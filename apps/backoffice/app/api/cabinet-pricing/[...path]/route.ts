@@ -32,7 +32,8 @@ async function proxy(request: Request, context: { params: Promise<{ path: string
   try {
     const upstream = new URL("/cabinet-pricing/" + segments.map(encodeURIComponent).join("/"), base)
     const response = await fetch(upstream, { method: request.method, headers: { "x-vulpine-operations": token, "content-type": "application/json" }, body: write ? body : undefined, cache: "no-store", signal: AbortSignal.timeout(55000) })
-    return new Response(response.body, { status: response.status, headers: { "content-type": response.headers.get("content-type") || "application/octet-stream", "cache-control": "private, no-store", "x-content-type-options": "nosniff", "content-security-policy": "frame-ancestors 'self'; object-src 'none'; base-uri 'self'" } })
+    const disposition = response.headers.get("content-disposition")
+    return new Response(response.body, { status: response.status, headers: { ...(disposition ? { "content-disposition": disposition } : {}), "content-type": response.headers.get("content-type") || "application/octet-stream", "cache-control": "private, no-store", "x-content-type-options": "nosniff", "content-security-policy": "frame-ancestors 'self'; object-src 'none'; base-uri 'self'" } })
   } catch {
     return Response.json({ error: "Cabinet service unavailable. Your saved draft is retained." }, { status: 502 })
   }

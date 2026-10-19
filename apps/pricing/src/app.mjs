@@ -41,7 +41,7 @@ try{
   }
 }catch{storageWarning=true}
 if(hosted){
-  const back=document.createElement('a');back.href='/';back.textContent='← Back office';back.className='backofficeLink';document.querySelector('.topRight').prepend(back);
+  const back=document.createElement('a');back.href='/';back.target='_top';back.onclick=async event=>{event.preventDefault();try{await flushWorkspace();window.top.location.assign('/');}catch(error){toast(error.message,{error:true});}};back.textContent='← Back office';back.className='backofficeLink';document.querySelector('.topRight').prepend(back);
   const response=await fetch('./draft',{cache:'no-store'});
   if(!response.ok)throw Error('Could not load your server draft. Reload after signing in.');
   const saved=await response.json();revision=saved.revision;

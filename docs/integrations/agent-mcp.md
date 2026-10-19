@@ -14,7 +14,7 @@ proposals or order materials.
 
 ## Tools and authentication
 
-The gateway forwards the pricing application's 19 native tools to its existing
+The gateway forwards the pricing application's 27 native tools to its existing
 MCP at `/bidding/agent/mcp`. Agents can create bids, attach source evidence,
 set unit mixes and catalog items, calculate, validate, save and export PDF/Excel.
 Catalog costs, revisions, source provenance and existing approval gates remain
@@ -159,3 +159,19 @@ SFTP. Single-file downloads stream as well. UI progress and Resume upload retain
 remaining files after an acknowledged partial failure while the tab stays open.
 The standalone drive.vulpine.llc website is retired (410); Backoffice Drive and
 shared storage remain active.
+
+## 2026-10-19 reliability verification
+
+Live inventory is 27 pricing tools and 35 through Backoffice. All seven registered
+identities were checked with actual access, quote read, catalog lookup and retained
+PDF download calls, not discovery alone. ChatGPT pricing in this session exposes
+25 cached tools; it can read the shared quote and download its customer PDF, but
+the two new saved-item/configuration tools and expanded schemas still need a
+connection metadata refresh. No exposed Plugin Management operation can perform
+that refresh. Do not reset credentials or claim that a new server fixes the cache.
+
+Shared-quote reads omit the duplicate embedded _agent source snapshot and return
+unit calculation totals by default. Editable units, financial totals and stored
+_calculation remain available; include_calculation_lines:true requests full rows.
+Source/provenance snapshots remain in the database. Invalid tool inputs now return
+bounded field-level errors so the caller can correct arguments.

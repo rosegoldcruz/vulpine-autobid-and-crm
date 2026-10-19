@@ -90,7 +90,11 @@ test('saved cabinet details preserve prices/quantities and enforce revision and 
  await new Promise(resolve=>app.server.listen(3039,'127.0.0.1',resolve));
  try{
   const unitId=randomUUID(),state=complete({project:'Count fixture',quoteId:'QA-COUNTS',customer:'Fixture GC',email:'',notes:'',preparedBy:'Daniel Cruz',status:'Tentative',margin:20,comparison:false,units:[{id:unitId,name:'A1',repeat:2,auto:false,defaultLi:0,items:[{sku:'B24',li:0,qty:3}]}]});
+  state._agent={sourceSnapshot:'source evidence '.repeat(1000)};state._calculation={privateSnapshot:true};
   const ref=await workspace.save(actor,state),before=calculateProject(app.catalogs.hci,state);
+  const compact=await execute('get_project_quote',{quote_id:ref.id}),detailed=await execute('get_project_quote',{quote_id:ref.id,include_calculation_lines:true});
+  assert.equal(compact.ok,true);assert.equal(compact.data.state._agent,undefined);assert.equal(compact.data.state._calculation.total,before.total);assert.deepEqual(compact.data.state.units,state.units);assert.equal(compact.data.calculation.units[0].entries,undefined);assert.ok(detailed.data.calculation.units[0].entries.length);assert.equal(compact.data.calculation.total,detailed.data.calculation.total);assert.deepEqual((await workspace.get(actor,ref.id)).state._agent,state._agent);
+
   const args={quote_id:ref.id,expected_revision:ref.revision,units:[{unit_id:unitId,kind:'apartment',items:[{sku:'B24',li:0,boxCount:1,handleCount:4,configurationBasis:'Source elevation confirms four operating fronts.'}]}]};
   assert.equal((await execute('set_project_quote_cabinet_details',args,{...actor,scopes:['bids.read']})).error.code,'FORBIDDEN');
   assert.equal((await execute('set_project_quote_cabinet_details',args,{...actor,org:'other'})).error.code,'NOT_FOUND');
@@ -102,6 +106,7 @@ test('saved cabinet details preserve prices/quantities and enforce revision and 
   const toe=await execute('set_project_quote_cabinet_details',{quote_id:ref.id,expected_revision:r.data.revision,units:[{unit_id:unitId,auto:true}]});assert.equal(toe.ok,true,JSON.stringify(toe));assert.equal(toe.data.state.units[0].auto,true);assert.equal(toe.data.state.units[0].items[0].qty,3);assert.ok(toe.data.totals.purchase>r.data.totals.purchase);
   const edit={quote_id:ref.id,expected_revision:toe.data.revision,unit_id:unitId,items:[{sku:'B24',li:0,qty:2}],basis:'Reviewed source configuration: two B24 stock bases replace three.'};
   for(const [args,who,code]of [[edit,{...actor,scopes:['bids.read']},'FORBIDDEN'],[edit,{...actor,org:'other'},'NOT_FOUND'],[{...edit,unit_id:randomUUID()},actor,'NOT_FOUND'],[{...edit,expected_revision:1},actor,'REVISION_CONFLICT'],[{...edit,items:[{sku:'INVENTED',li:0,qty:2}]},actor,'UNKNOWN_SKU'],[{...edit,items:[{sku:'B24',li:0,qty:2,price:1}]},actor,'INVALID_INPUT'],[{...edit,items:[...edit.items,...edit.items]},actor,'DUPLICATE_SKU']])assert.equal((await execute('set_project_quote_items',args,who)).error.code,code);
+  const invalid=await execute('set_project_quote_items',{...edit,expected_revision:'wrong'});assert.equal(invalid.error.code,'INVALID_INPUT');assert.match(invalid.error.message,/expected_revision/);
   const signed=await workspace.save(actor,{...toe.data.state,signature:{approved:true,quoteId:state.quoteId}},{id:ref.id,revision:toe.data.revision});
   const edited=await execute('set_project_quote_items',{...edit,expected_revision:signed.revision});assert.equal(edited.ok,true,JSON.stringify(edited));
   assert.deepEqual(edited.data.state.units[0].items,edit.items);assert.equal(edited.data.state.units[0].repeat,2);assert.equal(edited.data.state.margin,state.margin);assert.deepEqual(edited.data.state.tax,state.tax);assert.equal(edited.data.state.signature,undefined);assert.equal(edited.data.state.projectInfo.itemRevisionBasis[unitId],edit.basis);assert.ok(edited.data.totals.purchase<toe.data.totals.purchase);

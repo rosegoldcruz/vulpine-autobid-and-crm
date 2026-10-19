@@ -3,7 +3,9 @@ export function mountWorkspace({flush,startQuote,getReference,onArchive,onDelete
  const toggle=document.createElement('button');toggle.className='workspaceToggle secondary';toggle.textContent='☰ Projects';toggle.setAttribute('aria-expanded','true');
  document.querySelector('.topRight').prepend(toggle);document.body.append(sidebar);document.body.classList.add('workspaceOpen');
  toggle.onclick=()=>{const open=document.body.classList.toggle('workspaceOpen');toggle.setAttribute('aria-expanded',String(open));};
- if(matchMedia('(max-width: 900px)').matches)toggle.click();
+ const mobile=matchMedia('(max-width: 900px)');
+ const closeOnMobile=()=>{if(mobile.matches){document.body.classList.remove('workspaceOpen');toggle.setAttribute('aria-expanded','false');}};
+ closeOnMobile();mobile.addEventListener('change',closeOnMobile);
  const button=(label,fn)=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.onclick=async()=>{b.disabled=true;try{await fn();}catch(e){onError(e);}finally{b.disabled=false;}};return b;};
  async function action(name,action){const r=await fetch('./export',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({format:'project-action',name,action})});const result=await r.json();if(!r.ok)throw Error(result.error);return result;}
  async function refresh(){
@@ -23,7 +25,7 @@ export function mountWorkspace({flush,startQuote,getReference,onArchive,onDelete
     const row=document.createElement('div');row.className='historyQuote';
     row.append(button((q.id===getReference()?.id?'● ':'')+(q.quote_number||'Draft')+' · '+(q.supplier||'hci').toUpperCase(),async()=>{await flush();location.assign('./index.html?quote='+q.id);}));
     const date=document.createElement('small');date.textContent=new Date(q.updated_at).toLocaleString();row.append(date);
-    row.append(button('Saved PDFs & Excel',async()=>{const r=await fetch('./quotes/'+q.id);if(!r.ok)throw Error('Documents could not load.');const saved=await r.json();const docs=document.createElement('div');docs.className='savedDocuments';for(const d of saved.exports){const a=document.createElement('a');a.href='./documents/'+d.id;a.target='_blank';a.rel='noopener';a.textContent=d.type+' '+d.format.toUpperCase()+' · '+new Date(d.created_at).toLocaleString();docs.append(a);}if(!saved.exports.length)docs.textContent='Generate a PDF or Excel file to save it here.';row.querySelector('.savedDocuments')?.remove();row.append(docs);}));
+    row.append(button('Saved PDFs & Excel',async()=>{const r=await fetch('./quotes/'+q.id);if(!r.ok)throw Error('Documents could not load.');const saved=await r.json();const docs=document.createElement('div');docs.className='savedDocuments';for(const d of saved.exports){const a=document.createElement('a');a.href='./documents/'+d.id;a.target='_blank';a.rel='noopener';a.textContent=(d.type==='customer'?'Customer proposal':d.type==='draft'?'Internal draft':d.type==='purchase'?'Purchase schedule':'Internal costing')+' '+d.format.toUpperCase()+' · Revision '+d.revision+(d.revision===saved.state._history.revision?' · Current':' · Earlier revision')+' · '+new Date(d.created_at).toLocaleString();docs.append(a);}if(!saved.exports.length)docs.textContent='Generate a PDF or Excel file to save it here.';row.querySelector('.savedDocuments')?.remove();row.append(docs);}));
     row.append(button('Delete bid',async()=>{
      if(!confirm('Permanently delete this saved bid and its PDFs/Excel? Other bids are kept.'))return;
      await flush();
@@ -39,5 +41,5 @@ export function mountWorkspace({flush,startQuote,getReference,onArchive,onDelete
   const trash=document.createElement('details');const label=document.createElement('summary');label.textContent='Trash';trash.append(label);for(const p of data.projects.filter(p=>p.deleted_at))trash.append(button('Restore '+p.name,async()=>{await action(p.name,'restore');onArchive(false);await refresh();}));sidebar.append(trash);
  }
  // Preserve the existing draft in history before listing projects for the first time.
- flush().then(refresh).catch(onError);
+ flush().then(refresh).catch(error=>{sidebar.replaceChildren(button('Close projects',()=>toggle.click()));const message=document.createElement('p');message.setAttribute('role','alert');message.textContent='Saved projects could not load. Your current quote is retained.';sidebar.append(message,button('Retry saved projects',async()=>{await flush();await refresh();}));onError(error);});
 }

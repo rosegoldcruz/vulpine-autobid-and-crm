@@ -184,3 +184,19 @@ allowance also requires pricingAllowanceBasis. This permits a customer proposal
 with visible qualifications while retaining scopeIncomplete and construction
 facts; it does not waive missing prices, quantities, tax or required project data.
 Do not infer this authorization from a signature or urgency alone.
+
+## Customer export and saved-document revisions
+
+For completed Auto Bid work, save_bid followed by export_bid with type customer
+generates a customer PDF and filename without draft labeling. save_bid_to_project
+also accepts type customer to retain a customer PDF in a new shared quote; its
+default remains draft for incomplete review work. Do not resave repeatedly to
+edit an existing shared quote: use the existing quote editing/export tools.
+Customer validation and signed tax remain enforced. Existing historical PDFs
+are retained, and the project sidebar labels their revision and whether it is
+current or earlier. The Backoffice proxy preserves the PDF filename header.
+
+get_project_quote returns editable units, totals and documents without duplicating
+source captures or calculated item rows. Request include_calculation_lines:true
+when exact calculated rows are needed. Source provenance remains in storage and
+the original bid source tools. Input errors report the fields requiring repair.
