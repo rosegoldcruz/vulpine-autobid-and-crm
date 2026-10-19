@@ -14,7 +14,7 @@ test('exemptions require evidence, authority, matching address and effective dat
 test('letter-size short and long PDFs keep closing artwork final and customer notes clean',async()=>{for(const long of [false,true]){const s=fixture();if(long){s.units=Array.from({length:30},(_,i)=>({...s.units[0],id:String(i),name:'Apartment group '+i,repeat:12}));s.projectInfo.apartments=360;s.customerSections={included:'Cabinet scope '.repeat(500),basis:'Plans and schedules',substitutions:'None approved',exclusions:'Installation and assembly excluded.'};}const bytes=await generateQuote(PDFLib,data,s,'customer',template),doc=await PDFLib.PDFDocument.load(bytes);assert.ok(doc.getPageCount()>=6);for(const p of doc.getPages())assert.deepEqual(p.getSize(),{width:612,height:792});const text=await pdfText(bytes),pages=text.split('\f').filter(s=>s.trim());assert.match(pages.at(-1),/TRUST THE FOX/);assert.ok(text.indexOf('CUSTOMER AUTHORIZED')<text.lastIndexOf('TRUST THE FOX'));assert.doesNotMatch(text,/Agent instruction|Not separately priced|Only if listed|Not included unless listed/);assert.match(text,/Included Scope/i);}});
 test('signature is opt-in for one proposal, preserves image aspect ratio and leaves client blank',async()=>{const s=fixture();s.signature={approved:true,quoteId:s.quoteId};await assert.rejects(generateQuote(PDFLib,data,s,'customer',template),/signature asset/);const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+a9YQAAAAASUVORK5CYII=','base64');const bytes=await generateQuote(PDFLib,data,s,'customer',template,new Date(),{signatureBytes:png});const text=await pdfText(bytes);assert.match(text,/Daniel Cruz/);assert.match(text,/Customer signature/);assert.match(text,/Signing date/);s.signature.quoteId='UNRELATED';await generateQuote(PDFLib,data,s,'customer',template);});
 
-test('known supplier handle and freight costs stay separate from fixed selling charges',()=>{const s=fixture(),before=calculateProject(data,s);s.charges={handles:{supplierCost:1000},freight:{supplierCost:2000}};const after=calculateProject(data,s);assert.equal(after.sale,before.sale);assert.equal(after.purchase,before.purchase);assert.equal(after.knownSupplierTotal,before.purchase+3000);assert.equal(after.profit,before.profit-3000);assert.equal(after.costsComplete,true);});
+test('known supplier handle and freight costs stay separate from fixed selling charges',()=>{const s=fixture(),before=calculateProject(data,s);s.charges={handles:{supplierCost:1000},freight:{supplierCost:2000}};const after=calculateProject(data,s);assert.equal(after.sale,before.sale);assert.equal(after.purchase,before.purchase);assert.equal(after.knownSupplierTotal,before.purchase+3000);assert.equal(after.profit,before.profit-1000);assert.equal(after.costsComplete,true);});
 
 test('tax exemption signatures survive PostgreSQL JSONB object-key reordering',()=>{const s=fixture(),reorder=v=>Array.isArray(v)?v.map(reorder):v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().reverse().map(k=>[k,reorder(v[k])])):v;verifyTax(reorder(s.tax),testEnv);});
 
@@ -31,3 +31,23 @@ test('customer and draft PDFs hide upstream suppliers in specifications, notes, 
 });
 
  test('finish and drawing qualifications print on customer PDF without blocking download',async()=>{const s=fixture();s.projectInfo.finishUnresolved=true;s.projectInfo.conflicts=['Nine floor labels conflict; priced mix A57/B51 retained.'];assert.deepEqual(customerIssues(data,s,calculateProject(data,s)),[]);const text=await pdfText(await generateQuote(PDFLib,data,s,'customer',template));assert.match(text,/BID QUALIFICATIONS/);assert.match(text,/Finish selections are subject to final approval/);assert.match(text,/Nine floor labels conflict/);assert.doesNotMatch(text,/INTERNAL DRAFT|export is blocked/);});
+
+test('delivery revenue and supplier costs never contribute to profit or its margin',()=>{
+ const s=fixture(),before=calculateProject(data,s);
+ assert.equal(before.profit,before.cabinetSale+before.charges.handles.amount-before.purchase);
+ assert.equal(before.actualMargin,before.profit/(before.sale-before.charges.freight.amount)*100);
+ assert.match(before.profitBasis,/Excludes delivery/);
+ s.charges={freight:{override:true,rate:95000,approval:'Owner freight change',supplierCost:60000}};
+ let changed=calculateProject(data,s);
+ assert.notEqual(changed.sale,before.sale);assert.notEqual(changed.knownSupplierTotal,before.knownSupplierTotal);
+ assert.equal(changed.profit,before.profit);assert.equal(changed.actualMargin,before.actualMargin);
+ s.charges.freight.supplierCost=120000;changed=calculateProject(data,s);assert.equal(changed.profit,before.profit);
+ s.charges.handles={supplierCost:1000};changed=calculateProject(data,s);assert.equal(changed.profit,before.profit-1000);
+ assert.doesNotMatch(changed.profitBasis,/before handle/);
+});
+test('catalog freight cost is excluded from profit with explicit freight-cost precedence',()=>{
+ const catalog=structuredClone(data);catalog.Shaker.push(['QA-FREIGHT','Project delivery',100,100,100,0,0,0,'','','Fixture','Fixture']);
+ const s=fixture(),base=calculateProject(catalog,s);s.units[0].items.push({sku:'QA-FREIGHT',li:0,qty:1});
+ const included=calculateProject(catalog,s);assert.equal(included.profit,base.profit);
+ s.charges={freight:{supplierCost:40000}};assert.equal(calculateProject(catalog,s).profit,base.profit);
+});

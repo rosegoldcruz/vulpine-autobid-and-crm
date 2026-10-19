@@ -286,8 +286,8 @@ function renderBar(){
   const r=project(),ok=Number.isSafeInteger(r.purchase)&&Number.isSafeInteger(r.sale);
   taxUI?.draw(r.sale);
   $('tCost').textContent=ok?money(r.knownSupplierTotal):'—';$('tSell').textContent=ok?money(r.sale):'—';$('tProfit').textContent=ok?money(r.profit):'—';
-  $('tProfitLabel').textContent=r.costsComplete?'Profit':'Estimated profit';
-  $('tReal').textContent=ok&&r.sale?r.actualMargin.toFixed(2)+'%'+(r.costsComplete?' margin':' · before remaining supplier costs'):'';
+  $('tProfitLabel').textContent=!r.charges||r.charges.handles.supplierCost!==null?'Profit':'Estimated profit';
+  $('tReal').textContent=ok&&r.sale?r.actualMargin.toFixed(2)+'% · '+r.profitBasis:'';
   $('mVal').textContent=state.margin+'%';$('mTog').textContent=state.margin+'%';$('mRange').value=state.margin;
   $('mChips').innerHTML=[20,25,30,33,35,40].map(m=>'<button type="button" data-m="'+m+'" aria-pressed="'+(m===state.margin)+'">'+m+'</button>').join('');
   const warn=$('barWarn'),bad=r.units.filter(u=>u.repeat!==0&&u.entries.length&&u.issues.length).length;

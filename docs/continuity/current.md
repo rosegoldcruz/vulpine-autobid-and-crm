@@ -523,3 +523,28 @@ final document071905bb-7d01-4ee5-a4a9-eaa3d79c1f57. Rendered schedule inspected,
 exact six rows plus White Euro verified, obsolete material wording absent.
 Corrected /mnt/data/River_Pointe_Apartments_Bid.pdf regenerated; intermediate
 exports retained. Both services restarted/healthy; no env/frontend deployment.
+
+
+## 2026-10-19 — delivery excluded from estimated profit
+
+Owner explicitly states delivery is not part of profit. Corrected the shared
+current-policy engine to exclude both freight selling revenue and freight cost
+from profit; margin denominator also excludes freight revenue. Customer selling
+price, tax, catalog purchase cost and known supplier total remain unchanged.
+Backoffice profit caption explicitly says Excludes delivery, with unverified
+handle supplier cost disclosed. Profit label depends on handle cost completeness
+rather than unverified freight costs. Overall costsComplete remains the separate
+all-supplier-cost completeness indicator.
+
+Live authenticated River Pointe revision44: purchase172661.88, sell213457.86,
+delivery15428.00, corrected estimated profit25367.98, margin12.810179 percent
+of non-delivery revenue, tax-inclusive total226824.88. Handle supplier cost
+remains unverified;25367.98 is before that cost. Customer PDFs need no pricing
+change. Existing workspace PDF remains current.
+
+47 pricing tests passed, including freight revenue/cost changes, catalog freight,
+explicit cost precedence and handle costs. Protected build passed. Browser
+Generate/download, print, save/reopen and manual-tax desktop/mobile regression
+passed with added profit and delivery-exclusion caption assertions. Both services
+restarted/healthy; authenticated get_project_quote returns corrected profit and
+unchanged revision/totals. No env or hosted frontend deployment required.

@@ -282,3 +282,14 @@ framed selections retain their actual line names. Supplier source metadata is
 not rewritten. Actual source construction conflicts were disclosed; treat this
 as a required specification pending supplier compliance, explicitly qualified
 in the proposal, rather than confirmed manufacturing facts.
+
+
+## 2026-10-19 — owner profit definition excludes delivery
+
+Owner explicitly excludes delivery from profit. Treat delivery as pass-through
+for profit reporting: exclude freight revenue and actual freight cost, and use
+non-delivery selling revenue for the displayed margin percentage. Do not change
+customer prices, tax, purchase costs or the selected cabinet margin. Unverified
+handle supplier cost still qualifies estimated profit. Delivery costs continue
+to be reported in known supplier totals when entered, while contributing zero
+to reported profit regardless of delivery revenue/cost differences.
