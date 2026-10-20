@@ -1,40 +1,27 @@
 {
-  "last_change": "Executed Racine Garage Condos drawing-backed cabinet takeoff using parallel A, C/D, catalog and independent root drawing reviews. Created 17-tab full requirement audit workbook, five CSV schedules, preserved source workbook, saved MCP Auto Bid/shared quote and unsigned internal priced-scope PDF. Deliverables: /home/bid-workspace/Racine Garage Condos/Verified Takeoff 2026-10-20; downloadable copies/package: /mnt/data/Racine_Takeoff_and_Incomplete_Bid_Package.zip. No application source changes, customer approval, signature or sending. Original-spec full bid remains incomplete.",
+  "last_change": "Applied owner direction to Racine MCP shared quote revision 3 and saved Auto Bid revision 13: catalog-only semi-custom supply; exclude custom or unavailable catalog items, explicitly including D124 custom ADA sink cabinet. Updated workbook, CSV requirement schedules, PDF and delivery package. No quantity, 13% margin or price changes; no approval, signature or sending.",
   "verification": [
-    "Verified actual drawing title: Garage Condos at Racine Circle, 6507 S. Racine Circle, Centennial CO. Eight local PDFs contain 501 pages; 354 architectural pages and 425 non-geotechnical pages are indexed. September 4 A/C/D client-check sets are current. June CD PDF is civil. Site plans show three buildings A/C/D.",
-    "Parallel A, C/D and catalog workers plus root independent drawing checks reconciled 59 garages, 41 cabinet positions and 141 reviewed spaces. Cabinet scope: 37 owner service assemblies, 3 uncontested contractor casework positions and 1 D124 sink with contradictory supply/design notes. D124 has 9 specified pulls. No residential kitchen or upper-level repetition was inferred.",
-    "Catalog research covered 233 worksheets, including hidden tabs, and 2.81 million cells in four master workbooks. Available MCP catalogs and manufacturer dimensional sources were checked. Trim naming resolved to two WF336 blanks and one BFD25 south panel. No authoritative compliant PL-1 casework or modification quote was recovered.",
-    "LibreOffice recalculated 114 formulas without errors. Independent checks matched MCP line-rounded material sale $486.06, handles $19.98, engine freight $133 and incomplete stock alternate subtotal $639.04 before tax. Selected material gross margin is 13%. Physical stock counts are 3 bodies and 6 pulls, independent of pricing multipliers.",
-    "Original workbook copy is byte-identical, SHA256 2edfa06035719089b29dc1f10dd450033d434d9697986cbc36315db718b0b5bd; all 75,780 original formulas remain untouched.",
-    "Automatic tax failed with PROVIDER_UNAVAILABLE because the TaxJar credential is not configured. No tax was applied. Actual customer export failed VALIDATION_FAILED for zero apartments, missing customer/GC, missing tax and incomplete scope. No gate was bypassed.",
-    "Saved Auto Bid 30d8c184-a89e-407c-a9b1-683e955b3be6 revision 11 and shared quote 06f4f6b5-c098-49d4-bef2-084f80c7a921 revision 2. Draft document d4b48e2d-fa9d-42b5-b28e-51bcd993fc66 has ten Letter pages, all rendered and visually checked. Totals, scope and exclusions agree; supplier identities, purchase costs, margin and profit are absent from PDF text. PDF SHA256 61d5e0b014f018cb258294c220ab27a624560ad855d74c89524d8c98bfee228c.",
-    "Root independent QA passed 27 specific checks. The 37-file delivery ZIP passed testzip. Full original-spec bid total and tax-inclusive total remain null, not zero. No customer-ready PDF, signature, approval or sending occurred."
+    "Read live quote revision 2 and job revision 11 before edits; saved revisions 3 and 13 respectively. Read back explicit custom exclusions.",
+    "MCP regenerated ten-page PDF; verified exclusion language, unchanged $639.04 before-tax catalog material subtotal and absence of supplier identity, purchase cost or margin text. Inspected changed PDF pages; retained all drawing requirements in audit schedule.",
+    "Recalculated 114 workbook formulas without errors; 41 physical positions and 141 reviewed spaces preserved. Added owner scope direction tab, total 18 tabs. Source workbook untouched. Updated download files and ZIP; archive integrity passed."
   ],
   "decisions": [
-    "Explicit owner instruction in this chat selected 13% gross margin, superseding earlier preliminary mentions and the engine default. Applied through MCP. This authorizes the margin only; it does not approve substitutes or customer submission.",
-    "Account every drawn cabinet position as a documented owner exclusion or a specifically unresolved requirement. Price available stock materials only as a clearly incomplete alternate. Do not invent custom SKUs or fabrication prices.",
-    "Preserve a saved unsigned internal draft. Do not enter fictitious apartments to pass the current commercial-only customer export limitation."
+    "Explicit current owner instruction: Vulpine supplies semi-custom catalog cabinetry, not bespoke fabrication. Skip requirements without a verified catalog match and mark exclusions in MCP. D124 custom ADA sink is excluded; no request for owner design choice or custom quotation is required for that excluded item.",
+    "Preserve drawing ownership and ADA discrepancy as evidence without asserting that the excluded cabinet is owner-supplied or included. Maintain disclosed catalog configuration/finish differences.",
+    "Retain final selected 13% gross margin and existing catalog quantities and prices. Exclusion authorization does not authorize overall bid approval, signature or sending."
   ],
   "open_work": [
-    "Authoritative compliant custom PL-1 casework/fabrication quote unavailable after 233-sheet and catalog search.",
-    "D124 sink ownership/configuration conflicts between 1/A401 keynote1 and 4/A401/A421; user clarification pending.",
-    "AWI Economy/Custom conflict and exact shop-drawing dimensions/hardware package require specification resolution.",
-    "TaxJar credential unavailable; automatic tax failed with PROVIDER_UNAVAILABLE; no tax applied.",
-    "Customer/GC company not recovered.",
-    "MCP customer exporter rejects zero apartments for this commercial-only project; no invented apartment count entered."
+    "Verify customer/GC and transaction tax; tax provider credential remains unavailable.",
+    "Commercial-only project has zero apartments; customer export validation still requires positive apartment inventory.",
+    "Catalog product finish/configuration differences remain disclosed; no architectural compliance or substitution approval inferred."
   ],
   "blockers": [
-    "Authoritative compliant custom PL-1 casework/fabrication quote unavailable after 233-sheet and catalog search.",
-    "D124 sink ownership/configuration conflicts between 1/A401 keynote1 and 4/A401/A421; user clarification pending.",
-    "AWI Economy/Custom conflict and exact shop-drawing dimensions/hardware package require specification resolution.",
-    "TaxJar credential unavailable; automatic tax failed with PROVIDER_UNAVAILABLE; no tax applied.",
-    "Customer/GC company not recovered.",
-    "MCP customer exporter rejects zero apartments for this commercial-only project; no invented apartment count entered."
+    "Customer/GC missing; transaction tax unavailable; commercial-only customer export validator gap."
   ],
-  "next_action": "Resolve D124 sink supply/design and the AWI grade conflict; obtain authoritative compliant PL-1 casework/modification pricing; verify customer and transaction tax; address commercial-only customer export validation within an authorized platform task. Replace the unapproved alternate, reprice at retained 13% margin and export a reviewed customer proposal. Do not sign, approve, send or submit.",
-  "recorded_at": "2026-10-20T10:01:57.570Z",
+  "next_action": "Continue the catalog-only bid with explicit exclusions. Resolve customer/tax and commercial-only export checks; retain 13% margin. Do not seek bespoke custom pricing for excluded items and do not approve or send.",
+  "recorded_at": "2026-10-20T10:06:43.432Z",
   "snapshot": {
-    "head": "d86449ca3d1f5da2ba8c2bdb892c68240831a684",
+    "head": "1996f4d65624e554f97cb4f0e3e7f28df5e5a11c",
     "branch": "codex/cabinet-brain-integration-recovery",
     "worktree": "",
     "sources": {
@@ -72,7 +59,7 @@
   },
   "vault": {
     "project": "vulpine-platform",
-    "session_id": "ff5944af-ec2c-4503-a6b6-585b9991f6c2",
-    "record": "sources/aeon-sessions/vulpine-platform/ff5944af-ec2c-4503-a6b6-585b9991f6c2.md"
+    "session_id": "4962594f-dc8f-4d2a-8e1f-46b3ed223cd1",
+    "record": "sources/aeon-sessions/vulpine-platform/4962594f-dc8f-4d2a-8e1f-46b3ed223cd1.md"
   }
 }
