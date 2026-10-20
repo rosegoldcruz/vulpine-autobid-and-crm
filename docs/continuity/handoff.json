@@ -1,34 +1,42 @@
 {
-  "last_change": "Released Backoffice/PDF/MCP reliability fixes in pushed15dc4d4; promoted READY deployment dpl_7FS8DKFKsWuYrLaP8zDQydUURrUp; pricing/bidding services running MCP1.1.0. No business quote changes.",
+  "last_change": "Executed Racine Garage Condos drawing-backed cabinet takeoff using parallel A, C/D, catalog and independent root drawing reviews. Created 17-tab full requirement audit workbook, five CSV schedules, preserved source workbook, saved MCP Auto Bid/shared quote and unsigned internal priced-scope PDF. Deliverables: /home/bid-workspace/Racine Garage Condos/Verified Takeoff 2026-10-20; downloadable copies/package: /mnt/data/Racine_Takeoff_and_Incomplete_Bid_Package.zip. No application source changes, customer approval, signature or sending. Original-spec full bid remains incomplete.",
   "verification": [
-    "npm test:49 root+36 service tests passed. Pricing:53 unit+5 integration checks passed.",
-    "Final production Playwright suite:21 passed at1440px/390px,including previews,folder upload/resume,saving state,tracker editing,navigation and pricing retry/session cases.",
-    "Actual pricing service browser fixture:load saved quote,download customer PDF,reload,mobile resize and flush edit before returning to top-level Backoffice passed;no page errors. PDF text verifies customer company,total,no internal-draft banner.",
-    "Local Backoffice production build and Vercel release build passed. Affected ESLint passed. Initial React18/19 and19.2/19.3 type build failures repaired through host-scoped type peers.",
-    "Early development tests during dependency relinking/HMR failed; final frozen production build suite passes all21. New scoped alert test initially matched Next route announcer and was repaired.",
-    "All7 identities pass real access/quote/catalog/retained document calls after production release;27 pricing/35 total tools;Mission payload393KB->66KB. Actual ChatGPT pricing connector reads shared quote and resolves customer PDF.",
-    "Both services active and health ok. Vercel inspect confirms production alias on promoted release. Production sign-in page renders without page errors;post-release Vercel error query returns0 rows.",
-    "git push origin codex/cabinet-brain-integration-recovery succeeded for15dc4d4. QA server stopped;temporary generated instruction files removed."
+    "Verified actual drawing title: Garage Condos at Racine Circle, 6507 S. Racine Circle, Centennial CO. Eight local PDFs contain 501 pages; 354 architectural pages and 425 non-geotechnical pages are indexed. September 4 A/C/D client-check sets are current. June CD PDF is civil. Site plans show three buildings A/C/D.",
+    "Parallel A, C/D and catalog workers plus root independent drawing checks reconciled 59 garages, 41 cabinet positions and 141 reviewed spaces. Cabinet scope: 37 owner service assemblies, 3 uncontested contractor casework positions and 1 D124 sink with contradictory supply/design notes. D124 has 9 specified pulls. No residential kitchen or upper-level repetition was inferred.",
+    "Catalog research covered 233 worksheets, including hidden tabs, and 2.81 million cells in four master workbooks. Available MCP catalogs and manufacturer dimensional sources were checked. Trim naming resolved to two WF336 blanks and one BFD25 south panel. No authoritative compliant PL-1 casework or modification quote was recovered.",
+    "LibreOffice recalculated 114 formulas without errors. Independent checks matched MCP line-rounded material sale $486.06, handles $19.98, engine freight $133 and incomplete stock alternate subtotal $639.04 before tax. Selected material gross margin is 13%. Physical stock counts are 3 bodies and 6 pulls, independent of pricing multipliers.",
+    "Original workbook copy is byte-identical, SHA256 2edfa06035719089b29dc1f10dd450033d434d9697986cbc36315db718b0b5bd; all 75,780 original formulas remain untouched.",
+    "Automatic tax failed with PROVIDER_UNAVAILABLE because the TaxJar credential is not configured. No tax was applied. Actual customer export failed VALIDATION_FAILED for zero apartments, missing customer/GC, missing tax and incomplete scope. No gate was bypassed.",
+    "Saved Auto Bid 30d8c184-a89e-407c-a9b1-683e955b3be6 revision 11 and shared quote 06f4f6b5-c098-49d4-bef2-084f80c7a921 revision 2. Draft document d4b48e2d-fa9d-42b5-b28e-51bcd993fc66 has ten Letter pages, all rendered and visually checked. Totals, scope and exclusions agree; supplier identities, purchase costs, margin and profit are absent from PDF text. PDF SHA256 61d5e0b014f018cb258294c220ab27a624560ad855d74c89524d8c98bfee228c.",
+    "Root independent QA passed 27 specific checks. The 37-file delivery ZIP passed testzip. Full original-spec bid total and tax-inclusive total remain null, not zero. No customer-ready PDF, signature, approval or sending occurred."
   ],
   "decisions": [
-    "Owner requests complete reliability work with emphasis on PDFs and AI/MCP; release scope is verified workflows,not a claim every external provider is configured.",
-    "Keep current prices,finishes,signature approvals,source records and historical exports unchanged.",
-    "Customer exports must use explicit customer type;incomplete work retains draft default and validation.",
-    "ChatGPT installed metadata remains a separate observable client limitation;no reset/uninstall or broader permission changes inferred."
+    "Explicit owner instruction in this chat selected 13% gross margin, superseding earlier preliminary mentions and the engine default. Applied through MCP. This authorizes the margin only; it does not approve substitutes or customer submission.",
+    "Account every drawn cabinet position as a documented owner exclusion or a specifically unresolved requirement. Price available stock materials only as a clearly incomplete alternate. Do not invent custom SKUs or fabrication prices.",
+    "Preserve a saved unsigned internal draft. Do not enter fictitious apartments to pass the current commercial-only customer export limitation."
   ],
   "open_work": [
-    "ChatGPT pricing connector exposes25 cached tools while server exposes27;refresh installed metadata to expose new item/configuration tools and updated schemas.",
-    "External provider configuration beyond tested bid/document workflows was not certified complete."
+    "Authoritative compliant custom PL-1 casework/fabrication quote unavailable after 233-sheet and catalog search.",
+    "D124 sink ownership/configuration conflicts between 1/A401 keynote1 and 4/A401/A421; user clarification pending.",
+    "AWI Economy/Custom conflict and exact shop-drawing dimensions/hardware package require specification resolution.",
+    "TaxJar credential unavailable; automatic tax failed with PROVIDER_UNAVAILABLE; no tax applied.",
+    "Customer/GC company not recovered.",
+    "MCP customer exporter rejects zero apartments for this commercial-only project; no invented apartment count entered."
   ],
   "blockers": [
-    "No exposed Plugin Management operation can refresh ChatGPT connector metadata;server deployment does not update that installed snapshot."
+    "Authoritative compliant custom PL-1 casework/fabrication quote unavailable after 233-sheet and catalog search.",
+    "D124 sink ownership/configuration conflicts between 1/A401 keynote1 and 4/A401/A421; user clarification pending.",
+    "AWI Economy/Custom conflict and exact shop-drawing dimensions/hardware package require specification resolution.",
+    "TaxJar credential unavailable; automatic tax failed with PROVIDER_UNAVAILABLE; no tax applied.",
+    "Customer/GC company not recovered.",
+    "MCP customer exporter rejects zero apartments for this commercial-only project; no invented apartment count entered."
   ],
-  "next_action": "Use live Backoffice Pricing and tested direct agent connections;refresh the ChatGPT Pricing connection metadata for its remaining cached tool/schema mismatch.",
-  "recorded_at": "2026-10-19T19:37:32.175Z",
+  "next_action": "Resolve D124 sink supply/design and the AWI grade conflict; obtain authoritative compliant PL-1 casework/modification pricing; verify customer and transaction tax; address commercial-only customer export validation within an authorized platform task. Replace the unapproved alternate, reprice at retained 13% margin and export a reviewed customer proposal. Do not sign, approve, send or submit.",
+  "recorded_at": "2026-10-20T10:01:57.570Z",
   "snapshot": {
-    "head": "15dc4d452c20eb4f07c3cea2d2c9d37bad020582",
+    "head": "d86449ca3d1f5da2ba8c2bdb892c68240831a684",
     "branch": "codex/cabinet-brain-integration-recovery",
-    "worktree": " M docs/continuity/current.md\n M docs/continuity/decisions.md",
+    "worktree": "",
     "sources": {
       "AGENTS.md": "c51e08a8021528ff818e5f62620aae587530eeec275750b2d38c2771ef732460",
       "README.md": "b6948f9084afb5f1bcceb4466e627c78f2288ba7f4876ceb64f3702b4fea5bd1",
@@ -64,7 +72,7 @@
   },
   "vault": {
     "project": "vulpine-platform",
-    "session_id": "6381ac34-2cc1-427b-a112-e840ca7051da",
-    "record": "sources/aeon-sessions/vulpine-platform/6381ac34-2cc1-427b-a112-e840ca7051da.md"
+    "session_id": "ff5944af-ec2c-4503-a6b6-585b9991f6c2",
+    "record": "sources/aeon-sessions/vulpine-platform/ff5944af-ec2c-4503-a6b6-585b9991f6c2.md"
   }
 }
