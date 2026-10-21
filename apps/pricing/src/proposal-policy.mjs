@@ -20,13 +20,13 @@ export function quantities(data,state,units){
  return {apartments,actualApartments:nonnegative(expected)&&expected>0?expected:null,amenities,groups:apartmentGroups.size,shippingUnits:(nonnegative(expected)&&expected>0?expected:apartments)+amenities,issues};
 }
 export function projectCharges(data,state,units){
- const counts=quantities(data,state,units),issues=[...counts.issues];let boxes=0,accessories=0,handles=0,includedHandles=0,listedHandles=0,freightCost=0;
+ const counts=quantities(data,state,units),issues=[...counts.issues];let boxes=0,accessories=0,handles=0,includedHandles=0,listedHandles=0,freightCost=0,configurationMissing=false;
  const assemblies=new Set();
  for(const u of units.filter(u=>u.repeat>0))for(const r of u.entries){
   const meta=lookup(data,r.li,r.sku),extended=r.qty*u.repeat;
   if(freightItem(r)){freightCost+=r.purchase*extended;continue;}
   if(handleItem(r)){listedHandles+=extended;continue;}
-  if(data.countsVerified===false&&r.boxCount===undefined)issues.push('Verify cabinet-box and handle quantities for '+u.name+' / '+r.sku+'.');
+  if(data.countsVerified===false&&r.boxCount===undefined){configurationMissing=true;issues.push('Verify cabinet-box and handle quantities for '+u.name+' / '+r.sku+'.');}
   const bodyCount=r.boxCount??meta?.[5]??0;
   if(!nonnegative(bodyCount)||bodyCount>1||r.boxCount!==undefined&&!r.configurationBasis?.trim()){issues.push('Document a valid cabinet configuration for '+u.name+' / '+r.sku+'.');continue;}
   if(!bodyCount){accessories+=extended;continue;}
@@ -38,6 +38,7 @@ export function projectCharges(data,state,units){
   const quantity=configuration*extended;handles+=quantity;
   if(r.handlesIncluded){if(!r.handleInclusion?.trim())issues.push('Name the line that already includes handles for '+r.sku+'.');includedHandles+=quantity;}
  }
+ if(configurationMissing)issues.push('MCP count entry: use set_bid_details or set_project_quote_details with projectInfo.cabinetConfigurations=[{unit_id,items:[{sku,li,boxCount,handleCount,configurationBasis}]}]. Classify cabinets as boxCount 1 and trim as 0; retain quantities and catalog prices.');
  const remaining=Math.max(0,handles-includedHandles-listedHandles),freight=state.charges?.freight;
  if(freight?.override&&!freight.approval?.trim())issues.push('A project freight override requires an explicit approval reference.');
  const rate=freight?.override&&freight.approval?.trim()?freight.rate:FREIGHT_RATE;
