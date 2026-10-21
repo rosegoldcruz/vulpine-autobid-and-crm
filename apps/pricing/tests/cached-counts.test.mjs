@@ -1,0 +1,22 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import {calculateProject} from '../src/pricing.mjs';
+import {customerIssues} from '../src/proposal-policy.mjs';
+import {complete} from './proposal-fixture.mjs';
+const data=JSON.parse(await fs.readFile(new URL('../src/suppliers/rythern.json',import.meta.url)));
+test('SKU-only supplier rows cannot silently pass customer validation with zero bodies and pulls',()=>{
+ const state=complete({supplier:'rythern',margin:13,units:[{id:'fixture',name:'A',repeat:1,defaultLi:0,auto:false,items:[{sku:'B24',li:0,qty:2,handleCount:3},{sku:'TKC',li:0,qty:1,handleCount:0}]}]});
+ const before=calculateProject(data,state);
+ assert.equal(before.charges.boxes,0);
+ assert.ok(customerIssues(data,state,before).some(v=>v.includes('B24')));
+ assert.ok(customerIssues(data,state,before).some(v=>v.includes('TKC')));
+ Object.assign(state.units[0].items[0],{boxCount:1,configurationBasis:'Catalog drawing: two doors and one operating drawer.'});
+ Object.assign(state.units[0].items[1],{boxCount:0,configurationBasis:'Toe cover trim, no cabinet body or handles.'});
+ const after=calculateProject(data,state);
+ assert.equal(after.purchase,before.purchase);
+ assert.equal(after.charges.boxes,2);
+ assert.equal(after.charges.handles.quantity,6);
+ assert.equal(after.revenue-before.revenue,6*333);
+ assert.ok(!after.charges.issues.some(v=>v.includes('cabinet-box')));
+});

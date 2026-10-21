@@ -26,7 +26,7 @@ export function projectCharges(data,state,units){
   const meta=lookup(data,r.li,r.sku),extended=r.qty*u.repeat;
   if(freightItem(r)){freightCost+=r.purchase*extended;continue;}
   if(handleItem(r)){listedHandles+=extended;continue;}
-  if(data.countsVerified===false&&r.boxCount===undefined&&meta?.[5]===0&&/cabinet|base|vanity|wall/i.test(r.description))issues.push('Verify cabinet-box and handle quantities for '+u.name+' / '+r.sku+'.');
+  if(data.countsVerified===false&&r.boxCount===undefined)issues.push('Verify cabinet-box and handle quantities for '+u.name+' / '+r.sku+'.');
   const bodyCount=r.boxCount??meta?.[5]??0;
   if(!nonnegative(bodyCount)||bodyCount>1||r.boxCount!==undefined&&!r.configurationBasis?.trim()){issues.push('Document a valid cabinet configuration for '+u.name+' / '+r.sku+'.');continue;}
   if(!bodyCount){accessories+=extended;continue;}

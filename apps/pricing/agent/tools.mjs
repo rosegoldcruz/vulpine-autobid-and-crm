@@ -44,6 +44,7 @@ const descriptions={
  save_bid:'Persist the draft at the expected revision. Saving does not approve final pricing or authorize sending.',
  export_bid:'Generate a customer proposal, internal draft PDF or purchase workbook. Customer PDFs and filenames are not marked draft. Plan quantity review warnings do not block draft export and remain in the document. First save_bid at the current revision. Pass type draft to preserve incomplete work, with specific missing-field errors; customer export requires verified project and tax information. Use scope_notes to document unresolved quantities, finishes, supplier pricing and exclusions; never silently substitute products. Returns an expiring download link. Does not send the proposal.'
 };
+for(const name of ['set_bid_details','set_project_quote_details'])descriptions[name]+=' For cached clients, projectInfo.cabinetConfigurations accepts the documented count-only units/items schema (unit_id; sku, li, boxCount, handleCount, configurationBasis). It validates existing items, preserves quantities/prices/margin, clears signature approval and recalculates pulls. See bidding-agent.md.';
 export function createBidTools({workspace,store,catalogs,template,signatureBytes=null,publicUrl,env=process.env}){
  const hashes=Object.fromEntries(Object.entries(catalogs).map(([id,data])=>[id,hash(JSON.stringify(data))]));
  const get=async(actor,id)=>{const value=await store.get(actor,id);if(value.catalog_hash!==hashes[value.state.supplier||'hci'])throw new BidError('CATALOG_CHANGED','Catalog changed since this bid was created. Human repricing review required.');return value;};
@@ -54,9 +55,33 @@ export function createBidTools({workspace,store,catalogs,template,signatureBytes
  };
  const issues=j=>[...new Set([...calculateProject(catalogs[j.state.supplier||'hci'],j.state).issues,...j.exceptions])];
  const mutate=async(actor,a,name,fn)=>{await get(actor,a.job_id);return store.mutate(actor,a.job_id,a.expected_revision,name,j=>{fn(j);j.saved=false;});};
+ const applyCabinetDetails=(state,raw)=>{
+  if(state.issuedAt||state.status==='Issued')throw new BidError('ISSUED_QUOTE','Issued quotes are immutable. Create a revised draft.');
+  const details=inputs.set_project_quote_cabinet_details.shape.units.parse(raw);
+  if(new Set(details.map(d=>d.unit_id)).size!==details.length)throw new BidError('DUPLICATE_UNIT','Provide each unit once.');
+  for(const detail of details){
+   const unit=state.units.find(u=>u.id===detail.unit_id);if(!unit)throw new BidError('NOT_FOUND','Unit does not belong to this quote.');
+   const keys=detail.items.map(i=>i.li+':'+i.sku);if(new Set(keys).size!==keys.length)throw new BidError('DUPLICATE_SKU','Provide each SKU and finish once.');
+   for(const config of detail.items){
+    const item=unit.items.find(i=>i.sku===config.sku&&i.li===config.li);if(!item)throw new BidError('NOT_FOUND','Item does not belong to this unit.');
+    if(!config.boxCount&&config.handleCount)throw new BidError('INVALID_INPUT','Accessory rows cannot carry cabinet handles.');
+    Object.assign(item,{boxCount:config.boxCount,handleCount:config.handleCount,configurationBasis:config.configurationBasis});
+   }
+   if(detail.kind)unit.kind=detail.kind;if(detail.auto!==undefined)unit.auto=detail.auto;
+  }
+  delete state.signature;
+ };
  const applyDetails=(state,a)=>{
+  // The existing record-shaped field also works with clients caching older tool schemas.
+  // Parse the same strict count-only schema as the dedicated tool; never accept prices or quantities.
+  const projectInfo=a.projectInfo===undefined?undefined:{...a.projectInfo};
+  if(projectInfo&&Object.hasOwn(projectInfo,'cabinetConfigurations')){
+   applyCabinetDetails(state,projectInfo.cabinetConfigurations);
+   delete projectInfo.cabinetConfigurations;
+  }
   for(const key of ['customer','email','preparedBy','notes','date','validUntil','tax'])if(a[key]!==undefined)state[key]=a[key];
-  for(const key of ['projectInfo','customerSections'])if(a[key]!==undefined)state[key]={...state[key],...a[key]};
+  if(projectInfo!==undefined)state.projectInfo={...state.projectInfo,...projectInfo};
+  if(a.customerSections!==undefined)state.customerSections={...state.customerSections,...a.customerSections};
   if(a.charges!==undefined){state.charges={...state.charges};for(const [key,value]of Object.entries(a.charges))state.charges[key]=value&&typeof value==='object'&&!Array.isArray(value)?{...state.charges[key],...value}:value;}
   if(a.signature!==undefined){
    if(a.signature.approved&&(a.signature.quoteId!==state.quoteId||state.preparedBy!=='Daniel Cruz'))throw new BidError('INVALID_INPUT','Signature approval must name this quote and Daniel Cruz as preparer.');
@@ -117,16 +142,7 @@ export function createBidTools({workspace,store,catalogs,template,signatureBytes
     }
     case 'set_project_quote_cabinet_details':{
      const q=await shared(actor,a),state=structuredClone(q.state);
-     for(const detail of a.units){
-      const unit=state.units.find(u=>u.id===detail.unit_id);if(!unit)throw new BidError('NOT_FOUND','Unit does not belong to this quote.');
-      const keys=detail.items.map(i=>i.li+':'+i.sku);if(new Set(keys).size!==keys.length)throw new BidError('DUPLICATE_SKU','Provide each SKU and finish once.');
-      for(const config of detail.items){
-       const item=unit.items.find(i=>i.sku===config.sku&&i.li===config.li);if(!item)throw new BidError('NOT_FOUND','Item does not belong to this unit.');
-       if(!config.boxCount&&config.handleCount)throw new BidError('INVALID_INPUT','Accessory rows cannot carry cabinet handles.');
-       Object.assign(item,{boxCount:config.boxCount,handleCount:config.handleCount,configurationBasis:config.configurationBasis});
-      }
-      if(detail.kind)unit.kind=detail.kind;if(detail.auto!==undefined)unit.auto=detail.auto;
-     }
+     applyCabinetDetails(state,a.units);
      result=await sharedResult(actor,q,state);break;
     }
     case 'set_bid_details':result=await mutate(actor,a,name,j=>{applyDetails(j.state,a);j.state.pricingPolicy=2;});break;

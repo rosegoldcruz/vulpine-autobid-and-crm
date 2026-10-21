@@ -203,3 +203,25 @@ get_project_quote returns editable units, totals and documents without duplicati
 source captures or calculated item rows. Request include_calculation_lines:true
 when exact calculated rows are needed. Source provenance remains in storage and
 the original bid source tools. Input errors report the fields requiring repair.
+# Cabinet counts with cached client tool schemas
+
+When a supplier pricebook has `countsVerified:false`, classify every material item
+from catalog/drawing evidence. Missing counts block complete pricing even when the
+pricebook description is only a SKU. Do not infer counts from SKU names or charge
+zero handles because body metadata is missing.
+
+Current clients may use `set_project_quote_cabinet_details` or item `boxCount` /
+`configurationBasis` fields. Clients caching an older schema can use the existing
+`set_bid_details` or `set_project_quote_details` record field:
+
+```json
+{"projectInfo":{"cabinetConfigurations":[{"unit_id":"existing-unit-uuid","items":[{"sku":"B24","li":0,"boxCount":1,"handleCount":3,"configurationBasis":"Catalog drawing: two doors and one working drawer."},{"sku":"F342","li":0,"boxCount":0,"handleCount":0,"configurationBasis":"Filler trim, no cabinet body or pulls."}]}]}}
+```
+
+Include the current `job_id` or `quote_id` and `expected_revision` as usual.
+This uses the same strict count-only validation, authorization, revision guard and
+audit history as the dedicated tool. It rejects prices, quantities, foreign units,
+duplicate configurations and handles on accessory rows. It preserves SKU/quantity,
+catalog costs and selected margin, clears prior signature approval and recalculates
+handle charges and tax. The transport field is consumed, not stored as a second
+configuration source. Manual tax still uses the existing signed tax tool.
