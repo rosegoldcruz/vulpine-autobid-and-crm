@@ -1,3 +1,34 @@
+## 2026-10-21 — Pricing and Plan Studio switch without save prerequisites
+
+Owner reports Plan Studio blocked by "Save your pricing changes" and directs a
+working, unrestricted workspace switch. Hosted mode previously navigated away
+from Pricing after a save check; failed/conflicted saves blocked Studio entirely.
+Both hosted and standalone modes now retain the Pricing document and lazily
+mount Studio in its same-origin iframe. Switching never invokes a pricing save,
+waits on saveQueue or navigates away. Pricing autosaves continue independently;
+unsaved/conflicted drafts and the open Studio plan remain mounted on return.
+Embedded Studio hides its redundant deployment navigation; direct Studio visits
+retain it. Hide Pricing's sidebar in Studio, remove its desktop offset, and hide
+the outer masthead on mobile to preserve viewer space. Existing auth, pricing,
+revision protection and proposal rules are unchanged. Browser-local plan storage
+and physical minimum viewer dimensions remain upstream limitations.
+
+Verification: protected pricing build passed (510 records); all54 pricing tests
+passed; git diff --check passed. Playwright/Chrome with isolated real-service
+storage passed hosted switching with successful200, failed503 and conflict409
+saves, retaining pricing text and the mounted plan. Imported a real generated PDF,
+switched away/back and verified its title remained. Desktop1440x1000 and mobile
+390x844 screenshots visually inspected; no page errors or mobile horizontal
+page overflow. Browser plugin unavailable; used existing Playwright installation.
+First temporary test attempt failed on pdf-lib ESM import; corrected to CJS and
+final runs passed. Read-only signed live HTTP checks verified all five changed
+assets byte-match tested dist, health is ok and unsigned Studio remains401.
+No business quote writes. Assets are read per request, so no restart, Vercel build
+or environment change was needed. Existing open pages require a refresh to load
+updated modules. Evidence: /tmp/verify-studio-switch.mjs,
+/tmp/verify-live-studio.mjs, /tmp/studio-switch-desktop.png and
+/tmp/studio-switch-mobile.png (temporary artifacts).
+
 ## 2026-10-19 — Backoffice PDF/MCP reliability release
 
 Owner requests a full reliability pass, emphasizing PDF problems and partner AI

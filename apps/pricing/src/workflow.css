@@ -34,9 +34,10 @@
 #planStudio iframe{display:block;border:0;width:100%;height:100%}
 body.studioOpen{height:100dvh;overflow:hidden;display:flex;flex-direction:column}
 .studioOpen>.top,.studioOpen>.workspaceSwitch{flex:none}
+.studioOpen>.workspaceSwitch{margin-left:0;width:100%}
 .studioOpen #exportExcel,.studioOpen .factor,.studioOpen #saveState{display:none}
-.studioOpen .app,.studioOpen .bar{display:none!important}
-@media(max-width:640px){.workspaceSwitch{padding:8px 12px;gap:8px;flex-wrap:wrap}.workspaceSwitch button{padding:8px 18px}#studioStorageNote{font-size:11px}}
+.studioOpen .app,.studioOpen .bar,.studioOpen .projectSidebar,.studioOpen .workspaceToggle{display:none!important}
+@media(max-width:640px){.studioOpen>.top{display:none}.workspaceSwitch{padding:8px 12px;gap:8px;flex-wrap:wrap}.workspaceSwitch button{padding:8px 18px}#studioStorageNote{font-size:11px}}
 .bidAssistant{margin:12px 0;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
 .bidAssistant summary{padding:14px 16px;cursor:pointer;font-weight:700;min-height:48px}
 .bidAssistant summary small{margin-left:12px;color:var(--muted);font-weight:400}

@@ -27,3 +27,8 @@ await cp(new URL('src/suppliers/',root),new URL('dist/suppliers/',root),{recursi
 const studioPath=new URL('dist/studio/index.html',root);
 const studioNav='<nav aria-label="Pricing workspace" style="height:48px;display:flex;align-items:center;gap:18px;padding:0 16px;background:#17212b;color:#fff;font:14px system-ui;border-bottom:1px solid #46515d"><a href="../index.html" style="color:#fff;text-decoration:none;padding:8px 14px">Pricing</a><span aria-current="page" style="background:#fff;color:#17212b;border-radius:6px;padding:8px 14px">Plan Studio</span><span style="font-size:11px">Saved on this device · Export backups in Studio</span></nav>';
 await writeFile(studioPath,(await readFile(studioPath,'utf8')).replace('<body>','<body>'+studioNav).replace('<div id="root">','<div id="root" style="height:calc(100% - 48px)">'));
+
+// The parent workspace supplies navigation when Studio is embedded. Keep its
+// own return link for direct visits without allowing it to discard mounted plans.
+await copyFile(new URL('src/studio-embed.mjs',root),new URL('dist/studio/embed.mjs',root));
+await writeFile(studioPath,(await readFile(studioPath,'utf8')).replace('</body>','<script type="module" src="./embed.mjs"></script></body>'));

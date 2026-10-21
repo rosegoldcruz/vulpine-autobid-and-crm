@@ -419,3 +419,14 @@ through MCP. Missing automatic provider configuration or delivery address must
 not be represented as a manual-tax blocker. Keep existing signed manual tax
 tools and default mode; clarify their discovery metadata and worker instructions
 instead of adding duplicate tools or changing permissions/pricing rules.
+
+
+## 2026-10-21 — workspace navigation must not depend on pricing saves
+
+Owner explicitly rejects the save-pricing prerequisite for Plan Studio. Keep both
+workspaces mounted and let users switch immediately, including when Pricing has
+an unsaved draft or revision conflict. Preserve those edits in memory; do not
+silently overwrite newer shared records or represent failed saves as persisted.
+Studio keeps its existing browser-local persistence and backups. The request is
+implemented as removal of the navigation prerequisite, without changing prices,
+authentication or financial export rules.

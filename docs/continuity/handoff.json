@@ -1,30 +1,30 @@
 {
-  "last_change": "Clarified existing manual-tax MCP tool and field descriptions, assigned pricing-worker instructions and bidding-agent documentation; restarted bidding backend and verified live discovery for all seven configured agent clients.",
+  "last_change": "Removed hosted Pricing save prerequisite for Plan Studio; retain both workspaces in same-origin iframe, preserve drafts/open plans, fix desktop sidebar offset/mobile viewer layout and document behavior.",
   "verification": [
-    "node --test apps/pricing/tests/*.test.mjs: 53 passed.",
-    "node --env-file=/etc/vulpine-operations/runtime.env --env-file=/etc/vulpine-bidding/runtime.env --test apps/pricing/tests/agent-fields.integration.mjs: 2 passed; isolated fixtures removed by test cleanup; TaxJar disabled in fields test.",
-    "node /tmp/manual-tax-discovery.mjs: all seven configured clients expose 35 tools and both tax tool descriptions/schema explicitly permit provider-free manual tax. Evidence /opt/output/manual-tax-discovery-20261021.json.",
-    "Database active-run check: no queued/running jobs. systemctl restart vulpine-bidding succeeded; active. Public bidding health HTTP200/status ok.",
-    "git diff --check passed. Initial continuity start failed with sandbox spawnSync git EPERM; retry outside sandbox succeeded. No frontend build or deployment required."
+    "corepack pnpm --filter @vulpine/pricing build passed: 510 product records.",
+    "corepack pnpm --filter @vulpine/pricing test passed: 54 tests, 0 failed.",
+    "node /tmp/verify-studio-switch.mjs passed with isolated real-service storage: successful200, failed503 and conflict409 saves; pricing and Studio retained; real PDF import; desktop/mobile screenshots; no page errors or mobile page overflow.",
+    "Initial browser harness import failed with ERR_MODULE_NOT_FOUND in pdf-lib/es; corrected temporary script to cjs/index.js and both complete reruns passed.",
+    "Read-only live signed asset verification passed for studio-shell.mjs, app.mjs, styles.css, studio/index.html and studio/embed.mjs; all byte-match dist, health ok, unsigned Studio401. No business writes.",
+    "git diff --check passed. Initial continuity command sandbox spawnSync git EPERM; approved retry succeeded."
   ],
   "decisions": [
-    "Owner grants full access and directs no repeated permission requests. Apply rates already authorized for a project directly through MCP, without treating absent automatic provider/address as a manual-tax blocker.",
-    "Retain existing tools, scopes, revision guards and pricing logic; no production quote edits or credential changes."
+    "Owner requires Plan Studio to open without saving pricing first. Implement immediate view switch retaining both documents, independent of autosave success. Preserve existing quote data, autosave errors and revision protection."
   ],
   "open_work": [],
   "blockers": [],
-  "next_action": "Use get_bid_job or get_project_quote for the current revision, then set_bid_tax or set_project_quote_tax with mode manual and the project-authorized rate_percent. No user tax percentage was requested or applied in this infrastructure task.",
-  "recorded_at": "2026-10-21T04:28:01.915Z",
+  "next_action": "Refresh an existing Pricing tab once to load the new modules, then switch between Pricing and Plan Studio. Studio plans remain browser-local; keep backups.",
+  "recorded_at": "2026-10-21T21:43:34.621Z",
   "snapshot": {
-    "head": "c07c1d4a8368483e5d0a67c51e4b4c840fd3d26c",
+    "head": "22a6687d5642bef4974bd7077ab4ca0dde42fc5a",
     "branch": "codex/cabinet-brain-integration-recovery",
-    "worktree": " M apps/pricing/agent/schemas.mjs\n M apps/pricing/agent/tools.mjs\n M apps/pricing/agent/worker.mjs\n M apps/pricing/docs/bidding-agent.md\n M docs/continuity/current.md\n M docs/continuity/decisions.md",
+    "worktree": " M apps/pricing/scripts/build.mjs\n M apps/pricing/src/app.mjs\n M apps/pricing/src/studio-shell.mjs\n M apps/pricing/src/workflow.css\n M apps/pricing/vendor/README.md\n M docs/continuity/current.md\n M docs/continuity/decisions.md\n?? apps/pricing/src/studio-embed.mjs",
     "sources": {
       "AGENTS.md": "c51e08a8021528ff818e5f62620aae587530eeec275750b2d38c2771ef732460",
       "README.md": "b6948f9084afb5f1bcceb4466e627c78f2288ba7f4876ceb64f3702b4fea5bd1",
       "package.json": "fafa60aeae85182092017dfc87134dabfa1df3484315a510e118b4d879566a49",
-      "docs/continuity/current.md": "ecb65d51422792fd6c86f2b8d4635e22b5881315cafd467ca3ab9acae8bb701e",
-      "docs/continuity/decisions.md": "e1afedb25bc76ed2ba0e04fafa77a6f539a7d4f615ccf5eecf7c608add05a1f1",
+      "docs/continuity/current.md": "f6a03a93cea1bf87080d982e26e859d2fa787fff7841a2128469dcc0c15ff59a",
+      "docs/continuity/decisions.md": "f4ddbd9e71bcf19b5d4f3ef14a6373bf1e977911f0cd96021d8aa137ad4b98e6",
       "docs/continuity/audit.md": "c849de622d00377d1fadd3ba41cda2933eb9370b6fa13c2baf53bf36c0c471b2",
       "docs/continuity/verification.md": "5daeea53454a06fcf3b928b1fd12c8f69448beb8fc31a75b441181cc57962f28",
       "docs/continuity/sources.json": "0380630765b71a413ac27edd875e120cf51f501232720ee130160cd1f885937b",
@@ -54,7 +54,7 @@
   },
   "vault": {
     "project": "vulpine-platform",
-    "session_id": "a2eb4a63-7b87-4813-a116-bda19efdfb1f",
-    "record": "sources/aeon-sessions/vulpine-platform/a2eb4a63-7b87-4813-a116-bda19efdfb1f.md"
+    "session_id": "459b14f3-ed92-4856-98ed-0c3c43ec45c5",
+    "record": "sources/aeon-sessions/vulpine-platform/459b14f3-ed92-4856-98ed-0c3c43ec45c5.md"
   }
 }

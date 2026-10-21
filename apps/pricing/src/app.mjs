@@ -128,12 +128,6 @@ function save(){
 }
 function invalidatePdf(){if(pdfUrl){URL.revokeObjectURL(pdfUrl);pdfUrl=null}$('downloadResult').hidden=true}
 function cleanJobState(s){return Object.fromEntries(['version','supplier','project','status','quoteId','date','validUntil','customer','email','preparedBy','notes','margin','comparison','pricingPolicy','projectInfo','charges','customerSections','signature','revisionOf','tax','units'].map(k=>[k,k==='status'?'Tentative':k==='units'?s.units.map(u=>({id:u.id,name:u.name,repeat:u.repeat,defaultLi:u.defaultLi,auto:u.auto,kind:u.kind,areaId:u.areaId,areas:u.areas,items:u.items.map(i=>({sku:i.sku,li:i.li,qty:i.qty,handleCount:i.handleCount,boxCount:i.boxCount,configurationBasis:i.configurationBasis,handlesIncluded:i.handlesIncluded,handleInclusion:i.handleInclusion,assemblyId:i.assemblyId}))})):s[k]]));}
-document.addEventListener('vulpine-open-studio',async()=>{
-  // Let the existing debounced save finish before leaving the pricing document.
-  await new Promise(resolve=>setTimeout(resolve,450));await saveQueue;
-  if(serverConflict||$('saveState').textContent==='Not saved'){toast('Save your pricing changes before opening Studio.',{error:true});return;}
-  location.assign('./studio/index.html');
-});
 const safeName=()=>((state.quoteId||'Vulpine')+'_'+(state.project||'Project')).replace(/[^a-z0-9_-]/gi,'_');
 async function serverExport(format,type=documentType){await flushWorkspace();const response=await fetch('./export',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({state:{...structuredClone(state),supplierDrafts,_history:agentJob?null:historyRef},format,type})});if(!response.ok){const data=await response.json();throw Error(data.error?.message||data.error||'Export failed.');}return new Uint8Array(await response.arrayBuffer());}
 function downloadBytes(bytes,mime,name){const url=URL.createObjectURL(new Blob([bytes],{type:mime})),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);}
