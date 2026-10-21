@@ -410,3 +410,12 @@ without deleting source snapshots. Installed ChatGPT schemas are separately cach
 and remain a client refresh limitation; never bypass auth or reset connections
 merely to hide that mismatch. Use production browser checks after dependency
 relinking rather than relying on stale development/HMR state.
+
+
+## 2026-10-21 — manual tax agent access
+
+Owner requires agents to apply already authorized manual percentages directly
+through MCP. Missing automatic provider configuration or delivery address must
+not be represented as a manual-tax blocker. Keep existing signed manual tax
+tools and default mode; clarify their discovery metadata and worker instructions
+instead of adding duplicate tools or changing permissions/pricing rules.

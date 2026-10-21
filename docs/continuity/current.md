@@ -913,3 +913,26 @@ both services active and health ok. Actual exported PDFs have no internal-draft
 label, preserve qualifications/closing artwork, match supplied signature pixels,
 hide upstream suppliers and hash-match folder copies. Evidence under
 /opt/output/customer-bids-results.json and customer-bids-verification.json.
+
+
+## 2026-10-21 — manual tax MCP guidance verified live
+
+Owner requests direct manual-tax access for pricing agents without repeated
+permission requests. Both set_bid_tax and set_project_quote_tax already existed
+and are exposed in this ChatGPT session. Clarified their live descriptions,
+input field descriptions, assigned-worker instructions and bidding-agent guide:
+manual rates require no TaxJar/API credentials, provider lookup, delivery address
+or browser workaround. Apply an already authorized user rate without asking again.
+Manual remains the default; rates are never inferred. Existing revision, scope,
+signature, tax-base and historical-record protections remain unchanged.
+
+53 pricing unit tests and 2 isolated persistent MCP integration tests passed.
+Integration disables TaxJar and verifies manual9.25/6.75/zero rates, blank address,
+server signatures, saved revisions, retained documents and customer PDF export.
+Confirmed no queued/running jobs, restarted vulpine-bidding and verified public
+health HTTP200. Fresh live discovery confirms all7 configured agent identities
+see both tax tools and the clarified descriptions/schema (35 total tools each).
+Evidence: /opt/output/manual-tax-discovery-20261021.json. No production business
+quote edits, credential changes or frontend deployment. Existing installed
+ChatGPT metadata is not refreshed by this backend restart; both tax tools were
+already visible in this session before the change.

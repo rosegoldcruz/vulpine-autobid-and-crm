@@ -1,35 +1,30 @@
 {
-  "last_change": "Applied owner direction to Racine MCP shared quote revision 3 and saved Auto Bid revision 13: catalog-only semi-custom supply; exclude custom or unavailable catalog items, explicitly including D124 custom ADA sink cabinet. Updated workbook, CSV requirement schedules, PDF and delivery package. No quantity, 13% margin or price changes; no approval, signature or sending.",
+  "last_change": "Clarified existing manual-tax MCP tool and field descriptions, assigned pricing-worker instructions and bidding-agent documentation; restarted bidding backend and verified live discovery for all seven configured agent clients.",
   "verification": [
-    "Read live quote revision 2 and job revision 11 before edits; saved revisions 3 and 13 respectively. Read back explicit custom exclusions.",
-    "MCP regenerated ten-page PDF; verified exclusion language, unchanged $639.04 before-tax catalog material subtotal and absence of supplier identity, purchase cost or margin text. Inspected changed PDF pages; retained all drawing requirements in audit schedule.",
-    "Recalculated 114 workbook formulas without errors; 41 physical positions and 141 reviewed spaces preserved. Added owner scope direction tab, total 18 tabs. Source workbook untouched. Updated download files and ZIP; archive integrity passed."
+    "node --test apps/pricing/tests/*.test.mjs: 53 passed.",
+    "node --env-file=/etc/vulpine-operations/runtime.env --env-file=/etc/vulpine-bidding/runtime.env --test apps/pricing/tests/agent-fields.integration.mjs: 2 passed; isolated fixtures removed by test cleanup; TaxJar disabled in fields test.",
+    "node /tmp/manual-tax-discovery.mjs: all seven configured clients expose 35 tools and both tax tool descriptions/schema explicitly permit provider-free manual tax. Evidence /opt/output/manual-tax-discovery-20261021.json.",
+    "Database active-run check: no queued/running jobs. systemctl restart vulpine-bidding succeeded; active. Public bidding health HTTP200/status ok.",
+    "git diff --check passed. Initial continuity start failed with sandbox spawnSync git EPERM; retry outside sandbox succeeded. No frontend build or deployment required."
   ],
   "decisions": [
-    "Explicit current owner instruction: Vulpine supplies semi-custom catalog cabinetry, not bespoke fabrication. Skip requirements without a verified catalog match and mark exclusions in MCP. D124 custom ADA sink is excluded; no request for owner design choice or custom quotation is required for that excluded item.",
-    "Preserve drawing ownership and ADA discrepancy as evidence without asserting that the excluded cabinet is owner-supplied or included. Maintain disclosed catalog configuration/finish differences.",
-    "Retain final selected 13% gross margin and existing catalog quantities and prices. Exclusion authorization does not authorize overall bid approval, signature or sending."
+    "Owner grants full access and directs no repeated permission requests. Apply rates already authorized for a project directly through MCP, without treating absent automatic provider/address as a manual-tax blocker.",
+    "Retain existing tools, scopes, revision guards and pricing logic; no production quote edits or credential changes."
   ],
-  "open_work": [
-    "Verify customer/GC and transaction tax; tax provider credential remains unavailable.",
-    "Commercial-only project has zero apartments; customer export validation still requires positive apartment inventory.",
-    "Catalog product finish/configuration differences remain disclosed; no architectural compliance or substitution approval inferred."
-  ],
-  "blockers": [
-    "Customer/GC missing; transaction tax unavailable; commercial-only customer export validator gap."
-  ],
-  "next_action": "Continue the catalog-only bid with explicit exclusions. Resolve customer/tax and commercial-only export checks; retain 13% margin. Do not seek bespoke custom pricing for excluded items and do not approve or send.",
-  "recorded_at": "2026-10-20T10:06:43.432Z",
+  "open_work": [],
+  "blockers": [],
+  "next_action": "Use get_bid_job or get_project_quote for the current revision, then set_bid_tax or set_project_quote_tax with mode manual and the project-authorized rate_percent. No user tax percentage was requested or applied in this infrastructure task.",
+  "recorded_at": "2026-10-21T04:28:01.915Z",
   "snapshot": {
-    "head": "1996f4d65624e554f97cb4f0e3e7f28df5e5a11c",
+    "head": "c07c1d4a8368483e5d0a67c51e4b4c840fd3d26c",
     "branch": "codex/cabinet-brain-integration-recovery",
-    "worktree": "",
+    "worktree": " M apps/pricing/agent/schemas.mjs\n M apps/pricing/agent/tools.mjs\n M apps/pricing/agent/worker.mjs\n M apps/pricing/docs/bidding-agent.md\n M docs/continuity/current.md\n M docs/continuity/decisions.md",
     "sources": {
       "AGENTS.md": "c51e08a8021528ff818e5f62620aae587530eeec275750b2d38c2771ef732460",
       "README.md": "b6948f9084afb5f1bcceb4466e627c78f2288ba7f4876ceb64f3702b4fea5bd1",
       "package.json": "fafa60aeae85182092017dfc87134dabfa1df3484315a510e118b4d879566a49",
-      "docs/continuity/current.md": "ed74d8714b01617d7db3045265afddcf2be2054c61a465629677e702750fc336",
-      "docs/continuity/decisions.md": "b140f53f2ca3ecd7cbd53c5c5df01ad454c9ef60a84b3a4707c6a841a4163bf8",
+      "docs/continuity/current.md": "ecb65d51422792fd6c86f2b8d4635e22b5881315cafd467ca3ab9acae8bb701e",
+      "docs/continuity/decisions.md": "e1afedb25bc76ed2ba0e04fafa77a6f539a7d4f615ccf5eecf7c608add05a1f1",
       "docs/continuity/audit.md": "c849de622d00377d1fadd3ba41cda2933eb9370b6fa13c2baf53bf36c0c471b2",
       "docs/continuity/verification.md": "5daeea53454a06fcf3b928b1fd12c8f69448beb8fc31a75b441181cc57962f28",
       "docs/continuity/sources.json": "0380630765b71a413ac27edd875e120cf51f501232720ee130160cd1f885937b",
@@ -59,7 +54,7 @@
   },
   "vault": {
     "project": "vulpine-platform",
-    "session_id": "4962594f-dc8f-4d2a-8e1f-46b3ed223cd1",
-    "record": "sources/aeon-sessions/vulpine-platform/4962594f-dc8f-4d2a-8e1f-46b3ed223cd1.md"
+    "session_id": "a2eb4a63-7b87-4813-a116-bda19efdfb1f",
+    "record": "sources/aeon-sessions/vulpine-platform/a2eb4a63-7b87-4813-a116-bda19efdfb1f.md"
   }
 }

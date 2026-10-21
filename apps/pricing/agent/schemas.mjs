@@ -15,7 +15,7 @@ const key={job_id:id};
 const mutation={...key,expected_revision:z.number().int().positive()};
 const details={customer:z.string().max(200).optional(),email:z.string().max(200).optional(),preparedBy:state.shape.preparedBy.optional(),notes:state.shape.notes.optional(),date:state.shape.date.optional(),validUntil:state.shape.validUntil.optional(),projectInfo:state.shape.projectInfo,charges:state.shape.charges,customerSections:state.shape.customerSections,signature:state.shape.signature,tax:state.shape.tax};
 const quoteMutation={quote_id:id,expected_revision:z.number().int().positive()};
-const taxRequest={mode:z.enum(['manual','automatic','exempt']).default('manual'),address:tax.shape.address.optional(),rate_percent:z.number().min(0).max(100).optional(),exemption:z.strictObject({reason:text,document:z.string().min(1).max(10000),authority:text,validFrom:text,validUntil:text}).optional()};
+const taxRequest={mode:z.enum(['manual','automatic','exempt']).default('manual').describe('Use manual for a user-provided rate; no provider credentials or delivery address required'),address:tax.shape.address.optional().describe('Optional for manual tax, including when delivery address is blank'),rate_percent:z.number().min(0).max(100).optional().describe('User-authorized percentage for manual mode: 9.25 means 9.25%; explicit 0 is allowed. No provider lookup required'),exemption:z.strictObject({reason:text,document:z.string().min(1).max(10000),authority:text,validFrom:text,validUntil:text}).optional()};
 export const inputs={
  delete_bid:z.strictObject(mutation),
  delete_project_quote:z.strictObject({quote_id:id,expected_revision:z.number().int().positive()}),

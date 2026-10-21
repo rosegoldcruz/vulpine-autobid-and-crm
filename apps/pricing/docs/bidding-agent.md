@@ -108,7 +108,10 @@ require existing pricing write permission; no browser-only editing is necessary.
   preserved. Record patches merge with existing values; omitted fields remain.
 - `set_bid_tax` / `set_project_quote_tax`: generate signed tax records server-side.
   Manual mode takes the actual user-provided `rate_percent`, e.g. 9.25 means9.25%,
-  with explicit0 allowed. Omitted address preserves the existing one. Automatic
+  with explicit0 allowed. Manual tax requires no TaxJar/API credentials, provider
+  lookup or delivery address; a blank address is allowed. Apply an already
+  user-authorized rate directly without requesting it again. Use these MCP tools
+  without a browser workaround. Omitted address preserves the existing one. Automatic
   mode requires a verified full address and configured transaction-tax provider;
   unavailable providers fail explicitly without changing the bid. Exempt mode
   requires reason, document, authority, validFrom, validUntil and a valid address.
