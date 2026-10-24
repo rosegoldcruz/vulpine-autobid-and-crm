@@ -430,3 +430,10 @@ silently overwrite newer shared records or represent failed saves as persisted.
 Studio keeps its existing browser-local persistence and backups. The request is
 implemented as removal of the navigation prerequisite, without changing prices,
 authentication or financial export rules.
+
+
+## 2026-10-24 — AEON migration and tunnel compatibility
+
+Owner explicitly selects existing AEON instead of the Surface and authorizes the domain/tunnel setup. Stage complete recovered trees privately and deploy selected runtimes, keeping existing AEON factory services and its distinct Tailscale identity intact. Stop source writers before the final refresh and enable destination workers only after handover. Retain source recovery data and the temporary HTTPS relay for propagation; newer destination data prevents a blind writer rollback.
+
+Preserve existing large uploads when moving behind a per-request proxy limit: bounded authenticated chunks, renewed existing tickets, actor/path isolation and asynchronous save confirmation. Keep legacy storage concurrency as the default; AEON uses the optional tested setting of sixteen after complete upload/download hash comparisons against its actual storage server. Preserve Vercel frontends, mail/verification records and existing authentication. Pre-existing n8n owner setup and WhatsApp pairing are not silently invented or represented as complete.

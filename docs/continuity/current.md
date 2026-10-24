@@ -1,3 +1,15 @@
+## 2026-10-24 — Vulpine moved to AEON through Cloudflare
+
+The owner changed the destination to existing AEON; the Surface is excluded. All five rescue bundles passed SHA-256 verification and their file trees remain staged privately under `/srv/recovered-vulpine`. Source writers were stopped for a final SQL and application-state refresh. PostgreSQL 17, PostgreSQL 18 and MariaDB 10.11 were restored into isolated compatible containers; all final COPY blocks and all 844 MariaDB tables matched the source dumps. Existing AEON factory and personal services retain their configuration and identity.
+
+AEON now runs the migrated web services, bidding worker, Paperclip heartbeats, ERP queues/scheduler and the original Hermes gateway. Telegram and Slack connect on AEON. The old production writers and databases remain stopped with automatic restart disabled. Both domain zones are active at Cloudflare, all 41 DNS records match the verified migration set, and eleven former origin hosts route through the outbound tunnel. Existing Vercel frontends and mail records remain intact. Keep the old HTTPS relay temporarily for clients with cached DNS; do not restart its writers without reconciling newer AEON data.
+
+Drive compatibility: authenticated 32 MiB chunks retain large file support, async storage saves avoid a long proxy request, and bounded storage concurrency compensates for the home connection's latency. A 300 MiB public-origin upload/download and a 128 MiB transfer through Cloudflare both matched SHA-256 exactly; disposable validation folders were removed. A real connection reset was recovered from the acknowledged offset. The existing authorization and business pricing rules are unchanged. Refresh old Backoffice browser tabs for the new uploader.
+
+Verification: 32 local service/access checks, 22 public HTTPS checks and 36 targeted transfer tests passed. The connected pricing MCP reads 24 projects and 45 quotes. A retained proposal matches its source hash. Backoffice production deployment `dpl_HGtKJwx4CUYv5SK9DXuwPB6FPD9U` is READY. Local frontend build and affected TypeScript checks passed. Nightly private backups are enabled; the first three database dumps and application archive passed compressed-read and checksum checks. Live application file changes are explicitly recorded, so the routine archive is not represented as an atomic filesystem snapshot.
+
+Existing setup limits: WhatsApp was not paired at the source, and n8n had no completed owner login; its public route is protected by its existing configured password. Retired tracker/drive routes and the original voice/noco/files AI aliases are preserved. No server subscription was canceled, and Windows disk migration is separate.
+
 ## 2026-10-21 — Pricing and Plan Studio switch without save prerequisites
 
 Owner reports Plan Studio blocked by "Save your pricing changes" and directs a
