@@ -1,3 +1,4 @@
+import { uploadChunkedFile } from "./drive-chunks"
 import type {
   ApiResponse,
   DirectoryListing,
@@ -160,7 +161,7 @@ export class DriveClient {
   }
 
   async upload(path: string, files: readonly File[], onProgress?: (uploaded: number, total: number) => void, onTransfer?: (progress: DriveTransferProgress) => void) {
-    const maxBytes = 250 * 1024 * 1024
+    const maxBytes = 64 * 1024 * 1024
     let uploaded = 0
     let sentBytes = 0
     const totalBytes = files.reduce((total, file) => total + file.size, 0)
@@ -173,9 +174,16 @@ export class DriveClient {
         batch.push(files[index++])
       }
       try {
-        const transfer = await this.call<DriveUploadTicket>("/upload-ticket", {
+        const transfer = await this.call<DriveUploadTicket & { chunkedUploadVersion?: number }>("/upload-ticket", {
           method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ path }),
         })
+        if (batch.length === 1 && batch[0].size > maxBytes && transfer.chunkedUploadVersion === 1) {
+          const result = await uploadChunkedFile(batch[0], transfer, () => this.call("/upload-ticket", {
+            method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ path }),
+          }), this.request, (loaded, phase) => onTransfer?.({ sentBytes: sentBytes + loaded, totalBytes, phase, batchFiles: 1 }))
+          sentBytes += bytes; uploaded += result.uploaded; onProgress?.(uploaded, files.length)
+          continue
+        }
         const body = new FormData()
         body.append("path", path)
         if (batch.some(file => file.webkitRelativePath)) body.append("paths", JSON.stringify(batch.map(file => file.webkitRelativePath || file.name)))

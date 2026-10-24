@@ -11,6 +11,7 @@ import { resolveUploadPaths, validateDeletePath } from "./path.js"
 import { deleteItem, listAllItems, listDirectory, streamRemoteFile, writeUploadedFiles, zipDirectory } from "./sftp.js"
 import { temporaryUploadStorage, cleanupUpload } from "./upload-storage.js"
 import { releaseTransfer, reserveTransfer } from "./transfer-capacity.js"
+import { chunkUploadRouter } from "./chunked-upload.js"
 
 const app = express()
 const uploadLimit = optionalEnv("DRIVE_UPLOAD_MAX_BYTES") ? positiveIntegerEnv("DRIVE_UPLOAD_MAX_BYTES", 250 * 1024 * 1024) : undefined
@@ -48,6 +49,8 @@ function uploadCors(request: Request, response: Response, next: NextFunction) {
   }
   next()
 }
+
+app.use("/upload/chunks", uploadCors, chunkUploadRouter(writeUploadedFiles, uploadLimit))
 
 app.options("/upload", uploadCors)
 

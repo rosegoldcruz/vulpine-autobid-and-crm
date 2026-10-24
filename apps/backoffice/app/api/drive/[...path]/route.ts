@@ -70,7 +70,7 @@ async function proxy(request: Request, context: RouteContext) {
     }, integrationToken)
     upstreamUrl.searchParams.set("path", transferPath)
     upstreamUrl.searchParams.set("ticket", ticket)
-    return apiSuccess({ uploadUrl: upstreamUrl.toString(), expiresAt: new Date(expiresAt).toISOString() }, correlationId)
+    return apiSuccess({ uploadUrl: upstreamUrl.toString(), expiresAt: new Date(expiresAt).toISOString(), chunkedUploadVersion: 1 }, correlationId)
   }
 
   if (rule.binary) {
