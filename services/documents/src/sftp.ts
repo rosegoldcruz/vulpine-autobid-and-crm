@@ -1,4 +1,6 @@
 import { createReadStream } from "node:fs"
+import { stat as localStat } from "node:fs/promises"
+import { parallelRead } from "./parallel-read.js"
 import type { Readable } from "node:stream"
 import type { Archiver } from "archiver"
 import SftpClient from "ssh2-sftp-client"
@@ -103,7 +105,10 @@ export async function streamRemoteFile(
   await withSftp(async (client) => {
     const stat = await client.stat(path)
     if (!stat.isFile) throw new Error("Only files can be previewed.")
-    await handler(stat.size, (start, end) => client.createReadStream(path, { start, end }))
+    const concurrency = Math.min(16, positiveIntegerEnv("DRIVE_SFTP_TRANSFER_CONCURRENCY", 1))
+    await handler(stat.size, (start, end) => concurrency > 1 && (end ?? stat.size - 1) - (start ?? 0) > 1024 * 1024
+      ? parallelRead((first, last) => client.createReadStream(path, { start: first, end: last }), start ?? 0, end ?? stat.size - 1, concurrency)
+      : client.createReadStream(path, { start, end }))
   })
 }
 
@@ -116,7 +121,11 @@ export async function writeUploadedFiles(files: { path: string; localPath: strin
         const path = normalizeRemotePath(file.path)
         const parent = parentPath(path)
         if (parent !== "/" && !parents.has(parent)) { await client.mkdir(parent, true); parents.add(parent) }
-        await client.put(createReadStream(file.localPath), path)
+        const concurrency = Math.min(16, positiveIntegerEnv("DRIVE_SFTP_TRANSFER_CONCURRENCY", 1))
+        if (concurrency > 1) {
+          await client.fastPut(file.localPath, path, { concurrency })
+          if ((await client.stat(path)).size !== (await localStat(file.localPath)).size) throw new Error("Remote upload size does not match.")
+        } else await client.put(createReadStream(file.localPath), path)
         uploaded += 1
         await logAccess(path, "modify").catch(() => undefined)
       }
